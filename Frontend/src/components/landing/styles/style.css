@@ -1,0 +1,26 @@
+
+@tailwind utilities;
+
+@layer utilities {
+  .bg-radial-gradient {
+    background: radial-gradient(circle, var(--tw-gradient-from), var(--tw-gradient-to, transparent));
+  }
+}
+
+:root {
+  --primary: 239 68% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 329 70% 58%;
+  --secondary-foreground: 0 0% 100%;
+  --background: 222 84% 5%;
+  --foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+  --ring: 224 71% 45%;
+}
+
+body {
+  @apply bg-slate-900 text-slate-100;
+}
