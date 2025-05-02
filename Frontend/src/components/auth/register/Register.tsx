@@ -3,41 +3,55 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState, useEffect } from "react";
-import logo from '../../../assets/images/logo.png'
+import logo from '../../../assets/images/logo.png';
+import { AuthService } from "@/services/authService";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { registerSchema } from "../../../schemas/authSchema";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "client",
-  });
   const [isLoading, setIsLoading] = useState(true); // For initial page load
   const [isSubmitting, setIsSubmitting] = useState(false); // For form submission
 
+  const { register, handleSubmit, control, formState: { errors } } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "client",
+    },
+  });
+
+  const navigate = useNavigate();
   useEffect(() => {
     // Simulate initial loading (e.g., checking auth status, fetching config)
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: RegisterFormData) => {
     setIsSubmitting(true);
-    
     try {
-      const result = await 
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log({ ...formData});
-      
-    } catch (error) {
-      console.error("Registration failed:", error);
+      const result = await AuthService.registerUser(data);
+      if(result.data){
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('fanu',{ result });
+        navigate(`/auth/otp-verification?email=${encodeURIComponent(data.email)}`);
+      }
+    } catch (error:unknown) {
+      console.error("Registration failedd:", error);
+      if(error instanceof Error) {
+        toast.error(error.message);
+      }else{
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -63,125 +77,115 @@ export function RegisterPage() {
           <h1 className="text-2xl font-bold text-white">Tahtib ALJuhd</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Role Selection */}
           <div className="space-y-2">
             <Label className="text-white">I am a</Label>
-            <RadioGroup 
-              defaultValue="client" 
-              className="grid grid-cols-2 gap-4"
-              value={formData.role}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
-              disabled={isSubmitting}
-            >
-              <div>
-                <RadioGroupItem value="client" id="client" className="peer sr-only" />
-                <Label
-                  htmlFor="client"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-gray-700 bg-gray-700 p-4 hover:bg-gray-600 hover:cursor-pointer peer-data-[state=checked]:border-indigo-500 [&:has([data-state=checked])]:border-indigo-500"
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  className="grid grid-cols-2 gap-4"
+                  disabled={isSubmitting}
                 >
-                  <span className="text-2xl mb-2">💪</span>
-                  <span className="text-white">Client</span>
-                  <span className="text-xs text-gray-400 text-center">I want to workout</span>
-                </Label>
-              </div>
-              <div>
-                <RadioGroupItem value="trainer" id="trainer" className="peer sr-only" />
-                <Label
-                  htmlFor="trainer"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-gray-700 bg-gray-700 p-4 hover:bg-gray-600 hover:cursor-pointer peer-data-[state=checked]:border-indigo-500 [&:has([data-state=checked])]:border-indigo-500"
-                >
-                  <span className="text-2xl mb-2">👨‍🏫</span>
-                  <span className="text-white">Trainer</span>
-                  <span className="text-xs text-gray-400 text-center">I train others</span>
-                </Label>
-              </div>
-            </RadioGroup>
+                  <div>
+                    <RadioGroupItem value="client" id="client" className="peer sr-only" />
+                    <Label
+                      htmlFor="client"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-gray-700 bg-gray-700 p-4 hover:bg-gray-600 hover:cursor-pointer peer-data-[state=checked]:border-indigo-500 [&:has([data-state=checked])]:border-indigo-500"
+                    >
+                      <span className="text-2xl mb-2">💪</span>
+                      <span className="text-white">Client</span>
+                      <span className="text-xs text-gray-400 text-center">I want to workout</span>
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem value="trainer" id="trainer" className="peer sr-only" />
+                    <Label
+                      htmlFor="trainer"
+                      className="flex flex-col items-center justify-between rounded-md border-2 border-gray-700 bg-gray-700 p-4 hover:bg-gray-600 hover:cursor-pointer peer-data-[state=checked]:border-indigo-500 [&:has([data-state=checked])]:border-indigo-500"
+                    >
+                      <span className="text-2xl mb-2">👨‍🏫</span>
+                      <span className="text-white">Trainer</span>
+                      <span className="text-xs text-gray-400 text-center">I train others</span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              )}
+            />
+            {errors.role && <p className="text-red-500 text-xs">{errors.role.message}</p>}
           </div>
 
           {/* Form Fields */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-300">
-                Full Name
-              </Label>
+              <Label htmlFor="name" className="text-gray-300">Full Name</Label>
               <Input
                 id="name"
                 type="text"
                 placeholder="Enter your full name"
                 className="bg-gray-700 border-gray-600 text-white"
-                value={formData.name}
-                onChange={handleChange}
-                required
+                {...register("name")}
                 disabled={isSubmitting}
               />
+              {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-300">
-                Email
-              </Label>
+              <Label htmlFor="email" className="text-gray-300">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 className="bg-gray-700 border-gray-600 text-white"
-                value={formData.email}
-                onChange={handleChange}
-                required
+                {...register("email")}
                 disabled={isSubmitting}
               />
+              {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-300">
-                Password
-              </Label>
+              <Label htmlFor="password" className="text-gray-300">Password</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="Create a password"
                 className="bg-gray-700 border-gray-600 text-white"
-                value={formData.password}
-                onChange={handleChange}
-                required
+                {...register("password")}
                 disabled={isSubmitting}
               />
               <p className="text-xs text-gray-400">
                 Use 8 or more characters with a mix of letters, numbers & symbols
               </p>
+              {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-gray-300">
-                Confirm Password
-              </Label>
+              <Label htmlFor="confirmPassword" className="text-gray-300">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
                 className="bg-gray-700 border-gray-600 text-white"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
+                {...register("confirmPassword")}
                 disabled={isSubmitting}
               />
+              {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>}
             </div>
           </div>
 
           <div className="text-xs text-gray-400 text-center">
             By creating an account, you agree to our{" "}
-            <a href="#" className="text-indigo-400 hover:underline">
-              Terms of Service
-            </a>{" "}
+            <a href="#" className="text-indigo-400 hover:underline">Terms of Service</a>{" "}
             and{" "}
-            <a href="#" className="text-indigo-400 hover:underline">
-              Privacy Policy
-            </a>
+            <a href="#" className="text-indigo-400 hover:underline">Privacy Policy</a>
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center"
             disabled={isSubmitting}
           >
@@ -239,9 +243,7 @@ export function RegisterPage() {
 
         <div className="mt-6 text-center text-sm text-gray-400">
           Already have an account?{" "}
-          <a href="/auth?path=login" className="text-indigo-400 hover:underline">
-            Sign in
-          </a>
+          <a href="/auth?path=login" className="text-indigo-400 hover:underline">Sign in</a>
         </div>
       </div>
     </div>

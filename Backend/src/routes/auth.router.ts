@@ -10,5 +10,8 @@ const authService = new AuthService(userRepository);
 const authController = new AuthController(authService);
 
 authRouter.post("/register", authController.signUp.bind(authController));
+authRouter.post("/verify-otp", authController.verifyOtp.bind(authController));
+authRouter.post("/resend-otp", authController.resendOtp.bind(authController));
+authRouter.post("/login", authController.signIn.bind(authController)); 
 
 export default authRouter;

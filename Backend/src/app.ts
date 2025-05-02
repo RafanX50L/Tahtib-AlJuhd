@@ -5,9 +5,17 @@ import cookieParser from 'cookie-parser';
 
 doten.config();
 
+// validate env
+import {validateEnv} from './utils/validate-env.utils';
+validateEnv();
+
 // configs
 import {connectDb} from './config/mongo.config';
 import {env} from './config/env.config';
+import {connectRedis} from './config/redis.config';
+
+// middlewares
+import {errorHandler} from './middleware/error.middleware';
 
 //routes
 import authRoutes from './routes/auth.router';
@@ -31,6 +39,16 @@ connectDb();
 
 app.use('/api/auth', authRoutes);
 
-app.listen(env.PORT, () => {
-    console.log(`Server is running on port ${env.PORT}`);
+app.use(errorHandler);
+
+const startServer = async () => {
+    await connectRedis();
+    await connectDb();
+    app.listen(env.PORT, () => {
+        console.log(`Server is running on port ${env.PORT}`);
+    });
+};
+
+startServer().catch((error) => {
+    console.error('Error starting server:', error);
 });

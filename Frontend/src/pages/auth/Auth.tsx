@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
 import LoginPage from '../../components/auth/Login';
 import { RegisterPage } from '@/components/auth/register/Register';
-import { useSearchParams } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useSearchParams } from 'react-router-dom';
+import { OTPVerificationPage } from '@/components/auth/Input-otp-from';
 
 const Auth = () => {
-  const [login, setLogin] = useState(true);
   const [searchParams] = useSearchParams();
-
+  const [path, setPath] = useState(searchParams.get('path'));
   useEffect(() => {
-    const path = searchParams.get('path');
-    setLogin(path === 'login' ? true : path === 'register' ? false : true);
-    console.log('Path:', path, '| Login state:', path === 'login');
+    setPath(searchParams.get('path'));
   }, [searchParams]);
 
   return (
     <>
-      {login === true && <LoginPage />}
-      {login === false && <RegisterPage />}
+      {path === 'login' && <LoginPage />}
+      {path === 'register' && <RegisterPage />}
     </>
   );
 };
