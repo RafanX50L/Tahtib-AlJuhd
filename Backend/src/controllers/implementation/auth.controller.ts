@@ -80,4 +80,50 @@ export class AuthController implements IAuthController {
       next(error);
     }
   } 
+
+  async forgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { email } = req.body;
+      const forgotPassword = await this._authService.forgotPassword(email);
+      res.status(HttpStatus.OK).json({forgotPassword});
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  async resetPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { token, password } = req.body;
+      const updatedUserPassword = await this._authService.resetPassword(token, password);
+      res.status(HttpStatus.OK).json(updatedUserPassword);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async googleSignUp(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { email,name,role } = req.body;
+      const { user, accessToken, refreshToken } = await this._authService.googleSignUp(email, name, role);
+      setCookie(res, refreshToken);
+      res.status(HttpStatus.OK).json({
+        message: HttpResponse.LOGIN_SUCCESS,
+        user,
+        token: accessToken,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

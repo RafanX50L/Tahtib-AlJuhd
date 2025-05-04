@@ -17,4 +17,9 @@ export const HttpResponse = {
     LOGIN_SUCCESS: "Logged in successfully",
     LOGOUT_SUCCESS: "Logged out successfully",
     INVALID_PASSWORD: "Invalid password",
+    EMAIL_SENT_SUCCESS: "Email sent successfully", 
+    RESET_PASS_LINK: "Password reset link sent to your email",
+    PASSWORD_RESET_SUCCESS: "Password reset successfully",
+    TOKEN_EXPIRED: "Token expired",
+    USER_ALREADY_EXIST_WITH_PASSWORD: "User already exist with password",
 };

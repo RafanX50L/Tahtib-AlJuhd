@@ -29,4 +29,7 @@ export const env = {
     get NODE_ENV() {
         return process.env.NODE_ENV ;
     },
+    get RESET_PASS_URL() { 
+        return process.env.RESET_PASS_URL;
+    }   
 };

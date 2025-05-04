@@ -28,4 +28,15 @@ export class UserRepository
       throw new Error("Error finding user by email");
     }
   }
+  async updatePassword(
+    email: string,
+    hashedPassword: string
+  ): Promise<IUserModel | null> {
+    try {
+      return await this.model.findOneAndUpdate({email:email}, {password:hashedPassword}, {new:true});
+    } catch (error) {
+      console.error("Error updating password:", error);
+      throw new Error("Error updating password");
+    }
+  }
 }

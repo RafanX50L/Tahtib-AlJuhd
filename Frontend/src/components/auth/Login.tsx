@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -20,12 +19,87 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { AuthService } from "@/services/authService";
 import { Loader2 } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 type LoginForm = z.infer<typeof loginSchema>;
+
+interface GoogleUser {
+  access_token: string;
+}
+
+interface GoogleProfile {
+  email: string;
+  name: string;
+}
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState<GoogleUser | null>(null);
+
+
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      console.log("Login Success:", codeResponse);
+      setUser(codeResponse);
+    },
+    onError: (error) => {
+      console.log("Login Failed:", error);
+      toast.error("Google login failed. Please try again.");
+    },
+  });
+  
+
+  const GoogleSignUP = async (googleData: GoogleProfile) => {
+    const dataToSend = {
+      email: googleData.email,
+      password: "",
+    };
+    setIsSubmitting(true);
+    try {
+      console.log("Google data to send:", dataToSend);
+      const result = await AuthService.GoogleSignUP(dataToSend);
+      if (result.data) {
+        console.log("Google registration result:", result.data);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const role = result.data?.user?.role;
+        const route = role === "client" ? "/Dashboard" : `/${role}/Dashboard`;
+        navigate(`/${route}`);
+        toast.success("Google registration successful!");
+        toast.success("Google registration successful! Please verify your email.");
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred.";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.access_token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          console.log("Google profile data:", res.data);
+          GoogleSignUP(res.data as GoogleProfile);
+        })
+        .catch((err) => {
+          console.error("Google profile fetch failed:", err);
+          toast.error("Failed to fetch Google profile. Please try again.");
+        });
+    }
+  }, [user]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -156,17 +230,18 @@ export default function LoginPage() {
             </div>
 
             <Button
+              type="button"
               variant="outline"
               className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 text-white flex items-center justify-center"
-              disabled={isSubmitting}
-              onClick={() => toast.info("Google login not implemented yet.")}
+              // disabled={isSubmitting}
+              onClick={() => login()}
             >
               <FcGoogle className="mr-2 h-5 w-5" />
               Login with Google
             </Button>
 
             <div className="mt-4 text-center text-sm flex justify-between">
-              <Link to="#" className="text-indigo-400 hover:text-indigo-300">
+              <Link to="/auth/forgot-password" className="text-indigo-400 hover:text-indigo-300">
                 Forgot Password?
               </Link>
               <Link

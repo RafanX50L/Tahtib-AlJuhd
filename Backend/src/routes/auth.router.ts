@@ -13,5 +13,8 @@ authRouter.post("/register", authController.signUp.bind(authController));
 authRouter.post("/verify-otp", authController.verifyOtp.bind(authController));
 authRouter.post("/resend-otp", authController.resendOtp.bind(authController));
 authRouter.post("/login", authController.signIn.bind(authController)); 
+authRouter.post("/forgot-password", authController.forgotPassword.bind(authController));
+authRouter.post("/reset-password", authController.resetPassword.bind(authController));
+authRouter.post("/google-signup", authController.googleSignUp.bind(authController));
 
 export default authRouter;

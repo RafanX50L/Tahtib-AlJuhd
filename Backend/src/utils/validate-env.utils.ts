@@ -28,4 +28,8 @@ export const validateEnv = () => {
     if(!env.NODE_ENV){
         throw new Error("NODE_ENV is not defined in the environment variables");
     }
+    if(!env.RESET_PASS_URL){
+        throw new Error("RESET_PASS_URL is not defined in the environment variables");
+    }
+
 };

@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Home, Dumbbell, BarChart2, Users, Calendar, Utensils, MessageSquare, User, LogOut, Menu, X } from "lucide-react";
 import logo from "../../assets/images/logo.png";
 
-const Layout = () => {
+const LayoutPage = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    console.log('enterd to layout')
+  }, []); // Empty dependency array to run only once on mount
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const navLinks = [
@@ -79,4 +82,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default LayoutPage;

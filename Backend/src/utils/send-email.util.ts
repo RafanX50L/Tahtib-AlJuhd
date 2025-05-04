@@ -22,3 +22,26 @@ export  const sendOtpEmail = async (email: string, otp: string) => {
     throw new Error("Error sending email");
   }
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  try {
+    const resetLink = `${env.RESET_PASS_URL}?token=${token}`;
+    const mailOptions = {
+      from: `"Tahtib ALJuhd" <${env.SENDER_EMAIL}>`,
+      to: email,
+      subject: "Password Reset Request",
+      html: `
+                <h1>Password Reset Request</h1>
+                <p>Click the link below to reset your password:</p>
+                <a href="${resetLink}">Reset Password</a><br />
+                <p>If you did not request this, please ignore this email.</p>
+                <p>~ Tahtib ALJuhd</p>
+                  `, 
+    };
+    await transporter.sendMail(mailOptions);
+    console.log("Password reset email sent successfully to:", email);
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    throw new Error("Error sending password reset email");
+  }
+};

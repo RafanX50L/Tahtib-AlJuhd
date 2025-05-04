@@ -1,20 +1,16 @@
-import { OTPVerificationPage } from "@/components/auth/Input-otp-from";
-import Auth from "@/pages/auth/Auth";
-import Personalization from "@/pages/client/Personalization";
+import LayoutPage from "@/pages/client/Layout";
 import LandingPage from "@/pages/landing/LandingPage";
-import { Layout } from "lucide-react";
 import { Route, Routes } from "react-router-dom";
+import CDashboard from "@/pages/client/CDashboard";
 
 const UserRotues: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/auth/otp-verification" element={<OTPVerificationPage />} />
-
-      <Route path="/" element={<Layout />}>
-        <Route path="/personalization" element={<Personalization />} />
-      </Route>
+      <Route path="/Dashboard" element={<CDashboard />} />
+      <Route path="/client"  element={<LayoutPage />}/>
+        {/* <Route path="/personalization" element={<Personalization />} />
+      </Route> */}
     </Routes>
   );
 };

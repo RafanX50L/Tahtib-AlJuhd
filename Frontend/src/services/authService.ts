@@ -65,7 +65,29 @@ export const AuthService = {
     } catch (error: unknown) {
       const err = error as AxiosError<{error: string}>;
       const errorMessage = err.response?.data.error || "Failed to send password reset email. Please try again.";
-      return { data: null, error: errorMessage };
+      throw new Error(errorMessage);
+    }
+  },
+  resetPassword : async (data: { token: string; password: string }) => { 
+    try {
+      console.log("Resetting password with data:", data);
+      const response = await api.post(AUTH_ROUTES.RESET_PASSWORD, data);
+      return {data: response.data};
+    } catch (error: unknown) {
+      const err = error as AxiosError<{error: string}>;
+      const errorMessage = err.response?.data.error || "Failed to reset password. Please try again.";
+      throw new Error(errorMessage);
+    }
+  },
+  GoogleSignUP : async (data: any) => {
+    try {
+      console.log("Signing up with Google with data:", data);
+      const response = await api.post(AUTH_ROUTES.GOOGLE_SIGNUP, data);
+      return {data: response.data};
+    } catch (error: unknown) {
+      const err = error as AxiosError<{error: string}>;
+      const errorMessage = err.response?.data.error || "Google signup failed. Please try again.";
+      throw new Error(errorMessage);
     }
   }
 

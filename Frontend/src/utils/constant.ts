@@ -7,4 +7,7 @@ export const AUTH_ROUTES = {
     REGISTER: `${AUTH_ROUTE}/register`,
     VERIFY_OTP: `${AUTH_ROUTE}/verify-otp`,
     RESEND_OTP: `${AUTH_ROUTE}/resend-otp`,
+    FORGOT_PASSWORD: `${AUTH_ROUTE}/forgot-password`,
+    RESET_PASSWORD: `${AUTH_ROUTE}/reset-password`,
+    GOOGLE_SIGNUP: `${AUTH_ROUTE}/google-signup`,
 };

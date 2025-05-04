@@ -54,6 +54,7 @@ export function OTPVerificationPage() {
   // Initial page load
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
+    console.log("Loading OTP verification page...");
     return () => clearTimeout(timer);
   }, []);
 
@@ -78,9 +79,9 @@ export function OTPVerificationPage() {
       console.log("OTP verification response:", response.data);
       if (response.data !== null) {
         const userData = response.data as { user: { role: string } };
-        console.log("User role:", userData.user.role);
         const role = userData.user.role;
-        navigate(`/${role}`);
+        const route = role === "client" ? "/Dashboard" : `/${role}/Dashboard`;
+        navigate(`/${route}`);
       }
     } catch (error: unknown) {
       console.error("OTP verification failed:", error);

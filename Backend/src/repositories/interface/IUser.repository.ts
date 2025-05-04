@@ -5,4 +5,5 @@ import { IUserModel } from "../../models/implementation/user.model";
 export interface IUserRepository {
     createUser(user: IUserModel): Promise<IUserModel>;
     findByEmail(email: string): Promise<IUserModel | null>;
+    updatePassword(email: string, hashedPassword: string): Promise<IUserModel | null>;
 }

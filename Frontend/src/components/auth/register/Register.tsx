@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState, useEffect } from "react";
-import logo from '../../../assets/images/logo.png';
+import logo from "../../../assets/images/logo.png";
 import { AuthService } from "@/services/authService";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,14 +11,33 @@ import { z } from "zod";
 import { registerSchema } from "../../../schemas/authSchema";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
-export function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(true); // For initial page load
-  const [isSubmitting, setIsSubmitting] = useState(false); // For form submission
+interface GoogleUser {
+  access_token: string;
+}
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<RegisterFormData>({
+interface GoogleProfile {
+  name: string;
+  email: string;
+}
+
+export function RegisterPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState<GoogleUser | null>(null);
+  const [profile, setProfile] = useState<GoogleProfile | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    getValues,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -30,6 +49,87 @@ export function RegisterPage() {
   });
 
   const navigate = useNavigate();
+
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      setUser(codeResponse);
+    },
+    onError: (error) => {
+      console.log("Login Failed:", error);
+      toast.error("Google login failed. Please try again.");
+    },
+  });
+  
+  // Create a wrapper function that shows the toast first
+  const handleGoogleLogin = () => {
+    toast.info("IMPORTANT: Please ensure you select the correct role (Client or Trainer) before proceeding. This will determine your experience.", {
+      duration: 8000,  // Show for 8 seconds
+      // important: true,  Removed 'important' as it is not a valid property
+      action: {
+        label: "I Understand",
+        onClick: () => login()  // Proceed with login after they acknowledge
+      }
+    });
+  };
+
+  const GoogleSignUP = async (googleData: GoogleProfile) => {
+    const role = getValues("role");
+    const dataToSend = {
+      name: googleData.name,
+      email: googleData.email,
+      password: "",
+      role,
+    };
+    setIsSubmitting(true);
+    try {
+      const result = await AuthService.GoogleSignUP(dataToSend);
+      if (result.data) {
+        console.log("Google registration result:", result.data);
+        const role = result.data?.user?.role;
+        console.log("role", role);
+        const route = role === "client" ? "/Dashboard" : `/${role}/Dashboard`;
+        navigate(`${route}`);
+        toast.success("Google registration successful! Please verify your email.");
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred.";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      axios
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.access_token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .then((res) => {
+          setProfile(res.data as GoogleProfile);
+          GoogleSignUP(res.data as GoogleProfile);
+        })
+        .catch((err) => {
+          console.error("Google profile fetch failed:", err);
+          toast.error("Failed to fetch Google profile. Please try again.");
+        });
+    }
+  }, [user]);
+  
+
+  // log out function to log the user out of google and set the profile array to null
+  // const logOut = () => {
+  //   googleLogout();
+  //   setProfile(null);
+  // };
+
   useEffect(() => {
     // Simulate initial loading (e.g., checking auth status, fetching config)
     const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -40,16 +140,18 @@ export function RegisterPage() {
     setIsSubmitting(true);
     try {
       const result = await AuthService.registerUser(data);
-      if(result.data){
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('fanu',{ result });
-        navigate(`/auth/otp-verification?email=${encodeURIComponent(data.email)}`);
+      if (result.data) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        console.log("fanu", { result });
+        navigate(
+          `/auth/otp-verification?email=${encodeURIComponent(data.email)}`
+        );
       }
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       console.error("Registration failedd:", error);
-      if(error instanceof Error) {
+      if (error instanceof Error) {
         toast.error(error.message);
-      }else{
+      } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
     } finally {
@@ -92,37 +194,53 @@ export function RegisterPage() {
                   disabled={isSubmitting}
                 >
                   <div>
-                    <RadioGroupItem value="client" id="client" className="peer sr-only" />
+                    <RadioGroupItem
+                      value="client"
+                      id="client"
+                      className="peer sr-only"
+                    />
                     <Label
                       htmlFor="client"
                       className="flex flex-col items-center justify-between rounded-md border-2 border-gray-700 bg-gray-700 p-4 hover:bg-gray-600 hover:cursor-pointer peer-data-[state=checked]:border-indigo-500 [&:has([data-state=checked])]:border-indigo-500"
                     >
                       <span className="text-2xl mb-2">💪</span>
                       <span className="text-white">Client</span>
-                      <span className="text-xs text-gray-400 text-center">I want to workout</span>
+                      <span className="text-xs text-gray-400 text-center">
+                        I want to workout
+                      </span>
                     </Label>
                   </div>
                   <div>
-                    <RadioGroupItem value="trainer" id="trainer" className="peer sr-only" />
+                    <RadioGroupItem
+                      value="trainer"
+                      id="trainer"
+                      className="peer sr-only"
+                    />
                     <Label
                       htmlFor="trainer"
                       className="flex flex-col items-center justify-between rounded-md border-2 border-gray-700 bg-gray-700 p-4 hover:bg-gray-600 hover:cursor-pointer peer-data-[state=checked]:border-indigo-500 [&:has([data-state=checked])]:border-indigo-500"
                     >
                       <span className="text-2xl mb-2">👨‍🏫</span>
                       <span className="text-white">Trainer</span>
-                      <span className="text-xs text-gray-400 text-center">I train others</span>
+                      <span className="text-xs text-gray-400 text-center">
+                        I train others
+                      </span>
                     </Label>
                   </div>
                 </RadioGroup>
               )}
             />
-            {errors.role && <p className="text-red-500 text-xs">{errors.role.message}</p>}
+            {errors.role && (
+              <p className="text-red-500 text-xs">{errors.role.message}</p>
+            )}
           </div>
 
           {/* Form Fields */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-300">Full Name</Label>
+              <Label htmlFor="name" className="text-gray-300">
+                Full Name
+              </Label>
               <Input
                 id="name"
                 type="text"
@@ -131,11 +249,15 @@ export function RegisterPage() {
                 {...register("name")}
                 disabled={isSubmitting}
               />
-              {errors.name && <p className="text-red-500 text-xs">{errors.name.message}</p>}
+              {errors.name && (
+                <p className="text-red-500 text-xs">{errors.name.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-300">Email</Label>
+              <Label htmlFor="email" className="text-gray-300">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -144,11 +266,15 @@ export function RegisterPage() {
                 {...register("email")}
                 disabled={isSubmitting}
               />
-              {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-xs">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-300">Password</Label>
+              <Label htmlFor="password" className="text-gray-300">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -158,13 +284,20 @@ export function RegisterPage() {
                 disabled={isSubmitting}
               />
               <p className="text-xs text-gray-400">
-                Use 8 or more characters with a mix of letters, numbers & symbols
+                Use 8 or more characters with a mix of letters, numbers &
+                symbols
               </p>
-              {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-xs">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-gray-300">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-gray-300">
+                Confirm Password
+              </Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -173,15 +306,23 @@ export function RegisterPage() {
                 {...register("confirmPassword")}
                 disabled={isSubmitting}
               />
-              {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="text-xs text-gray-400 text-center">
             By creating an account, you agree to our{" "}
-            <a href="#" className="text-indigo-400 hover:underline">Terms of Service</a>{" "}
+            <a href="#" className="text-indigo-400 hover:underline">
+              Terms of Service
+            </a>{" "}
             and{" "}
-            <a href="#" className="text-indigo-400 hover:underline">Privacy Policy</a>
+            <a href="#" className="text-indigo-400 hover:underline">
+              Privacy Policy
+            </a>
           </div>
 
           <Button
@@ -191,9 +332,25 @@ export function RegisterPage() {
           >
             {isSubmitting ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Processing...
               </>
@@ -213,6 +370,7 @@ export function RegisterPage() {
             className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 text-white"
             type="button"
             disabled={isSubmitting}
+            onClick={handleGoogleLogin}
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -243,7 +401,12 @@ export function RegisterPage() {
 
         <div className="mt-6 text-center text-sm text-gray-400">
           Already have an account?{" "}
-          <a href="/auth?path=login" className="text-indigo-400 hover:underline">Sign in</a>
+          <a
+            href="/auth?path=login"
+            className="text-indigo-400 hover:underline"
+          >
+            Sign in
+          </a>
         </div>
       </div>
     </div>
