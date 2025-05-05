@@ -14,10 +14,11 @@ interface NavItem {
 const icons = { Grid, Users, User, Calendar, DollarSign, Bell, Settings };
 
 const Sidebar = () => {
+  const pathadmin = '/admin';
   const navItems: NavItem[] = [
-    { name: "Dashboard", icon: "Grid", href: "#", active: true },
-    { name: "Trainer Management", icon: "Users", href: "#" },
-    { name: "Client Management", icon: "User", href: "#" },
+    { name: "Dashboard", icon: "Grid", href: `${pathadmin}/dashboard`, active: false },
+    { name: "Trainer Management", icon: "Users", href: `${pathadmin}/trainer-management` },
+    { name: "Client Management", icon: "User", href: `${pathadmin}/client-management` },
     { name: "Interview Schedule", icon: "Calendar", href: "#" },
     { name: "Payments", icon: "DollarSign", href: "#" },
     { name: "Notifications", icon: "Bell", href: "#" },

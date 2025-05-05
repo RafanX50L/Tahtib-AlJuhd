@@ -10,6 +10,7 @@ export abstract class BaseRepository<T extends Document> {
     }
 
     async create(data: Partial<T>): Promise<T> {
+        console.log("Creating document with data:", data);
         const document = new this.model(data);
         return document.save();
     }

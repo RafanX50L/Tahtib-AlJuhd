@@ -37,7 +37,7 @@ const TopTrainers = () => {
   ];
 
   return (
-    <Card className="bg-gray-800 p-6">
+    <Card className="bg-gray-800 p-6 border-none">
       <h3 className="text-lg font-bold text-white mb-4">Top Performing Trainers</h3>
       <div className="space-y-4">
         {trainers.map((trainer, index) => (

@@ -1,7 +1,7 @@
 
 import api from './api'
-import { AUTH_ROUTES } from "../utils/constant";
-import { OtpData } from './interface/IAuthService';
+import { AUTH_ROUTES } from "../../utils/constant";
+import { OtpData } from '../interface/IAuthService';
 import { toast } from 'sonner';
 import { AxiosError } from "axios";
 

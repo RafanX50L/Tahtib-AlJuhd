@@ -17,7 +17,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { AuthService } from "@/services/authService";
+import { AuthService } from "@/services/implementation/authService";
 import { Loader2 } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";

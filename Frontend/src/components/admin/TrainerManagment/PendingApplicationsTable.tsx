@@ -9,47 +9,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
+import { Dispatch } from "@reduxjs/toolkit";
 
-interface Application {
-  id: number;
-  name: string;
-  email: string;
-  specialization: string;
-  experience: string;
-  appliedOn: string;
-  status: string;
+interface trainer{
+  trainer:ITrainerWithPersonalization[]
+  
 }
 
-const PendingApplicationsTable = () => {
-  const [applications] = useState<Application[]>([
-    {
-      id: 1,
-      name: "Michael Johnson",
-      email: "michael.j@example.com",
-      specialization: "Strength Training",
-      experience: "7 years",
-      appliedOn: "April 8, 2025",
-      status: "Interview completed",
-    },
-    {
-      id: 2,
-      name: "Sarah Miller",
-      email: "sarah.m@example.com",
-      specialization: "Yoga & Pilates",
-      experience: "5 years",
-      appliedOn: "April 7, 2025",
-      status: "Interview Scheduled",
-    },
-    {
-      id: 3,
-      name: "David Chen",
-      email: "david.c@example.com",
-      specialization: "CrossFit",
-      experience: "3 years",
-      appliedOn: "April 5, 2025",
-      status: "Not Scheduled",
-    },
-  ]);
+const PendingApplicationsTable : React.FC<trainer> =  ({trainer}) => {
+  console.log(trainer)
+  // const [applications] = useState<Application[]>([
+  //   {
+  //     id: 1,
+  //     name: "Michael Johnson",
+  //     email: "michael.j@example.com",
+  //     specialization: "Strength Training",
+  //     experience: "7 years",
+  //     appliedOn: "April 8, 2025",
+  //     status: "Interview completed",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Sarah Miller",
+  //     email: "sarah.m@example.com",
+  //     specialization: "Yoga & Pilates",
+  //     experience: "5 years",
+  //     appliedOn: "April 7, 2025",
+  //     status: "Interview Scheduled",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "David Chen",
+  //     email: "david.c@example.com",
+  //     specialization: "CrossFit",
+  //     experience: "3 years",
+  //     appliedOn: "April 5, 2025",
+  //     status: "Not Scheduled",
+  //   },
+  // ]);
+  const [applications] = useState<ITrainerWithPersonalization[]>(trainer) 
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -117,9 +116,9 @@ const PendingApplicationsTable = () => {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{application.specialization}</TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{application.experience}</TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">{application.appliedOn}</TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{application.personalization?.data?.specialty || "N/A"}</TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{application.personalization?.data?.experience}</TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">{application.personalization?.createdAt }</TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap border-none">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}`}>
                       {statusText}
@@ -131,14 +130,14 @@ const PendingApplicationsTable = () => {
                         <Button
                           className="text-indigo-400 hover:text-indigo-300 mr-3 transition-colors"
                           variant="ghost"
-                          onClick={() => handleAction(application.id, "Approve")}
+                          onClick={() => handleAction(application._id, "Approve")}
                         >
                           Approve
                         </Button>
                         <Button
                           className="text-red-400 hover:text-red-300 transition-colors"
                           variant="ghost"
-                          onClick={() => handleAction(application.id, "Reject")}
+                          onClick={() => handleAction(application._id, "Reject")}
                         >
                           Reject
                         </Button>
@@ -147,7 +146,7 @@ const PendingApplicationsTable = () => {
                       <Button
                         className="text-indigo-400 hover:text-indigo-300 transition-colors"
                         variant="ghost"
-                        onClick={() => handleAction(application.id, "View Details")}
+                        onClick={() => handleAction(application._id, "View Details")}
                       >
                         View Details
                       </Button>
@@ -155,7 +154,7 @@ const PendingApplicationsTable = () => {
                       <Button
                         className="text-indigo-400 hover:text-indigo-300 transition-colors"
                         variant="ghost"
-                        onClick={() => handleAction(application.id, "Schedule Review")}
+                        onClick={() => handleAction(application._id, "Schedule Review")}
                       >
                         Schedule Review
                       </Button>

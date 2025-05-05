@@ -64,10 +64,10 @@ const TrainerApplications = () => {
           View All Applications
         </Button>
       </div>
-      <Card className="bg-gray-800 overflow-hidden">
+      <Card className="bg-gray-800 overflow-hidden border-none">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-800 hover:bg-gray-800">
+            <TableRow className="bg-gray-800 hover:bg-gray-800 ">
               <TableHead className="text-gray-300">Trainer</TableHead>
               <TableHead className="text-gray-300">Specialization</TableHead>
               <TableHead className="text-gray-300">Experience</TableHead>
@@ -78,7 +78,7 @@ const TrainerApplications = () => {
           </TableHeader>
           <TableBody>
             {applications.map((app, index) => (
-              <TableRow key={index} className="bg-gray-800 hover:bg-gray-700">
+              <TableRow key={index} className=" border-none bg-gray-800 hover:bg-gray-700">
                 <TableCell>
                   <div className="flex items-center">
                     <img

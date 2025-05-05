@@ -11,3 +11,12 @@ export const AUTH_ROUTES = {
     RESET_PASSWORD: `${AUTH_ROUTE}/reset-password`,
     GOOGLE_SIGNUP: `${AUTH_ROUTE}/google-signup`,
 };
+
+const ADMIN_ROUTE = "/admin";
+
+export const ADMIN_ROUTES = {
+    GET_ALL_CLIENTS: `${ADMIN_ROUTE}/clients`,
+    GET_ALL_TRAINERS: `${ADMIN_ROUTE}/trainers`,
+    UPDATE_CLIENT_STATUS: `${ADMIN_ROUTE}/clients/updateStatus`,
+    UPDATE_TRAINER_STATUS:`${ADMIN_ROUTE}/trainers/updateStatus`
+}

@@ -11,74 +11,28 @@ import {
 } from "@/components/ui/table";
 import { Eye, PlayCircle, PauseCircle, X } from "lucide-react";
 import TrainerActions from "./TrainerActions";
+import { toast } from "sonner";
+import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
 
-interface Trainer {
-  id: number;
-  name: string;
-  email: string;
-  specialty: string;
-  experience: string;
-  monthlyFee: string;
-  status: string;
-  expertiseLevel: string;
-  isActive: boolean;
-  clients?: string;
-  rating?: string;
-  earnings?: string;
+interface Props {
+  trainer: ITrainerWithPersonalization[];
 }
 
-const ApprovedTrainersTable = () => {
-  const [trainers, setTrainers] = useState<Trainer[]>([
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@fitconnect.com",
-      specialty: "CrossFit",
-      experience: "3 years",
-      monthlyFee: "$150",
-      status: "approved",
-      expertiseLevel: "advanced",
-      isActive: true,
-    },
-    {
-      id: 4,
-      name: "Sarah Lee",
-      email: "sarah@fitconnect.com",
-      specialty: "Zumba",
-      experience: "2 years",
-      monthlyFee: "$90",
-      status: "approved",
-      expertiseLevel: "beginner",
-      isActive: false,
-    },
-    {
-      id: 6,
-      name: "Emma Johnson",
-      email: "emma@fitconnect.com",
-      specialty: "HIIT",
-      experience: "4 years",
-      monthlyFee: "$130",
-      status: "approved",
-      expertiseLevel: "intermediate",
-      isActive: true,
-    },
-  ]);
-
+const ApprovedTrainersTable: React.FC<Props> = ({ trainer }) => {
+  const [trainers, setTrainers] = useState(trainer);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [modalTrainer, setModalTrainer] = useState<Trainer | null>(null);
+  const [modalTrainer, setModalTrainer] = useState<ITrainerWithPersonalization | null>(null);
   const itemsPerPage = 5;
 
   const filteredTrainers = trainers.filter((trainer) => {
     const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "active" && trainer.isActive) ||
-      (statusFilter === "inactive" && !trainer.isActive);
+      statusFilter === "all" || trainer.status === statusFilter;
     const matchesSearch =
       trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trainer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trainer.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+      trainer.personalization?.data.specialty.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -88,13 +42,26 @@ const ApprovedTrainersTable = () => {
     currentPage * itemsPerPage
   );
 
-  const handleStatusChange = (trainerId: number, isActive: boolean) => {
-    if (confirm(`Are you sure you want to ${isActive ? "activate" : "deactivate"} this trainer?`)) {
-      setTrainers((prev) =>
-        prev.map((trainer) =>
-          trainer.id === trainerId ? { ...trainer, isActive } : trainer
-        )
-      );
+  const handleStatusChange = (trainerId: string, status: string) => {
+    if (
+      confirm(
+        `Are you sure you want to ${status === "active" ? "deactivate" : "activate"} this trainer?`
+      )
+    ) {
+      try {
+        const newStatus = status === "active" ? "inactive" : "active";
+        setTrainers((prev) =>
+          prev.map((t) =>
+            t.id === trainerId ? { ...t, status: newStatus } : t
+          )
+        );
+        toast.success(`Trainer ${newStatus === "active" ? "activated" : "deactivated"} successfully`);
+      } catch (error) {
+        console.error("Error updating trainer status:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "An unexpected error occurred";
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -124,9 +91,11 @@ const ApprovedTrainersTable = () => {
           onExportClick={handleExportClick}
           onStatusChange={handleStatusFilterChange}
         />
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-white">Approved Trainers</h2>
+        </div>
         <Card className="bg-gray-800 rounded-lg overflow-hidden border-none">
-          <div className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Approved Trainers</h3>
+          <div>
             <div className="relative mb-4">
               <input
                 type="text"
@@ -139,22 +108,41 @@ const ApprovedTrainersTable = () => {
             <Table className="border-none">
               <TableHeader>
                 <TableRow className="bg-gray-900 hover:bg-gray-900 border-none">
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Name</TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Email</TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Specialty</TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Experience</TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Monthly Fee</TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Status</TableHead>
-                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Expertise Level</TableHead>
-                  <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider border-none">Actions</TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Name
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Email
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Specialty
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Experience
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Monthly Fee
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Status
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Expertise Level
+                  </TableHead>
+                  <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider border-none">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedTrainers.map((trainer) => {
-                  const statusClass = trainer.isActive ? "text-green-400 bg-green-200/20" : "text-gray-400 bg-gray-200/20";
-                  const statusText = trainer.isActive ? "Active" : "Inactive";
+                  const statusClass =
+                    trainer.status === "active"
+                      ? "text-green-400 bg-green-200/20"
+                      : "text-gray-400 bg-gray-200/20";
+                  const statusText = trainer.status;
                   let expertiseClass, expertiseText;
-                  switch (trainer.expertiseLevel.toLowerCase()) {
+                  switch (trainer.personalization?.data.expertiseLevel) {
                     case "advanced":
                       expertiseClass = "text-blue-400 bg-blue-200/20";
                       expertiseText = "Advanced";
@@ -173,19 +161,36 @@ const ApprovedTrainersTable = () => {
                   }
 
                   return (
-                    <TableRow key={trainer.id} className="bg-gray-800 hover:bg-gray-700 border-none">
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{trainer.name}</TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">{trainer.email}</TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">{trainer.specialty}</TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">{trainer.experience}</TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-indigo-400 font-medium border-none">{trainer.monthlyFee}</TableCell>
+                    <TableRow
+                      key={trainer._id.toString()}
+                      className="bg-gray-800 hover:bg-gray-700 border-none"
+                    >
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">
+                        {trainer.name}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">
+                        {trainer.email}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">
+                        {trainer.personalization?.data.specialty || "N/A"}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">
+                        {trainer.personalization?.data.experience || "N/A"}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-indigo-400 font-medium border-none">
+                        {trainer.personalization?.data.monthlyFee || "N/A"}
+                      </TableCell>
                       <TableCell className="px-6 py-4 whitespace-nowrap text-sm border-none">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}
+                        >
                           {statusText}
                         </span>
                       </TableCell>
                       <TableCell className="px-6 py-4 whitespace-nowrap text-sm border-none">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${expertiseClass}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${expertiseClass}`}
+                        >
                           {expertiseText}
                         </span>
                       </TableCell>
@@ -193,27 +198,26 @@ const ApprovedTrainersTable = () => {
                         <Button
                           className="text-indigo-400 hover:text-indigo-300 mr-3 transition-colors"
                           variant="ghost"
-                          onClick={() =>
-                            setModalTrainer({
-                              ...trainer,
-                              clients: "32",
-                              rating: "4.8 / 5",
-                              earnings: "$2,450",
-                            })
-                          }
+                          onClick={() => setModalTrainer(trainer)}
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
                         <Button
                           className={
-                            trainer.isActive
+                            trainer.status === "active"
                               ? "text-red-400 hover:text-red-300 transition-colors"
                               : "text-green-400 hover:text-green-300 transition-colors"
                           }
                           variant="ghost"
-                          onClick={() => handleStatusChange(trainer.id, !trainer.isActive)}
+                          onClick={() =>
+                            handleStatusChange(trainer.id, trainer.status)
+                          }
                         >
-                          {trainer.isActive ? <PauseCircle className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
+                          {trainer.status === "active" ? (
+                            <PauseCircle className="w-4 h-4" />
+                          ) : (
+                            <PlayCircle className="w-4 h-4" />
+                          )}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -223,7 +227,7 @@ const ApprovedTrainersTable = () => {
             </Table>
           </div>
         </Card>
-        <div className="flex justify-between items-center px-6 py-4 bg-gray-800 rounded-lg">
+        <div className="flex justify-between mt-5 items-center px-6 py-4 bg-gray-800 rounded-lg">
           <div className="text-sm text-gray-400">
             Showing {(currentPage - 1) * itemsPerPage + 1}-
             {Math.min(currentPage * itemsPerPage, filteredTrainers.length)} of{" "}
@@ -265,7 +269,10 @@ const ApprovedTrainersTable = () => {
 
       {modalTrainer && (
         <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setModalTrainer(null)} />
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            onClick={() => setModalTrainer(null)}
+          />
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-lg p-6 z-100 w-11/12 max-w-[600px] max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-white">Trainer Details</h3>
@@ -291,31 +298,19 @@ const ApprovedTrainersTable = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400">Specialization</p>
-                <p className="text-white">{modalTrainer.specialty}</p>
+                <p className="text-white">{modalTrainer.personalization?.data.specialty || "N/A"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Experience</p>
-                <p className="text-white">{modalTrainer.experience}</p>
+                <p className="text-white">{modalTrainer.personalization?.data.experience || "N/A"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Monthly Fee</p>
-                <p className="text-white">{modalTrainer.monthlyFee}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Clients</p>
-                <p className="text-white">{modalTrainer.clients}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Rating</p>
-                <p className="text-white">{modalTrainer.rating}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Earnings</p>
-                <p className="text-white">{modalTrainer.earnings}</p>
+                <p className="text-white">{modalTrainer.personalization?.data.monthlyFee || "N/A"}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Status</p>
-                <p className="text-white">{modalTrainer.isActive ? "Active" : "Inactive"}</p>
+                <p className="text-white">{modalTrainer.status}</p>
               </div>
             </div>
           </div>

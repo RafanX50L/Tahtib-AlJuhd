@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -11,104 +11,76 @@ import {
 } from "@/components/ui/table";
 import { X } from "lucide-react";
 import ClientActions from "./ClientActions";
+import { Types } from "mongoose";
+import { AdminService } from "@/services/implementation/adminServices";
+import { toast } from "sonner";
 
-interface Client {
-  id: number;
-  name: string;
-  email: string;
+export interface IClientPersonalizationData {
   trainer: string;
-  planStatus: string;
-  sessionStatus: string;
-  status: string;
+  planStatus: "Active" | "Inactive";
+  sessionStatus: "Purchased" | "Not Purchased";
 }
 
-const ClientsTable = () => {
-  const [clients, setClients] = useState<Client[]>([
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      email: "sarah.j@example.com",
-      trainer: "Jennifer Lee",
-      planStatus: "Active",
-      sessionStatus: "Purchased",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Michael Brown",
-      email: "michael.b@example.com",
-      trainer: "Robert Wilson",
-      planStatus: "Active",
-      sessionStatus: "Not Purchased",
-      status: "active",
-    },
-    {
-      id: 3,
-      name: "Emily Davis",
-      email: "emily.d@example.com",
-      trainer: "Maria Rodriguez",
-      planStatus: "Inactive",
-      sessionStatus: "Not Purchased",
-      status: "inactive",
-    },
-    {
-      id: 4,
-      name: "James Carter",
-      email: "james.c@example.com",
-      trainer: "James Carter",
-      planStatus: "Active",
-      sessionStatus: "Purchased",
-      status: "active",
-    },
-    {
-      id: 5,
-      name: "Lisa Anderson",
-      email: "lisa.a@example.com",
-      trainer: "Maria Rodriguez",
-      planStatus: "Active",
-      sessionStatus: "Not Purchased",
-      status: "active",
-    },
-    {
-      id: 6,
-      name: "David Miller",
-      email: "david.m@example.com",
-      trainer: "Robert Wilson",
-      planStatus: "Inactive",
-      sessionStatus: "Not Purchased",
-      status: "inactive",
-    },
-  ]);
+export interface IPersonalization {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  role: "client" | "trainer" | "admin";
+  data: IClientPersonalizationData; 
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
+}
+
+export interface IClient {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  status: "active" | "inactive";
+  role: "client" | "trainer" | "admin";
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
+  personalization: IPersonalization;
+  id: string; // usually a virtual getter of _id.toString()
+}
+interface ClientsTableProps {
+  clienttData: IClient[];
+  setRefetch: React.Dispatch<SetStateAction<boolean>>;
+
+}
+
+const ClientsTable : React.FC<ClientsTableProps> = ( {clienttData,setRefetch} ) => {
+  console.log('daatas',clienttData)
+
+
+  const [clients, setClients] = useState<IClient[]>(clienttData);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [modalClient, setModalClient] = useState<Client | null>(null);
+  const [modalClient, setModalClient] = useState<IClient | null>(null);
   const itemsPerPage = 5;
 
-  const filteredClients = clients.filter((client) => {
-    const matchesStatus =
-      statusFilter === "all" || client.status === statusFilter;
-    const matchesSearch =
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  
 
-  const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
-  const paginatedClients = filteredClients.slice(
+  const totalPages = Math.ceil(clienttData.length / itemsPerPage);
+  const paginatedClients = clienttData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const handleStatusChange = (clientId: number, newStatus: string) => {
-    setClients((prev) =>
-      prev.map((client) =>
-        client.id === clientId
-          ? { ...client, status: newStatus, planStatus: newStatus === "active" ? "Active" : "Inactive" }
-          : client
-      )
-    );
+  const handleStatusChange = async (clientId: string, newStatus: string) => {
+    console.log(clientId,newStatus)
+    try{
+      const response = await AdminService.updateClinetStatus(clientId,newStatus);
+      console.log('updated',response);
+      toast.success(response.data)
+      setRefetch((prev)=>!prev)      
+    }catch(error){
+      console.log("Error updating user status",error);
+      const errorMessage = error instanceof Error ? error.message : "An unexepected error occured";
+      toast.error(errorMessage)
+    }
   };
 
   const handleFilterClick = () => {
@@ -150,8 +122,8 @@ const ClientsTable = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedClients.map((client) => (
-                <TableRow key={client.id} className="bg-gray-800 hover:bg-gray-700 border-none">
+              {paginatedClients.map((client,index) => (
+                <TableRow key={index} className="bg-gray-800 hover:bg-gray-700 border-none">
                   <TableCell className="px-6 py-4 whitespace-nowrap border-none">
                     <div className="flex items-center">
                       <img
@@ -165,27 +137,27 @@ const ClientsTable = () => {
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 border-none">{client.email}</TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{client.trainer}</TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-white border-none">{client.personalization.data.trainer}</TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap border-none">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        client.planStatus === "Active"
+                        client.personalization.data.planStatus === "Active"
                           ? "bg-green-200 text-green-800"
                           : "bg-red-200 text-red-800"
                       }`}
                     >
-                      {client.planStatus}
+                      {client.personalization.data.planStatus}
                     </span>
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap border-none">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        client.sessionStatus === "Purchased"
+                        client.personalization.data.sessionStatus === "Purchased"
                           ? "bg-green-200 text-green-800"
                           : "bg-gray-200 text-gray-800"
                       }`}
                     >
-                      {client.sessionStatus}
+                      {client.personalization.data.sessionStatus}
                     </span>
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium border-none">
@@ -205,7 +177,7 @@ const ClientsTable = () => {
                       variant="ghost"
                       onClick={() =>
                         handleStatusChange(
-                          client.id,
+                          client._id.toString(),
                           client.status === "active" ? "inactive" : "active"
                         )
                       }
@@ -218,11 +190,11 @@ const ClientsTable = () => {
             </TableBody>
           </Table>
         </Card>
-        <div className="flex justify-between items-center px-6 py-4 bg-gray-800">
+        <div className="flex justify-between rounded-lg items-center px-6 py-4 bg-gray-800 mt-5">
           <div className="text-sm text-gray-400">
             Showing {(currentPage - 1) * itemsPerPage + 1}-
-            {Math.min(currentPage * itemsPerPage, filteredClients.length)} of{" "}
-            {filteredClients.length} clients
+            {Math.min(currentPage * itemsPerPage, clienttData.length)} of{" "}
+            {clienttData.length} clients
           </div>
           <div className="flex space-x-2">
             <Button
@@ -286,20 +258,20 @@ const ClientsTable = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400">Assigned Trainer</p>
-                <p className="text-white">{modalClient.trainer}</p>
+                <p className="text-white">{modalClient.personalization.data.trainer}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Plan Status</p>
-                <p className="text-white">{modalClient.planStatus}</p>
+                <p className="text-white">{modalClient.personalization.data.planStatus}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">One-to-One Sessions</p>
-                <p className="text-white">{modalClient.sessionStatus}</p>
+                <p className="text-white">{modalClient.personalization.data.sessionStatus}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-400">Access Type</p>
                 <p className="text-white">
-                  {modalClient.sessionStatus === "Purchased"
+                  {modalClient.personalization.data.sessionStatus === "Purchased"
                     ? "One-to-One + Workout API"
                     : "Workout API"}
                 </p>

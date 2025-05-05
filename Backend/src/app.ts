@@ -19,6 +19,7 @@ import {errorHandler} from './middleware/error.middleware';
 
 //routes
 import authRoutes from './routes/auth.router';
+import adminRouter from './routes/admin.router';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use(express.urlencoded({extended: true}));
 connectDb();
 
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRouter);
 
 app.use(errorHandler);
 

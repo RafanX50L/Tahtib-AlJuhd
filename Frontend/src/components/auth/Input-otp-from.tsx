@@ -8,7 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Loader2 } from "lucide-react";
 import { otpSchema } from "@/schemas/authSchema";
-import { AuthService } from "@/services/authService";
+import { AuthService } from "@/services/implementation/authService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -80,8 +80,9 @@ export function OTPVerificationPage() {
       if (response.data !== null) {
         const userData = response.data as { user: { role: string } };
         const role = userData.user.role;
-        const route = role === "client" ? "/Dashboard" : `/${role}/Dashboard`;
-        navigate(`/${route}`);
+        console.log("User role:", role);
+        const route = role === "client" ? "/dashboard" : `/${role}/dashboard`;
+        navigate(`${route}`);
       }
     } catch (error: unknown) {
       console.error("OTP verification failed:", error);

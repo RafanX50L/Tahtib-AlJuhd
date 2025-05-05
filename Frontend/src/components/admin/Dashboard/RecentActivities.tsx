@@ -45,7 +45,7 @@ const RecentActivities = ({ className }: { className?: string }) => {
   ];
 
   return (
-    <Card className={`bg-gray-800 p-6 ${className}`}>
+    <Card className={`bg-gray-800 p-6 ${className} border-none` }>
       <h3 className="text-lg font-bold text-white mb-4">Recent Activities</h3>
       <div className="space-y-4">
         {activities.map((activity, index) => (

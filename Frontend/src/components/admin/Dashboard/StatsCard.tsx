@@ -47,10 +47,10 @@ const StatsCard = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 ">
       {stats.map((stat, index) => (
-        <Card key={index} className="bg-gray-800 p-6 hover:-translate-y-1 transition-transform">
-          <div className="flex items-center justify-between">
+        <Card key={index} className="bg-gray-800 p-6 hover:-translate-y-1 border-none transition-transform">
+          <div className="flex items-center justify-between border-none">
             <div>
               <h3 className="text-gray-400 text-sm font-medium">{stat.title}</h3>
               <p className="text-white text-2xl font-bold mt-1">{stat.value}</p>

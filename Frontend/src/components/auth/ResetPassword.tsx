@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { AuthService } from "@/services/authService";
+import { AuthService } from "@/services/implementation/authService";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { resetPasswordSchema } from "../../schemas/authSchema";

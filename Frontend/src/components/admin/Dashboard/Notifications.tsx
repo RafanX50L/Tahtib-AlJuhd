@@ -33,7 +33,7 @@ const Notifications = () => {
   ];
 
   return (
-    <Card className="bg-gray-800 p-6">
+    <Card className="bg-gray-800 p-6 border-none">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-white">Notifications</h3>
         <span className="text-sm text-indigo-400 cursor-pointer hover:text-indigo-300">
