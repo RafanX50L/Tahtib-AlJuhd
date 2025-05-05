@@ -1,9 +1,12 @@
-import { LogOut, Grid, Users, User, Calendar, DollarSign, Bell, Settings} from "lucide-react";
+import { LogOut, Grid, Users, User, Calendar, DollarSign, Bell, Settings } from "lucide-react";
 import React from "react";
+
+// Placeholder logo import; replace with actual logo path
+import logo from "../../assets/images/logo.png";
 
 interface NavItem {
   name: string;
-  icon: keyof typeof icons; // Explicitly typed to avoid 'any' type error
+  icon: keyof typeof icons;
   href: string;
   active?: boolean;
 }
@@ -11,7 +14,6 @@ interface NavItem {
 const icons = { Grid, Users, User, Calendar, DollarSign, Bell, Settings };
 
 const Sidebar = () => {
-
   const navItems: NavItem[] = [
     { name: "Dashboard", icon: "Grid", href: "#", active: true },
     { name: "Trainer Management", icon: "Users", href: "#" },
@@ -25,8 +27,17 @@ const Sidebar = () => {
   return (
     <div className="h-screen w-64 bg-gray-900 pt-5 flex flex-col">
       <div className="px-6 mb-8">
-        <h1 className="text-2xl font-bold text-white">Tahtib AlJuhd</h1>
-        <p className="text-gray-400 text-sm">Admin Portal</p>
+        <div className="flex flex-row items-center">
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-12 h-12 mr-3"
+          />
+          <div className="flex flex-col">
+            <h1 className="text-xl font-bold text-white">Tahtib AlJuhd</h1>
+            <p className="text-gray-400 text-sm">Admin Portal</p>
+          </div>
+        </div>
       </div>
       <nav className="flex-1 px-2">
         <div className="space-y-1">
@@ -34,19 +45,17 @@ const Sidebar = () => {
             <a
               key={item.name}
               href={item.href}
-              className={`flex items-center px-4 py-3 rounded-md group ${
+              className={`flex items-center px-4 py-3 rounded-md group transition-colors ${
                 item.active
                   ? "bg-gray-800 text-white"
                   : "text-gray-300 hover:bg-gray-800 hover:text-white"
               }`}
             >
-              {React.createElement(
-                icons[item.icon as keyof typeof icons],
-                {
-                  className: `w-5 h-5 ${item.active ? "text-white" : "text-gray-300 group-hover:text-white"}`
-                }
-              )}
-              <span className="ml-3">{item.name}</span>
+              {React.createElement(icons[item.icon], {
+                className: `w-5 h-5 mr-3 ${
+                  item.active ? "text-white" : "text-gray-300 group-hover:text-white"
+                }`,
+              })}
               <span>{item.name}</span>
             </a>
           ))}
@@ -66,9 +75,9 @@ const Sidebar = () => {
         </div>
         <a
           href="#"
-          className="mt-4 flex items-center text-sm text-gray-400 hover:text-white"
+          className="mt-4 flex items-center text-sm text-gray-400 hover:text-white transition-colors"
         >
-          <LogOut  className="w-4 h-4 mr-2" />
+          <LogOut className="w-4 h-4 mr-2" />
           Log out
         </a>
       </div>
