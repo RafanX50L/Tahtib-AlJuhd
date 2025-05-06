@@ -30,7 +30,7 @@ export class AuthService implements IAuthService {
   async signUp(user: SignUpUser): Promise<string> {
     const existingUser = await this._userRepository.findByEmail(user.email);
     if (existingUser) {
-      throw createHttpError(HttpStatus.CONFLICT, "User already exists");
+      throw createHttpError(HttpStatus.CONFLICT, HttpResponse.USER_EXIST);
     }
 
     const otp = generateOTP();
@@ -65,10 +65,9 @@ export class AuthService implements IAuthService {
       );
     }
 
-    const payload = { id: existingUser._id, role: existingUser.role };
+    const payload = { id: existingUser._id, role: existingUser.role, status: existingUser.status };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-    console.log("Access Token:", accessToken);
     return { role: existingUser.role, accessToken, refreshToken };
   }
 

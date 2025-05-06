@@ -21,6 +21,7 @@ import { AuthService } from "@/services/implementation/authService";
 import { Loader2 } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useAuth } from "@/hooks/Auth.hook";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
@@ -37,9 +38,9 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<GoogleUser | null>(null);
+  const { login } = useAuth();
 
-
-  const login = useGoogleLogin({
+  const logins = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log("Login Success:", codeResponse);
       setUser(codeResponse);
@@ -49,7 +50,6 @@ export default function LoginPage() {
       toast.error("Google login failed. Please try again.");
     },
   });
-  
 
   const GoogleSignUP = async (googleData: GoogleProfile) => {
     const dataToSend = {
@@ -60,18 +60,15 @@ export default function LoginPage() {
     try {
       console.log("Google data to send:", dataToSend);
       const result = await AuthService.GoogleSignUP(dataToSend);
-      if (result.data) {
-        console.log("Google registration result:", result.data);
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        const role = result.data?.user?.role;
-        const route = role === "client" ? "/Dashboard" : `/${role}/Dashboard`;
-        navigate(`/${route}`);
-        toast.success("Google registration successful!");
-        toast.success("Google registration successful! Please verify your email.");
-      }
+      console.log("Google registration result:", result.data.token);
+      login(result.data.token);
+      toast.success("Google registration successful!");
     } catch (error: unknown) {
+      console.log(error);
       const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred.";
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -124,12 +121,9 @@ export default function LoginPage() {
       console.log("Submitting login data:", data);
       const response = await AuthService.login(data);
       console.log("Login response:", response);
-      if (response.status === 200) {
-        const userData = response.data as { user: { role: string } };
-        const role = userData.user.role;
-        navigate(`/${role}`);
-        toast.success("Login successful!");
-      }
+      console.log("token", response.data.token);
+      login(response.data.token); // Directly call login from useAuth
+      // Navigation is handled by AuthRoute/ProtectedRoute
     } catch (error: unknown) {
       console.log("Login error:", error);
       let errorMessage = "An unexpected error occurred. Please try again.";
@@ -234,14 +228,17 @@ export default function LoginPage() {
               variant="outline"
               className="w-full bg-gray-700 border-gray-600 hover:bg-gray-600 text-white flex items-center justify-center"
               // disabled={isSubmitting}
-              onClick={() => login()}
+              onClick={() => logins()}
             >
               <FcGoogle className="mr-2 h-5 w-5" />
               Login with Google
             </Button>
 
             <div className="mt-4 text-center text-sm flex justify-between">
-              <Link to="/auth/forgot-password" className="text-indigo-400 hover:text-indigo-300">
+              <Link
+                to="/auth/forgot-password"
+                className="text-indigo-400 hover:text-indigo-300"
+              >
                 Forgot Password?
               </Link>
               <Link

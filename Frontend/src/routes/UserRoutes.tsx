@@ -4,7 +4,9 @@ import { Route, Routes } from "react-router-dom";
 import CDashboard from "@/pages/client/CDashboard";
 
 const UserRotues: React.FC = () => {
+  console.log('entered to here')
   return (
+    
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/Dashboard" element={<CDashboard />} />

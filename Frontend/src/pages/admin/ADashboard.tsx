@@ -9,8 +9,14 @@ import Notifications from "../../components/admin/Dashboard/Notifications";
 import { HelpCircle, Info, LucideIcon } from "lucide-react"; // Ensure this is the correct library for LucideIcon
 
 const ADashboard = () => {
+  console.log('entered to admin dashboard')
   return (
+    // <div>
+    //   afdksfj
+    // </div>
+
     <div className="flex h-screen overflow-hidden bg-black text-white">
+      
       <Sidebar />
       <div className="flex-1 overflow-y-auto">
         <Header />

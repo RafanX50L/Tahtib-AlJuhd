@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { useAuth } from "@/hooks/Auth.hook";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -30,7 +31,7 @@ export function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<GoogleUser | null>(null);
   const [profile, setProfile] = useState<GoogleProfile | null>(null);
-
+  const {login} = useAuth();
   const {
     register,
     handleSubmit,
@@ -50,7 +51,7 @@ export function RegisterPage() {
 
   const navigate = useNavigate();
 
-  const login = useGoogleLogin({
+  const logins = useGoogleLogin({
     onSuccess: (codeResponse) => {
       setUser(codeResponse);
     },
@@ -67,7 +68,7 @@ export function RegisterPage() {
       // important: true,  Removed 'important' as it is not a valid property
       action: {
         label: "I Understand",
-        onClick: () => login()  // Proceed with login after they acknowledge
+        onClick: () => logins()  // Proceed with login after they acknowledge
       }
     });
   };
@@ -85,10 +86,7 @@ export function RegisterPage() {
       const result = await AuthService.GoogleSignUP(dataToSend);
       if (result.data) {
         console.log("Google registration result:", result.data);
-        const role = result.data?.user?.role;
-        console.log("role", role);
-        const route = role === "client" ? "/Dashboard" : `/${role}/Dashboard`;
-        navigate(`${route}`);
+        login(result.data.token)
         toast.success("Google registration successful! Please verify your email.");
       }
     } catch (error: unknown) {

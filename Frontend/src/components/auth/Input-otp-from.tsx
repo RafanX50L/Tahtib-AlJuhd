@@ -11,6 +11,7 @@ import { otpSchema } from "@/schemas/authSchema";
 import { AuthService } from "@/services/implementation/authService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/Auth.hook";
 
 type OTPFormData = z.infer<typeof otpSchema>;
 
@@ -21,7 +22,7 @@ export function OTPVerificationPage() {
   const [showResend, setShowResend] = useState(false); // Control resend link visibility
   const [isExpired, setIsExpired] = useState(false); // Track OTP expiration
   const location = useLocation();
-  const navigate = useNavigate();
+  const { login } = useAuth(); // Use auth hook directly in the component
 
   const form = useForm<OTPFormData>({
     resolver: zodResolver(otpSchema),
@@ -76,14 +77,9 @@ export function OTPVerificationPage() {
     try {
       console.log("Submitting OTP:", data.otp);
       const response = await AuthService.verifyOtp({ ...data, email });
-      console.log("OTP verification response:", response.data);
-      if (response.data !== null) {
-        const userData = response.data as { user: { role: string } };
-        const role = userData.user.role;
-        console.log("User role:", role);
-        const route = role === "client" ? "/dashboard" : `/${role}/dashboard`;
-        navigate(`${route}`);
-      }
+      console.log("OTP verification response:", response.data.token);
+      login(response.data.token); // Directly call login from useAuth
+      // Navigation is handled by AuthRoute/ProtectedRoute
     } catch (error: unknown) {
       console.error("OTP verification failed:", error);
       let errorMessage = "An unexpected error occurred. Please try again.";
@@ -103,7 +99,7 @@ export function OTPVerificationPage() {
     const searchParams = new URLSearchParams(location.search);
     const email = searchParams.get("email") ?? "";
     try {
-      await AuthService.resentOtp(email as string);
+      await AuthService.resentOtp(email);
       setSecondsRemaining(300); // Reset timer to 5 minutes
       setIsExpired(false);
       setShowResend(false); // Hide resend link until 1 minute passes again
@@ -184,7 +180,7 @@ export function OTPVerificationPage() {
                     Please enter the one-time password sent to your email.
                   </FormDescription>
                   <div className="text-sm text-gray-400 text-center">
-                    OTP exires in : <span className={isExpired ? "text-red-500" : "text-white"}>{formatTime(secondsRemaining)}</span>
+                    OTP expires in: <span className={isExpired ? "text-red-500" : "text-white"}>{formatTime(secondsRemaining)}</span>
                   </div>
                   <FormMessage className="text-red-500" />
                 </FormItem>
