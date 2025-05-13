@@ -2,15 +2,20 @@ import { useAuth } from "@/hooks/Auth.hook";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 // Protected Route Component
-export const ProtectedRoute: React.FC<{ allowedRoles: string[] }> = ({ allowedRoles }) => {
+export const ProtectedRoute: React.FC<{ allowedRoles: string }> = ({ allowedRoles }) => {
     const { user, isAuthenticated } = useAuth();
     const location = useLocation();
+
+    console.log('entere -nfkadsjf')
   
     if (!isAuthenticated) {
       return <Navigate to="/auth?path=login" state={{ from: location }} replace />;
     }
   
+    console.log(user?.role,allowedRoles)
+
     if (user && !allowedRoles.includes(user.role)) {
+      console.log('enterd to not allowed role')
       // Redirect based on user role
       console.log(user.role)
       const redirectPath =

@@ -7,6 +7,7 @@ export const AdminService = {
   getAllClients: async () => {
     try {
       const response = await api.get(ADMIN_ROUTES.GET_ALL_CLIENTS);
+      console.log(response)
       return { data: response.data, error: null };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;

@@ -8,4 +8,5 @@ export interface IAuthController {
     resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
     googleSignUp(req: Request, res: Response, next: NextFunction): Promise<void>;
     resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
+    refreshAcessToken(req:Request, res: Response, next: NextFunction): Promise<void>;
 }

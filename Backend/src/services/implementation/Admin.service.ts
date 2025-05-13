@@ -8,7 +8,7 @@ export class AdminService implements IAdminService{
         // Logic to get all clients
         console.log('functin entered to here');
         const clientData = await this._adminRepository.findAllClientsWithPersonalization();
-        // console.log(clientData);
+        console.log(clientData);
         return clientData;
     }
     async updateClientStatus(id:string,status:string):Promise<string>{

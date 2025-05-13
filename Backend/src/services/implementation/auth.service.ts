@@ -15,8 +15,10 @@ import {
   hashPassword,
   sendOtpEmail,
   sendPasswordResetEmail,
+  verifyRefreshToken,
 } from "../../utils";
 import { redisClient } from "../../config/redis.config";
+import { JwtPayload } from "jsonwebtoken";
 import { createHttpError } from "../../utils/http-error.util";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
@@ -112,6 +114,31 @@ export class AuthService implements IAuthService {
     return { user: createdUser, accessToken, refreshToken };
   }
 
+  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
+    if (!refreshToken) {
+      throw new Error('Refresh token is required');
+    }
+
+    // Verify the refresh token and decode its payload
+    const decoded = verifyRefreshToken(refreshToken);
+    if (!decoded) {
+      throw new Error('Invalid or expired refresh token');
+    }
+
+    // Extract the required payload fields (id, role, status)
+    const payload = {
+      id: (decoded as JwtPayload)._id,
+      role: (decoded as JwtPayload).role,
+      status:(decoded as JwtPayload).status
+      // Add any other necessary fields from the decoded token
+    };
+
+    // Generate new access token
+    const accessToken = generateAccessToken(payload);
+
+    return { accessToken };
+  }
+
   async resendOtp(email: string): Promise<string> {
     const storedDataString = await redisClient.get(email);
     if (!storedDataString) {
@@ -129,6 +156,7 @@ export class AuthService implements IAuthService {
     );
     return email;
   }
+
 
   async forgotPassword(email: string): Promise<forgotPasswordReturnType> {
     const existingUser = await this._userRepository.findByEmail(email);

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
+import { AuthService } from '@/services/implementation/authService';
 
 // Types
 interface User {
@@ -36,11 +38,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (token) {
       try {
         const decoded = jwtDecode<JwtPayload>(token);
+        const refreshToken = Cookies.get('refreshToken') as string;
+        const decodeRef = jwtDecode<JwtPayload>(refreshToken);
         if (decoded.exp * 1000 > Date.now()) {
           setUser({ id: decoded.id, role: decoded.role as User['role'] });
           setIsAuthenticated(true);
-        } else {
-          logout();
+        } else{
+          if(decodeRef.exp * 1000 < Date.now()){
+            logout();
+          }
+          const newAcessToken = AuthService.refreshAcessToken();
+          localStorage.setItem('accessToken',newAcessToken) ;
+          const decodedAcces = jwtDecode<JwtPayload>(token);
+          setUser({ id: decodedAcces.id, role: decodedAcces.role as User['role'] });
+          setIsAuthenticated(true);
         }
       } catch (error) {
         console.error('Invalid token:', error);

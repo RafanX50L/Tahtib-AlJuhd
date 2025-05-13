@@ -8,47 +8,6 @@ import { useAuth } from '@/hooks/Auth.hook';
 
 export const AuthService = {
 
-  // registerUser : async (formData: any) => {
-  //   try {
-  //     console.log("Registering user with data:", formData);
-  //     const response = await api.post(AUTH_ROUTES.REGISTER, formData);
-  //     console.log("Registration response:", response.data); 
-  //     return {data:response.data,error:null};
-  //   } catch (error: unknown) {
-  //     const err = error as AxiosError<{error: string}>;
-  //     const errorMessage = err.response?.data?.error || "Registration failed. Please try again.";
-  //     toast.error(errorMessage);
-  //     return { data: null, error: errorMessage };
-  //   }
-  // },
-  // login : async (formData: any) => {
-  //   try {
-  //     console.log("Logging in user with data:", formData);
-  //     const response = await api.post(AUTH_ROUTES.LOGIN, formData);
-  //     console.log("Login response:", response.data);
-  //     return { data: response.data, error: null, status: response.status };  
-  //   } catch (error: unknown) {
-  //     console.log("Error during login:", error);
-  //     const err = error as AxiosError<{error: string}>;
-  //     const errorMessage = err.response?.data.error || "Login failed. Please try again.";
-  //     throw new Error(errorMessage);
-  //     // return { data: null, error: errorMessage };
-  //   }
-  // },
-  // verifyOtp : async (data:OtpData) => {
-  //   try{
-  //     console.log("Verifying OTP with data:", data);
-  //     const response = await api.post(AUTH_ROUTES.VERIFY_OTP, data);
-  //     return {data: response.data};
-  //   }catch(error: unknown) {
-
-  //     const err = error as AxiosError<{error: string}>;
-  //     const errorMessage = err.response?.data.error || "OTP verification failed. Please try again.";
-  //     console.log("Error during OTP verification:", err);    
-  //     throw new Error(errorMessage) 
-  //   }
-  // },
-
   registerUser: async (formData: any) => {
     try {
       console.log("Registering user with data:", formData);
@@ -146,4 +105,17 @@ export const AuthService = {
     logout();
   },
 
+  refreshAcessToken : async () => {
+    try {
+      const response = await api.post(AUTH_ROUTES.REFRESH_ACESS_TOKEN);
+      return {accessToken: response.data}
+    } catch (error) {
+      const err = error as AxiosError<{error: string}>;
+      const errorMessage = err.response?.data.error || "Creating new Acess Token failed";
+      throw new Error(errorMessage);
+    }
+  }
+
 }
+
+

@@ -37,4 +37,6 @@ export interface IAuthService {
   forgotPassword(email: string): Promise<forgotPasswordReturnType>;
   resetPassword(token: string, password: string): Promise<resetPasswordReturnType>;
   googleSignUp(email: string, name: string, role: "client" | "trainer" | "admin"): Promise<verifyOtpReturnType>;
+  refreshAccessToken:(refreshToken:string) => Promise<{ accessToken: string }>;
+
 }
