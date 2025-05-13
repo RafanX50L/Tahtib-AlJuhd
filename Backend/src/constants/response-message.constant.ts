@@ -22,4 +22,5 @@ export const HttpResponse = {
     PASSWORD_RESET_SUCCESS: "Password reset successfully",
     TOKEN_EXPIRED: "Token expired",
     USER_ALREADY_EXIST_WITH_PASSWORD: "User already exist with password",
+    UNAUTHORIZED : "Unauthorized Request"
 };

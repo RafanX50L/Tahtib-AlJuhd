@@ -13,7 +13,7 @@ export class AdminController implements IAdminController {
   ): Promise<void> {
     try {
       const clients = await this.adminService.getAllClients();
-      console.log(clients);
+      // console.log(clients);
       res.status(HttpStatus.OK).json([clients]);
     } catch (error) {
       next(error);
