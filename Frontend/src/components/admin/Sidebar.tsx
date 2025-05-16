@@ -10,7 +10,6 @@ import {
   FaSignOutAlt,
 } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
-import { useAuth } from '@/hooks/Auth.hook';
 import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
@@ -23,6 +22,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { logout } from "@/store/slices/authSlice";
 
 interface NavItem {
   name: string;
@@ -34,8 +35,8 @@ interface NavItem {
 const Sidebar = () => {
   const pathadmin = '/admin';
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { logout } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const navItems: NavItem[] = [
     { name: 'Dashboard', icon: FaTachometerAlt, href: `${pathadmin}/dashboard`, active: false },
@@ -48,10 +49,10 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout())
     setDialogOpen(false);
     navigate('/auth?path=login');
-    toast.success('Successfully logged out');
+    toast.success('Successfully logged out'); 
   };
 
   return (
@@ -70,7 +71,7 @@ const Sidebar = () => {
           {navItems.map((item) => (
             <a
               key={item.name}
-              href={item.href}
+              onClick={()=>navigate(item.href)}
               className={`flex items-center px-4 py-3 rounded-md group transition-colors mb-3 ${
                 item.active ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
               }`}

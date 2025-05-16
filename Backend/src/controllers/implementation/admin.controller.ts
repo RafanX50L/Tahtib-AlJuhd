@@ -2,17 +2,19 @@ import { HttpStatus } from "../../constants/status.constant";
 import { IAdminController } from "../interface/IAdminController";
 import { IAdminService } from "../../services/interface/IAdmin.service";
 import { NextFunction, Response, Request } from "express";
+import { userData } from "../../middleware/verify.token.middleware";
 
 export class AdminController implements IAdminController {
   constructor(private adminService: IAdminService) {}
 
   async getAllClients(
-    req: Request,
+    req: userData,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const clients = await this.adminService.getAllClients();
+      const userid = req.user?.id as string;
+      const clients = await this.adminService.getAllClients(userid);
       // console.log(clients);
       res.status(HttpStatus.OK).json([clients]);
     } catch (error) {

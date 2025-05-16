@@ -7,14 +7,14 @@ import AdminRotues from "./routes/AdminRoutes";
 import React from "react";
 import { AuthRoute } from "./routes/AuthRoute";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
-import { AuthProvider } from "./globalContext/AuthContext";
+import VerifyUser from "./components/common/verifyUser";
 
 const App: React.FC = () => {
   return (
     <>
       <Toaster richColors position="top-right" />
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        {/* <VerifyUser> */}
           <Routes>
             <Route path="/auth/*" element={<AuthRoute />}>
               <Route path="*" element={<AuthRotues />} />
@@ -31,15 +31,15 @@ const App: React.FC = () => {
             >
               <Route path="*" element={<TrainerRotues />} />
             </Route>
-            {/* <Route
+            <Route
               path="/admin/*"
               element={<ProtectedRoute allowedRoles={"admin"} />}
-            > */}
-              <Route path="/admin/*" element={<AdminRotues />} />
-            {/* </Route> */}
+            >
+              <Route path="*" element={<AdminRotues />} />
+            </Route>
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        {/* </VerifyUser> */}
+      </BrowserRouter>
     </>
   );
 };

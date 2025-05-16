@@ -18,36 +18,7 @@ interface trainer{
 }
 
 const PendingApplicationsTable : React.FC<trainer> =  ({trainer}) => {
-  console.log(trainer)
-  // const [applications] = useState<Application[]>([
-  //   {
-  //     id: 1,
-  //     name: "Michael Johnson",
-  //     email: "michael.j@example.com",
-  //     specialization: "Strength Training",
-  //     experience: "7 years",
-  //     appliedOn: "April 8, 2025",
-  //     status: "Interview completed",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Sarah Miller",
-  //     email: "sarah.m@example.com",
-  //     specialization: "Yoga & Pilates",
-  //     experience: "5 years",
-  //     appliedOn: "April 7, 2025",
-  //     status: "Interview Scheduled",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "David Chen",
-  //     email: "david.c@example.com",
-  //     specialization: "CrossFit",
-  //     experience: "3 years",
-  //     appliedOn: "April 5, 2025",
-  //     status: "Not Scheduled",
-  //   },
-  // ]);
+  console.log(trainer);
   const [applications] = useState<ITrainerWithPersonalization[]>(trainer) 
 
   const [currentPage, setCurrentPage] = useState(1);

@@ -3,11 +3,16 @@ import { IAuthService } from "../../services/interface/IAuth.service";
 import { IAuthController } from "../interface/IAuthController";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
-import { getCookie, setCookie } from "../../utils/cookie.utils";
+import { deleteCookie, getCookie, getIdFromCookie, setCookie } from "../../utils/cookie.utils";
+import { createHttpError, generateAccessToken, verifyRefreshToken } from "../../utils";
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
-  async refreshAcessToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async refreshAcessToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const refreshToken = getCookie(req, "refreshToken");
 
@@ -18,7 +23,8 @@ export class AuthController implements IAuthController {
         return;
       }
 
-      const { accessToken } = await this._authService.refreshAccessToken(refreshToken);
+      const { accessToken } =
+        await this._authService.refreshAccessToken(refreshToken);
 
       res.status(HttpStatus.OK).json({
         message: HttpResponse.TOKEN_GENERATED_SUCCESS,
@@ -42,7 +48,7 @@ export class AuthController implements IAuthController {
   async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
-      const { role, accessToken, refreshToken } =
+      const { user, accessToken, refreshToken } =
         await this._authService.signIn(email, password);
 
       setCookie(res, refreshToken);
@@ -50,8 +56,8 @@ export class AuthController implements IAuthController {
       console.log("Refresh Token:", refreshToken);
       res.status(HttpStatus.OK).json({
         message: HttpResponse.LOGIN_SUCCESS,
-        user: { role },
-        token: accessToken,
+        user,
+        accessToken,
       });
     } catch (error) {
       next(error);
@@ -69,11 +75,10 @@ export class AuthController implements IAuthController {
         await this._authService.verifyOtp(email, otp);
 
       setCookie(res, refreshToken);
-
       res.status(HttpStatus.CREATED).json({
         message: HttpResponse.USER_CREATION_SUCCESS,
         user,
-        token: accessToken,
+        accessToken
       });
     } catch (error) {
       next(error);
@@ -140,10 +145,78 @@ export class AuthController implements IAuthController {
       res.status(HttpStatus.OK).json({
         message: HttpResponse.LOGIN_SUCCESS,
         user,
-        token: accessToken,
+        accessToken
       });
     } catch (error) {
       next(error);
     }
   }
+
+  async verifyUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const id = getIdFromCookie(req, "accessToken");
+      if (id === null) {
+        console.log('enterd to id null');
+        createHttpError(HttpStatus.BAD_REQUEST, "Access token is missing or invalid");
+      }
+      const { user } = await this._authService.getUserData(id as string);
+      res.status(HttpStatus.OK).json({
+        message: HttpResponse.DATA_FETCHING_SUCCESSFULL,
+        user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Refresh access token using refresh token
+  async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+
+      if (!refreshToken) {
+        return next(createHttpError(HttpStatus.UNAUTHORIZED, 'Refresh token not found'));
+      }
+
+      const decodedToken = verifyRefreshToken(refreshToken);
+      if (!decodedToken || typeof decodedToken === "string" || !("user" in decodedToken)) {
+        return next(createHttpError(HttpStatus.FORBIDDEN, 'Invalid token'));
+      }
+
+      const { _id, name, email, role } = (decodedToken as any).user;
+
+      const user = await this._authService.getUserById(_id);
+
+      if (!user) {
+        // Assuming clearRefreshTokenCookie is imported and available
+        deleteCookie(res);
+        return next(createHttpError(HttpStatus.NOT_FOUND, 'User not found'));
+      }
+
+      const payload: any = {
+        _id: user && user._id ? user._id.toString() : "",
+        name: user ? user.name : "",
+        email: user ? user.email : "",
+        role,
+      };
+
+      const user1 = {
+        _id:user._id,
+        name:user.name,
+        email:user.email,
+        role:user.role,
+      };
+
+      const accessToken = generateAccessToken(payload);
+
+      res.status(HttpStatus.OK).json({ accessToken, user:user1 });
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

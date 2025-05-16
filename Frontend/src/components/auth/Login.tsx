@@ -21,7 +21,9 @@ import { AuthService } from "@/services/implementation/authService";
 import { Loader2 } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { useAuth } from "@/hooks/Auth.hook";
+import { useDispatch, useSelector } from "react-redux";
+import { setCredentials } from "@/store/slices/authSlice";
+import { RootState } from "@/store/store";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
@@ -38,8 +40,12 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<GoogleUser | null>(null);
-  const { login } = useAuth();
 
+  const dispath = useDispatch();
+  const navigate = useNavigate();
+  const {isAuthenticated} = useSelector((state:RootState)=>state.auth);
+
+  
   const logins = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log("Login Success:", codeResponse);
@@ -59,10 +65,16 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       console.log("Google data to send:", dataToSend);
-      const result = await AuthService.GoogleSignUP(dataToSend);
-      console.log("Google registration result:", result.data.token);
-      login(result.data.token);
-      toast.success("Google registration successful!");
+      const response = await AuthService.GoogleSignUP(dataToSend);
+      console.log(`Google Login Successfull with status ${response.status}`);
+      dispath(
+        setCredentials({
+          user: response.user,
+          accessToken: response.accessToken,
+        })
+      );
+      toast.success(response.message);
+      navigate(`/dashboard`);
     } catch (error: unknown) {
       console.log(error);
       const errorMessage =
@@ -105,6 +117,12 @@ export default function LoginPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/myFeed");
+    }
+  }, [isAuthenticated, navigate]);
+
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -113,17 +131,20 @@ export default function LoginPage() {
     },
   });
 
-  const navigate = useNavigate();
-
   const onSubmit = async (data: LoginForm) => {
     setIsSubmitting(true);
     try {
       console.log("Submitting login data:", data);
       const response = await AuthService.login(data);
-      console.log("Login response:", response);
-      console.log("token", response.data.token);
-      login(response.data.token); // Directly call login from useAuth
-      // Navigation is handled by AuthRoute/ProtectedRoute
+      console.log(`Login Successfull with status ${response.status}`);
+      dispath(
+        setCredentials({
+          user: response.user,
+          accessToken: response.accessToken,
+        })
+      );
+      toast.success(response.message);
+      navigate(`/dashboard`);
     } catch (error: unknown) {
       console.log("Login error:", error);
       let errorMessage = "An unexpected error occurred. Please try again.";

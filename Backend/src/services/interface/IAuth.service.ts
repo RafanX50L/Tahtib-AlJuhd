@@ -1,5 +1,4 @@
-import { IUserModel } from "../../models/implementation/user.model";
-// import { IUser } from "../../models/interface/IUser.model";
+import { IUser } from "@/models/interface/IUser.model";
 
 export interface SignUpUser {
   role: "client" | "trainer" | "admin";
@@ -8,13 +7,13 @@ export interface SignUpUser {
 }
 
 export interface verifyOtpReturnType {
-  user: IUserModel;
+  user: { _id: string | unknown; name: string; email: string; role: string };
   accessToken: string;
   refreshToken: string;
 }
 
 export interface signInReturnType {
-  role: string;
+  user: { _id: string | unknown ; name: string; email: string; role: string };
   accessToken: string;
   refreshToken: string;
 }
@@ -29,14 +28,33 @@ export interface resetPasswordReturnType {
   message: string;
 }
 
+export interface getUserDataReturnType {
+  user:{
+    _id:string,
+    name:string,
+    email:string,
+    role:string,
+  }
+}
+
 export interface IAuthService {
   signUp(user: SignUpUser): Promise<string>;
   signIn(email: string, password: string): Promise<signInReturnType>;
   verifyOtp(email: string, otp: string): Promise<verifyOtpReturnType>;
   resendOtp(email: string): Promise<string>;
   forgotPassword(email: string): Promise<forgotPasswordReturnType>;
-  resetPassword(token: string, password: string): Promise<resetPasswordReturnType>;
-  googleSignUp(email: string, name: string, role: "client" | "trainer" | "admin"): Promise<verifyOtpReturnType>;
-  refreshAccessToken:(refreshToken:string) => Promise<{ accessToken: string }>;
-
+  resetPassword(
+    token: string,
+    password: string
+  ): Promise<resetPasswordReturnType>;
+  googleSignUp(
+    email: string,
+    name: string,
+    role: "client" | "trainer" | "admin"
+  ): Promise<verifyOtpReturnType>;
+  refreshAccessToken: (
+    refreshToken: string
+  ) => Promise<{ accessToken: string }>;
+  getUserData(id:string):Promise<getUserDataReturnType>;
+  getUserById( id: string): Promise<IUser | null>;
 }

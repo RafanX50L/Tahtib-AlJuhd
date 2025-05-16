@@ -3,6 +3,7 @@ export const HttpResponse = {
     USER_EXIST: "User already exist",
     PAGE_NOT_FOUND: "Route not found",
     USER_NOT_FOUND: "User not found",
+    USER_IS_BLOKED: "User is Blocked",
     PASSWORD_INCORRECT: "Incorrect password, try again",
     NO_TOKEN: "Token not provided",
     OTP_INCORRECT: "Incorrect otp, try again",
@@ -23,5 +24,6 @@ export const HttpResponse = {
     TOKEN_EXPIRED: "Token expired",
     USER_ALREADY_EXIST_WITH_PASSWORD: "User already exist with password",
     UNAUTHORIZED : "Unauthorized Request",
-    TOKEN_GENERATED_SUCCESS : "Token Regenerating Successfull"
+    TOKEN_GENERATED_SUCCESS : "Token Regenerating Successfull",
+    DATA_FETCHING_SUCCESSFULL : "Data fetched successfully",
 };

@@ -3,7 +3,6 @@ import { BaseRepository } from "../base.repository";
 import { UserModel, IUserModel } from "../../models/implementation/user.model";
 import { PersonalizationModel, IPersonalization } from "../../models/implementation/personalization.model";
 import { IUser } from "../../models/interface/IUser.model";
-// import mongoose from "mongoose";
 
 export class UserRepository
   extends BaseRepository<IUserModel>
@@ -55,9 +54,18 @@ export class UserRepository
     }
   }
 
+  async getUserById (id:string):Promise<IUser | null>{
+    try{
+      return await this.model.findById(id);
+    }catch(error){
+      console.log('Error finding user by Id:',error);
+      throw new Error('Error finding user by Id');
+    }
+  }
+
   async findByEmail(email: string): Promise<IUserModel | null> {
     try {
-      return await this.model.findOne({ email }).populate("personalization");
+      return await this.model.findOne({ email });
     } catch (error) {
       console.error("Error finding user by email:", error);
       throw new Error("Error finding user by email");

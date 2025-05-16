@@ -34,4 +34,12 @@ export class AdminRepository extends BaseRepository<IUserModel> implements IAdmi
         }
     }
 
+    async IsBlocked(id:string){
+        try{
+            return await this.isBlocked(id);
+        }catch(error){
+            console.error('Error finding clients',error);
+            throw new Error("Error finding clients");
+        }
+    }
 }

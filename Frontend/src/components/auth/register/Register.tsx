@@ -11,9 +11,11 @@ import { z } from "zod";
 import { registerSchema } from "../../../schemas/authSchema";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
-import { useAuth } from "@/hooks/Auth.hook";
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setCredentials } from "@/store/slices/authSlice";
+import { RootState } from "@/store/store";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -31,7 +33,6 @@ export function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<GoogleUser | null>(null);
   const [profile, setProfile] = useState<GoogleProfile | null>(null);
-  const {login} = useAuth();
   const {
     register,
     handleSubmit,
@@ -50,6 +51,9 @@ export function RegisterPage() {
   });
 
   const navigate = useNavigate();
+  const dispath = useDispatch();
+    const {isAuthenticated} = useSelector((state:RootState)=>state.auth);
+
 
   const logins = useGoogleLogin({
     onSuccess: (codeResponse) => {
@@ -60,17 +64,20 @@ export function RegisterPage() {
       toast.error("Google login failed. Please try again.");
     },
   });
-  
+
   // Create a wrapper function that shows the toast first
   const handleGoogleLogin = () => {
-    toast.info("IMPORTANT: Please ensure you select the correct role (Client or Trainer) before proceeding. This will determine your experience.", {
-      duration: 8000,  // Show for 8 seconds
-      // important: true,  Removed 'important' as it is not a valid property
-      action: {
-        label: "I Understand",
-        onClick: () => logins()  // Proceed with login after they acknowledge
+    toast.info(
+      "IMPORTANT: Please ensure you select the correct role (Client or Trainer) before proceeding. This will determine your experience.",
+      {
+        duration: 8000, // Show for 8 seconds
+        // important: true,  Removed 'important' as it is not a valid property
+        action: {
+          label: "I Understand",
+          onClick: () => logins(), // Proceed with login after they acknowledge
+        },
       }
-    });
+    );
   };
 
   const GoogleSignUP = async (googleData: GoogleProfile) => {
@@ -83,15 +90,22 @@ export function RegisterPage() {
     };
     setIsSubmitting(true);
     try {
-      const result = await AuthService.GoogleSignUP(dataToSend);
-      if (result.data) {
-        console.log("Google registration result:", result.data);
-        login(result.data.token)
-        toast.success("Google registration successful! Please verify your email.");
-      }
+      console.log("Google data to send:", dataToSend);
+      const response = await AuthService.GoogleSignUP(dataToSend);
+      console.log(`Google Login Successfull with status ${response.status}`);
+      dispath(
+        setCredentials({
+          user: response.user,
+          accessToken: response.accessToken,
+        })
+      );
+      toast.success(response.message);
+      navigate(`/dashboard`);
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred.";
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -120,7 +134,6 @@ export function RegisterPage() {
         });
     }
   }, [user]);
-  
 
   // log out function to log the user out of google and set the profile array to null
   // const logOut = () => {
@@ -133,6 +146,12 @@ export function RegisterPage() {
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/myFeed");
+    }
+  }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsSubmitting(true);

@@ -6,6 +6,7 @@ import {
   signInReturnType,
   verifyOtpReturnType,
   SignUpUser,
+  getUserDataReturnType,
 } from "../interface/IAuth.service";
 import {
   comparePassword,
@@ -25,6 +26,7 @@ import { HttpResponse } from "../../constants/response-message.constant";
 // import { IUserModel } from "../../models/implementation/user.model";
 import { IUser } from "../../models/interface/IUser.model";
 import { generateNanoId } from "../../utils/generate-nanoid";
+import mongoose from "mongoose";
 
 export class AuthService implements IAuthService {
   constructor(private readonly _userRepository: IUserRepository) {}
@@ -60,17 +62,32 @@ export class AuthService implements IAuthService {
       throw createHttpError(HttpStatus.NOT_FOUND, HttpResponse.USER_NOT_FOUND);
     }
 
-    if (!existingUser.password || !(await comparePassword(password, existingUser.password))) {
+    if (
+      !existingUser.password ||
+      !(await comparePassword(password, existingUser.password))
+    ) {
       throw createHttpError(
         HttpStatus.UNAUTHORIZED,
         HttpResponse.INVALID_PASSWORD
       );
     }
 
-    const payload = { id: existingUser._id, role: existingUser.role, status: existingUser.status };
+    const payload = {
+      id: existingUser._id,
+      role: existingUser.role,
+    };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-    return { role: existingUser.role, accessToken, refreshToken };
+    return {
+      user: {
+        _id: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+      },
+      accessToken,
+      refreshToken,
+    };
   }
 
   async verifyOtp(email: string, otp: string): Promise<verifyOtpReturnType> {
@@ -111,25 +128,36 @@ export class AuthService implements IAuthService {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
-    return { user: createdUser, accessToken, refreshToken };
+    return {
+      user: {
+        _id: createdUser._id,
+        name: createdUser.name,
+        email: createdUser.email,
+        role: createdUser.role,
+      },
+      accessToken,
+      refreshToken,
+    };
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
+  async refreshAccessToken(
+    refreshToken: string
+  ): Promise<{ accessToken: string }> {
     if (!refreshToken) {
-      throw new Error('Refresh token is required');
+      throw new Error("Refresh token is required");
     }
 
     // Verify the refresh token and decode its payload
     const decoded = verifyRefreshToken(refreshToken);
     if (!decoded) {
-      throw new Error('Invalid or expired refresh token');
+      throw new Error("Invalid or expired refresh token");
     }
 
     // Extract the required payload fields (id, role, status)
     const payload = {
       id: (decoded as JwtPayload)._id,
       role: (decoded as JwtPayload).role,
-      status:(decoded as JwtPayload).status
+      status: (decoded as JwtPayload).status,
       // Add any other necessary fields from the decoded token
     };
 
@@ -149,14 +177,9 @@ export class AuthService implements IAuthService {
     const otp = generateOTP();
     console.log("Resending OTP:", otp);
     await sendOtpEmail(email, otp);
-    await redisClient.setEx(
-      email,
-      300,
-      JSON.stringify({ ...storedData, otp })
-    );
+    await redisClient.setEx(email, 300, JSON.stringify({ ...storedData, otp }));
     return email;
   }
-
 
   async forgotPassword(email: string): Promise<forgotPasswordReturnType> {
     const existingUser = await this._userRepository.findByEmail(email);
@@ -180,14 +203,20 @@ export class AuthService implements IAuthService {
     };
   }
 
-  async resetPassword(token: string, password: string): Promise<resetPasswordReturnType> {
+  async resetPassword(
+    token: string,
+    password: string
+  ): Promise<resetPasswordReturnType> {
     const getEmail = await redisClient.get(token);
     if (!getEmail) {
       throw createHttpError(HttpStatus.NOT_FOUND, HttpResponse.TOKEN_EXPIRED);
     }
 
     const hashedPassword = await hashPassword(password);
-    const updatedUser = await this._userRepository.updatePassword(getEmail, hashedPassword);
+    const updatedUser = await this._userRepository.updatePassword(
+      getEmail,
+      hashedPassword
+    );
     if (!updatedUser) {
       throw createHttpError(
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -210,7 +239,10 @@ export class AuthService implements IAuthService {
     const existingUser = await this._userRepository.findByEmail(email);
     if (!existingUser) {
       if (!role) {
-        throw createHttpError(HttpStatus.BAD_REQUEST, "User does not exist, please register first");
+        throw createHttpError(
+          HttpStatus.BAD_REQUEST,
+          "User does not exist, please register first"
+        );
       }
 
       const user: IUser = {
@@ -232,14 +264,44 @@ export class AuthService implements IAuthService {
       const payload = { id: createdUser._id, role: createdUser.role };
       const accessToken = generateAccessToken(payload);
       const refreshToken = generateRefreshToken(payload);
-      return { user: createdUser, accessToken, refreshToken };
+      return {
+        user: {
+          _id: createdUser._id,
+          name: createdUser.name,
+          email: createdUser.email,
+          role: createdUser.role,
+        },
+        accessToken,
+        refreshToken,
+      };
     } else if (existingUser.password) {
-      throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.USER_ALREADY_EXIST_WITH_PASSWORD);
+      throw createHttpError(
+        HttpStatus.UNAUTHORIZED,
+        HttpResponse.USER_ALREADY_EXIST_WITH_PASSWORD
+      );
     } else {
       const payload = { id: existingUser._id, role: existingUser.role };
       const accessToken = generateAccessToken(payload);
       const refreshToken = generateRefreshToken(payload);
       return { user: existingUser, accessToken, refreshToken };
     }
+  }
+  async getUserData(id: string): Promise<getUserDataReturnType> {
+    const objectId = new mongoose.Types.ObjectId(id);
+    const user = await this._userRepository.findById(objectId);
+    if (!user) {
+      throw createHttpError(HttpStatus.NOT_FOUND, HttpResponse.USER_NOT_FOUND);
+    }
+    return {
+      user: {
+        _id: String(user._id),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
+  async getUserById(id: string): Promise<IUser | null> {
+    return this._userRepository.getUserById( id);
   }
 }

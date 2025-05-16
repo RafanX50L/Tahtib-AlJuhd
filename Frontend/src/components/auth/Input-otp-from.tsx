@@ -11,7 +11,8 @@ import { otpSchema } from "@/schemas/authSchema";
 import { AuthService } from "@/services/implementation/authService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/Auth.hook";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/store/slices/authSlice";
 
 type OTPFormData = z.infer<typeof otpSchema>;
 
@@ -22,7 +23,10 @@ export function OTPVerificationPage() {
   const [showResend, setShowResend] = useState(false); // Control resend link visibility
   const [isExpired, setIsExpired] = useState(false); // Track OTP expiration
   const location = useLocation();
-  const { login } = useAuth(); // Use auth hook directly in the component
+
+  const dispath = useDispatch();
+  const navigate = useNavigate();
+
 
   const form = useForm<OTPFormData>({
     resolver: zodResolver(otpSchema),
@@ -77,9 +81,10 @@ export function OTPVerificationPage() {
     try {
       console.log("Submitting OTP:", data.otp);
       const response = await AuthService.verifyOtp({ ...data, email });
-      console.log("OTP verification response:", response.data.token);
-      login(response.data.token); // Directly call login from useAuth
-      // Navigation is handled by AuthRoute/ProtectedRoute
+      console.log(`OTP verification response with Status ${response.status}`);
+      dispath(setCredentials({ user: response.user , accessToken:response.accessToken}))
+      toast.success(response.message);
+      navigate(`/dashboard`)
     } catch (error: unknown) {
       console.error("OTP verification failed:", error);
       let errorMessage = "An unexpected error occurred. Please try again.";

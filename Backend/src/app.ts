@@ -38,9 +38,9 @@ app.use(express.urlencoded({extended: true}));
 
 connectDb();
 
+// app.use('/api',isUserBlocked);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRouter);
-
 app.use(errorHandler);
 
 const startServer = async () => {

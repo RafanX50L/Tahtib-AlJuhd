@@ -1,11 +1,18 @@
+import { createHttpError } from "../../utils";
 import { IAdminService } from "../interface/IAdmin.service";
-import { IAdminRepository } from "@/repositories/interface/IAdmin.respository";
+import { IAdminRepository } from "../../repositories/interface/IAdmin.respository";
+import { HttpStatus } from "../../constants/status.constant";
+import { HttpResponse } from "../../constants/response-message.constant";
 
 export class AdminService implements IAdminService{
     constructor(private readonly _adminRepository: IAdminRepository) {} // Replace 'any' with the actual type of your repository
 
-    async getAllClients(): Promise<any> {
+    async getAllClients(userid:string): Promise<any> {
         // Logic to get all clients
+        const isBlocked = await this._adminRepository.IsBlocked(userid);
+        if(isBlocked){
+            createHttpError(HttpStatus.FORBIDDEN,HttpResponse.USER_IS_BLOKED);
+        }
         console.log('functin entered to here');
         const clientData = await this._adminRepository.findAllClientsWithPersonalization();
         console.log(clientData);

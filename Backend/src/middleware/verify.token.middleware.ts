@@ -1,3 +1,4 @@
+
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken } from '../utils';
 import { HttpResponse } from '../constants/response-message.constant';
@@ -14,7 +15,7 @@ export interface userData extends Request {
 export default function verifyToken(userLevel: 'client' | 'admin' | 'trainer') {
   return (req: userData, res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
-
+    console.log(authHeader);
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.NO_TOKEN);
     }

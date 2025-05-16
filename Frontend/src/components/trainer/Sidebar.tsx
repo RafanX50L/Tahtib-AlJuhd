@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FaBars, FaTachometerAlt, FaCalendarAlt, FaUsers, FaComments, FaStar, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
-import { useAuth } from '@/hooks/Auth.hook';
 import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
@@ -14,12 +13,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { logout } from '@/store/slices/authSlice';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { logout } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
@@ -34,7 +35,7 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     setDialogOpen(false);
     navigate('/auth?path=login');
     toast.success('Successfully logged out');

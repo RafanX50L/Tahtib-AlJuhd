@@ -24,6 +24,11 @@ const ApprovedTrainersTable: React.FC<Props> = ({ trainer }) => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [modalTrainer, setModalTrainer] = useState<ITrainerWithPersonalization | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    trainerId: string;
+    status: string;
+    isOpen: boolean;
+  }>({ trainerId: "", status: "", isOpen: false });
   const itemsPerPage = 5;
 
   const filteredTrainers = trainers.filter((trainer) => {
@@ -43,25 +48,26 @@ const ApprovedTrainersTable: React.FC<Props> = ({ trainer }) => {
   );
 
   const handleStatusChange = (trainerId: string, status: string) => {
-    if (
-      confirm(
-        `Are you sure you want to ${status === "active" ? "deactivate" : "activate"} this trainer?`
-      )
-    ) {
-      try {
-        const newStatus = status === "active" ? "inactive" : "active";
-        setTrainers((prev) =>
-          prev.map((t) =>
-            t.id === trainerId ? { ...t, status: newStatus } : t
-          )
-        );
-        toast.success(`Trainer ${newStatus === "active" ? "activated" : "deactivated"} successfully`);
-      } catch (error) {
-        console.error("Error updating trainer status:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "An unexpected error occurred";
-        toast.error(errorMessage);
-      }
+    setConfirmModal({ trainerId, status, isOpen: true });
+  };
+
+  const confirmStatusChange = () => {
+    try {
+      const { trainerId, status } = confirmModal;
+      const newStatus = status === "active" ? "inactive" : "active";
+      setTrainers((prev) =>
+        prev.map((t) =>
+          t.id === trainerId ? { ...t, status: newStatus } : t
+        )
+      );
+      toast.success(`Trainer ${newStatus === "active" ? "activated" : "deactivated"} successfully`);
+    } catch (error) {
+      console.error("Error updating trainer status:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      toast.error(errorMessage);
+    } finally {
+      setConfirmModal({ trainerId: "", status: "", isOpen: false });
     }
   };
 
@@ -312,6 +318,50 @@ const ApprovedTrainersTable: React.FC<Props> = ({ trainer }) => {
                 <p className="text-sm text-gray-400">Status</p>
                 <p className="text-white">{modalTrainer.status}</p>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {confirmModal.isOpen && (
+        <>
+Ordinal Code Format
+          <div
+            className="fixed inset-0  bg-opacity-50 z-50"
+            onClick={() => setConfirmModal({ trainerId: "", status: "", isOpen: false })}
+          />
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-lg p-6 z-100 w-11/12 max-w-md shadow-xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-white">Confirm Action</h3>
+              <Button
+                className="text-gray-400 hover:text-white focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                variant="ghost"
+                onClick={() => setConfirmModal({ trainerId: "", status: "", isOpen: false })}
+              >
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
+            <p className="text-sm text-gray-300 mb-6">
+              Are you sure you want to{" "}
+              {confirmModal.status === "active" ? "deactivate" : "activate"} this trainer?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <Button
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition-colors"
+                onClick={() => setConfirmModal({ trainerId: "", status: "", isOpen: false })}
+              >
+                Cancel
+              </Button>
+              <Button
+                className={`px-4 py-2 rounded-md text-white transition-colors ${
+                  confirmModal.status === "active"
+                    ? "bg-red-600 hover:bg-red-500"
+                    : "bg-green-600 hover:bg-green-500"
+                }`}
+                onClick={confirmStatusChange}
+              >
+                {confirmModal.status === "active" ? "Deactivate" : "Activate"}
+              </Button>
             </div>
           </div>
         </>

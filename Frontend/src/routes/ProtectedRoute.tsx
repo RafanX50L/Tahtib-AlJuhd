@@ -1,9 +1,10 @@
-import { useAuth } from "@/hooks/Auth.hook";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 // Protected Route Component
 export const ProtectedRoute: React.FC<{ allowedRoles: string }> = ({ allowedRoles }) => {
-    const { user, isAuthenticated } = useAuth();
+    const {user,isAuthenticated} = useSelector((state: RootState)=>state.auth);
     const location = useLocation();
 
     console.log('entere -nfkadsjf')

@@ -32,3 +32,13 @@ export function verifyRefreshToken(token:string){
         return null;
     }
 }
+
+export function decodeAndVerifyToken(token: string): Record<string, null> | null {
+  try {
+    const decoded = jwt.verify(token, ACCESS_KEY);
+    return typeof decoded === 'object' && decoded !== null ? decoded : null;
+  } catch (err) {
+    console.error("Invalid or expired token:", err);
+    return null;
+  }
+}
