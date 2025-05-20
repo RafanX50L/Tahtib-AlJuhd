@@ -67,9 +67,16 @@ export class AuthService implements IAuthService {
       !(await comparePassword(password, existingUser.password))
     ) {
       throw createHttpError(
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.FORBIDDEN,
         HttpResponse.INVALID_PASSWORD
       );
+    }
+
+    console.log(existingUser);
+
+    if(existingUser.status === 'inactive'){
+      console.log('entered to bloked user');
+      throw createHttpError(HttpStatus.UNAUTHORIZED,HttpResponse.USER_IS_BLOKED);
     }
 
     const payload = {
@@ -157,7 +164,7 @@ export class AuthService implements IAuthService {
     const payload = {
       id: (decoded as JwtPayload)._id,
       role: (decoded as JwtPayload).role,
-      status: (decoded as JwtPayload).status,
+      // status: (decoded as JwtPayload).status,
       // Add any other necessary fields from the decoded token
     };
 
@@ -302,6 +309,7 @@ export class AuthService implements IAuthService {
     };
   }
   async getUserById(id: string): Promise<IUser | null> {
+    console.log('enterd to get userby id',id)
     return this._userRepository.getUserById( id);
   }
 }

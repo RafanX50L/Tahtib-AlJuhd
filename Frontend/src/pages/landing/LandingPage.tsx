@@ -7,6 +7,7 @@ import CTA from "../../components/landing/CTA";
 import Footer from "../../components/landing/Footer";
 
 function LandingPage() {
+  console.log('entered to landing pagew')
   return (
     <>
       <div className="bg-slate-900 text-slate-100 min-h-screen">

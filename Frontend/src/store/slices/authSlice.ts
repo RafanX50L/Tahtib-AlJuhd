@@ -1,7 +1,9 @@
+// store/slices/authSlice.ts
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-
 import api from "@/services/implementation/api";
 import { UserInterface } from "@/types/user";
+
+console.log("Auth slice importing API instance:", (api as any).__instanceId);
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -9,7 +11,6 @@ interface AuthState {
   accessToken: string | null;
   status: "idle" | "loading" | "succeeded" | "failed";
 }
-
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -19,38 +20,24 @@ const initialState: AuthState = {
 };
 
 export const refreshAccessToken = createAsyncThunk(
-  "auth/refreshToken",
+  "auth/refresh-Token",
   async (_, { rejectWithValue, dispatch }) => {
     try {
+      console.log("Sending refresh token request...");
       const response = await api.post(
         "/auth/refresh-token",
         {},
         { withCredentials: true }
       );
+      console.log("Refresh token response:", response.data);
+      if (!response.data.accessToken) {
+        throw new Error("No access token in response");
+      }
       return response.data;
-    } catch {
+    } catch (error) {
+      console.error("Refresh token error:", error);
       dispatch(logout());
       return rejectWithValue("Session expired, please login again.");
-    }
-  }
-);
-
-export const VerifyUsers = createAsyncThunk(
-  "auth/varifyUser",
-  async (_, { rejectWithValue, dispatch }) => {
-    try {
-      const reponse = await api.get("/auth/autherisation", {
-        withCredentials: true,
-      });
-      console.log(reponse);
-      return reponse;
-    } catch (error: any) {
-      dispatch(logout());
-      return rejectWithValue(
-        error instanceof Error
-          ? error.message
-          : error?.response?.data?.message || "Unexpexted Error"
-      );
     }
   }
 );
@@ -61,22 +48,21 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: UserInterface, accessToken: string }>
+      action: PayloadAction<{ user: UserInterface; accessToken: string }>
     ) => {
+      console.log("Setting credentials:", action.payload);
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
+      localStorage.setItem("accessToken", action.payload.accessToken);
       state.isAuthenticated = true;
       localStorage.setItem("sessionActive", "true");
     },
     logout: (state) => {
+      console.log("Logging out...");
       state.isAuthenticated = false;
-      state.accessToken = null;
+      localStorage.removeItem("accessToken");
       state.user = null;
     },
-    updateUserProfile: (
-      state,
-      action: PayloadAction<Partial<UserInterface>>
-    ) => {
+    updateUserProfile: (state, action: PayloadAction<Partial<UserInterface>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }
@@ -88,29 +74,18 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
+        console.log("Refresh token fulfilled:", action.payload);
         authSlice.caseReducers.setCredentials(state, action);
         state.status = "succeeded";
       })
       .addCase(refreshAccessToken.rejected, (state) => {
+        console.log("Refresh token rejected");
         state.isAuthenticated = false;
         state.user = null;
         state.status = "failed";
-      })
-      .addCase(VerifyUsers.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(VerifyUsers.fulfilled, (state, action) => {
-        authSlice.caseReducers.setCredentials(state, action);
-        state.status = "succeeded";
-      })
-      .addCase(VerifyUsers.rejected, (state) => {
-        state.isAuthenticated = false;
-        state.user = null;
-        state.status = "failed";
-      })
+      });
   },
 });
 
-
-export const { setCredentials, logout, updateUserProfile} = authSlice.actions;
+export const { setCredentials, logout, updateUserProfile } = authSlice.actions;
 export default authSlice.reducer;

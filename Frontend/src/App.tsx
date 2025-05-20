@@ -7,15 +7,16 @@ import AdminRotues from "./routes/AdminRoutes";
 import React from "react";
 import { AuthRoute } from "./routes/AuthRoute";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
-import VerifyUser from "./components/common/verifyUser";
+import LandingPage from "./pages/landing/LandingPage";
 
 const App: React.FC = () => {
+  console.log('enterd to react App.tsx page')
   return (
     <>
       <Toaster richColors position="top-right" />
       <BrowserRouter>
-        {/* <VerifyUser> */}
           <Routes>
+            <Route path="/"element={<LandingPage/>}/>
             <Route path="/auth/*" element={<AuthRoute />}>
               <Route path="*" element={<AuthRotues />} />
             </Route>
@@ -38,7 +39,6 @@ const App: React.FC = () => {
               <Route path="*" element={<AdminRotues />} />
             </Route>
           </Routes>
-        {/* </VerifyUser> */}
       </BrowserRouter>
     </>
   );

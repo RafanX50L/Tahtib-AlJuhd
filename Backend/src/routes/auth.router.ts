@@ -17,7 +17,7 @@ authRouter.post("/login", authController.signIn.bind(authController));
 authRouter.post("/forgot-password", authController.forgotPassword.bind(authController));
 authRouter.post("/reset-password", authController.resetPassword.bind(authController));
 authRouter.post("/google-signup", authController.googleSignUp.bind(authController));
-authRouter.post("/refresh-acessToken", authController.googleSignUp.bind(authController));
+authRouter.post("/refresh-Token", authController.refreshToken.bind(authController));
 authRouter.get('/autherisation',authController.verifyUser.bind(authController));
 
 export default authRouter;

@@ -3,8 +3,17 @@ import { IAuthService } from "../../services/interface/IAuth.service";
 import { IAuthController } from "../interface/IAuthController";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
-import { deleteCookie, getCookie, getIdFromCookie, setCookie } from "../../utils/cookie.utils";
-import { createHttpError, generateAccessToken, verifyRefreshToken } from "../../utils";
+import {
+  deleteCookie,
+  getCookie,
+  getIdFromCookie,
+  setCookie,
+} from "../../utils/cookie.utils";
+import {
+  createHttpError,
+  generateAccessToken,
+  verifyRefreshToken,
+} from "../../utils";
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
@@ -78,7 +87,7 @@ export class AuthController implements IAuthController {
       res.status(HttpStatus.CREATED).json({
         message: HttpResponse.USER_CREATION_SUCCESS,
         user,
-        accessToken
+        accessToken,
       });
     } catch (error) {
       next(error);
@@ -145,7 +154,7 @@ export class AuthController implements IAuthController {
       res.status(HttpStatus.OK).json({
         message: HttpResponse.LOGIN_SUCCESS,
         user,
-        accessToken
+        accessToken,
       });
     } catch (error) {
       next(error);
@@ -160,8 +169,11 @@ export class AuthController implements IAuthController {
     try {
       const id = getIdFromCookie(req, "accessToken");
       if (id === null) {
-        console.log('enterd to id null');
-        createHttpError(HttpStatus.BAD_REQUEST, "Access token is missing or invalid");
+        console.log("enterd to id null");
+        createHttpError(
+          HttpStatus.BAD_REQUEST,
+          "Access token is missing or invalid"
+        );
       }
       const { user } = await this._authService.getUserData(id as string);
       res.status(HttpStatus.OK).json({
@@ -174,49 +186,65 @@ export class AuthController implements IAuthController {
   }
 
   // Refresh access token using refresh token
-  async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async refreshToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const refreshToken = req.cookies.refreshToken;
 
       if (!refreshToken) {
-        return next(createHttpError(HttpStatus.UNAUTHORIZED, 'Refresh token not found'));
+        return next(
+          createHttpError(HttpStatus.UNAUTHORIZED, "Refresh token not found")
+        );
       }
 
       const decodedToken = verifyRefreshToken(refreshToken);
-      if (!decodedToken || typeof decodedToken === "string" || !("user" in decodedToken)) {
-        return next(createHttpError(HttpStatus.FORBIDDEN, 'Invalid token'));
+      console.log(decodedToken);
+
+      if (
+        !decodedToken ||
+        typeof decodedToken !== "object" ||
+        !("id" in decodedToken) ||
+        !("role" in decodedToken)
+      ) {
+        return next(createHttpError(HttpStatus.FORBIDDEN, "Invalid token"));
       }
 
-      const { _id, name, email, role } = (decodedToken as any).user;
+      const { id, role } = decodedToken as { id: string; role: string };
 
-      const user = await this._authService.getUserById(_id);
+      const user = await this._authService.getUserById(id);
 
       if (!user) {
         // Assuming clearRefreshTokenCookie is imported and available
         deleteCookie(res);
-        return next(createHttpError(HttpStatus.NOT_FOUND, 'User not found'));
+        return next(createHttpError(HttpStatus.NOT_FOUND, "User not found"));
+      }
+      if(user.status === 'inactive'){
+        console.log('user is bloked');
+        deleteCookie(res);
+        return next(createHttpError(HttpStatus.UNAUTHORIZED,HttpResponse.USER_IS_BLOKED));
       }
 
       const payload: any = {
         _id: user && user._id ? user._id.toString() : "",
-        name: user ? user.name : "",
-        email: user ? user.email : "",
+        // name: user ? user.name : "",
+        // email: user ? user.email : "",
         role,
       };
-
+      console.log('payloads ',payload);
       const user1 = {
-        _id:user._id,
-        name:user.name,
-        email:user.email,
-        role:user.role,
+        _id: user._id,
+        role: user.role,
       };
 
       const accessToken = generateAccessToken(payload);
+      console.log(accessToken,user1);
 
-      res.status(HttpStatus.OK).json({ accessToken, user:user1 });
+      res.status(HttpStatus.OK).json({ accessToken, user: user1 });
     } catch (error) {
       next(error);
     }
   }
-
 }

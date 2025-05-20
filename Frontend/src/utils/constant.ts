@@ -10,7 +10,7 @@ export const AUTH_ROUTES = {
     FORGOT_PASSWORD: `${AUTH_ROUTE}/forgot-password`,
     RESET_PASSWORD: `${AUTH_ROUTE}/reset-password`,
     GOOGLE_SIGNUP: `${AUTH_ROUTE}/google-signup`,
-    REFRESH_ACESS_TOKEN : `${AUTH_ROUTE}/refresh-acessToken`
+    REFRESH_ACESS_TOKEN : `${AUTH_ROUTE}/refresh-Token`
 };
 
 const ADMIN_ROUTE = "/admin";

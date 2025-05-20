@@ -29,7 +29,7 @@ export class AdminController implements IAdminController {
   ): Promise<void> {
     try {
       const {id,status} = req.body;
-      console.log(id,status);
+      // console.log(id,status);
       const clients = await this.adminService.updateClientStatus(id,status);
       res.status(HttpStatus.OK).json([clients]);
     } catch (error) {
@@ -44,7 +44,7 @@ export class AdminController implements IAdminController {
   ): Promise<void> {
     try {
       const trainers = await this.adminService.getAllTrainers();
-      console.log(trainers);
+      // console.log(trainers);
       res.status(HttpStatus.OK).json(trainers);
     } catch (error) {
       next(error);
@@ -58,7 +58,7 @@ export class AdminController implements IAdminController {
   ): Promise<void> {
     try {
       const {id,status} = req.body;
-      console.log(id,status);
+      // console.log(id,status);
       const clients = await this.adminService.updateTrainertatus(id,status);
       res.status(HttpStatus.OK).json([clients]);
     } catch (error) {
