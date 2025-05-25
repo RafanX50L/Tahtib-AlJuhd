@@ -3,7 +3,7 @@ import { IClientService } from "../interface/IClient.service";
 import { HttpResponse } from "../../constants/response-message.constant";
 import { createHttpError } from "../../utils";
 import { HttpStatus } from "../../constants/status.constant";
-import generateFitnessPlan from "../../utils/gemini2.utils";
+import generateFitnessPlan from "../../utils/gemini1.utils";
 import { IClientUserData } from "@/models/interface/IPersonalization";
 // import { writeFile } from "fs";
 

@@ -1,15 +1,50 @@
 import { GoogleGenAI } from "@google/genai";
-import { NextRequest, NextResponse } from "next/server";
+import { env } from "../config/env.config";
 
-const genAI = new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY!});
+interface UserData {
+  nick_name: string;
+  age: number;
+  gender: string;
+  height: number;
+  current_weight: number;
+  target_weight: number;
+  fitness_goal: string;
+  current_fitness_level: string;
+  activity_level: string;
+  equipments: string[];
+  workout_duration: string;
+  workout_days_perWeek: number;
+  health_issues: string[];
+  medical_condition: string;
+  diet_allergies: string[];
+  diet_meals_perDay: string;
+  diet_preferences: string[];
+}
 
-export async function generateFitnessPlan(request: NextRequest) {
+// Initialize the Google GenAI client
+const genAI = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+
+async function generateFitnessPlan(userData: UserData) {
   try {
-    const userData = await request.json();
-    
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-    
-    const prompt = `
+    // Format the prompt with user data
+    const prompt = formatPrompt(userData);
+
+    // Generate content using the new API structure
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+    });
+
+    // Parse the response into structured data
+    return parseResponse(response.text ?? "");
+  } catch (error) {
+    console.error("Error generating fitness plan:", error);
+    throw new Error("Failed to generate fitness plan");
+  }
+}
+
+function formatPrompt(userData: UserData) {
+  return `
     Create a comprehensive 4-week workout plan and diet plan for a user with the following details:
     
     User Data: ${JSON.stringify(userData, null, 2)}
@@ -392,40 +427,54 @@ export async function generateFitnessPlan(request: NextRequest) {
     
     Make sure to:
     1. Avoid exercises that could aggravate back and knee issues
-    2. Consider asthma when planning cardio intensity
-    3. Exclude nuts and gluten from all meal options
-    4. Focus on vegetarian protein sources for muscle building
-    5. Plan for ${userData.workout_days_perWeek} workout days per week
-    6. Keep workouts within ${userData.workout_duration} minutes
-    7. Progress difficulty from week 1 to week 4
-    8. Provide ${userData.diet_meals_perDay} meal options per day
+    2.Include 10-12 unique exercises per day, suitable for indoor home workouts using only the specified equipment: ${userData.equipments.join(', ') || 'None'}.
+    3. Consider asthma when planning cardio intensity
+    4. Exclude nuts and gluten from all meal options
+    5. Focus on vegetarian protein sources for muscle building
+    6. Plan for ${userData.workout_days_perWeek} workout days per week
+    7. Keep workouts within ${userData.workout_duration} minutes
+    8. Progress difficulty from week 1 to week 4
+    9. Provide ${getMealCount(userData.diet_meals_perDay)} meal options per day
     
     Return ONLY the JSON object, no other text.
     `;
+}
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Try to parse the JSON response
+function getMealCount(mealsPerDay: string) {
+  switch (mealsPerDay) {
+    case "3":
+      return "3 meals (breakfast, lunch, dinner)";
+    case "4":
+      return "3 meals (breakfast, lunch, dinner) + 1 snack";
+    case "5":
+      return "3 meals (breakfast, lunch, dinner) + 2 snacks";
+    case "6":
+      return "6 meals (breakfast, mid-morning snack, lunch, afternoon snack, dinner, evening snack)";
+    default:
+      return "3 meals (breakfast, lunch, dinner)";
+  }
+}
+
+function parseResponse(text: string) {
+  try {
+    // Attempt to parse the response as JSON
+    let jsonResponse;
     try {
-      const jsonResponse = JSON.parse(text);
-      return NextResponse.json(jsonResponse);
+      jsonResponse = JSON.parse(text);
+      return jsonResponse;
     } catch (parseError) {
       // If parsing fails, try to extract JSON from the response
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        const extractedJson = JSON.parse(jsonMatch[0]);
-        return NextResponse.json(extractedJson);
+        jsonResponse = JSON.parse(jsonMatch[0]);
+        return jsonResponse;
       }
-      throw new Error(`Failed to parse AI response as JSON : ${parseError}`);
+      throw new Error("Failed to parse AI response as JSON");
     }
-    
   } catch (error) {
-    console.error('Error generating plan:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate workout and diet plan' },
-      { status: 500 }
-    );
+    console.error("Error parsing response:", error, "Raw text:", text);
+    return { rawResponse: text, error: "Failed to parse JSON response" };
   }
 }
+
+export default generateFitnessPlan;
