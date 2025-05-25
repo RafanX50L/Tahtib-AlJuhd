@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import doten from 'dotenv';
 import cookieParser from 'cookie-parser';
-
+import morgan from 'morgan';
 doten.config();
 
 // validate env
@@ -20,6 +20,7 @@ import {errorHandler} from './middleware/error.middleware';
 //routes
 import authRoutes from './routes/auth.router';
 import adminRouter from './routes/admin.router';
+import clientRouter from './routes/client.router';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(morgan("dev"));
 app.use(express.urlencoded({extended: true}));
 
 connectDb();
@@ -41,6 +43,7 @@ connectDb();
 // app.use('/api',isUserBlocked);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRouter);
+app.use('/api/client',clientRouter);
 app.use(errorHandler);
 
 const startServer = async () => {

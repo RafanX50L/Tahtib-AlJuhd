@@ -7,13 +7,13 @@ export interface SignUpUser {
 }
 
 export interface verifyOtpReturnType {
-  user: { _id: string | unknown; name: string; email: string; role: string };
+  user: { _id: string | unknown; name: string; email: string; role: string, personalization:string | null };
   accessToken: string;
   refreshToken: string;
 }
 
 export interface signInReturnType {
-  user: { _id: string | unknown ; name: string; email: string; role: string };
+  user: { _id: string | unknown ; name: string; email: string; role: string }|Partial<IUser>;
   accessToken: string;
   refreshToken: string;
 }

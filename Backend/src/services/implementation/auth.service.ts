@@ -23,7 +23,6 @@ import { JwtPayload } from "jsonwebtoken";
 import { createHttpError } from "../../utils/http-error.util";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
-// import { IUserModel } from "../../models/implementation/user.model";
 import { IUser } from "../../models/interface/IUser.model";
 import { generateNanoId } from "../../utils/generate-nanoid";
 import mongoose from "mongoose";
@@ -74,14 +73,20 @@ export class AuthService implements IAuthService {
 
     console.log(existingUser);
 
-    if(existingUser.status === 'inactive'){
-      console.log('entered to bloked user');
-      throw createHttpError(HttpStatus.UNAUTHORIZED,HttpResponse.USER_IS_BLOKED);
+    if (existingUser.isBlocked) {
+      console.log("entered to bloked user");
+      throw createHttpError(
+        HttpStatus.UNAUTHORIZED,
+        HttpResponse.USER_IS_BLOKED
+      );
     }
 
     const payload = {
       id: existingUser._id,
+      name: existingUser.name,
+      email: existingUser.email,
       role: existingUser.role,
+      personalization: existingUser.personalization,
     };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
@@ -91,6 +96,7 @@ export class AuthService implements IAuthService {
         name: existingUser.name,
         email: existingUser.email,
         role: existingUser.role,
+        personalization:existingUser.personalization
       },
       accessToken,
       refreshToken,
@@ -112,12 +118,11 @@ export class AuthService implements IAuthService {
     // Sanitize name from email (e.g., john.doe@domain.com -> john_doe)
     const name = storedData.email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "_");
 
-    const user: IUser = {
+    const user: Partial<IUser> = {
       name,
       email: storedData.email,
       password: storedData.password,
       role: storedData.role,
-      status: "active",
     };
 
     const createdUser = await this._userRepository.createUser(user as IUser);
@@ -141,6 +146,7 @@ export class AuthService implements IAuthService {
         name: createdUser.name,
         email: createdUser.email,
         role: createdUser.role,
+        personalization: createdUser.personalization,
       },
       accessToken,
       refreshToken,
@@ -160,12 +166,10 @@ export class AuthService implements IAuthService {
       throw new Error("Invalid or expired refresh token");
     }
 
-    // Extract the required payload fields (id, role, status)
+    // Extract the required payload fields (id, role)
     const payload = {
       id: (decoded as JwtPayload)._id,
       role: (decoded as JwtPayload).role,
-      // status: (decoded as JwtPayload).status,
-      // Add any other necessary fields from the decoded token
     };
 
     // Generate new access token
@@ -252,11 +256,10 @@ export class AuthService implements IAuthService {
         );
       }
 
-      const user: IUser = {
+      const user: Partial<IUser> = {
         name,
         email,
         role,
-        status: "active",
       };
 
       const createdUser = await this._userRepository.createUser(user as IUser);
@@ -277,6 +280,7 @@ export class AuthService implements IAuthService {
           name: createdUser.name,
           email: createdUser.email,
           role: createdUser.role,
+          personalization: createdUser.personalization,
         },
         accessToken,
         refreshToken,
@@ -287,12 +291,30 @@ export class AuthService implements IAuthService {
         HttpResponse.USER_ALREADY_EXIST_WITH_PASSWORD
       );
     } else {
+      if (existingUser.isBlocked) {
+        console.log("entered to bloked user");
+        throw createHttpError(
+          HttpStatus.UNAUTHORIZED,
+          HttpResponse.USER_IS_BLOKED
+        );
+      }
       const payload = { id: existingUser._id, role: existingUser.role };
       const accessToken = generateAccessToken(payload);
       const refreshToken = generateRefreshToken(payload);
-      return { user: existingUser, accessToken, refreshToken };
+      return {
+        user: {
+          _id: existingUser._id,
+          name: existingUser.name,
+          email: existingUser.email,
+          role: existingUser.role,
+          personalization: existingUser.personalization,
+        },
+        accessToken,
+        refreshToken,
+      };
     }
   }
+
   async getUserData(id: string): Promise<getUserDataReturnType> {
     const objectId = new mongoose.Types.ObjectId(id);
     const user = await this._userRepository.findById(objectId);
@@ -309,7 +331,7 @@ export class AuthService implements IAuthService {
     };
   }
   async getUserById(id: string): Promise<IUser | null> {
-    console.log('enterd to get userby id',id)
-    return this._userRepository.getUserById( id);
+    console.log("enterd to get userby id", id);
+    return this._userRepository.getUserById(id);
   }
 }

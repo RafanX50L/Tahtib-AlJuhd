@@ -19,15 +19,19 @@ const userSchema = new Schema<IUserModel>(
     password: {
       type: String,
     },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
     role: {
       type: String,
       enum: ["client", "trainer", "admin"],
       default: "client",
+    },
+    personalization: {
+      type: Schema.Types.ObjectId,
+      ref: "Personalization",
+      default: null,
     },
   },
   { timestamps: true }
@@ -40,12 +44,12 @@ userSchema.pre<IUserModel>("save", async function (next) {
   next();
 });
 
-userSchema.virtual("personalization", {
-  ref: "Personalization",
-  localField: "_id",
-  foreignField: "userId",
-  justOne: true,
-});
+// userSchema.virtual("personalization", {
+//   ref: "Personalization",
+//   localField: "_id",
+//   foreignField: "userId",
+//   justOne: true,
+// });
 
 userSchema.set("toObject", { virtuals: true });
 userSchema.set("toJSON", { virtuals: true });

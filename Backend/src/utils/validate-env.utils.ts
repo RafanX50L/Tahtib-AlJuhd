@@ -31,5 +31,8 @@ export const validateEnv = () => {
     if(!env.RESET_PASS_URL){
         throw new Error("RESET_PASS_URL is not defined in the environment variables");
     }
+    if(!env.GEMINI_API_KEY){
+        throw new Error("GEMINI_API is not defined in the evironment variables");
+    }
 
 };

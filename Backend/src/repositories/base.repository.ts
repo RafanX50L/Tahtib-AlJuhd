@@ -2,7 +2,7 @@ import{
     Document, Model, Types
 } from "mongoose";
 
-export abstract class BaseRepository<T extends Document & { status?: string }> {
+export abstract class BaseRepository<T extends Document & { isBlocked:boolean}> {
     constructor(protected model: Model<T>) {};
 
     async findById(id: Types.ObjectId): Promise<T | null> {
@@ -17,7 +17,7 @@ export abstract class BaseRepository<T extends Document & { status?: string }> {
 
     async isBlocked(id:string):Promise<boolean>{
         const user = await this.model.findById(id);
-        if(user && user.status === 'inactive'){
+        if(user && user.isBlocked){
             return true;
         }else{
             return false;

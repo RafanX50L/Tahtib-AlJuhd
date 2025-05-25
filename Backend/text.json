@@ -1,0 +1,139 @@
+{
+  "workoutPlan": {
+    "week1": {
+      "day1": {
+        "tittle": "",
+        "exercises": [
+          {
+            "name": "Exercise Name",
+            "sets": "3",
+            "reps": "10",
+            "rest": "30 seconds",
+            "instructions": "Setp by step instructions for play while doing exercise",
+            "animation_link": "Animation URL,the video should be available and playable if not don't gave"
+          },
+          {
+            "name": "Exercise Name",
+            "duration": "30 sec",
+            "rest": "30 seconds",
+            "instructions": "Setp by step instructions for play while doing exercise",
+            "animation_link": "Animation URL,the video should be available and playable if not don't gave"
+          }
+        ]
+      },
+      "day2": {
+        "tittle": "",
+        "exercises": [
+          {
+            "name": "Exercise Name",
+            "sets": "3",
+            "reps": "10",
+            "rest": "30 seconds",
+            "instructions": "Setp by step instructions for play while doing exercise",
+            "animation_link": "Animation URL,the video should be available and playable if not don't gave"
+          },
+          {
+            "name": "Exercise Name",
+            "duration": "30 sec",
+            "rest": "30 seconds",
+            "instructions": "Setp by step instructions for play while doing exercise",
+            "animation_link": "Animation URL,the video should be available and playable if not don't gave"
+          }
+        ]
+      }
+    }
+  },
+  "dietPlan": {
+    "mealPlan": {
+      "breakfast": { 
+        "options": [
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          }
+        ] 
+      },
+      "lunch": { 
+        "options": [
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          }
+        ] 
+      },
+      "dinner": { 
+        "options": [
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Meal Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          }
+        ] 
+      },
+      "snacks": { 
+        "options": [
+          {
+            "name": "Snack Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Snack Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          },
+          {
+            "name": "Snack Name", 
+            "ingredients": ["Ingredient 1", "Ingredient 2"], 
+            "instructions": "Step by Step instructions for how to make",
+            "video_link": "YouTube URL it should be playable or 'No video available'"
+          }
+        ] 
+      }
+    },
+    "notes": "Any special dietary notes"
+  }
+}

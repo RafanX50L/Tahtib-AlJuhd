@@ -26,4 +26,11 @@ export const HttpResponse = {
     UNAUTHORIZED : "Unauthorized Request",
     TOKEN_GENERATED_SUCCESS : "Token Regenerating Successfull",
     DATA_FETCHING_SUCCESSFULL : "Data fetched successfully",
+
+    GENERATING_FITNESS_PLAN_SUCCESSFULL : "Creating user fitness plan successfull",
+    FAILED_TO_GENERATE_FITNESS_PLAN :  "Failed to generate fitness plan",
+    FAILED_TO_CREATE_OR_UPDATE_PERSONALIZATION:"Failed to create or update personalization",
+    FAILED_TO_GENERATE_WORKOUT_PLAN : "Failed to create workout plan",
+    FAILED_TO_GENERATE_DIET_PLAN : "Failed to create diet plan",
+
 };

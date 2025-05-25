@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { IAuthService } from "../../services/interface/IAuth.service";
-import { IAuthController } from "../interface/IAuthController";
+import { IAuthController } from "../interface/IAuth.controller";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
 import {
   deleteCookie,
-  getCookie,
   getIdFromCookie,
   setCookie,
 } from "../../utils/cookie.utils";
@@ -17,32 +16,6 @@ import {
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
-  async refreshAcessToken(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const refreshToken = getCookie(req, "refreshToken");
-
-      if (!refreshToken) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-          message: "Refresh token is required",
-        });
-        return;
-      }
-
-      const { accessToken } =
-        await this._authService.refreshAccessToken(refreshToken);
-
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.TOKEN_GENERATED_SUCCESS,
-        data: { accessToken },
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
 
   async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -196,7 +169,7 @@ export class AuthController implements IAuthController {
 
       if (!refreshToken) {
         return next(
-          createHttpError(HttpStatus.UNAUTHORIZED, "Refresh token not found")
+          createHttpError(HttpStatus.BAD_REQUEST, "Refresh token not found")
         );
       }
 
@@ -221,22 +194,23 @@ export class AuthController implements IAuthController {
         deleteCookie(res);
         return next(createHttpError(HttpStatus.NOT_FOUND, "User not found"));
       }
-      if(user.status === 'inactive'){
+      if(user.isBlocked){
         console.log('user is bloked');
         deleteCookie(res);
         return next(createHttpError(HttpStatus.UNAUTHORIZED,HttpResponse.USER_IS_BLOKED));
       }
 
-      const payload: any = {
+      const payload: {_id:string,role:string} = {
         _id: user && user._id ? user._id.toString() : "",
-        // name: user ? user.name : "",
-        // email: user ? user.email : "",
         role,
       };
       console.log('payloads ',payload);
       const user1 = {
         _id: user._id,
+        name: user.name,
+        email:user.email,
         role: user.role,
+        personalization:user.personalization
       };
 
       const accessToken = generateAccessToken(payload);

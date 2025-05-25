@@ -1,5 +1,5 @@
 import { HttpStatus } from "../../constants/status.constant";
-import { IAdminController } from "../interface/IAdminController";
+import { IAdminController } from "../interface/IAdmin.controller";
 import { IAdminService } from "../../services/interface/IAdmin.service";
 import { NextFunction, Response, Request } from "express";
 import { userData } from "../../middleware/verify.token.middleware";

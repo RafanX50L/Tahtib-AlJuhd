@@ -4,8 +4,8 @@ import { env } from '../config/env.config';
 const ACCESS_KEY = env.JWT_ACCESS_SECRET as string;
 const REFRESH_KEY =env.JWT_REFRESH_SECRET as string;
 
-const ACCESS_TOKEN_EXPIRY = "1m";
-const REFRESH_TOKEN_EXPIRY = "5m";
+const ACCESS_TOKEN_EXPIRY = "15m";
+const REFRESH_TOKEN_EXPIRY = "7day";
 
 export function generateAccessToken(payload:object):string{
     return jwt.sign(payload,ACCESS_KEY,{expiresIn:ACCESS_TOKEN_EXPIRY});

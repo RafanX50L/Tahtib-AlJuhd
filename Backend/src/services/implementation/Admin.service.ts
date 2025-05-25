@@ -3,11 +3,12 @@ import { IAdminService } from "../interface/IAdmin.service";
 import { IAdminRepository } from "../../repositories/interface/IAdmin.respository";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
+import { IUser } from "@/models/interface/IUser.model";
 
 export class AdminService implements IAdminService{
     constructor(private readonly _adminRepository: IAdminRepository) {} // Replace 'any' with the actual type of your repository
 
-    async getAllClients(userid:string): Promise<any> {
+    async getAllClients(userid:string): Promise<IUser> {
         // Logic to get all clients
         const isBlocked = await this._adminRepository.IsBlocked(userid);
         if(isBlocked){
@@ -24,7 +25,7 @@ export class AdminService implements IAdminService{
         return 'Update Success Full';
     }
     
-    async getAllTrainers(): Promise<any> {
+    async getAllTrainers(): Promise<IUser> {
         // Logic to get all trainers
         // console.log('functin entered to here');
         const trainerData = await this._adminRepository.findAllTrainersWithPersonalization();

@@ -31,5 +31,8 @@ export const env = {
     },
     get RESET_PASS_URL() { 
         return process.env.RESET_PASS_URL;
-    }   
+    },
+    get GEMINI_API_KEY(){
+        return process.env.GEMINI_API;
+    }
 };
