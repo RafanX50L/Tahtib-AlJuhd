@@ -37,15 +37,9 @@ export class ClientService implements IClientService {
       }
       console.log(userData);
 
-      
-
       const plan = await generateFitnessPlan(userData);
 
-      // console.log("plan created",plan);
-
       await this._clientRepository.SaveWorkoutsDietsPersonalization(userData,plan);
-
-      // const planString = JSON.stringify(plan, null, 2);
 
       return HttpResponse.GENERATING_FITNESS_PLAN_SUCCESSFULL;
     } catch (error) {

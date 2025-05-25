@@ -21,3 +21,9 @@ export const ADMIN_ROUTES = {
     UPDATE_CLIENT_STATUS: `${ADMIN_ROUTE}/clients/updateStatus`,
     UPDATE_TRAINER_STATUS:`${ADMIN_ROUTE}/trainers/updateStatus`
 }
+
+const CLIENT_ROUTE = "/client";
+
+export const CLIENT_ROUTES = {
+    GENERATE_FITNESS_PLAN: `${CLIENT_ROUTE}/generate-fitness-plan`,
+}

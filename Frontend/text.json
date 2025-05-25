@@ -1,0 +1,176 @@
+the created Plan {
+  rawResponse: '```json\n' +
+    '{\n' +
+    '  "workoutPlan": {\n' +
+    '    "day1": {\n' +
+    '      "title": "Full Body Strength (Beginner)",\n' +
+    '      "exercises": [\n' +
+    '        {\n' +
+    '          "name": "Wall Push-ups (modified for shoulder)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "10",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Stand facing a wall, a little further than arm’s length away. Place your hands on the wall, shoulder-width apart. Lean towards the wall, bending your elbows. Keep your body in a straight line. Push back to the starting position.  Avoid locking out your elbows. If you feel pain in your shoulder, reduce the range of motion.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=drh5P2Ew_0M"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Bodyweight Squats (modified for knee)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "10",\n' +
+    '          "rest": "60 seconds",\n' +
+    `          "instructions": "Stand with your feet shoulder-width apart. Lower your body as if you're sitting in a chair, keeping your back straight. Ensure your knees don't go past your toes. If you feel knee pain, reduce the depth of the squat.",\n` +
+    '          "animation_link": "https://www.youtube.com/watch?v=YaXPRqG-N34"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Yoga - Cat-Cow Stretch",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "5 each",\n' +
+    '          "rest": "30 seconds",\n' +
+    '          "instructions": "Start on your hands and knees. Inhale and arch your back, dropping your belly towards the floor (Cow pose). Exhale and round your spine towards the ceiling, tucking your chin to your chest (Cat pose). This will help with flexibility and back pain. Go slowly and controlled.",\n' +      
+    '          "animation_link": "https://www.youtube.com/watch?v=BfJY8n8x2Q8"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Plank (on knees)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "Hold for 20 seconds",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Start on your hands and knees. Lower your forearms to the ground, keeping your elbows directly under your shoulders. Extend your legs behind you, resting on your knees.  Engage your core and keep your body in a straight line from head to knees.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=ASdvNktTRYs"\n' +
+    '        }\n' +
+    '      ],\n' +
+    '      "notes": "Focus on proper form. If you experience pain, stop immediately. Remember to breathe throughout each exercise.  As an asthma patient, keep your inhaler nearby and take breaks as needed."\n' + 
+    '    },\n' +
+    '    "day2": {\n' +
+    '      "title": "Rest",\n' +
+    '      "exercises": [],\n' +
+    '      "notes": "Rest and recovery are crucial for muscle growth. Focus on stretching and light activity."\n' +
+    '    },\n' +
+    '    "day3": {\n' +
+    '      "title": "Yoga and Light Cardio",\n' +
+    '      "exercises": [\n' +
+    '        {\n' +
+    '          "name": "Yoga - Sun Salutations (modified)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "1",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Perform a simplified sun salutation sequence. Focus on controlled breathing and gentle movements. Omit any poses that strain your knee or shoulder. You can modify downward dog by placing your hands on a wall or chair for support. Avoid any poses that significantly elevate your heart rate.  If asthma is triggered, stop and rest.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=nK7h2-tA_Hw"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Walking in Place",\n' +
+    '          "sets": "1",\n' +
+    '          "reps": "15 minutes",\n' +
+    '          "rest": "N/A",\n' +
+    '          "instructions": "Walk in place at a moderate pace.  If you experience asthma symptoms, slow down or stop.  Ensure you are breathing properly throughout the activity.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=53p_a_c987A"\n' +
+    '        }\n' +
+    '      ],\n' +
+    '      "notes": "Focus on flexibility and light cardiovascular activity. Pay attention to your breathing and adjust intensity as needed."\n' +
+    '    },\n' +
+    '    "day4": {\n' +
+    '      "title": "Rest",\n' +
+    '      "exercises": [],\n' +
+    '      "notes": "Rest and recovery."\n' +
+    '    },\n' +
+    '    "day5": {\n' +
+    '      "title": "Lower Body Strength (Beginner)",\n' +
+    '      "exercises": [\n' +
+    '        {\n' +
+    '          "name": "Chair Assisted Lunges (modified for knee)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "8 per leg",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Stand facing a chair. Place one hand on the chair for balance. Step one leg back into a lunge position, lowering your back knee towards the floor. Keep your front knee behind your toes. Return to the starting position. If you experience knee pain, reduce the range of motion.",\n' +    
+    '          "animation_link": "https://www.youtube.com/watch?v=LpT1C9q5Nys"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Calf Raises",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "15",\n' +
+    '          "rest": "45 seconds",\n' +
+    '          "instructions": "Stand with your feet shoulder-width apart. Raise up onto your toes, squeezing your calf muscles. Slowly lower back down. You can hold onto a wall or chair for balance.",\n' +      
+    '          "animation_link": "https://www.youtube.com/watch?v=5g8zHl05ifg"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Glute Bridge",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "12",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Lie on your back with your knees bent and feet flat on the floor. Squeeze your glutes and lift your hips off the floor until your body forms a straight line from your shoulders to your knees. Slowly lower back down.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=wT8lmqYw8g8"\n' +
+    '        }\n' +
+    '      ],\n' +
+    '      "notes": "Focus on controlled movements and proper form. Listen to your body and stop if you experience pain."\n' +
+    '    },\n' +
+    '    "day6": {\n' +
+    '      "title": "Rest",\n' +
+    '      "exercises": [],\n' +
+    '      "notes": "Rest and recovery."\n' +
+    '    },\n' +
+    '    "day7": {\n' +
+    '      "title": "Yoga and Breathing Exercises",\n' +
+    '      "exercises": [\n' +
+    '        {\n' +
+    '          "name": "Diaphragmatic Breathing",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "10 breaths",\n' +
+    '          "rest": "30 seconds",\n' +
+    '          "instructions": "Lie on your back with your knees bent. Place one hand on your chest and the other on your abdomen. Inhale slowly through your nose, feeling your abdomen rise. Exhale slowly through your mouth, feeling your abdomen fall. This will help with lung capacity and asthma management.",\n' +   
+    '          "animation_link": "https://www.youtube.com/watch?v=QeG_0W1g02Q"\n' +
+    '        },\n' +
+    '        {\n' +
+    `          "name": "Yoga - Child's Pose",\n` +
+    '          "sets": "2",\n' +
+    '          "reps": "Hold for 60 seconds",\n' +
+    '          "rest": "30 seconds",\n' +
+    '          "instructions": "Start on your hands and knees. Sit back on your heels and lower your chest towards the floor, extending your arms forward. This is a relaxing pose that can help with stress and anxiety.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=SEj2d4F01t4"\n' +
+    '        }\n' +
+    '      ],\n' +
+    '      "notes": "Focus on relaxation and breathing exercises to help manage asthma symptoms and reduce stress."\n' +
+    '    },\n' +
+    '\t"day8": {\n' +
+    '      "title": "Full Body Strength (Beginner)",\n' +
+    '      "exercises": [\n' +
+    '        {\n' +
+    '          "name": "Wall Push-ups (modified for shoulder)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "10",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Stand facing a wall, a little further than arm’s length away. Place your hands on the wall, shoulder-width apart. Lean towards the wall, bending your elbows. Keep your body in a straight line. Push back to the starting position.  Avoid locking out your elbows. If you feel pain in your shoulder, reduce the range of motion.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=drh5P2Ew_0M"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Bodyweight Squats (modified for knee)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "10",\n' +
+    '          "rest": "60 seconds",\n' +
+    `          "instructions": "Stand with your feet shoulder-width apart. Lower your body as if you're sitting in a chair, keeping your back straight. Ensure your knees don't go past your toes. If you feel knee pain, reduce the depth of the squat.",\n` +
+    '          "animation_link": "https://www.youtube.com/watch?v=YaXPRqG-N34"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Yoga - Cat-Cow Stretch",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "5 each",\n' +
+    '          "rest": "30 seconds",\n' +
+    '          "instructions": "Start on your hands and knees. Inhale and arch your back, dropping your belly towards the floor (Cow pose). Exhale and round your spine towards the ceiling, tucking your chin to your chest (Cat pose). This will help with flexibility and back pain. Go slowly and controlled.",\n' +      
+    '          "animation_link": "https://www.youtube.com/watch?v=BfJY8n8x2Q8"\n' +
+    '        },\n' +
+    '        {\n' +
+    '          "name": "Plank (on knees)",\n' +
+    '          "sets": "3",\n' +
+    '          "reps": "Hold for 20 seconds",\n' +
+    '          "rest": "60 seconds",\n' +
+    '          "instructions": "Start on your hands and knees. Lower your forearms to the ground, keeping your elbows directly under your shoulders. Extend your legs behind you, resting on your knees.  Engage your core and keep your body in a straight line from head to knees.",\n' +
+    '          "animation_link": "https://www.youtube.com/watch?v=ASdvNktTRYs"\n' +
+    '        }\n' +
+    '      ],\n' +
+    '      "notes": "Focus on proper form. If you experience pain, stop immediately. Remember to breathe throughout each exercise.  As an asthma patient, keep your inhaler nearby and take breaks as needed."\n' + 
+    '    },\n' +
+    '    "day9": {\n' +
+    '      "title": "Rest",\n' +
+    '      "exercises": [],\n' +
+    '      "notes": "Rest and recovery are crucial for muscle growth. Focus on stretching and light activity."\n' +
+    '    },\n' +
+}
+}

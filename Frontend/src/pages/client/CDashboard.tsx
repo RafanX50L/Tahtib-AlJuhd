@@ -6,8 +6,11 @@ import WorkoutLevels from '../../components/client/Dashboard/WorkoutLevels';
 import Leaderboard from '../../components/client/Dashboard/LeaderBoard';
 import ChatbotButton from '../../components/client/Dashboard/ChatbotButton';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 const CDashboard = () => {
+  const {user} = useSelector((state:RootState)=>state.auth);
   useEffect(() => {
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
@@ -44,6 +47,7 @@ const CDashboard = () => {
     });
   }, []);
 
+ 
   return (
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
       <Sidebar />

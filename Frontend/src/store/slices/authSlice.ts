@@ -67,6 +67,12 @@ const authSlice = createSlice({
         state.user = { ...state.user, ...action.payload };
       }
     },
+    setUserPersonalization: (state, action: PayloadAction<{ _id: string}>) => {
+      if (state.user) {
+        (state.user as any).personalization = action.payload._id;
+        // ['userBasicInfo', 'fitnessGoal', 'fitnessLevel', 'activityLevel', 'workoutPreferences', 'healthInfo', 'dietPreferences'].forEach(key => localStorage.removeItem(key));
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -87,5 +93,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout, updateUserProfile } = authSlice.actions;
+export const { setCredentials, logout, updateUserProfile, setUserPersonalization } = authSlice.actions;
 export default authSlice.reducer;
