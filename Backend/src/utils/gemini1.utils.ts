@@ -36,7 +36,7 @@ async function generateFitnessPlan(userData: UserData) {
     });
 
     // Parse the response into structured data
-    return parseResponse(response.text ?? "");
+    return parseResponse(response.text?? "");
   } catch (error) {
     console.error("Error generating fitness plan:", error);
     throw new Error("Failed to generate fitness plan");
@@ -313,6 +313,7 @@ function formatPrompt(userData: UserData) {
             ]
           }
         }
+        "notes": " This 28-day challenge is designed to help you build strength, improve endurance, and transform your body through progressive workouts. Each week focuses on different muscle groups with increasing intensity. "
       },
       "dietPlan": {
         "mealPlan": {
@@ -455,26 +456,24 @@ function getMealCount(mealsPerDay: string) {
   }
 }
 
-function parseResponse(text: string) {
+function parseResponse(text:string) {
   try {
-    // Attempt to parse the response as JSON
-    let jsonResponse;
-    try {
-      jsonResponse = JSON.parse(text);
-      return jsonResponse;
-    } catch (parseError) {
-      // If parsing fails, try to extract JSON from the response
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        jsonResponse = JSON.parse(jsonMatch[0]);
-        return jsonResponse;
-      }
-      throw new Error("Failed to parse AI response as JSON");
+    // Remove triple backticks if present
+    let jsonString = text.replace(/^```(json)?|```$/g, '').trim();
+    
+    // Remove "json" prefix if it exists at the start
+    if (jsonString.startsWith('json')) {
+      jsonString = jsonString.substring(4).trim();
     }
+    
+    // Handle escaped quotes if present (like "")
+    jsonString = jsonString.replace(/""/g, '"');
+    
+    return JSON.parse(jsonString);
   } catch (error) {
-    console.error("Error parsing response:", error, "Raw text:", text);
-    return { rawResponse: text, error: "Failed to parse JSON response" };
+    console.error("Failed to parse AI response:", error);
+    throw new Error("Failed to parse AI response");
   }
-}
 
+}
 export default generateFitnessPlan;

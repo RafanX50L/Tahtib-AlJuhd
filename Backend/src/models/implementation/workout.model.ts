@@ -29,7 +29,8 @@ const WorkoutPlanSchema = new Schema({
   week1: WeekSchema,
   week2: WeekSchema,
   week3: WeekSchema,
-  week4: WeekSchema
+  week4: WeekSchema,
+  notes: { type: String, required: false }
 });
 
 export const WorkoutPlanModel = mongoose.model('WorkoutPlan', WorkoutPlanSchema);

@@ -38,8 +38,12 @@ export class ClientService implements IClientService {
       console.log(userData);
 
       const plan = await generateFitnessPlan(userData);
+      
 
-      await this._clientRepository.SaveWorkoutsDietsPersonalization(userData,plan);
+      await this._clientRepository.SaveWorkoutsDietsPersonalization(
+        userData,
+        plan
+      );
 
       return HttpResponse.GENERATING_FITNESS_PLAN_SUCCESSFULL;
     } catch (error) {
