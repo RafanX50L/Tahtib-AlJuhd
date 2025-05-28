@@ -19,4 +19,11 @@ export interface IClientRepository extends IBaseRepository<IUserModel> {
     session?: mongoose.ClientSession
   ): Promise<any>;
   createDietPlan(dietPlan: any, session?: mongoose.ClientSession): Promise<any>;
+  getBasicFitnessPlan(userId: string): Promise<{
+    Workout_Duration: string;
+    Workout_Days_Per_Week: number;
+    Workout_Completed: number;
+  }>;
+  getWorkouts(userId: string, week: string): Promise<any>;
+  getWeekCompletionStatus(userId: string): Promise<any>;
 }

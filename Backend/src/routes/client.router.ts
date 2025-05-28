@@ -14,5 +14,8 @@ const clientController = new ClientController(clientService);
 clientRouter.use('/',verifyToken('client'),isBlocked());
 
 clientRouter.post('/generate-fitness-plan',clientController.generateFitnessPlan.bind(clientController));
+clientRouter.get('/get-basic-fitness-details',clientController.getBasicFitnessPlan.bind(clientController));
+clientRouter.get('/get-workouts/:week', clientController.getWorkouts.bind(clientController));
+clientRouter.get('/get-week-completion-status', clientController.getWeekCompletionStatus.bind(clientController));
 
 export default clientRouter;

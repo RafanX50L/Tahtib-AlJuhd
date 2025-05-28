@@ -50,6 +50,7 @@ const clientPersonalizationSchema = new Schema<IClientPersonalization>({
       required: true,
     },
     diet_preferences: { type: String },
+    workout_completed_of_28days : { type: Number, default: 0 },
   },
   workouts: { type: Schema.Types.ObjectId, ref: "WorkoutPlan", default: null },
   dietPlan:{ type: Schema.Types.ObjectId, ref: "DietPlan", default: null },
@@ -101,11 +102,11 @@ const personalizationSchema = new Schema<IPersonalization>(
             let schema: Schema;
             if (this.role === "client") {
               console.log('nice enterd');
-              schema = clientPersonalizationSchema;
+              schema = clientPersonalizationSchema as Schema<IClientPersonalization>;
             } else if (this.role === "trainer") {
-              schema = trainerPersonalizationSchema;
+              schema = trainerPersonalizationSchema as Schema<ITrainerPersonalization>;
             } else if (this.role === "admin") {
-              schema = adminPersonalizationSchema;
+              schema = adminPersonalizationSchema as Schema<IAdminPersonalization>;
             } else {
               return false;
             }

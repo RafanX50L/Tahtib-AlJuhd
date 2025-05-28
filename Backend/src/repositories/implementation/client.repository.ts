@@ -1,4 +1,7 @@
-import { IClientUserData } from "@/models/interface/IPersonalization";
+import {
+  IClientPersonalization,
+  IClientUserData,
+} from "@/models/interface/IPersonalization";
 import { IClientRepository } from "../interface/IClient.repository";
 import { WorkoutPlanModel } from "../../models/implementation/workout.model";
 import { DietPlanModel } from "../../models/implementation/DietPlan.model";
@@ -17,35 +20,6 @@ export class ClientRepository
     super();
   }
 
-  // async SaveWorkoutsDietsPersonalization(userData: IClientUserData, plan: any) {
-  //   const session = await mongoose.startSession();
-  //   session.startTransaction();
-  //   try {
-  //     const workoutPlan = await this.createWorkoutPlan(
-  //       plan.workoutPlan,
-  //       session
-  //     );
-  //     const dietPlan = await this.createDietPlan(plan.dietPlan, session);
-  //     const personalization = await this.createPersonalization(
-  //       userData,
-  //       workoutPlan._id,
-  //       dietPlan._id,
-  //       session
-  //     );
-  //     await session.commitTransaction();
-  //     return personalization;
-  //   } catch (error) {
-  //     await session.abortTransaction();
-  //     console.log("Error complained:", error);
-  //     throw createHttpError(
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //       HttpResponse.FAILED_TO_GENERATE_FITNESS_PLAN
-  //     );
-  //   } finally {
-  //     session.endSession();
-  //   }
-  // }
-
   async SaveWorkoutsDietsPersonalization(userData: IClientUserData, plan: any) {
     // Check if transactions are supported (replica set or sharded cluster)
     let useTransactions = false;
@@ -56,7 +30,8 @@ export class ClientRepository
       }
     } catch (error) {
       console.warn(
-        "Running in standalone mode; transactions are not supported. Proceeding without transactions.",error
+        "Running in standalone mode; transactions are not supported. Proceeding without transactions.",
+        error
       );
     }
 
@@ -72,11 +47,14 @@ export class ClientRepository
         const dietPlan = await this.createDietPlan(plan.dietPlan, session);
         const personalization = await this.createPersonalization(
           userData,
-          workoutPlan._id,
-          dietPlan._id,
+          workoutPlan._id as mongoose.Types.ObjectId,
+          dietPlan._id as mongoose.Types.ObjectId,
           session
         );
-        const client = await this.updatePersonalizationId(userData.userId,personalization.id);
+        const client = await this.updatePersonalizationId(
+          userData.userId,
+          personalization.id
+        );
         await session.commitTransaction();
         return client;
       } catch (error) {
@@ -96,10 +74,13 @@ export class ClientRepository
         const dietPlan = await this.createDietPlan(plan.dietPlan);
         const personalization = await this.createPersonalization(
           userData,
-          workoutPlan._id,
-          dietPlan._id
+          workoutPlan._id as mongoose.Types.ObjectId,
+          dietPlan._id as mongoose.Types.ObjectId
         );
-        const client = await this.updatePersonalizationId(userData.userId,personalization.id);
+        const client = await this.updatePersonalizationId(
+          userData.userId,
+          personalization.id
+        );
         return client;
       } catch (error) {
         console.log("Error :", error);
@@ -201,6 +182,114 @@ export class ClientRepository
       throw createHttpError(
         HttpStatus.INTERNAL_SERVER_ERROR,
         HttpResponse.FAILED_TO_GENERATE_DIET_PLAN
+      );
+    }
+  }
+
+  async getBasicFitnessPlan(userId: string) {
+    try {
+      const personalData = await PersonalizationModel.findOne({ userId });
+      const userData = personalData?.data as IClientPersonalization;
+      console.log("done return basic fitness data");
+      return {
+        Workout_Duration: userData?.user_data.workout_duration,
+        Workout_Days_Per_Week: userData?.user_data.workout_days_perWeek,
+        Workout_Completed: userData?.user_data.workout_completed_of_28days,
+      };
+    } catch (error) {
+      console.log("Error fetching basic fitness plan:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_BASIC_FITNESS_PLAN
+      );
+    }
+  }
+
+  async getWorkouts(userId: string, week: string) {
+    try {
+      const PersonalData = await PersonalizationModel.findOne({ userId })
+        .populate({
+          path: "data.workouts",
+          model: "WorkoutPlan",
+        })
+        .exec();
+      if (!PersonalData) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_WORKOUTS
+        );
+      }
+      const data = PersonalData?.data as IClientPersonalization;
+      const weekNumber = parseInt(week, 10);
+      const weeks = `week${weekNumber}`;
+      // Ensure workouts is not null and is an object before accessing weeks
+      let workouts: any = null;
+      if (
+        data.workouts &&
+        typeof data.workouts === "object" &&
+        weeks in data.workouts
+      ) {
+        workouts = (data.workouts as any)[weeks];
+      }
+      console.log("Fetched Workouts:", workouts);
+      if (!workouts) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_WORKOUTS
+        );
+      }
+      const notes = (data.workouts as any).notes || "No notes available";
+      console.log("feteched notes", notes);
+      return {
+        workouts,
+        notes,
+      };
+    } catch (error) {
+      console.log("Error fetching workouts:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WORKOUTS
+      );
+    }
+  }
+
+  async getWeekCompletionStatus(userId: string) {
+    try {
+      const PersonalData = await PersonalizationModel.findOne({ userId })
+        .populate({ path: "data.workouts", model: "WorkoutPlan" })
+        .exec();
+      if (!PersonalData) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_WORKOUTS
+        );
+      }
+      const data = PersonalData?.data as IClientPersonalization;
+      if (!data || typeof data !== "object") {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_WORKOUTS
+        );
+      }
+      // Ensure workouts is populated and not just an ObjectId
+      const workouts =
+        data.workouts && typeof data.workouts === "object" && !("toHexString" in data.workouts)
+          ? (data.workouts as any)
+          : null;
+
+      const weekCompletionStatus = {
+        week1: workouts?.week1?.workout_completed || false,
+        week2: workouts?.week2?.workout_completed || false,
+        week3: workouts?.week3?.workout_completed || false,
+        week4: workouts?.week4?.workout_completed || false,
+      };
+      return weekCompletionStatus;
+
+    } catch (error) {
+      console.log("Error fetching week completion status:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEK_COMPLETION_STATUS
       );
     }
   }

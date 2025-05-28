@@ -33,4 +33,10 @@ export const HttpResponse = {
     FAILED_TO_GENERATE_WORKOUT_PLAN : "Failed to create workout plan",
     FAILED_TO_GENERATE_DIET_PLAN : "Failed to create diet plan",
 
+    //workouts respnse messages
+    WORKOUTS_FETCHED_SUCCESSFULL: "Workouts fetched successfully",
+    FAILED_TO_FETCH_BASIC_FITNESS_PLAN: "Failed to fetch basic fitness plan",
+    FAILED_TO_FETCH_WORKOUTS: "Failed to fetch workouts",
+    FAILED_TO_FETCH_DIET_PLAN: "Failed to fetch diet plan",
+    FAILED_TO_FETCH_WEEK_COMPLETION_STATUS: "Failed to fetch week completion status",
 };

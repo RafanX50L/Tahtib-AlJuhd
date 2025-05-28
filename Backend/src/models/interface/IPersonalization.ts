@@ -58,4 +58,5 @@ export interface IClientUserData {
   diet_allergies: Array<'nuts' | 'dairy' | 'shellfish' | 'glusten'> | string;
   diet_meals_perDay: Array<'3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals'>;
   diet_preferences: string;
+  workout_completed_of_28days : number;
 }

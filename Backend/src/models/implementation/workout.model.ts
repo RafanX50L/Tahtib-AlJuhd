@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import { IDay, IExercise, IWeek, IWorkoutPlan } from "../interface/IWorkout";
 const Schema = mongoose.Schema;
 
-const ExerciseSchema = new Schema({
+const ExerciseSchema = new Schema<IExercise>({
   name: { type: String, required: true },
   sets: { type: String, required: false },
   reps: { type: String, required: false },
@@ -11,21 +12,24 @@ const ExerciseSchema = new Schema({
   animation_link: { type: String, required: false, default: "No video available" }
 });
 
-const DaySchema = new Schema({
+const DaySchema = new Schema<IDay>({
   title: { type: String, required: true },
-  exercises: [ExerciseSchema]
+  exercises: [ExerciseSchema],
+  completed: { type: Boolean, default: false },
 });
 
-const WeekSchema = new Schema({
+const WeekSchema = new Schema<IWeek>({
   day1: DaySchema,
   day2: DaySchema,
   day3: DaySchema,
   day4: DaySchema,
   day5: DaySchema,
-  day6: DaySchema
+  day6: DaySchema,
+  day7: DaySchema,
+  completed: { type: Boolean, default: false }
 });
 
-const WorkoutPlanSchema = new Schema({
+const WorkoutPlanSchema = new Schema<IWorkoutPlan>({
   week1: WeekSchema,
   week2: WeekSchema,
   week3: WeekSchema,
@@ -33,4 +37,4 @@ const WorkoutPlanSchema = new Schema({
   notes: { type: String, required: false }
 });
 
-export const WorkoutPlanModel = mongoose.model('WorkoutPlan', WorkoutPlanSchema);
+export const WorkoutPlanModel = mongoose.model<IWorkoutPlan>('WorkoutPlan', WorkoutPlanSchema);

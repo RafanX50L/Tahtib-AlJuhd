@@ -54,5 +54,49 @@ export class ClientService implements IClientService {
         HttpResponse.FAILED_TO_GENERATE_FITNESS_PLAN
       );
     }
-  }
+  };
+
+  // workouts services 
+
+  getBasicFitnessPlan = async (userId: string) => {
+    try {
+      const basicPlan = await this._clientRepository.getBasicFitnessPlan(userId);
+      return basicPlan;
+    } catch (error) {
+      console.error("Error fetching basic fitness plan:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_BASIC_FITNESS_PLAN
+      );
+    }
+  };
+
+  getWorkouts = async (userId: string, week: string) => {
+    try {
+      const workouts = await this._clientRepository.getWorkouts(userId, week);
+      return workouts;
+    } catch (error) {
+      console.error("Error fetching workouts:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WORKOUTS
+      );
+    }
+  };
+
+  
+
+  getWeekCompletionStatus = async (userId: string) => {
+    try {
+      const weekCompletionStatus = await this._clientRepository.getWeekCompletionStatus(userId);
+      return weekCompletionStatus;
+    } catch (error) {
+      console.error("Error fetching week completion status:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WORKOUTS
+      );
+    }
+  };
+
 }
