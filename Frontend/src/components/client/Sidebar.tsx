@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaBars,
   FaBolt,
@@ -13,7 +13,7 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import logo from "../../assets/images/logo.png"; // Adjust the path as necessary
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -37,15 +37,16 @@ const Sidebar = () => {
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
 
+
   const navItems = [
-    { icon: FaHome, text: "Dashboard", active: true },
-    { icon: FaDumbbell, text: "Workout" },
-    { icon: FaChartLine, text: "Progress" },
-    { icon: FaUsers, text: "Community" },
-    { icon: FaUserTie, text: "Trainer Sessions" },
-    { icon: FaUtensils, text: "Meal Guide" },
-    { icon: FaCommentAlt, text: "Chat Bot" },
-    { icon: FaUser, text: "Profile" },
+    { icon: FaHome, text: "Dashboard",path:"/dashboard" },
+    { icon: FaDumbbell, text: "Workout" , path:"/workouts" },
+    { icon: FaChartLine, text: "Progress", path: "/progress" },
+    { icon: FaUsers, text: "Community", path: "/progress", },
+    { icon: FaUserTie, text: "Trainer Sessions", path: "/progress", },
+    { icon: FaUtensils, text: "Meal Guide", path: "/progress", },
+    { icon: FaCommentAlt, text: "Chat Bot", path: "/progress", },
+    { icon: FaUser, text: "Profile", path: "/progress" },
   ];
 
   const handleLogout = () => {
@@ -86,18 +87,21 @@ const Sidebar = () => {
         </div>
         <nav className="flex flex-col gap-2">
           {navItems.map((item) => (
-            <a
+            <NavLink
               key={item.text}
-              href="#"
-              className={`flex items-center gap-3 p-3 rounded-lg text-[#A0A7B8] hover:bg-[#1E2235] hover:text-white hover:translate-x-1 transition-all ${
-                item.active
+              to={item.path}
+              
+              className= {({isActive})=>
+                `flex items-center gap-3 p-3 rounded-lg text-[#A0A7B8] hover:bg-[#1E2235] hover:text-white hover:translate-x-1 transition-all ${
+                isActive
                   ? "bg-gradient-to-r from-[#5D5FEF] to-[#7577F5] text-white font-medium shadow-lg"
                   : ""
-              }`}
+              }`
+              }
             >
               <item.icon className="w-5 text-center" />
               <span>{item.text}</span>
-            </a>
+            </NavLink>
           ))}
         </nav>
         <nav className="flex flex-col gap-2 mt-4">
