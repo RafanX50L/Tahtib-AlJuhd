@@ -10,6 +10,8 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 import LandingPage from "./pages/landing/LandingPage";
 import { Button } from "./components/ui/button";
 import { usePWA } from "./hooks/usePWA";
+import WorkoutSession from './pages/client/CWorkoutSession';
+import Sample from "./pages/client/sample";
 
 const App: React.FC = () => {
   console.log("enterd to react App.tsx page");
@@ -39,6 +41,8 @@ const App: React.FC = () => {
             <Route path="/auth/*" element={<AuthRoute />}>
               <Route path="*" element={<AuthRotues />} />
             </Route>
+            <Route path="/workoutSession" element={<WorkoutSession/>} /> 
+            <Route path="test" element={<Sample/>} />
             <Route
               path="/*"
               element={<ProtectedRoute allowedRoles={"client"} />}

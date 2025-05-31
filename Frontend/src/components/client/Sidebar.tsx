@@ -42,7 +42,7 @@ const Sidebar = () => {
     { icon: FaHome, text: "Dashboard",path:"/dashboard" },
     { icon: FaDumbbell, text: "Workout" , path:"/workouts" },
     { icon: FaChartLine, text: "Progress", path: "/progress" },
-    { icon: FaUsers, text: "Community", path: "/progress", },
+    { icon: FaUsers, text: "Community", path: "/workoutSession", },
     { icon: FaUserTie, text: "Trainer Sessions", path: "/progress", },
     { icon: FaUtensils, text: "Meal Guide", path: "/progress", },
     { icon: FaCommentAlt, text: "Chat Bot", path: "/progress", },

@@ -1,10 +1,18 @@
+import { useNavigate } from "react-router-dom";
+
 const WorkoutCards = ({ workouts, weekStatus }) => {
-  const handleActionClick = (day, action) => {
+
+  const navigate = useNavigate();
+
+  const handleActionClick = (day, action, workout) => {
     if (action !== "locked") {
       console.log(
         `Action for ${day}: ${action === "start" ? "Start Workout" : "View Results"}`
       );
       // Navigation logic here
+      console.log(workout);
+      localStorage.setItem('Current_Workout_Exercises',JSON.stringify(workout));
+      navigate('/workoutSession');
     }
   };
 
@@ -50,7 +58,7 @@ const WorkoutCards = ({ workouts, weekStatus }) => {
     if (nextWorkoutIndex !== -1) {
       const nextWorkout = workoutDays[nextWorkoutIndex];
       console.log(`Starting next workout: ${nextWorkout.day}`);
-      handleActionClick(nextWorkout.day, nextWorkout.action);
+      handleActionClick(nextWorkout.day, nextWorkout.action,nextWorkout.exercises);
     }
   };
 
@@ -135,7 +143,7 @@ const WorkoutCard = ({ day, status, exercises, action, onActionClick }) => {
               ? "bg-transparent border border-[#5D5FEF] text-[#5D5FEF] hover:bg-[#5D5FEF] hover:text-white"
               : "bg-transparent border border-gray-400 text-gray-400 cursor-not-allowed"
         }`}
-        onClick={() => onActionClick(day, action)}
+        onClick={() => {console.log(exercises),onActionClick(day, action,exercises)}}
       >
         {action === "start"
           ? "Start Workout"
