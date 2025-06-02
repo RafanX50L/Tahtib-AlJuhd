@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document } from "mongoose";
 
 export interface IExercise extends Document {
   name: string;
@@ -14,6 +14,7 @@ export interface IDay extends Document {
   title: string;
   exercises: IExercise[];
   completed?: boolean;
+  report?: IWorkoutReport;
 }
 
 export interface IWeek extends Document {
@@ -22,8 +23,8 @@ export interface IWeek extends Document {
   day3: IDay;
   day4: IDay;
   day5: IDay;
-  day6?: IDay; 
-  day7?: IDay; 
+  day6?: IDay;
+  day7?: IDay;
   completed?: boolean;
 }
 
@@ -33,4 +34,13 @@ export interface IWorkoutPlan extends Document {
   week3: IWeek;
   week4: IWeek;
   notes?: string;
+}
+
+export interface IWorkoutReport {
+  totalExercises?: number;
+  totalSets?: number;
+  estimatedDuration?: string;
+  caloriesBurned?: number;
+  intensity?: string;
+  feedback?: string;
 }

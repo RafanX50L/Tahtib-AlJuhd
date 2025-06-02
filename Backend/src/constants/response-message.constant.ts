@@ -26,6 +26,7 @@ export const HttpResponse = {
     UNAUTHORIZED : "Unauthorized Request",
     TOKEN_GENERATED_SUCCESS : "Token Regenerating Successfull",
     DATA_FETCHING_SUCCESSFULL : "Data fetched successfully",
+    INVALID_REQUEST_DATA : "Invalid request data",
 
     GENERATING_FITNESS_PLAN_SUCCESSFULL : "Creating user fitness plan successfull",
     FAILED_TO_GENERATE_FITNESS_PLAN :  "Failed to generate fitness plan",
@@ -39,4 +40,9 @@ export const HttpResponse = {
     FAILED_TO_FETCH_WORKOUTS: "Failed to fetch workouts",
     FAILED_TO_FETCH_DIET_PLAN: "Failed to fetch diet plan",
     FAILED_TO_FETCH_WEEK_COMPLETION_STATUS: "Failed to fetch week completion status",
+    WORKOUT_NOT_FOUND: "Workout not found",
+    WEEK_COMPLETION_STATUS_UPDATED: "Week completion status updated successfully",
+    FAILED_TO_UPDATE_WEEK_COMPLETION_STATUS: "Failed to update week completion status",
+    FAILED_TO_UPDATE_DAY_COMPLETION_STATUS: "Failed to update day completion status",
+    FAILED_TO_FETCH_WORKOUT_REPORT: "Failed to fetch workout report",
 };

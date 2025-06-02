@@ -2,6 +2,7 @@ import { IUserModel } from "@/models/implementation/user.model";
 import { IBaseRepository } from "../IBase.respository";
 import { IClientUserData } from "@/models/interface/IPersonalization";
 import mongoose from "mongoose";
+import {  IWorkoutPlan, IWorkoutReport } from "@/models/interface/IWorkout";
 
 export interface IClientRepository extends IBaseRepository<IUserModel> {
   SaveWorkoutsDietsPersonalization(
@@ -26,4 +27,14 @@ export interface IClientRepository extends IBaseRepository<IUserModel> {
   }>;
   getWorkouts(userId: string, week: string): Promise<any>;
   getWeekCompletionStatus(userId: string): Promise<any>;
+  updateDayCompletion(
+    userId: string,
+    workoutReport: IWorkoutReport,
+    week: string,
+    day: string,
+  ): Promise<IWorkoutPlan | null>;
+  getWorkoutReport( userId: string,
+    week: string,
+    day: string
+  ): Promise<IWorkoutReport | null>;
 }

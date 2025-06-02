@@ -3,8 +3,9 @@ import { IClientService } from "../interface/IClient.service";
 import { HttpResponse } from "../../constants/response-message.constant";
 import { createHttpError } from "../../utils";
 import { HttpStatus } from "../../constants/status.constant";
-import generateFitnessPlan from "../../utils/gemini1.utils";
+import {generateFitnessPlan, generateWorkoutReport} from "../../utils/gemini1.utils";
 import { IClientUserData } from "@/models/interface/IPersonalization";
+import { IExercise, IWorkoutReport } from "@/models/interface/IWorkout";
 // import { writeFile } from "fs";
 
 export class ClientService implements IClientService {
@@ -84,8 +85,6 @@ export class ClientService implements IClientService {
     }
   };
 
-  
-
   getWeekCompletionStatus = async (userId: string) => {
     try {
       const weekCompletionStatus = await this._clientRepository.getWeekCompletionStatus(userId);
@@ -95,6 +94,66 @@ export class ClientService implements IClientService {
       throw createHttpError(
         HttpStatus.INTERNAL_SERVER_ERROR,
         HttpResponse.FAILED_TO_FETCH_WORKOUTS
+      );
+    }
+  };
+
+  updateDayCompletionStatus = async (
+    userId: string,
+    week: string,
+    day: string,
+    workout: IExercise[]
+  ) => {
+    try {
+      // const workoutReport = await generateWorkoutReport(workout);
+      const workoutReport = {
+        caloriesBurned: 500, // Example value
+        duration: 60, // Example value in minutes
+        feedback: "Great job! Keep it up!", // Example feedback
+        intensity: "low",
+        estimatedDuration: "60 minutes",
+        totalExercises: 5,
+        totalSets: 15,
+      } as IWorkoutReport;
+      const updateDay = await this._clientRepository.updateDayCompletion(
+        userId,
+        workoutReport,
+        week,
+        day,
+      );
+      if (!updateDay) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.WORKOUT_NOT_FOUND
+        );
+      }
+      return workoutReport;
+    } catch (error) {
+      console.error("Error updating day completion status:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WORKOUTS
+      );
+    }
+  };
+
+  getWorkoutReport = async (
+    userId: string,
+    week: string,
+    day: string
+  ) => {
+    try {
+      const workoutReport = await this._clientRepository.getWorkoutReport(
+        userId,
+        week,
+        day
+      );
+      return workoutReport;
+    } catch (error) {
+      console.error("Error fetching workout report:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WORKOUT_REPORT
       );
     }
   };

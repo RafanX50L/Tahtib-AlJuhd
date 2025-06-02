@@ -51,4 +51,46 @@ export class ClientController implements IClientController{
             next(error);
         }
     }
+
+    updateDayCompletionStatus = async (req: userData, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id as string;
+            const { week, day, workout } = req.body;
+            console.log("body",req.body);
+            console.log("User ID:", userId, "Week:", week, "Day:", day, "Workout:", workout);
+            if (!week || !day || !workout) {
+                res.status(HttpStatus.BAD_REQUEST).json({
+                    message: HttpResponse.INVALID_REQUEST_DATA
+                });
+                return;
+            }
+
+            const workoutReport = await this._clientService.updateDayCompletionStatus(userId, week, day, workout);
+            res.status(HttpStatus.OK).json(workoutReport);
+        } catch (error) {
+            next(error);
+        }
+    };
+    getWorkoutReport = async (req: userData, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id as string;
+            const { week, day } = req.query;
+            console.log("Week:", week, "Day:", day);
+            if (!week || !day) {
+                res.status(HttpStatus.BAD_REQUEST).json({
+                    message: HttpResponse.INVALID_REQUEST_DATA
+                });
+                return;
+            }
+
+            const workoutReport = await this._clientService.getWorkoutReport(
+                userId,
+                week as string,
+                day as string
+            );
+            res.status(HttpStatus.OK).json(workoutReport);
+        } catch (error) {
+            next(error);
+        }
+    };
 }

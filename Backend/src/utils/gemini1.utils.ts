@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { env } from "../config/env.config";
 import { writeFile } from "fs";
+import { IExercise } from "@/models/interface/IWorkout";
 
 interface UserData {
   nick_name: string;
@@ -488,4 +489,51 @@ function parseResponse(text:string) {
   }
 
 }
-export default generateFitnessPlan;
+
+
+const generateWorkoutReport = async (exercises: IExercise[]) => {
+  console.log("Generating workout report for exercises:", exercises);
+
+  const prompt = `
+You are a fitness assistant. Based on the following exercise data, generate a workout report that includes:
+- Total number of exercises
+- Total sets completed
+- Estimated total workout time
+- Estimated calories burned (assume beginner-level intensity)
+- Suggested intensity level (Low, Moderate, High)
+- A brief motivational note for the user
+
+Return the response in JSON format with the keys:
+{
+  "totalExercises": number,
+  "totalSets": number,
+  "estimatedDuration": string,
+  "caloriesBurned": number,
+  "intensity": string,
+  "feedback": string
+}
+
+Exercise data:
+${JSON.stringify(exercises, null, 2)}
+`;
+
+  const response = await genAI.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+
+  const textResponse = response?.text || "";
+  console.log("Raw Gemini Response:", textResponse);
+
+  try {
+    // Remove any markdown artifacts
+    const cleaned = textResponse.replace(/^```json|```$/g, "").trim();
+    const report = JSON.parse(cleaned);
+    console.log("Generated workout report:", report);
+    return report;
+  } catch (err) {
+    console.error("Failed to parse Gemini workout report:", err);
+    throw new Error("Invalid workout report format from Gemini.");
+  }
+};
+export { generateFitnessPlan, generateWorkoutReport };

@@ -16,7 +16,14 @@ const DaySchema = new Schema<IDay>({
   title: { type: String, required: true },
   exercises: [ExerciseSchema],
   completed: { type: Boolean, default: false },
+  
+  report: {
+    type: Object,
+    required: false,
+    default: undefined
+  }
 });
+
 
 const WeekSchema = new Schema<IWeek>({
   day1: DaySchema,

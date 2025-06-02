@@ -17,5 +17,7 @@ clientRouter.post('/generate-fitness-plan',clientController.generateFitnessPlan.
 clientRouter.get('/get-basic-fitness-details',clientController.getBasicFitnessPlan.bind(clientController));
 clientRouter.get('/get-workouts/:week', clientController.getWorkouts.bind(clientController));
 clientRouter.get('/get-week-completion-status', clientController.getWeekCompletionStatus.bind(clientController));
+clientRouter.patch('/update-day-completion-status', clientController.updateDayCompletionStatus.bind(clientController));
+clientRouter.get('/get-workout-report', clientController.getWorkoutReport.bind(clientController));
 
 export default clientRouter;

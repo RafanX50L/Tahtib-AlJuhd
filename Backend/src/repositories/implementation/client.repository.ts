@@ -11,6 +11,7 @@ import { createHttpError } from "../../utils";
 import { HttpResponse } from "../../constants/response-message.constant";
 import { HttpStatus } from "../../constants/status.constant";
 import { UserRepository } from "./user.repository";
+import { IWorkoutReport } from "@/models/interface/IWorkout";
 
 export class ClientRepository
   extends UserRepository
@@ -273,7 +274,9 @@ export class ClientRepository
       }
       // Ensure workouts is populated and not just an ObjectId
       const workouts =
-        data.workouts && typeof data.workouts === "object" && !("toHexString" in data.workouts)
+        data.workouts &&
+        typeof data.workouts === "object" &&
+        !("toHexString" in data.workouts)
           ? (data.workouts as any)
           : null;
 
@@ -284,7 +287,6 @@ export class ClientRepository
         week4: workouts?.week4?.workout_completed || false,
       };
       return weekCompletionStatus;
-
     } catch (error) {
       console.log("Error fetching week completion status:", error);
       throw createHttpError(
@@ -293,4 +295,116 @@ export class ClientRepository
       );
     }
   }
+
+  async updateDayCompletion(
+    userId: string,
+    workoutReport: IWorkoutReport,
+    week: string,
+    day: string,
+  ) {
+    // Update personalization progress
+    console.log("week", week,"day",day);
+    const PersonalData = await PersonalizationModel.findOneAndUpdate(
+      { userId },
+      { $inc: { "data.user_data.workout_completed_of_28days": 1 } },
+      { new: true, runValidators: true }
+    );
+
+    const data = PersonalData?.data as IClientPersonalization;
+    const workoutId = data?.workouts;
+
+    if (!workoutId) {
+      throw createHttpError(HttpStatus.NOT_FOUND, "Workout ID not found");
+    }
+
+    const workoutPlan = await WorkoutPlanModel.findById(workoutId);
+
+    if (!workoutPlan) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        HttpResponse.WORKOUT_NOT_FOUND
+      );
+    }
+
+    // Ensure week and day exist
+    const weekObj = (workoutPlan as any)[week];
+    if (!weekObj) {
+      throw createHttpError(HttpStatus.BAD_REQUEST, `Week '${week}' not found`);
+    }
+
+    const dayObj = weekObj[day];
+    if (!dayObj) {
+      throw createHttpError(
+        HttpStatus.BAD_REQUEST,
+        `Day '${day}' not found in ${week}`
+      );
+    }
+
+    // Update the nested fields
+    dayObj.completed = true;
+    dayObj.report = workoutReport;
+
+    const update = await workoutPlan.save();
+
+    if (!update) {
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_UPDATE_WEEK_COMPLETION_STATUS
+      );
+    }
+
+    return update;
+  }
+
+  getWorkoutReport = async (
+    userId: string,
+    week: string,
+    day: string
+  ): Promise<IWorkoutReport | null> => {
+    const PersonalData = await PersonalizationModel.findOne({ userId });
+    const data = PersonalData?.data as IClientPersonalization;
+    const workoutId = data.workouts;
+
+    if (!workoutId) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        HttpResponse.FAILED_TO_FETCH_WORKOUT_REPORT
+      );
+    }
+
+    const workoutPlan = await WorkoutPlanModel.findById(workoutId);
+    if (!workoutPlan) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        HttpResponse.FAILED_TO_FETCH_WORKOUT_REPORT
+      );
+    }
+
+    // Dynamically access the week and day
+    const weekData = (workoutPlan as any)[`${week}`];
+    if (!weekData) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        `Week ${week} data not found`
+      );
+    }
+
+    const dayData = (workoutPlan as any)?.[week]?.[day];
+    if (!dayData) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        `Day ${day} data not found in Week ${week}`
+      );
+    }
+
+    const report = dayData.report;
+    if (!report) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        `No report found for Week ${week}, Day ${day}`
+      );
+    }
+
+    return report;
+  };
 }
