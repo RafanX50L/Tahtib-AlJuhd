@@ -1,6 +1,15 @@
 import { useEffect } from "react";
 
-const MainCard = ({ data }) => {
+interface MainCardProps {
+  data:{
+    notes: string,
+    Workout_Duration: string,
+    Workout_Days_Per_Week: number,
+    Workout_Completed: number
+  };
+}
+
+const MainCard: React.FC<MainCardProps> = ({ data }) => {
   console.log("main card", data);
   useEffect(() => {
     console.log("chabged", data, data);
@@ -21,8 +30,6 @@ const MainCard = ({ data }) => {
 
       <div className="flex items-center gap-6 mb-6">
         <p className="text-gray-400 text-sm">
-          {/* <span className="text-white font-medium">20-40 min/day</span> •{" "}
-          <span className="text-white font-medium">6 days/week</span> •{" "} */}
           <span className="text-white font-medium">
             {data.Workout_Duration} min/day
           </span>{" "}
@@ -30,8 +37,6 @@ const MainCard = ({ data }) => {
           <span className="text-white font-medium">
             {data.Workout_Days_Per_Week} days/week
           </span>{" "}
-          •{" "}
-          {/* <span className="text-white font-medium">Expert Support</span> */}
         </p>
       </div>
 
@@ -40,13 +45,13 @@ const MainCard = ({ data }) => {
           <div
             className="h-full bg-gradient-to-r from-[#5D5FEF] to-[#7577F5] rounded-full transition-all duration-1000"
             style={{
-              width: `${(data.Workout_Completed / 7) * data.Workout_Days_Per_Week * 100}%`,
+              width: `${(data.Workout_Completed / (4*data.Workout_Days_Per_Week)) * 100}%`,
             }}
           ></div>
         </div>
         <div className="text-gray-400 text-sm">
           Day {data.Workout_Completed} of {data.Workout_Days_Per_Week * 4} • {"  "}
-          {(data.Workout_Completed / 7) * data.Workout_Days_Per_Week * 100}%{" "}
+          {(data.Workout_Completed / (4*data.Workout_Days_Per_Week)) * 100}%{" "}
           completed
         </div>
       </div>

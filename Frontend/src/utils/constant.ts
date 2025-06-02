@@ -28,5 +28,7 @@ export const CLIENT_ROUTES = {
     GENERATE_FITNESS_PLAN: `${CLIENT_ROUTE}/generate-fitness-plan`,
     GET_BASIC_FITNESS_DETAILS: `${CLIENT_ROUTE}/get-basic-fitness-details`,
     GET_CLIENT_WORKOUTS: `${CLIENT_ROUTE}/get-workouts`,
-    GET_WEEK_COMPLETION_STATUS: `${CLIENT_ROUTE}/get-week-completion-status`
+    GET_WEEK_COMPLETION_STATUS: `${CLIENT_ROUTE}/get-week-completion-status`,
+    UPDATE_DAY_COMPLETION_STATUS: `${CLIENT_ROUTE}/update-day-completion-status`,
+    GET_WORKOUT_REPORT: `${CLIENT_ROUTE}/get-workout-report`,
 }

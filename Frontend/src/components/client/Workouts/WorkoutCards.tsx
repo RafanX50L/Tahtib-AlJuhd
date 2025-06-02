@@ -1,18 +1,28 @@
 import { useNavigate } from "react-router-dom";
 
-const WorkoutCards = ({ workouts, weekStatus }) => {
+interface WorkoutCardProps {
+  workouts:any,
+  weekStatus:boolean | null;
+  currentWeek:string;
+}
+
+const WorkoutCards: React.FC<WorkoutCardProps> = ({ workouts, weekStatus, currentWeek }) => {
 
   const navigate = useNavigate();
 
-  const handleActionClick = (day, action, workout) => {
-    if (action !== "locked") {
-      console.log(
-        `Action for ${day}: ${action === "start" ? "Start Workout" : "View Results"}`
-      );
-      // Navigation logic here
-      console.log(workout);
-      localStorage.setItem('Current_Workout_Exercises',JSON.stringify(workout));
-      navigate('/workoutSession');
+  const handleActionClick = (day:string, action:string, workout:any) => {
+    if(action === 'view'){
+      navigate(`/workoutReport?week=${currentWeek}&day=${day}`)
+    }else{
+      if (action !== "locked") {
+        console.log(
+          `Action for ${day}: ${action === "start" ? "Start Workout" : "View Results"}`
+        );
+        // Navigation logic here
+        console.log(workout);
+        localStorage.setItem('Current_Workout_Exercises',JSON.stringify({exercises:workout, day, week:currentWeek}));
+        navigate('/workoutSession');
+      }
     }
   };
 
@@ -37,7 +47,7 @@ const WorkoutCards = ({ workouts, weekStatus }) => {
       }
 
       return {
-        day: value.title,
+        day: key,
         status,
         exercises: value.exercises,
         action,
@@ -93,7 +103,16 @@ const WorkoutCards = ({ workouts, weekStatus }) => {
 
 export default WorkoutCards;
 
-const WorkoutCard = ({ day, status, exercises, action, onActionClick }) => {
+interface SingleWorkoutCardProps{
+  key: number,
+  day:string,
+  status: string,
+  exercises: any,
+  action: string,
+  onActionClick : (day:string,action: string, workout: any)=> void;
+}
+
+const WorkoutCard:React.FC<SingleWorkoutCardProps> = ({ day, status, exercises, action, onActionClick }) => {
   return (
     <div
       className={`bg-gradient-to-br from-[rgba(30,34,53,0.9)] to-[rgba(18,21,30,0.8)] border border-gray-700 rounded-lg p-5 transition-all duration-300 ${
@@ -117,7 +136,7 @@ const WorkoutCard = ({ day, status, exercises, action, onActionClick }) => {
         )}
       </div>
       <div className="mb-4">
-        {exercises.map((exercise, index) => (
+        {exercises.map((exercise:any, index:number) => (
           <div
             key={index}
             className="flex justify-between items-start text-sm text-gray-400 mb-2 last:mb-0"

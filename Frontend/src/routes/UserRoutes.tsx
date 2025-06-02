@@ -4,6 +4,8 @@ import { Route, Routes } from "react-router-dom";
 import CDashboard from "@/pages/client/CDashboard";
 import Personalization from "@/pages/client/Personalization";
 import WorkoutPlan from "@/pages/client/CWorkouts";
+import WorkoutSession from "@/pages/client/CWorkoutSession";
+import WorkoutReport from "@/components/client/Workouts/WorkoutReport";
 
 const UserRotues: React.FC = () => {
   console.log('entered to client routes')
@@ -13,6 +15,8 @@ const UserRotues: React.FC = () => {
       <Route path="/Dashboard" element={<CDashboard />} />
       <Route path="/personalization" element = {<Personalization/>}/>
       <Route path="/workouts" element={<WorkoutPlan/>} />
+      <Route path="/workoutSession" element={<WorkoutSession/>}/>
+      <Route path="/workoutReport" element={<WorkoutReport/>}/>
       
       {/* <Route path="/client"  element={<LayoutPage />}/> */}
     </Routes>

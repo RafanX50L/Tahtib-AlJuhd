@@ -22,11 +22,10 @@ interface Workout {
 }
 
 interface MainData {
-  title?: string;
-  description?: string;
-  details?: string;
-  progress?: number;
-  notes?: string;
+  notes: string;
+  Workout_Duration: string;
+  Workout_Days_Per_Week: number;
+  Workout_Completed: number;
 }
 
 interface FitnessDetailsResponse {
@@ -35,7 +34,7 @@ interface FitnessDetailsResponse {
 
 interface WorkoutsResponse {
   data: {
-    workouts: Workout;
+    workouts: Workout[];
     notes: string;
   };
 }
@@ -47,33 +46,36 @@ const WorkoutPlan = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [weekStatuses, setWeekStatuses] = useState(null);
-  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(null)
-
+  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(
+    null
+  );
 
   // Fetch fitness details only on component mount
   useEffect(() => {
     const fetchFitnessDetails = async () => {
-      console.log(localStorage.getItem('page'));
-      
+      console.log(localStorage.getItem("page"));
+
       try {
         setIsLoading(true);
         const response = await ClientService.getBasicFitnessDetails();
         const weekStatus = await ClientService.getWeekCompletionStatus();
-        setWeekStatuses(weekStatus.data);
+        setWeekStatuses(weekStatus.data );
         setMainData((prev) => ({ ...prev, ...response.data }));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch fitness details.");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch fitness details."
+        );
       } finally {
         setIsLoading(false);
-        console.log('main data',mainData);
-
+        console.log("main data", mainData);
       }
     };
     fetchFitnessDetails();
-    return ()=>{
-      
-      localStorage.setItem('page','workout')
-    }
+    return () => {
+      localStorage.setItem("page", "workout");
+    };
   }, []); // Empty dependency array to run only on mount
 
   // Fetch workouts when activeTab changes
@@ -82,15 +84,30 @@ const WorkoutPlan = () => {
       try {
         setIsLoading(true);
         const response = await ClientService.getWorkouts(activeTab);
-        setWorkouts(response.data.workouts);
-        setMainData((prev) => prev ? { ...prev, notes: response.data.notes } : { notes: response.data.notes });
+        setWorkouts((response as WorkoutsResponse).data.workouts);
+        setMainData((prev) =>
+          prev
+            ? { ...prev, notes: (response.data as MainData).notes }
+            : {
+                notes: (response as WorkoutsResponse).data.notes,
+                Workout_Duration: "",
+                Workout_Days_Per_Week: 0,
+                Workout_Completed: 0,
+              }
+        );
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch workouts.");
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch workouts."
+        );
       } finally {
         setIsLoading(false);
       }
       console.log(weekStatuses);
-      setCurrentWeekStatus(activeTab === 1 ? true : weekStatuses[`week${activeTab}`]);
+      setCurrentWeekStatus(
+        activeTab === 1
+          ? true
+          : weekStatuses && weekStatuses[`week${activeTab}`]
+      );
       console.log(currentWeekStatus);
     };
     fetchWorkouts();
@@ -123,9 +140,15 @@ const WorkoutPlan = () => {
   return (
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
       <Sidebar />
-      <main className={`lg:ml-[280px] p-8 min-h-screen transition-all duration-300 ${styles.container}`}>
+      <main
+        className={`lg:ml-[280px] p-8 min-h-screen transition-all duration-300 ${styles.container}`}
+      >
         {isLoading ? (
-          <div className={styles.loaderContainer} role="status" aria-live="polite">
+          <div
+            className={styles.loaderContainer}
+            role="status"
+            aria-live="polite"
+          >
             <div className="flex flex-col items-center">
               <div
                 className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"
@@ -149,7 +172,13 @@ const WorkoutPlan = () => {
             <CWHeader />
             {mainData && <MainCard data={mainData} />}
             <LevelTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-            {workouts && <WorkoutCards workouts={workouts} weekStatus={currentWeekStatus} />}
+            {workouts && (
+              <WorkoutCards
+                workouts={workouts}
+                weekStatus={currentWeekStatus}
+                currentWeek={`week${activeTab}`}
+              />
+            )}
             <ChatbotButton />
             <CFooter />
           </>
