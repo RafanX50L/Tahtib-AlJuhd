@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { env } from '@/config/env';
 
-
 const searchYouTube = async (query) => {
+  console.log('env', env.YOUTUBE_API_KEY); // Debug
   const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
     params: {
       part: 'snippet',
@@ -13,7 +13,7 @@ const searchYouTube = async (query) => {
     },
   });
 
-  return response.data.items[0]; // return the first video result
+  return response.data.items[0];
 };
 
 export default searchYouTube;
