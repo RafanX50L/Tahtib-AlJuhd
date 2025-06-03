@@ -16,7 +16,7 @@ const UserRotues: React.FC = () => {
       <Route path="/personalization" element = {<Personalization/>}/>
       <Route path="/workouts" element={<WorkoutPlan/>} />
       <Route path="/workoutSession" element={<WorkoutSession/>}/>
-      <Route path="/workoutReport" element={<WorkoutReport/>}/>
+      <Route path="/workout-report" element={<WorkoutReport/>}/>
       
       {/* <Route path="/client"  element={<LayoutPage />}/> */}
     </Routes>

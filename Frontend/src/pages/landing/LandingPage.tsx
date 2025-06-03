@@ -24,5 +24,8 @@ function LandingPage() {
     </>
   );
 }
-
+const calculateBMI = (weightKg: number, heightCm: number): number => {
+  const heightM = heightCm / 100;
+  return parseFloat((weightKg / (heightM * heightM)).toFixed(2));
+};
 export default LandingPage;

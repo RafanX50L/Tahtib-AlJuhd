@@ -50,8 +50,8 @@ const MainCard: React.FC<MainCardProps> = ({ data }) => {
           ></div>
         </div>
         <div className="text-gray-400 text-sm">
-          Day {data.Workout_Completed} of {data.Workout_Days_Per_Week * 4} • {"  "}
-          {(data.Workout_Completed / (4*data.Workout_Days_Per_Week)) * 100}%{" "}
+          Day {data.Workout_Completed} of {7 * 4} • {"  "}
+          {((data.Workout_Completed / (4 * 7)) * 100).toFixed(1)}%{" "}
           completed
         </div>
       </div>
