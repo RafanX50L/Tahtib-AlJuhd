@@ -7,7 +7,8 @@ import {  IWorkoutPlan, IWorkoutReport } from "@/models/interface/IWorkout";
 export interface IClientRepository extends IBaseRepository<IUserModel> {
   SaveWorkoutsDietsPersonalization(
     userData: IClientUserData,
-    plan: any
+    workout: any,
+    diet: any
   ): Promise<any>;
   createPersonalization(
     userData: IClientUserData,

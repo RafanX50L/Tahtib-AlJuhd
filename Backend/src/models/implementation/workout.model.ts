@@ -38,9 +38,9 @@ const WeekSchema = new Schema<IWeek>({
 
 const WorkoutPlanSchema = new Schema<IWorkoutPlan>({
   week1: WeekSchema,
-  week2: WeekSchema,
-  week3: WeekSchema,
-  week4: WeekSchema,
+  week2: { type: WeekSchema, default: null },
+  week3: { type: WeekSchema, default: null },
+  week4: { type: WeekSchema, default: null },
   notes: { type: String, required: false }
 });
 

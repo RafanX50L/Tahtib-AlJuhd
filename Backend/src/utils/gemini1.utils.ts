@@ -1,7 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
-import { env } from "../config/env.config";
-import { writeFile } from "fs";
 import { IExercise } from "@/models/interface/IWorkout";
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import {  writeFile } from 'fs'; // To simulate file writing for debugging
+import dotenv from 'dotenv';
+import { env } from "..//config/env.config";
+
+dotenv.config(); // Load environment variables
 
 interface UserData {
   nick_name: string;
@@ -24,472 +29,251 @@ interface UserData {
 }
 
 // Initialize the Google GenAI client
-const genAI = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY as string);
 
-async function generateFitnessPlan(userData: UserData) {
+async function generateFitnessPlan(
+  userData: UserData,
+  weekNumber: number | null,
+  planType: 'workout' | 'diet',
+  previousWeekWorkoutData: Record<string, any> | null = null
+) {
   try {
-    // Format the prompt with user data
-    const prompt = formatPrompt(userData);
+    // Format the prompt with user data, week number, plan type, and previous week's data
+    const prompt = formatPrompt(userData, weekNumber, planType, previousWeekWorkoutData);
 
     // Generate content using the new API structure
-    const response = await genAI.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using 1.5 Flash for potentially better JSON output
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const text = response.text();
 
-    // // Parse the response into structured data
-    // console.log('response from ai',response.text);
-    return parseResponse(response.text?? ""); 
+    // Parse the response into structured data
+    return parseResponse(text);
   } catch (error) {
     console.error("Error generating fitness plan:", error);
     throw new Error("Failed to generate fitness plan");
   }
 }
 
-function formatPrompt(userData: UserData) {
-  return `
-    Create a comprehensive 4-week workout plan and diet plan for a user with the following details:
-    
-    User Data: ${JSON.stringify(userData, null, 2)}
-    
-    IMPORTANT: Return ONLY a valid JSON response in this EXACT format (no markdown, no explanations):
-    
-    {
-      "workoutPlan": {
-        "week1": {
-          "day1": {
-            "title": "Day 1 - Upper Body Focus",
-            "exercises": [
-              {
-                "name": "Push-ups",
-                "sets": "3",
-                "reps": "8-12",
-                "rest": "60 seconds",
-                "instructions": "Start in plank position, lower chest to ground, push back up. Keep core tight throughout movement.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day2": {
-            "title": "Day 2 - Lower Body Focus",
-            "exercises": [
-              {
-                "name": "Bodyweight Squats",
-                "sets": "3",
-                "reps": "10-15",
-                "rest": "45 seconds",
-                "instructions": "Stand with feet shoulder-width apart, lower hips back and down, return to standing.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day3": {
-            "title": "Day 3 - Core & Cardio",
-            "exercises": [
-              {
-                "name": "Plank Hold",
-                "duration": "30 sec",
-                "rest": "30 seconds",
-                "instructions": "Hold plank position with straight line from head to heels.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day4": {
-            "title": "Day 4 - Full Body",
-            "exercises": [
-              {
-                "name": "Burpees",
-                "sets": "3",
-                "reps": "5-8",
-                "rest": "90 seconds",
-                "instructions": "Squat down, jump back to plank, do push-up, jump feet forward, jump up.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day5": {
-            "title": "Day 5 - Active Recovery",
-            "exercises": [
-              {
-                "name": "Walking",
-                "duration": "20 min",
-                "rest": "As needed",
-                "instructions": "Light walking or stretching for recovery.",
-                "animation_link": "No video available"
-              }
-            ]
-          }
-        },
-        "week2": {
-          "day1": {
-            "title": "Day 1 - Upper Body Progression",
-            "exercises": [
-              {
-                "name": "Incline Push-ups",
-                "sets": "3",
-                "reps": "10-15",
-                "rest": "60 seconds",
-                "instructions": "Use elevated surface for hands, perform push-up motion.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day2": {
-            "title": "Day 2 - Lower Body Progression",
-            "exercises": [
-              {
-                "name": "Jump Squats",
-                "sets": "3",
-                "reps": "8-12",
-                "rest": "60 seconds",
-                "instructions": "Perform squat then jump explosively upward.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day3": {
-            "title": "Day 3 - Core Strength",
-            "exercises": [
-              {
-                "name": "Mountain Climbers",
-                "duration": "45 sec",
-                "rest": "45 seconds",
-                "instructions": "In plank position, alternate bringing knees to chest rapidly.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day4": {
-            "title": "Day 4 - Full Body Circuit",
-            "exercises": [
-              {
-                "name": "Bodyweight Circuit",
-                "sets": "3",
-                "reps": "Circuit",
-                "rest": "2 minutes",
-                "instructions": "Combine multiple exercises in sequence.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day5": {
-            "title": "Day 5 - Flexibility",
-            "exercises": [
-              {
-                "name": "Yoga Flow",
-                "duration": "25 min",
-                "rest": "As needed",
-                "instructions": "Gentle yoga poses for flexibility and recovery.",
-                "animation_link": "No video available"
-              }
-            ]
-          }
-        },
-        "week3": {
-          "day1": {
-            "title": "Day 1 - Strength Building",
-            "exercises": [
-              {
-                "name": "Diamond Push-ups",
-                "sets": "3",
-                "reps": "6-10",
-                "rest": "75 seconds",
-                "instructions": "Form diamond shape with hands, perform push-up.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day2": {
-            "title": "Day 2 - Power Development",
-            "exercises": [
-              {
-                "name": "Single Leg Squats",
-                "sets": "3",
-                "reps": "5-8 each leg",
-                "rest": "90 seconds",
-                "instructions": "Squat on one leg, use assistance if needed.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day3": {
-            "title": "Day 3 - Core Power",
-            "exercises": [
-              {
-                "name": "Plank to Push-up",
-                "sets": "3",
-                "reps": "8-12",
-                "rest": "60 seconds",
-                "instructions": "Start in plank, move to push-up position and back.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day4": {
-            "title": "Day 4 - Endurance",
-            "exercises": [
-              {
-                "name": "Tabata Circuit",
-                "duration": "20 min",
-                "rest": "10 seconds",
-                "instructions": "High intensity intervals: 20 sec work, 10 sec rest.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day5": {
-            "title": "Day 5 - Recovery",
-            "exercises": [
-              {
-                "name": "Stretching Routine",
-                "duration": "30 min",
-                "rest": "As needed",
-                "instructions": "Full body stretching focusing on worked muscles.",
-                "animation_link": "No video available"
-              }
-            ]
-          }
-        },
-        "week4": {
-          "day1": {
-            "title": "Day 1 - Peak Performance",
-            "exercises": [
-              {
-                "name": "Advanced Push-up Variations",
-                "sets": "4",
-                "reps": "8-15",
-                "rest": "60 seconds",
-                "instructions": "Mix of different push-up styles for maximum challenge.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day2": {
-            "title": "Day 2 - Lower Body Mastery",
-            "exercises": [
-              {
-                "name": "Pistol Squat Progression",
-                "sets": "3",
-                "reps": "3-6 each leg",
-                "rest": "2 minutes",
-                "instructions": "Advanced single leg squat, use assistance as needed.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day3": {
-            "title": "Day 3 - Core Mastery",
-            "exercises": [
-              {
-                "name": "Advanced Plank Variations",
-                "duration": "60 sec",
-                "rest": "60 seconds",
-                "instructions": "Side planks, plank with leg lifts, etc.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day4": {
-            "title": "Day 4 - Full Body Challenge",
-            "exercises": [
-              {
-                "name": "Complex Movement Patterns",
-                "sets": "4",
-                "reps": "10-20",
-                "rest": "90 seconds",
-                "instructions": "Combine multiple movement patterns for full body workout.",
-                "animation_link": "No video available"
-              }
-            ]
-          },
-          "day5": {
-            "title": "Day 5 - Assessment & Recovery",
-            "exercises": [
-              {
-                "name": "Fitness Assessment",
-                "duration": "45 min",
-                "rest": "As needed",
-                "instructions": "Test improvements and plan next phase.",
-                "animation_link": "No video available"
-              }
-            ]
-          }
-        }
-        "notes": " This 28-day challenge is designed to help you build strength, improve endurance, and transform your body through progressive workouts. Each week focuses on different muscle groups with increasing intensity. "
-      },
-      "dietPlan": {
-        "mealPlan": {
-          "breakfast": {
-            "options": [
-              {
-                "name": "Protein Oatmeal Bowl",
-                "ingredients": ["Gluten-free oats", "Plant protein powder", "Banana", "Almond milk", "Chia seeds"],
-                "instructions": "Cook oats with almond milk, add protein powder, top with sliced banana and chia seeds.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Vegetarian Scramble",
-                "ingredients": ["Tofu", "Spinach", "Tomatoes", "Nutritional yeast", "Olive oil"],
-                "instructions": "Crumble tofu, sauté with vegetables, season with nutritional yeast.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Green Smoothie Bowl",
-                "ingredients": ["Spinach", "Banana", "Protein powder", "Coconut milk", "Hemp seeds"],
-                "instructions": "Blend ingredients until smooth, pour into bowl, top with hemp seeds.",
-                "video_link": "No video available"
-              }
-            ]
-          },
-          "lunch": {
-            "options": [
-              {
-                "name": "Quinoa Power Bowl",
-                "ingredients": ["Quinoa", "Black beans", "Avocado", "Sweet potato", "Tahini dressing"],
-                "instructions": "Cook quinoa and sweet potato, combine with beans and avocado, drizzle with tahini.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Lentil Curry",
-                "ingredients": ["Red lentils", "Coconut milk", "Curry spices", "Vegetables", "Brown rice"],
-                "instructions": "Cook lentils with coconut milk and spices, serve over brown rice.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Mediterranean Wrap",
-                "ingredients": ["Gluten-free wrap", "Hummus", "Vegetables", "Olives", "Hemp hearts"],
-                "instructions": "Spread hummus on wrap, add vegetables and olives, sprinkle hemp hearts.",
-                "video_link": "No video available"
-              }
-            ]
-          },
-          "dinner": {
-            "options": [
-              {
-                "name": "Stuffed Bell Peppers",
-                "ingredients": ["Bell peppers", "Quinoa", "Black beans", "Corn", "Nutritional yeast"],
-                "instructions": "Hollow peppers, stuff with quinoa mixture, bake until tender.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Vegetable Stir-fry",
-                "ingredients": ["Mixed vegetables", "Tofu", "Coconut oil", "Tamari sauce", "Brown rice"],
-                "instructions": "Stir-fry vegetables and tofu, season with tamari, serve over rice.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Chickpea Curry",
-                "ingredients": ["Chickpeas", "Coconut milk", "Spinach", "Curry spices", "Quinoa"],
-                "instructions": "Simmer chickpeas in coconut milk with spices, add spinach, serve over quinoa.",
-                "video_link": "No video available"
-              }
-            ]
-          },
-          "snacks": {
-            "options": [
-              {
-                "name": "Energy Balls",
-                "ingredients": ["Dates", "Sunflower seeds", "Coconut", "Cacao powder"],
-                "instructions": "Blend ingredients, roll into balls, refrigerate until firm.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Vegetable Sticks with Hummus",
-                "ingredients": ["Carrots", "Celery", "Cucumber", "Homemade hummus"],
-                "instructions": "Cut vegetables into sticks, serve with hummus for dipping.",
-                "video_link": "No video available"
-              },
-              {
-                "name": "Protein Smoothie",
-                "ingredients": ["Plant protein powder", "Banana", "Spinach", "Almond milk"],
-                "instructions": "Blend all ingredients until smooth, serve immediately.",
-                "video_link": "No video available"
-              }
-            ]
-          }
-        },
-        "notes": "This plan is designed for vegetarian preferences, avoiding nuts and gluten. All meals support muscle building goals while considering asthma and joint health. Increase portions gradually to support weight gain goals."
-      }
-    }
-    
-    Please customize this plan based on the user's specific details:
-    - Age: ${userData.age}
-    - Gender: ${userData.gender}
-    - Current weight: ${userData.current_weight}kg, Target: ${userData.target_weight}kg
-    - Fitness goal: ${userData.fitness_goal}
-    - Fitness level: ${userData.current_fitness_level}
-    - Activity level: ${userData.activity_level}
-    - Available equipment: ${userData.equipments.join(', ')}
-    - Workout duration: ${userData.workout_duration} minutes
-    - Workout days per week: ${userData.workout_days_perWeek}
-    - Health issues: ${userData.health_issues.join(', ')}
-    - Medical condition: ${userData.medical_condition}
-    - Diet allergies: ${userData.diet_allergies.join(', ')}
-    - Meals per day: ${userData.diet_meals_perDay}
-    - Diet preferences: ${userData.diet_preferences.join(', ')}
-    
-    Make sure to:
-    1. Avoid exercises that could aggravate back and knee issues
-    2.Include 10-12 unique exercises per day, suitable for indoor home workouts using only the specified equipment: ${userData.equipments.join(', ') || 'None'}.
-    3. Consider asthma when planning cardio intensity
-    4. Plan for ${userData.workout_days_perWeek} workout days per week
-    5. Keep workouts within ${userData.workout_duration} minutes
-    6. Progress difficulty from week 1 to week 4
-    7. Exclude nuts and gluten from all meal options
-    8. Focus on vegetarian protein sources for muscle building
-    9. Provide ${getMealCount(userData.diet_meals_perDay)} meal options per day
-    
-    Return ONLY the JSON object, no other text.
-    `;
-}
-
-function getMealCount(mealsPerDay: string) {
+function getMealCategories(mealsPerDay: string): string[] {
   switch (mealsPerDay) {
     case "3":
-      return "3 meals (breakfast, lunch, dinner)";
+      return ["breakfast", "lunch", "dinner"];
     case "4":
-      return "3 meals (breakfast, lunch, dinner) + 1 snack";
+      return ["breakfast", "lunch", "dinner", "snack1"];
     case "5":
-      return "3 meals (breakfast, lunch, dinner) + 2 snacks";
+      return ["breakfast", "lunch", "dinner", "snack1", "snack2"];
     case "6":
-      return "6 meals (breakfast, mid-morning snack, lunch, afternoon snack, dinner, evening snack)";
+      return ["breakfast", "mid_morning_snack", "lunch", "afternoon_snack", "dinner", "evening_snack"];
     default:
-      return "3 meals (breakfast, lunch, dinner)";
+      return ["breakfast", "lunch", "dinner"];
   }
 }
 
-function parseResponse(text:string) {
-  try {
-    // Remove triple backticks if present
-    // let jsonString = text.replace(/^```(json)?|```$/g, '').trim();
-    const jsonString = JSON.stringify(text,null,2);
-    console.log(jsonString);
-     writeFile('new.txt', jsonString, 'utf-8', (err) => {
-    if (err) {
-      console.error('Error while writing file:', err);
-    } else {
-      console.log('File written successfully!');
+function formatPrompt(userData: UserData, weekNumber: number | null, planType: 'workout' | 'diet', previousWeekWorkoutData: Record<string, any> | null = null) {
+  const equipmentList = userData.equipments.length > 0 ? userData.equipments.join(', ') : 'bodyweight only';
+  const healthConcerns = [...userData.health_issues, userData.medical_condition].filter(Boolean).join(', ');
+  const dietRestriction = userData.diet_allergies.length > 0 ? `Additionally, the user has allergies to: ${userData.diet_allergies.join(', ')}. ` : '';
+
+  // Dynamically generate meal plan structure based on getMealCategories
+  const mealCategories = getMealCategories(userData.diet_meals_perDay);
+  const mealPlanStructure: Record<string, any> = {};
+  for (const category of mealCategories) {
+    mealPlanStructure[category] = {
+      "options": [
+        {
+          "name": `[${category.charAt(0).toUpperCase() + category.slice(1)} Meal Name]`,
+          "ingredients": ["", ""],
+          "instructions": "",
+          "video_link": "No video available"
+        }
+        // The AI should add 2 more options here
+      ]
+    };
+  }
+
+  // Helper to generate a day structure for the prompt for a SINGLE week
+  const generateDayStructure = (currentWeekNum: number, dayNum: number, workoutDaysPerWeek: number) => {
+    let title = `Day ${dayNum} - [Appropriate Title for Week ${currentWeekNum}, Day ${dayNum}]`;
+    let exercisesContent = `
+              [
+                {
+                  "name": "[Exercise Name - ensure progression for Week ${currentWeekNum}]",
+                  "sets": "[Number of sets]",
+                  "reps": "[Reps or Duration]",
+                  "rest": "[Rest time]",
+                  "instructions": "[Instructions]",
+                  "animation_link": "[YouTube Link or 'No video available']"
+                }
+                // ... 10-12 exercises with specific progressive data
+              ]`;
+
+    if (dayNum > workoutDaysPerWeek) {
+      title = `Day ${dayNum} - Rest`;
+      exercisesContent = `[]`; // Empty array for rest days
     }
-  });
-    
-    // Remove "json" prefix if it exists at the start
-    // if (jsonString.startsWith('json')) {
-    //   jsonString = jsonString.substring(4).trim();
-    // }
-    
-    // // Handle escaped quotes if present (like "")
-    // jsonString = jsonString.replace(/""/g, '"');
-    
-    // return JSON.parse(jsonString);
-    return jsonString;
-  } catch (error) {
-    console.error("Failed to parse AI response:", error);
-    throw new Error("Failed to parse AI response");
+
+    return `
+          "day${dayNum}": {
+            "title": "${title}",
+            "exercises": ${exercisesContent}
+          }`;
+  };
+
+  // Generate all 7 days for the SPECIFIED week
+  const generateSingleWeekStructure = (currentWeekNum: number, workoutDaysPerWeek: number) => {
+    let days = "";
+    for (let i = 1; i <= 7; i++) {
+      days += generateDayStructure(currentWeekNum, i, workoutDaysPerWeek);
+      if (i < 7) days += ",";
+    }
+    return days;
+  };
+
+  let promptContent = ``;
+  let jsonStructure = ``;
+
+  if (planType === 'workout' && weekNumber !== null) {
+    let progressionInstruction = "";
+    let previousWeekDataSection = "";
+
+    if (weekNumber === 1) {
+      progressionInstruction = "This is Week 1, so set a baseline difficulty and intensity.";
+    } else {
+      progressionInstruction = `This is Week ${weekNumber}. Ensure the difficulty and intensity of the workouts are progressively increased compared to Week ${weekNumber - 1}.`;
+      if (previousWeekWorkoutData) {
+        previousWeekDataSection = `
+      Here is the workout plan for the previous week (Week ${weekNumber - 1}) to guide progression:
+      ${JSON.stringify(previousWeekWorkoutData, null, 2)}
+      `;
+      } else {
+        previousWeekDataSection = `
+      (Note: Previous week's workout data was not provided. Please infer progression based on general fitness principles and the user's current level.)
+      `;
+      }
+    }
+
+    promptContent = `
+      Create a comprehensive workout plan ONLY for Week ${weekNumber} for a user with the following details.
+      
+      User Nickname: ${userData.nick_name}
+      Age: ${userData.age} years old
+      Gender: ${userData.gender}
+      Height: ${userData.height} cm
+      Current weight: ${userData.current_weight} kg
+      Target weight: ${userData.target_weight} kg
+      Fitness goal: ${userData.fitness_goal}
+      Current fitness level: ${userData.current_fitness_level}
+      Activity level: ${userData.activity_level}
+      Available equipment: ${equipmentList}
+      Desired workout duration: ${userData.workout_duration} minutes per session
+      Workout days per week: ${userData.workout_days_perWeek} days
+      Health issues: ${healthConcerns}
+      ${previousWeekDataSection}
+      IMPORTANT INSTRUCTIONS FOR GENERATING THE RESPONSE:
+      1. The output MUST be a valid JSON object. Do NOT include any markdown formatting (like triple backticks) or additional explanatory text outside the JSON.
+      2. The **workout plan** should be ONLY for Week ${weekNumber}, with daily exercise routines based on the user's specified workout days per week (${userData.workout_days_perWeek}).
+      3. Each active workout day should include 10-12 **unique exercises**.
+      4. All exercises must be suitable for **indoor home workouts** and only use the provided equipment: ${equipmentList}. If 'None' is specified, assume bodyweight exercises only.
+      5. For each exercise, provide:
+          - "name": Name of the exercise
+          - "sets": Number of sets (e.g., "3")
+          - "reps": Repetition range (e.g., "8-12" or "30 sec" for duration-based)
+          - "rest": Rest period between sets (e.g., "60 seconds")
+          - "instructions": Concise instructions on how to perform the exercise correctly.
+          - "animation_link": A relevant YouTube video link for the exercise if available. If not, state "No video available".
+      6. **Progression**: ${progressionInstruction}
+      7. **Health Considerations**:
+          - **Avoid exercises that could aggravate back and knee issues**.
+          - **Consider asthma when planning cardio intensity**, providing options that can be modified or are less intense.
+      8. The total duration of each workout session must be within ${userData.workout_duration} minutes.
+      9. The "notes" section should summarize the workout plan's overall approach and key considerations for Week ${weekNumber}.
+      10. **CRITICAL**: For Week ${weekNumber}, **fully populate** every exercise detail for each day. For active workout days, provide **specific, progressive data** (e.g., increased reps, sets, or more challenging variations). For rest days (if workout days per week is less than 7), set "title" to "Day X - Rest" and "exercises" to an empty array \`[]\`. **DO NOT** use placeholders or comments like 'Repeat Week X Day Y exercises' or truncated JSON.
+
+      Here is the exact JSON structure you should follow. Populate all fields dynamically based on the user's data and the instructions above:
+    `;
+
+    jsonStructure = `
+      {
+        "week${weekNumber}": {
+          ${generateSingleWeekStructure(weekNumber, userData.workout_days_perWeek)}
+        },
+        "notes": "[Overall notes for the workout plan for Week ${weekNumber}, considering user's goals, health, and progression.]"
+      }
+    `;
+  } else if (planType === 'diet') {
+    promptContent = `
+      Create a comprehensive diet plan for a user with the following details.
+      
+      User Nickname: ${userData.nick_name}
+      Age: ${userData.age} years old
+      Gender: ${userData.gender}
+      Height: ${userData.height} cm
+      Current weight: ${userData.current_weight} kg
+      Target weight: ${userData.target_weight} kg
+      Fitness goal: ${userData.fitness_goal}
+      Diet allergies: ${userData.diet_allergies.join(', ') || 'None'}
+      Meals per day: ${userData.diet_meals_perDay}
+      Diet preferences: ${userData.diet_preferences.join(', ')}
+      
+      IMPORTANT INSTRUCTIONS FOR GENERATING THE RESPONSE:
+      1. The output MUST be a valid JSON object. Do NOT include any markdown formatting (like triple backticks) or additional explanatory text outside the JSON.
+      2. The **diet plan** should align with the user's diet preferences (${userData.diet_preferences.join(', ')}) and allergies (${userData.diet_allergies.join(', ')}).
+      3. Provide meal options for each meal category specified by ${userData.diet_meals_perDay}. For example, if ${userData.diet_meals_perDay} is "5", include breakfast, lunch, dinner, and two snack options.
+      4. For each meal option, provide:
+          - "name": Name of the dish
+          - "ingredients": A list of ingredients.
+          - "instructions": Simple cooking instructions.
+          - "video_link": A relevant YouTube video link for the recipe. **Prioritize finding a real, relevant YouTube video link.** If a suitable video is absolutely not found after a thorough search, then state "No video available".
+      5. **Dietary Restrictions**: Exclude nuts and gluten from all meal options.
+      6. Focus on **vegetarian protein sources** for muscle building.
+      7. The "notes" section should summarize the diet plan's overall approach and key considerations based on the user's data.
+      8. **CRITICAL**: Fully populate all meal options with specific details. DO NOT use placeholders or truncated JSON.
+
+      Here is the exact JSON structure you should follow. Populate all fields dynamically based on the user's data and the instructions above:
+    `;
+
+    jsonStructure = `
+      {
+        "dietPlan": {
+          "mealPlan": ${JSON.stringify(mealPlanStructure, null, 2)},
+          "notes": "[Overall notes for the diet plan, considering user's goals, allergies, preferences, and weight goals.]"
+        }
+      }
+    `;
+  } else {
+    throw new Error("Invalid planType or missing weekNumber for workout plan.");
   }
 
+  return `${promptContent}${jsonStructure}`;
 }
 
+
+
+function parseResponse(text: string) {
+  let cleanedText = text.trim();
+
+  // Check if the response is wrapped in markdown code block and remove it
+  if (cleanedText.startsWith('```json') && cleanedText.endsWith('```')) {
+    cleanedText = cleanedText.substring(7, cleanedText.length - 3).trim();
+  }
+
+  try {
+    const parsedJson = JSON.parse(cleanedText);
+
+    return parsedJson;
+  } catch (error) {
+    console.log("Error parsing AI response:", error);
+    console.error("Failed to parse AI response. Raw response was:", text);
+    throw new Error("Failed to parse AI response. Ensure the model returns pure JSON and is not truncated.");
+  }
+}
+
+export { generateFitnessPlan };
+
+
+// Initialize the Google GenAI client
+const genAIS = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
 const generateWorkoutReport = async (exercises: IExercise[]) => {
   console.log("Generating workout report for exercises:", exercises);
@@ -517,7 +301,7 @@ Exercise data:
 ${JSON.stringify(exercises, null, 2)}
 `;
 
-  const response = await genAI.models.generateContent({
+  const response = await genAIS.models.generateContent({
     model: "gemini-2.0-flash",
     contents: [{ role: "user", parts: [{ text: prompt }] }],
   });
@@ -536,4 +320,4 @@ ${JSON.stringify(exercises, null, 2)}
     throw new Error("Invalid workout report format from Gemini.");
   }
 };
-export { generateFitnessPlan, generateWorkoutReport };
+export {  generateWorkoutReport };

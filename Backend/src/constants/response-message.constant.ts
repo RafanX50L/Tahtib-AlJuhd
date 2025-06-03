@@ -45,4 +45,5 @@ export const HttpResponse = {
     FAILED_TO_UPDATE_WEEK_COMPLETION_STATUS: "Failed to update week completion status",
     FAILED_TO_UPDATE_DAY_COMPLETION_STATUS: "Failed to update day completion status",
     FAILED_TO_FETCH_WORKOUT_REPORT: "Failed to fetch workout report",
+    FAILED_TO_GENERATE_NEXT_WEEK_WORKOUT: "Failed to generate next week workout",
 };

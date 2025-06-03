@@ -14,6 +14,7 @@
   "type": "commonjs",
   "dependencies": {
     "@google/genai": "^1.2.0",
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cheerio": "^1.0.0",
     "cookie-parser": "^1.4.7",

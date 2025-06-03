@@ -12,6 +12,7 @@ import { HttpResponse } from "../../constants/response-message.constant";
 import { HttpStatus } from "../../constants/status.constant";
 import { UserRepository } from "./user.repository";
 import { IWorkoutReport } from "@/models/interface/IWorkout";
+import { generateFitnessPlan } from "../../utils/gemini1.utils";
 
 export class ClientRepository
   extends UserRepository
@@ -21,7 +22,7 @@ export class ClientRepository
     super();
   }
 
-  async SaveWorkoutsDietsPersonalization(userData: IClientUserData, plan: any) {
+  async SaveWorkoutsDietsPersonalization(userData: IClientUserData, workout: any, diet: any) {
     // Check if transactions are supported (replica set or sharded cluster)
     let useTransactions = false;
     try {
@@ -42,10 +43,10 @@ export class ClientRepository
       session.startTransaction();
       try {
         const workoutPlan = await this.createWorkoutPlan(
-          plan.workoutPlan,
+          workout,
           session
         );
-        const dietPlan = await this.createDietPlan(plan.dietPlan, session);
+        const dietPlan = await this.createDietPlan(diet, session);
         const personalization = await this.createPersonalization(
           userData,
           workoutPlan._id as mongoose.Types.ObjectId,
@@ -71,8 +72,8 @@ export class ClientRepository
     } else {
       // Non-transactional fallback for standalone mode
       try {
-        const workoutPlan = await this.createWorkoutPlan(plan.workoutPlan);
-        const dietPlan = await this.createDietPlan(plan.dietPlan);
+        const workoutPlan = await this.createWorkoutPlan(workout);
+        const dietPlan = await this.createDietPlan(diet);
         const personalization = await this.createPersonalization(
           userData,
           workoutPlan._id as mongoose.Types.ObjectId,
@@ -232,15 +233,8 @@ export class ClientRepository
       ) {
         workouts = (data.workouts as any)[weeks];
       }
-      console.log("Fetched Workouts:", workouts);
-      if (!workouts) {
-        throw createHttpError(
-          HttpStatus.NOT_FOUND,
-          HttpResponse.FAILED_TO_FETCH_WORKOUTS
-        );
-      }
       const notes = (data.workouts as any).notes || "No notes available";
-      console.log("feteched notes", notes);
+      console.log("workouts", workouts);
       return {
         workouts,
         notes,
@@ -281,10 +275,10 @@ export class ClientRepository
           : null;
 
       const weekCompletionStatus = {
-        week1: workouts?.week1?.workout_completed || false,
-        week2: workouts?.week2?.workout_completed || false,
-        week3: workouts?.week3?.workout_completed || false,
-        week4: workouts?.week4?.workout_completed || false,
+        week1: true,
+        week2: workouts?.week1?.workout_completed || false,
+        week3: workouts?.week2?.workout_completed || false,
+        week4: workouts?.week3?.workout_completed || false,
       };
       return weekCompletionStatus;
     } catch (error) {
@@ -338,6 +332,27 @@ export class ClientRepository
         HttpStatus.BAD_REQUEST,
         `Day '${day}' not found in ${week}`
       );
+    }
+
+    if (day === "day7") {
+      const weekNumber = parseInt(week.replace("week", ""), 10);
+      const userData = data?.user_data as any;
+      const nextWeek = await generateFitnessPlan(userData, weekNumber + 1, "workout", weekObj);
+      if (!nextWeek) {
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_GENERATE_NEXT_WEEK_WORKOUT
+      );
+      }
+      // nextWeek has shape: { "weekN": {...}, notes: "..." }
+      const nextWeekKey = `week${weekNumber + 1}`;
+      if (nextWeek[nextWeekKey]) {
+      (workoutPlan as any)[nextWeekKey] = nextWeek[nextWeekKey];
+      }
+      if (nextWeek.notes) {
+      (workoutPlan as any).notes = nextWeek.notes;
+      }
+      (workoutPlan as any)[`week${weekNumber}`].completed = true;
     }
 
     // Update the nested fields
