@@ -6,6 +6,7 @@ import Personalization from "@/pages/client/Personalization";
 import WorkoutPlan from "@/pages/client/CWorkouts";
 import WorkoutSession from "@/pages/client/CWorkoutSession";
 import WorkoutReport from "@/components/client/Workouts/WorkoutReport";
+import ChallengeDetail from "@/components/client/WeeklyChallenge/ChallengeDetails";
 
 const UserRotues: React.FC = () => {
   console.log('entered to client routes')
@@ -17,6 +18,7 @@ const UserRotues: React.FC = () => {
       <Route path="/workouts" element={<WorkoutPlan/>} />
       <Route path="/workoutSession" element={<WorkoutSession/>}/>
       <Route path="/workout-report" element={<WorkoutReport/>}/>
+      <Route path="/challenge/:id" element={<ChallengeDetail/>}/>
       
       {/* <Route path="/client"  element={<LayoutPage />}/> */}
     </Routes>

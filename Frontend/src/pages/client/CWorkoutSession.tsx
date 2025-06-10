@@ -41,8 +41,9 @@ const WorkoutSession: React.FC = () => {
     null
   );
   const [workout, setWorkout] = useState<Exercise[]>([]);
-  const [currentWeek, setCurrentWeek] = useState("");
+  const [currentWeek, setCurrentWeek] = useState<string | number>("");
   const [currentDay, setCurrentDay] = useState("");
+  const [challengeId, setChallengId] = useState<string | null>(null);
   const [workoutReport, setWorkoutReport] = useState<WorkoutReport | null>(
     null
   );
@@ -72,6 +73,7 @@ const WorkoutSession: React.FC = () => {
           const parsedData = JSON.parse(data);
           setCurrentDay(parsedData.day || "");
           setCurrentWeek(parsedData.week ? `${parsedData.week}` : "");
+          setChallengId(parsedData.challengeId || null);
           setWorkout(parsedData.exercises || []);
           console.log("workouts here ", parsedData.exercises);
         }
@@ -117,10 +119,11 @@ const WorkoutSession: React.FC = () => {
     const fetchVideo = async () => {
       const exercise = workout[currentExerciseIndex];
       if (exercise?.name) {
-        const video = await searchYouTube(exercise.name);
-        console.log("fetching times donfdak",exercise.name,video.id.videoId);
-        if (video) {
-          setVideoId(video.id.videoId);
+        // const video = await searchYouTube(exercise.name);
+        // console.log("fetching times donfdak",exercise.name,video.id.videoId);
+        const videoId = "5PIFX6QKghk&si=77PT8uUa2p0MDwEs";
+        if (videoId) {
+          setVideoId(videoId);
         } else {
           setVideoId(null); // Reset if no video is found
         }
@@ -139,12 +142,20 @@ const WorkoutSession: React.FC = () => {
         setIsGeneratingReport(true);
         console.log("Starting workout completion process...");
 
-        const response =
-          await ClientService.updateDayCompletionAndGetWorkoutReport(
+        let response;
+        if (challengeId) {
+          response = await ClientService.updateDayCompletionOfWeeklyChallenge(
+            workout,
+            +currentDay,
+            challengeId as string
+          );
+        } else {
+          response = await ClientService.updateDayCompletionAndGetWorkoutReport(
             workout,
             currentDay,
-            currentWeek
+            currentWeek as string
           );
+        }
 
         console.log("Workout completion response:", response);
 
@@ -468,12 +479,28 @@ const WorkoutSession: React.FC = () => {
                     setIsGeneratingReport(true);
                     console.log("Starting workout completion process...");
 
-                    const response =
-                      await ClientService.updateDayCompletionAndGetWorkoutReport(
-                        workout,
-                        currentDay,
-                        currentWeek
-                      );
+                    // const response =
+                    //   await ClientService.updateDayCompletionAndGetWorkoutReport(
+                    //     workout,
+                    //     currentDay,
+                    //     currentWeek
+                    //   );
+                    let response;
+                    if (challengeId) {
+                      response =
+                        await ClientService.updateDayCompletionOfWeeklyChallenge(
+                          workout,
+                          +currentDay,
+                          challengeId as string
+                        );
+                    } else {
+                      response =
+                        await ClientService.updateDayCompletionAndGetWorkoutReport(
+                          workout,
+                          currentDay,
+                          currentWeek as string
+                        );
+                    }
 
                     console.log("Workout completion response:", response);
 
@@ -541,12 +568,30 @@ const WorkoutSession: React.FC = () => {
             setIsGeneratingReport(true);
             console.log("Starting workout completion process...");
 
-            const response =
-              await ClientService.updateDayCompletionAndGetWorkoutReport(
-                workout,
-                currentDay,
-                currentWeek
-              );
+            // const response =
+            //   await ClientService.updateDayCompletionAndGetWorkoutReport(
+            //     workout,
+            //     currentDay,
+            //     currentWeek as string
+            //   );
+
+            let response;
+            console.log("challenge Id:", challengeId);
+            if (challengeId) {
+              response =
+                await ClientService.updateDayCompletionOfWeeklyChallenge(
+                  workout,
+                  +currentDay,
+                  challengeId as string
+                );
+            } else {
+              response =
+                await ClientService.updateDayCompletionAndGetWorkoutReport(
+                  workout,
+                  currentDay,
+                  currentWeek as string
+                );
+            }
 
             console.log("Workout completion response:", response);
 

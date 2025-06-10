@@ -19,7 +19,7 @@ export const AdminService = {
     }
   },
 
-  updateClinetStatus: async (id: string, status: string) => {
+  updateClinetStatus: async (id: string, status: boolean) => {
     console.log("afaskdfjjk");
     try {
       console.log("afdnasjfkas");

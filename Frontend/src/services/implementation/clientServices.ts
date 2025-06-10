@@ -114,5 +114,68 @@ export const ClientService = {
     }
   },
 
-  
+  getWeeklyChallenges: async () => {
+    try {
+      const response = await api.get(CLIENT_ROUTES.GET_WEEKLY_CHALLENGES);
+      console.log("Weekly challenges response: ", response.data);
+      return response.data ;
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch weekly challenges";
+      console.log("Error fetching weekly challenges: ", errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getChallengeById: async (challengeId: string) => {
+    try {
+      const response = await api.get(
+        `${CLIENT_ROUTES.GET_WEEKLY_CHALLENGES}/${challengeId}`
+      );
+      console.log("Challenge response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch challenge details";
+      console.log("Error fetching challenge details: ", errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  joinChallenge: async (challengeId: string) => {
+    try {
+      const response = await api.post(
+        `${CLIENT_ROUTES.JOIN_WEEKLY_CHALLENGE}/${challengeId}`
+      );
+      console.log("Join challenge response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to join challenge";
+      console.log("Error joining challenge: ", errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  updateDayCompletionOfWeeklyChallenge: async (exercises: any, day: number, challengeId: string) => {
+    console.log('Updating day completion for weekly challenge:', exercises, 'day:', day, 'challengeId:', challengeId);
+    try {
+      const response = await api.patch(
+        `${CLIENT_ROUTES.UPDATE_DAY_COMPLETION_OF_WEEKLY_CHALLENGE_STATUS}`,
+        { exercises, day, challengeId }
+      );
+      console.log("Updated day completion response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to update day completion";
+      console.log("Error updating day completion: ", errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
 };

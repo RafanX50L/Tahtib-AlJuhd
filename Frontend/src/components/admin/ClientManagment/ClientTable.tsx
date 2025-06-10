@@ -69,7 +69,7 @@ const ClientsTable : React.FC<ClientsTableProps> = ( {clienttData,setRefetch} ) 
     currentPage * itemsPerPage
   );
 
-  const handleStatusChange = async (clientId: string, newStatus: string) => {
+  const handleStatusChange = async (clientId: string, newStatus: boolean) => {
     console.log(clientId,newStatus)
     try{
       const response = await AdminService.updateClinetStatus(clientId,newStatus);
@@ -178,11 +178,11 @@ const ClientsTable : React.FC<ClientsTableProps> = ( {clienttData,setRefetch} ) 
                       onClick={() =>
                         handleStatusChange(
                           client._id.toString(),
-                          client.status === "active" ? "inactive" : "active"
+                          client.isBlocked === true ? false : true
                         )
                       }
                     >
-                      {client.status === "active" ? "Deactivate" : "Activate"}
+                      {client.isBlocked ? "Deactivate" : "Activate"}
                     </Button>
                   </TableCell>
                 </TableRow>

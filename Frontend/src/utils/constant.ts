@@ -31,4 +31,7 @@ export const CLIENT_ROUTES = {
     GET_WEEK_COMPLETION_STATUS: `${CLIENT_ROUTE}/get-week-completion-status`,
     UPDATE_DAY_COMPLETION_STATUS: `${CLIENT_ROUTE}/update-day-completion-status`,
     GET_WORKOUT_REPORT: `${CLIENT_ROUTE}/get-workout-report`,
-}
+    GET_WEEKLY_CHALLENGES: `${CLIENT_ROUTE}/get-weekly-challenges`,
+    JOIN_WEEKLY_CHALLENGE: `${CLIENT_ROUTE}/join-weekly-challenge`,
+    UPDATE_DAY_COMPLETION_OF_WEEKLY_CHALLENGE_STATUS: `${CLIENT_ROUTE}/update-day-completion-of-weekly-challenge-status`
+};
