@@ -598,4 +598,99 @@ export class ClientService implements IClientService {
       );
     }
   };
+
+  async getWeeklyChallenges(){
+    try {
+      const challenges = await this._clientRepository.getWeeklyChallenges();
+      return challenges;
+    } catch (error) {
+      console.error("Error fetching weekly challenges:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+      );
+    }
+  }
+
+  async getChallengeById(userId: string, challengeId: string) {
+    try {
+      const challenge = await this._clientRepository.getChallengeById(challengeId);
+      if (!challenge) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.WORKOUT_NOT_FOUND
+        );
+      }
+      console.log('challenge', challenge);
+
+      const userWeeklyChallenge = await this._clientRepository.getUserWeeklyChallenge(userId, challengeId);
+
+      console.log('userWeeklyChallenge', userWeeklyChallenge);
+      return { challenge, userWeeklyChallenge };
+    } catch (error) {
+      console.error("Error fetching challenge by ID:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+      );
+    }
+  }
+
+  async joinWeeklyChallenge(id: string, userId: string) {
+    try {
+      const challenge = await this._clientRepository.joinWeeklyChallenge(id, userId);
+      if (!challenge) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.WORKOUT_NOT_FOUND
+        );
+      }
+      return challenge;
+    } catch (error) {
+      console.error("Error joining weekly challenge:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+      );
+    }
+  }
+
+  async updateDayCompletionOfWeeklyChallengeStatus(
+    userId: string,
+    challengeId: string,
+    dayIndex: number,
+  ) {
+    console.log('userId:', userId);
+    console.log('challengeId:', challengeId); 
+    console.log('dayIndex:', dayIndex);
+    try {
+      const workoutReport = {caloriesBurned: 500, // Example value
+          duration: 60, // Example value in minutes
+          feedback: "Great job! Keep it up!", // Example feedback
+          intensity: "low",
+          estimatedDuration: "60 minutes",
+          totalExercises: 5,
+          totalSets: 15,
+        } as IWorkoutReport;
+      const updatedChallenge = await this._clientRepository.updateDayCompletionOfWeeklyChallengeStatus(
+        userId,
+        dayIndex,
+        challengeId,
+        workoutReport
+      );
+      if (!updatedChallenge) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.WORKOUT_NOT_FOUND
+        );
+      }
+      return updatedChallenge;
+    } catch (error) {
+      console.error("Error updating day completion of weekly challenge status:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+      );
+    }
+  }
 }

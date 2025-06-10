@@ -2,10 +2,10 @@ import { GoogleGenAI } from "@google/genai";
 import { IExercise } from "@/models/interface/IWorkout";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import {  writeFile } from 'fs'; // To simulate file writing for debugging
 import dotenv from 'dotenv';
 import { env } from "..//config/env.config";
 
+// Initialize dotenv
 dotenv.config(); // Load environment variables
 
 interface UserData {
@@ -248,8 +248,6 @@ function formatPrompt(userData: UserData, weekNumber: number | null, planType: '
   return `${promptContent}${jsonStructure}`;
 }
 
-
-
 function parseResponse(text: string) {
   let cleanedText = text.trim();
 
@@ -269,23 +267,20 @@ function parseResponse(text: string) {
   }
 }
 
-export { generateFitnessPlan };
-
-
 // Initialize the Google GenAI client
 const genAIS = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
 const generateWorkoutReport = async (exercises: IExercise[]) => {
   console.log("Generating workout report for exercises:", exercises);
-
+  
   const prompt = `
-You are a fitness assistant. Based on the following exercise data, generate a workout report that includes:
-- Total number of exercises
-- Total sets completed
-- Estimated total workout time
-- Estimated calories burned (assume beginner-level intensity)
-- Suggested intensity level (Low, Moderate, High)
-- A brief motivational note for the user
+  You are a fitness assistant. Based on the following exercise data, generate a workout report that includes:
+  - Total number of exercises
+  - Total sets completed
+  - Estimated total workout time
+  - Estimated calories burned (assume beginner-level intensity)
+  - Suggested intensity level (Low, Moderate, High)
+  - A brief motivational note for the user
 
 Return the response in JSON format with the keys:
 {
@@ -320,4 +315,141 @@ ${JSON.stringify(exercises, null, 2)}
     throw new Error("Invalid workout report format from Gemini.");
   }
 };
-export {  generateWorkoutReport };
+
+
+
+// const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+type ChallengeType = 'beginner' | 'intermediate' | 'advanced'; // Added 'intermediate'
+
+const generateExercisesForWeek = async (type: ChallengeType) => {
+  try {
+    const numDailyExercises = 5; // Assuming 5 exercises per day
+    const totalExercisesNeeded = numDailyExercises * 7;
+
+    const prompt = `Generate ${totalExercisesNeeded} unique ${type} fitness exercises suitable for a weekly challenge. Ensure there is enough variety so that each day can have a different set of 5 exercises. Each exercise should have:
+    - name: string (e.g., "Jumping Jacks")
+    - sets: string (e.g., "2", "3")
+    - reps: string (e.g., "15 seconds", "12", "10 each leg", "20")
+    - rest: string (e.g., "30 seconds", "45 seconds")
+    - instructions: string (a brief, clear description of how to perform the exercise)
+    - animation_link: string (a placeholder URL, e.g., "https://example.com/exercise-name")
+
+    Format the output as a JSON array of objects.
+    `;
+
+    let generatedExercises: any[] = [];
+    // --- START GEMINI INTEGRATION (Uncomment and implement when ready) ---
+    // try {
+    //   const result = await model.generateContent(prompt);
+    //   const response = await result.response;
+    //   const text = response.text();
+    //   generatedExercises = JSON.parse(text);
+    //   // Basic validation to ensure we got enough exercises
+    //   if (generatedExercises.length < totalExercisesNeeded) {
+    //     console.warn(`Gemini returned fewer exercises than requested (${generatedExercises.length}/${totalExercisesNeeded}). Falling back to dummy data.`);
+    //     generatedExercises = []; // Clear to trigger dummy data fallback
+    //   }
+    // } catch (geminiError) {
+    //   console.error('Error with Gemini API call, falling back to dummy data:', geminiError);
+    //   generatedExercises = []; // Trigger dummy data fallback
+    // }
+    // --- END GEMINI INTEGRATION ---
+
+    // Fallback to dummy data if Gemini integration is commented out or fails
+    if (generatedExercises.length === 0) {
+      console.log('Using dummy data for exercise generation.');
+      const beginnerDummyPool = [
+        { name: 'Jumping Jacks', sets: "2", reps: "15 seconds", rest: "30 seconds", instructions: 'Start with feet together, jump while spreading legs and arms, then return to start.', animation_link: 'https://example.com/jumping-jacks' },
+        { name: 'Wall Push-Ups', sets: "2", reps: "12", rest: "30 seconds", instructions: 'Stand facing a wall, place hands shoulder-width apart and perform a push-up.', animation_link: 'https://example.com/wall-pushups' },
+        { name: 'Chair Squats', sets: "2", reps: "15", rest: "30 seconds", instructions: 'Stand in front of a chair, lower until seated, then stand back up.', animation_link: 'https://example.com/chair-squats' },
+        { name: 'Knee Lifts', sets: "2", reps: "30 seconds", rest: "30 seconds", instructions: 'March in place lifting your knees to waist height.', animation_link: 'https://example.com/knee-lifts' },
+        { name: 'Plank (Knees)', sets: "2", reps: "20 seconds", rest: "30 seconds", instructions: 'Hold a plank from your knees and elbows.', animation_link: 'https://example.com/plank-knees' },
+        { name: 'Leg Raises', sets: "2", reps: "15", rest: "30 seconds", instructions: 'Lie on your back and raise your legs towards the ceiling.', animation_link: 'https://example.com/leg-raises' },
+        { name: 'Bird Dog', sets: "2", reps: "10 each side", rest: "30 seconds", instructions: 'On all fours, extend opposite arm and leg while keeping core stable.', animation_link: 'https://example.com/bird-dog' },
+        { name: 'Glute Bridge', sets: "2", reps: "15", rest: "30 seconds", instructions: 'Lie on your back, knees bent, lift hips off the ground.', animation_link: 'https://example.com/glute-bridge' },
+        { name: 'Calf Raises', sets: "2", reps: "20", rest: "30 seconds", instructions: 'Stand and raise up onto the balls of your feet.', animation_link: 'https://example.com/calf-raises' },
+        { name: 'Arm Circles', sets: "2", reps: "20 seconds forward/backward", rest: "30 seconds", instructions: 'Stand with arms extended, make small circles.', animation_link: 'https://example.com/arm-circles' },
+        { name: 'Side Plank (Knees)', sets: "2", reps: "15 seconds each side", rest: "30 seconds", instructions: 'Support yourself on one forearm and knees, keeping body straight.', animation_link: 'https://example.com/side-plank-knees' },
+        { name: 'Toe Taps', sets: "2", reps: "30 seconds", rest: "30 seconds", instructions: 'Alternately tap your toes to the ground in front of you.', animation_link: 'https://example.com/toe-taps' },
+        { name: 'Modified Crunches', sets: "2", reps: "15", rest: "30 seconds", instructions: 'Lie on back, knees bent, lift head and shoulders off floor.', animation_link: 'https://example.com/modified-crunches' },
+        { name: 'Reverse Lunges', sets: "2", reps: "8 each leg", rest: "30 seconds", instructions: 'Step backward into a lunge, then return to start.', animation_link: 'https://example.com/reverse-lunges' },
+        { name: 'Cat-Cow Stretch', sets: "2", reps: "10", rest: "30 seconds", instructions: 'Move spine from rounded to arched position on all fours.', animation_link: 'https://example.com/cat-cow' }
+      ];
+
+      // New Intermediate Pool
+      const intermediateDummyPool = [
+        { name: 'Standard Push-Ups', sets: "3", reps: "8-12", rest: "45 seconds", instructions: 'Perform push-ups with hands shoulder-width apart, keeping body straight.', animation_link: 'https://example.com/standard-pushups' },
+        { name: 'Bodyweight Squats', sets: "3", reps: "15-20", rest: "45 seconds", instructions: 'Squat down as if sitting in a chair, keeping chest up and back straight.', animation_link: 'https://example.com/bodyweight-squats' },
+        { name: 'Walking Lunges', sets: "3", reps: "10 each leg", rest: "45 seconds", instructions: 'Step forward into a lunge, then continue forward with the opposite leg.', animation_link: 'https://example.com/walking-lunges' },
+        { name: 'Plank Hold (Elbows)', sets: "3", reps: "45-60 seconds", rest: "45 seconds", instructions: 'Hold body in a straight line from head to heels on your forearms.', animation_link: 'https://example.com/plank-elbows' },
+        { name: 'Bicycle Crunches', sets: "3", reps: "15 each side", rest: "45 seconds", instructions: 'Lie on back, bring opposite elbow to knee, mimicking cycling.', animation_link: 'https://example.com/bicycle-crunches' },
+        { name: 'Triceps Dips (Bench/Chair)', sets: "3", reps: "12-15", rest: "45 seconds", instructions: 'Use a sturdy bench or chair for dips, lowering your body by bending elbows.', animation_link: 'https://example.com/triceps-dips-bench' },
+        { name: 'Step-Ups', sets: "3", reps: "10 each leg", rest: "45 seconds", instructions: 'Step onto a sturdy elevated surface, focusing on the leg pushing up.', animation_link: 'https://example.com/step-ups' },
+        { name: 'Russian Twists', sets: "3", reps: "20 each side", rest: "45 seconds", instructions: 'Sit with knees bent, lean back slightly, twist torso side-to-side.', animation_link: 'https://example.com/russian-twists' },
+        { name: 'Push-Up to Plank Jack', sets: "3", reps: "10", rest: "45 seconds", instructions: 'Perform a push-up, then jump feet out and in like a jumping jack in plank position.', animation_link: 'https://example.com/pushup-plank-jack' },
+        { name: 'Side Plank', sets: "3", reps: "30 seconds each side", rest: "45 seconds", instructions: 'Support yourself on one forearm and foot, keeping body straight.', animation_link: 'https://example.com/side-plank' },
+        { name: 'Supermans', sets: "3", reps: "15", rest: "30 seconds", instructions: 'Lie face down, lift arms and legs off the floor simultaneously.', animation_link: 'https://example.com/supermans' },
+        { name: 'High Knees', sets: "3", reps: "45 seconds", rest: "30 seconds", instructions: 'Run in place, bringing knees up towards your chest.', animation_link: 'https://example.com/high-knees' },
+        { name: 'Butt Kicks', sets: "3", reps: "45 seconds", rest: "30 seconds", instructions: 'Run in place, bringing heels towards your glutes.', animation_link: 'https://example.com/butt-kicks' },
+        { name: 'Reverse Crunches', sets: "3", "reps": "15", "rest": "45 seconds", "instructions": "Lie on your back, lift your legs with knees bent, and curl your hips towards your chest.", "animation_link": "https://example.com/reverse-crunches" },
+        { name: 'Incline Push-Ups', sets: "3", reps: "12-15", rest: "45 seconds", instructions: 'Perform push-ups with hands elevated on a bench or sturdy surface.', animation_link: 'https://example.com/incline-pushups' }
+      ];
+
+
+      const advancedDummyPool = [
+        { name: 'Burpees', sets: "3", reps: "15", rest: "45 seconds", instructions: 'Drop into push-up position, push-up, jump feet forward, leap up.', animation_link: 'https://example.com/burpees' },
+        { name: 'Push-Ups', sets: "3", reps: "12-15", rest: "45 seconds", instructions: 'Keep body straight, lower until chest nearly touches the ground, then push back up.', animation_link: 'https://example.com/pushups' },
+        { name: 'Jump Squats', sets: "3", reps: "20", rest: "45 seconds", instructions: 'Perform a squat, then explode up into a jump and land softly.', animation_link: 'https://example.com/jump-squats' },
+        { name: 'Walking Lunges', sets: "3", reps: "10 each leg", rest: "45 seconds", instructions: 'Step forward into a lunge, then continue forward with the opposite leg.', animation_link: 'https://example.com/walking-lunges' },
+        { name: 'Plank Hold', sets: "3", reps: "45 seconds", rest: "45 seconds", instructions: 'Hold body in a straight line from head to heels.', animation_link: 'https://example.com/plank' },
+        { name: 'Box Jumps', sets: "3", reps: "10", rest: "60 seconds", instructions: 'Jump onto a sturdy box or elevated surface.', animation_link: 'https://example.com/box-jumps' },
+        { name: 'Pull-Ups (Assisted/Negative)', sets: "3", reps: "6-8", rest: "60 seconds", instructions: 'Use a band for assistance or focus on the lowering phase.', animation_link: 'https://example.com/pull-ups' },
+        { name: 'Pistol Squats (Assisted)', sets: "3", reps: "5 each leg", rest: "60 seconds", instructions: 'Use a support for balance while performing a single-leg squat.', animation_link: 'https://example.com/pistol-squats' },
+        { name: 'Mountain Climbers', sets: "3", reps: "45 seconds", rest: "45 seconds", instructions: 'Rapidly bring knees to chest in a plank position.', animation_link: 'https://example.com/mountain-climbers' },
+        { name: 'Handstand Push-Ups (Wall Assisted)', sets: "3", reps: "5-8", rest: "60 seconds", instructions: 'Perform push-ups while in a handstand against a wall.', animation_link: 'https://example.com/handstand-pushups' },
+        { name: 'Side Plank with Reach', sets: "3", reps: "10 each side", rest: "45 seconds", instructions: 'From a side plank, reach your top arm under and through.', animation_link: 'https://example.com/side-plank-reach' },
+        { name: 'Commando Planks', sets: "3", reps: "10-12 reps", rest: "45 seconds", instructions: 'Transition between high plank and forearm plank.', animation_link: 'https://example.com/commando-planks' },
+        { name: 'Russian Twists (Weighted)', sets: "3", reps: "20 each side", rest: "45 seconds", instructions: 'Twist torso side-to-side while leaning back, holding a weight.', animation_link: 'https://example.com/russian-twists' },
+        { name: 'Triceps Dips (Chair)', sets: "3", reps: "15", rest: "45 seconds", instructions: 'Use a chair for dips, lowering your body by bending elbows.', animation_link: 'https://example.com/triceps-dips' },
+        { name: 'Plyometric Lunges', sets: "3", reps: "10 each leg", rest: "60 seconds", instructions: 'Perform a lunge, then jump and switch legs in mid-air.', animation_link: 'https://example.com/plyo-lunges' }
+      ];
+
+      let exercisePool: any[] = [];
+      if (type === 'beginner') {
+        exercisePool = beginnerDummyPool;
+      } else if (type === 'intermediate') { // Select intermediate pool
+        exercisePool = intermediateDummyPool;
+      } else {
+        exercisePool = advancedDummyPool;
+      }
+
+
+      // Randomly select enough exercises to fill 7 days
+      // Ensure we don't pick the same exercise too many times if the pool is small
+      for (let i = 0; i < totalExercisesNeeded; i++) {
+        const randomIndex = Math.floor(Math.random() * exercisePool.length);
+        generatedExercises.push(exercisePool[randomIndex]);
+      }
+    }
+
+    const weeklyTasks = [];
+    for (let i = 0; i < 7; i++) {
+      const dailyExercises = generatedExercises.slice(i * numDailyExercises, (i + 1) * numDailyExercises);
+      weeklyTasks.push({
+        title: `Day ${i + 1} - ${type === 'beginner' ? 'Foundations' : type === 'intermediate' ? 'Progress' : 'Challenge'}`, // Update title based on type
+        exercises: dailyExercises,
+        completed: false,
+        report: null
+      });
+    }
+
+    return weeklyTasks;
+
+  } catch (error) {
+    console.error('❌ Critical error in generateExercisesForWeek:', error);
+    return [];
+  }
+};
+
+export { generateExercisesForWeek, generateWorkoutReport, generateFitnessPlan };

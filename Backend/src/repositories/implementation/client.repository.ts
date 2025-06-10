@@ -13,6 +13,8 @@ import { HttpStatus } from "../../constants/status.constant";
 import { UserRepository } from "./user.repository";
 import { IWorkoutReport } from "@/models/interface/IWorkout";
 import { generateFitnessPlan } from "../../utils/gemini1.utils";
+import WeeklyChallenge from "../../models/implementation/WeeklyChallenges.model";
+import UserWeeklyChallenge, { IUserDayReport } from "../../models/implementation/UserWeeklyChallenge.model";
 
 export class ClientRepository
   extends UserRepository
@@ -22,7 +24,11 @@ export class ClientRepository
     super();
   }
 
-  async SaveWorkoutsDietsPersonalization(userData: IClientUserData, workout: any, diet: any) {
+  async SaveWorkoutsDietsPersonalization(
+    userData: IClientUserData,
+    workout: any,
+    diet: any
+  ) {
     // Check if transactions are supported (replica set or sharded cluster)
     let useTransactions = false;
     try {
@@ -42,10 +48,7 @@ export class ClientRepository
       const session = await mongoose.startSession();
       session.startTransaction();
       try {
-        const workoutPlan = await this.createWorkoutPlan(
-          workout,
-          session
-        );
+        const workoutPlan = await this.createWorkoutPlan(workout, session);
         const dietPlan = await this.createDietPlan(diet, session);
         const personalization = await this.createPersonalization(
           userData,
@@ -294,10 +297,10 @@ export class ClientRepository
     userId: string,
     workoutReport: IWorkoutReport,
     week: string,
-    day: string,
+    day: string
   ) {
     // Update personalization progress
-    console.log("week", week,"day",day);
+    console.log("week", week, "day", day);
     const PersonalData = await PersonalizationModel.findOneAndUpdate(
       { userId },
       { $inc: { "data.user_data.workout_completed_of_28days": 1 } },
@@ -337,20 +340,25 @@ export class ClientRepository
     if (day === "day7") {
       const weekNumber = parseInt(week.replace("week", ""), 10);
       const userData = data?.user_data as any;
-      const nextWeek = await generateFitnessPlan(userData, weekNumber + 1, "workout", weekObj);
-      if (!nextWeek) {
-      throw createHttpError(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        HttpResponse.FAILED_TO_GENERATE_NEXT_WEEK_WORKOUT
+      const nextWeek = await generateFitnessPlan(
+        userData,
+        weekNumber + 1,
+        "workout",
+        weekObj
       );
+      if (!nextWeek) {
+        throw createHttpError(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpResponse.FAILED_TO_GENERATE_NEXT_WEEK_WORKOUT
+        );
       }
       // nextWeek has shape: { "weekN": {...}, notes: "..." }
       const nextWeekKey = `week${weekNumber + 1}`;
       if (nextWeek[nextWeekKey]) {
-      (workoutPlan as any)[nextWeekKey] = nextWeek[nextWeekKey];
+        (workoutPlan as any)[nextWeekKey] = nextWeek[nextWeekKey];
       }
       if (nextWeek.notes) {
-      (workoutPlan as any).notes = nextWeek.notes;
+        (workoutPlan as any).notes = nextWeek.notes;
       }
       (workoutPlan as any)[`week${weekNumber}`].completed = true;
     }
@@ -422,4 +430,176 @@ export class ClientRepository
 
     return report;
   };
+
+  async getWeeklyChallenges(): Promise<any> {
+    try {
+      const now = new Date();
+      const startOfToday = new Date(now.setHours(0, 0, 0, 0));
+      const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
+
+      // Fetch all three types created today
+      const challenges = await WeeklyChallenge.find({
+        type: { $in: ["beginner", "intermediate", "advanced"] },
+        // startDate: { $gte: startOfToday, $lt: endOfToday },
+      });
+
+      // Map them to type
+      const result: Record<string, any> = {
+        beginner: null,
+        intermediate: null,
+        advanced: null,
+      };
+
+      challenges.forEach((challenge) => {
+        result[challenge.type] = challenge;
+      });
+      console.log("Weekly Challenges:", result);
+      return result;
+    } catch (error) {
+      console.error("Error fetching weekly challenges:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+      );
+    }
+  }
+
+  async getChallengeById(challengeId: string): Promise<any> {
+    try {
+      console.log('')
+      const challenge = await WeeklyChallenge.findById(challengeId);
+      if (!challenge) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+        );
+      }
+      return challenge;
+    } catch (error) {
+      console.error("Error fetching challenge by ID:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+      );
+    }
+  }
+
+  async getUserWeeklyChallenge(userId: string, challengeId: string): Promise<any> {
+    try {
+      const userChallenge = await UserWeeklyChallenge.findOne({
+        user: new mongoose.Types.ObjectId(userId),
+        challenge: new mongoose.Types.ObjectId(challengeId),
+      });
+
+      
+
+      return userChallenge;
+    } catch (error) {
+      console.error("Error fetching user weekly challenge:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE
+      );
+    }
+  }
+
+  async joinWeeklyChallenge(
+    userId: string,
+    challengeId: string
+  ): Promise<any> {
+    try {
+      const challenge = await WeeklyChallenge.findById(challengeId);
+      if (!challenge) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_WEEKLY_CHALLENGES
+        );
+      }
+
+      // Check if user is already entered
+      if (challenge.enteredUsers.includes(new mongoose.Types.ObjectId(userId))) {
+        throw createHttpError(
+          HttpStatus.BAD_REQUEST,
+          HttpResponse.USER_ALREADY_JOINED_CHALLENGE
+        );
+      }
+
+      // Add user to enteredUsers array
+      challenge.enteredUsers.push(new mongoose.Types.ObjectId(userId));
+      await challenge.save();
+
+      const userWeeklyChallenge = await UserWeeklyChallenge.create({
+        user: new mongoose.Types.ObjectId(userId),
+        challenge: new mongoose.Types.ObjectId(challengeId),
+        type: challenge.type,
+        startDate: new Date(),
+        progress: [],
+        score: 0,
+      });
+
+      return challenge;
+    } catch (error) {
+      console.error("Error joining weekly challenge:", error);
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_JOIN_WEEKLY_CHALLENGE
+      );
+    }
+  }
+
+  async updateDayCompletionOfWeeklyChallengeStatus(
+  userId: string,
+  dayIndex: number,
+  challengeId: string,
+  workoutReport: IWorkoutReport
+) {
+  console.log('userId:', userId, 'dayIndex:', dayIndex, 'challengeId:', challengeId, 'workoutReport:', workoutReport);
+  try {
+    const userChallenge = await UserWeeklyChallenge.findOne({
+      user: new mongoose.Types.ObjectId(userId),
+      challenge: new mongoose.Types.ObjectId(challengeId),
+    });
+
+    if (!userChallenge) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        HttpResponse.FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE
+      );
+    }
+
+    // Create a new day report entry
+    const newDayReport: IUserDayReport = {
+      dayIndex,
+      completed: true,
+      completedAt: new Date(),
+      report: {
+        caloriesBurned: (workoutReport.caloriesBurned ?? 0),
+        feedback: workoutReport.feedback ?? "",
+        intensity: workoutReport.intensity ?? "",
+        estimatedDuration: workoutReport.estimatedDuration ?? "",
+        totalExercises: (workoutReport.totalExercises ?? 0),
+        totalSets: (workoutReport.totalSets ?? 0),
+      },
+    };
+
+    // Ensure progress array has enough length to accommodate dayIndex
+    if (!userChallenge.progress) {
+      userChallenge.progress = [];
+    }
+
+    // Set the new day report at the specified dayIndex
+    userChallenge.progress[dayIndex] = newDayReport;
+
+    await userChallenge.save();
+
+    return userChallenge;
+  } catch (error) {
+    console.error("Error updating day completion of weekly challenge status:", error);
+    throw createHttpError(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      HttpResponse.FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE
+    );
+  }
+}
+  
 }

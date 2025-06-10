@@ -16,9 +16,9 @@ export class AdminRepository extends BaseRepository<IUserModel> implements IAdmi
         }
     }
 
-    async updateStatusWithId(id:string,status:string){
+    async updateStatusWithId(id:string,status:boolean){
         try{
-            return await this.model.findByIdAndUpdate(id, { $set: { status: status } });
+            return await this.model.findByIdAndUpdate(id, { $set: { isBlocked: status } });
         }catch(error){
             console.error('Error finding clients',error);
             throw new Error("Error finding clients");
