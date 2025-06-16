@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./routes/ProtectedRoute";
 import LandingPage from "./pages/landing/LandingPage";
 import { Button } from "./components/ui/button";
 import { usePWA } from "./hooks/usePWA";
+import TrainerForm from "./pages/trainer/TSubmittingDetails";
 
 const App: React.FC = () => {
   console.log("enterd to react App.tsx page");

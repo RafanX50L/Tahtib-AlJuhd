@@ -16,9 +16,10 @@ import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
 
 interface Props {
   trainer: ITrainerWithPersonalization[];
+  setRefetch: any
 }
 
-const ApprovedTrainersTable: React.FC<Props> = ({ trainer }) => {
+const ApprovedTrainersTable: React.FC<Props> = ({ trainer,setRefetch }) => {
   const [trainers, setTrainers] = useState(trainer);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
