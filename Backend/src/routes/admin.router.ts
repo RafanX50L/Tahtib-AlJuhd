@@ -15,6 +15,7 @@ adminRouter.use('/', verifyToken('admin'), isBlocked()); // Apply middleware to 
 
 adminRouter.get('/clients', adminController.getAllClients.bind(adminController));
 adminRouter.get('/trainers', adminController.getAllTrainers.bind(adminController));
+adminRouter.get('/pending-trainers/:page', adminController.getPendingTrainers.bind(adminController));
 adminRouter.post('/clients/updateStatus', adminController.updateClientStatus.bind(adminController));
 adminRouter.post('/trainers/updateStatus', adminController.updateTrainerStatus.bind(adminController));
 

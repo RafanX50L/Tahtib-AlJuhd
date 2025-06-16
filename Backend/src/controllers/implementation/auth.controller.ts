@@ -13,6 +13,8 @@ import {
   generateAccessToken,
   verifyRefreshToken,
 } from "../../utils";
+import { PersonalizationModel } from "@/models/implementation/personalization.model";
+import { ITrainer } from "@/models/implementation/trainer/sample";
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
@@ -194,27 +196,46 @@ export class AuthController implements IAuthController {
         deleteCookie(res);
         return next(createHttpError(HttpStatus.NOT_FOUND, "User not found"));
       }
-      if(user.isBlocked){
-        console.log('user is bloked');
+      if (user.isBlocked) {
+        console.log("user is bloked");
         deleteCookie(res);
-        return next(createHttpError(HttpStatus.UNAUTHORIZED,HttpResponse.USER_IS_BLOKED));
+        return next(
+          createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.USER_IS_BLOKED)
+        );
       }
 
-      const payload: {_id:string,role:string} = {
+      const payload: { _id: string; role: string } = {
         _id: user && user._id ? user._id.toString() : "",
         role,
       };
-      console.log('payloads ',payload);
-      const user1 = {
-        _id: user._id,
-        name: user.name,
-        email:user.email,
-        role: user.role,
-        personalization:user.personalization
-      };
+      console.log("payloads ", payload);
+      let user1;
+      if (user.role === "trainer" && user.personalization !== null) {
+        const personalization = await PersonalizationModel.findById(
+          user.personalization
+        );
+        const personalizationData = personalization.data as ITrainer;
+         user1 = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          personalization: user.personalization as string,
+          status: personalizationData.status,
+        };
+      } else {
+         user1 = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          personalization: user.personalization as string,
+          status: null,
+        };
+      }
 
       const accessToken = generateAccessToken(payload);
-      console.log(accessToken,user1);
+      console.log(accessToken, user1);
 
       res.status(HttpStatus.OK).json({ accessToken, user: user1 });
     } catch (error) {

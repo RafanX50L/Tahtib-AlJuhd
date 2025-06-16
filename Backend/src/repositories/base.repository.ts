@@ -23,4 +23,8 @@ export abstract class BaseRepository<T extends Document & { isBlocked:boolean}> 
             return false;
         }
     } 
+
+    async findByIdAndUpdatePersonalization(id: string, personalization: Types.ObjectId): Promise<T | null> {
+        return this.model.findByIdAndUpdate(id, { personalization }, { new: true });
+    }
 }

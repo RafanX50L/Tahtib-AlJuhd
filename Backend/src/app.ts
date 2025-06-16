@@ -21,6 +21,7 @@ import {errorHandler} from './middleware/error.middleware';
 import authRoutes from './routes/auth.router';
 import adminRouter from './routes/admin.router';
 import clientRouter from './routes/client.router';
+import trainerRouter from './routes/trainer.router';
 
 const app = express();
 
@@ -44,6 +45,7 @@ connectDb();
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRouter);
 app.use('/api/client',clientRouter);
+app.use('/api/trainer', trainerRouter);
 app.use(errorHandler);
 
 const startServer = async () => {

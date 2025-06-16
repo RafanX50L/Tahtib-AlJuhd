@@ -33,7 +33,7 @@ export class UserRepository
 
   async findByEmail(email: string): Promise<IUserModel | null> {
     try {
-      return await this.model.findOne({ email });
+      return (await this.model.findOne({ email }));
     } catch (error) {
       console.error("Error finding user by email:", error);
       throw new Error("Error finding user by email");
