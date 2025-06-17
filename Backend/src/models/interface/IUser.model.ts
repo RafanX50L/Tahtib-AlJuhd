@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 
 export interface IUser {
@@ -8,5 +8,5 @@ export interface IUser {
   password?: string;
   isBlocked: boolean;
   role: "client" | "trainer" | "admin";
-  personalization: string | null;
+  personalization: null | string | ObjectId;
 }

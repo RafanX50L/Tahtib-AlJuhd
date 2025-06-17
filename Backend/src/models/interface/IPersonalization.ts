@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { ITrainer } from "../implementation/trainer/sample";
 
 export interface IClientPersonalization extends Document {
   
@@ -11,13 +12,6 @@ export interface IClientPersonalization extends Document {
   one_to_one: Types.ObjectId | null;
 }
 
-export interface ITrainerPersonalization {
-  specialty: string;
-  experience: string;
-  monthlyFee: string;
-  expertiseLevel: "beginner" | "intermediate" | "advanced";
-  isActive: boolean;
-}
 
 export interface IAdminPersonalization {
   adminNotes?: string;
@@ -26,7 +20,7 @@ export interface IAdminPersonalization {
 export interface IPersonalization extends Document {
   userId: Types.ObjectId;
   role: "client" | "trainer" | "admin";
-  data: IClientPersonalization | ITrainerPersonalization | IAdminPersonalization | null;
+  data: IClientPersonalization | ITrainer | IAdminPersonalization | null;
 }
 
 

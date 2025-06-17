@@ -26,6 +26,9 @@ import { HttpResponse } from "../../constants/response-message.constant";
 import { IUser } from "../../models/interface/IUser.model";
 import { generateNanoId } from "../../utils/generate-nanoid";
 import mongoose from "mongoose";
+import { PersonalizationData } from "@/repositories/implementation/trainer.repositor";
+import { PersonalizationModel } from "@/models/implementation/personalization.model";
+import { ITrainer } from "@/models/implementation/trainer/sample";
 
 export class AuthService implements IAuthService {
   constructor(private readonly _userRepository: IUserRepository) {}
@@ -83,24 +86,47 @@ export class AuthService implements IAuthService {
 
     const payload = {
       id: existingUser._id,
-      name: existingUser.name,
-      email: existingUser.email,
+      // name: existingUser.name,
+      // email: existingUser.email,
       role: existingUser.role,
-      personalization: existingUser.personalization,
+      // personalization: existingUser.personalization,
     };
+    console.log("existingenUser", existingUser);
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-    return {
-      user: {
-        _id: existingUser._id,
-        name: existingUser.name,
-        email: existingUser.email,
-        role: existingUser.role,
-        personalization:existingUser.personalization
-      },
-      accessToken,
-      refreshToken,
-    };
+    if (existingUser.role === "trainer" && existingUser.personalization !==null) {
+      const personalization = await PersonalizationModel.findById(
+        existingUser.personalization
+      );
+      const personalizationData = personalization.data as ITrainer;
+      return {
+        user: {
+          _id: existingUser._id,
+          name: existingUser.name,
+          email: existingUser.email,
+          role: existingUser.role,
+          personalization: existingUser.personalization as string,
+          status: personalizationData.status,
+        },
+        accessToken,
+        refreshToken,
+      };
+    } else {
+      return {
+        user: {
+          _id: existingUser._id,
+          name: existingUser.name,
+          email: existingUser.email,
+          role: existingUser.role,
+          personalization: existingUser.personalization as string,
+          status: null,
+          // personalization: existingUser.personalization._id || null,
+          // status: existingUser.personalization.data.status || null
+        },
+        accessToken,
+        refreshToken,
+      };
+    }
   }
 
   async verifyOtp(email: string, otp: string): Promise<verifyOtpReturnType> {
@@ -109,7 +135,7 @@ export class AuthService implements IAuthService {
       throw createHttpError(HttpStatus.NOT_FOUND, HttpResponse.OTP_NOT_FOUND);
     }
 
-    const storedData = JSON.parse(storedDataString);
+    const storedData = JSON.parse(storedDataString as string);
 
     if (storedData.otp !== otp) {
       throw createHttpError(HttpStatus.BAD_REQUEST, HttpResponse.OTP_INCORRECT);
@@ -140,17 +166,37 @@ export class AuthService implements IAuthService {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
-    return {
-      user: {
-        _id: createdUser._id,
-        name: createdUser.name,
-        email: createdUser.email,
-        role: createdUser.role,
-        personalization: createdUser.personalization,
-      },
-      accessToken,
-      refreshToken,
-    };
+    if (createdUser.role === "trainer" && createdUser.personalization !== null) {
+      const personalization = await PersonalizationModel.findById(
+        createdUser.personalization
+      );
+      const personalizationData = personalization.data as ITrainer;
+      return {
+        user: {
+          _id: createdUser._id,
+          name: createdUser.name,
+          email: createdUser.email,
+          role: createdUser.role,
+          personalization: createdUser.personalization as string,
+          status: personalizationData.status,
+        },
+        accessToken,
+        refreshToken,
+      };
+    } else {
+      return {
+        user: {
+          _id: createdUser._id,
+          name: createdUser.name,
+          email: createdUser.email,
+          role: createdUser.role,
+          personalization: createdUser.personalization as string,
+          status: null,
+        },
+        accessToken,
+        refreshToken,
+      };
+    }
   }
 
   async refreshAccessToken(
@@ -184,7 +230,7 @@ export class AuthService implements IAuthService {
       throw createHttpError(HttpStatus.NOT_FOUND, HttpResponse.OTP_NOT_FOUND);
     }
 
-    const storedData = JSON.parse(storedDataString);
+    const storedData = JSON.parse(storedDataString as string);
     const otp = generateOTP();
     console.log("Resending OTP:", otp);
     await sendOtpEmail(email, otp);
@@ -225,7 +271,7 @@ export class AuthService implements IAuthService {
 
     const hashedPassword = await hashPassword(password);
     const updatedUser = await this._userRepository.updatePassword(
-      getEmail,
+      getEmail as string,
       hashedPassword
     );
     if (!updatedUser) {
@@ -274,17 +320,37 @@ export class AuthService implements IAuthService {
       const payload = { id: createdUser._id, role: createdUser.role };
       const accessToken = generateAccessToken(payload);
       const refreshToken = generateRefreshToken(payload);
-      return {
-        user: {
-          _id: createdUser._id,
-          name: createdUser.name,
-          email: createdUser.email,
-          role: createdUser.role,
-          personalization: createdUser.personalization,
-        },
-        accessToken,
-        refreshToken,
-      };
+      if (createdUser.role === "trainer" && createdUser.personalization !== null) {
+        const personalization = await PersonalizationModel.findById(
+          createdUser.personalization
+        );
+        const personalizationData = personalization.data as ITrainer;
+        return {
+          user: {
+            _id: createdUser._id,
+            name: createdUser.name,
+            email: createdUser.email,
+            role: createdUser.role,
+            personalization: createdUser.personalization as string,
+            status: personalizationData.status,
+          },
+          accessToken,
+          refreshToken,
+        };
+      } else {
+        return {
+          user: {
+            _id: createdUser._id,
+            name: createdUser.name,
+            email: createdUser.email,
+            role: createdUser.role,
+            personalization: createdUser.personalization as string,
+            status: null,
+          },
+          accessToken,
+          refreshToken,
+        };
+      }
     } else if (existingUser.password) {
       throw createHttpError(
         HttpStatus.UNAUTHORIZED,
@@ -301,17 +367,37 @@ export class AuthService implements IAuthService {
       const payload = { id: existingUser._id, role: existingUser.role };
       const accessToken = generateAccessToken(payload);
       const refreshToken = generateRefreshToken(payload);
-      return {
-        user: {
-          _id: existingUser._id,
-          name: existingUser.name,
-          email: existingUser.email,
-          role: existingUser.role,
-          personalization: existingUser.personalization,
-        },
-        accessToken,
-        refreshToken,
-      };
+      if (existingUser.role === "trainer" && existingUser.personalization !== null) {
+        const personalization = await PersonalizationModel.findById(
+          existingUser.personalization
+        );
+        const personalizationData = personalization.data as ITrainer;
+        return {
+          user: {
+            _id: existingUser._id,
+            name: existingUser.name,
+            email: existingUser.email,
+            role: existingUser.role,
+            personalization: existingUser.personalization as string,
+            status: personalizationData.status,
+          },
+          accessToken,
+          refreshToken,
+        };
+      } else {
+        return {
+          user: {
+            _id: existingUser._id,
+            name: existingUser.name,
+            email: existingUser.email,
+            role: existingUser.role,
+            personalization: existingUser.personalization as string,
+            status: null,
+          },
+          accessToken,
+          refreshToken,
+        };
+      }
     }
   }
 

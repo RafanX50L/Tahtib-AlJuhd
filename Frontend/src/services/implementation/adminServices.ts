@@ -1,7 +1,7 @@
 import api from "./api";
 import { ADMIN_ROUTES } from "@/utils/constant";
 import { AxiosError } from "axios";
-import { toast } from "sonner";
+
 
 export const AdminService = {
   getAllClients: async () => {
@@ -52,6 +52,23 @@ export const AdminService = {
       throw new Error(errorMessage);
     }
   },
+
+  getPendingTrainers: async (page:number) => {
+    try {
+      console.log('jkdsakfjsadklfjsadkfj');
+      const response = await api.get(`${ADMIN_ROUTES.GET_PENDING_TRAINERS}/${page}`);
+      console.log('response from pending tariners',response.data);
+      return { data: response.data, error: null};
+    } catch (error: unknown) {
+       const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error ||
+        "Failed to fetch trainers. Please try again.";
+      console.log("Error fetching trainers:", errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
   updateTrainerStatus: async (id:string,status:string) => {
     try {
       console.log("afdnasjfkas");

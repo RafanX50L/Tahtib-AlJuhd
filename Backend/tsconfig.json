@@ -8,7 +8,7 @@
       "@/*": ["src/*"] // Use path alias to point to the src folder
     },
     "esModuleInterop": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "sourceMap": true

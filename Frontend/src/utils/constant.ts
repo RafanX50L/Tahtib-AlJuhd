@@ -1,4 +1,6 @@
-export const HOST = "http://localhost:5000"; 
+import { env } from "@/config/env";
+
+export const HOST = env.PUBLIC_DOMAIN; 
 
 const AUTH_ROUTE = "/auth";
 
@@ -17,6 +19,7 @@ const ADMIN_ROUTE = "/admin";
 
 export const ADMIN_ROUTES = {
     GET_ALL_CLIENTS: `${ADMIN_ROUTE}/clients`,
+    GET_PENDING_TRAINERS: `${ADMIN_ROUTE}/pending-trainers`,
     GET_ALL_TRAINERS: `${ADMIN_ROUTE}/trainers`,
     UPDATE_CLIENT_STATUS: `${ADMIN_ROUTE}/clients/updateStatus`,
     UPDATE_TRAINER_STATUS:`${ADMIN_ROUTE}/trainers/updateStatus`
@@ -35,3 +38,8 @@ export const CLIENT_ROUTES = {
     JOIN_WEEKLY_CHALLENGE: `${CLIENT_ROUTE}/join-weekly-challenge`,
     UPDATE_DAY_COMPLETION_OF_WEEKLY_CHALLENGE_STATUS: `${CLIENT_ROUTE}/update-day-completion-of-weekly-challenge-status`
 };
+
+const TRAINER_ROUTE = "/trainer";
+export const TRAINER_ROUTES = {
+    SUBMIT_TRAINER_APPLICATION: `${TRAINER_ROUTE}/submit-application`,
+}

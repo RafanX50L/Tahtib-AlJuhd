@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/app.ts",
-    "dev": "ts-node-dev --respawn src/app.ts",
+    "start": "ts-node src/server.ts",
+    "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/server.ts",
     "build": "tsc"
   },
   "keywords": [],
@@ -13,6 +13,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.828.0",
+    "@aws-sdk/s3-request-presigner": "^3.828.0",
     "@google/genai": "^1.2.0",
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
@@ -20,17 +22,21 @@
     "cookie-parser": "^1.4.7",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.6.0",
     "morgan": "^1.10.0",
     "nanoid": "^5.1.5",
     "node": "^23.11.0",
     "node-cron": "^4.1.0",
     "nodemailer": "^6.10.1",
-    "redis": "^5.0.0"
+    "redis": "^5.0.0",
+    "socket.io": "^4.8.1",
+    "tsconfig-paths": "^4.2.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
     "@types/bcryptjs": "^2.4.6",
-    "@types/cookie-parser": "^1.4.8",
+    "@types/cookie-parser": "^1.4.3",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.14.1",

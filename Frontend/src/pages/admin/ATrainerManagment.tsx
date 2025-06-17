@@ -16,6 +16,7 @@ export interface IUser {
   email: string;
   password?: string;
   status: "active" | "inactive";
+  isActive: boolean,
   role: "client" | "trainer" | "admin";
   personalization?: IPersonalization;
 }
@@ -45,22 +46,92 @@ export interface IAdminPersonalization {
 }
 
 // Interface for a Trainer with populated personalization data
-export interface ITrainerWithPersonalization extends Omit<IUser, "personalization"> {
-  _id: Types.ObjectId;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  __v: number;
+// export interface ITrainerWithPersonalization extends Omit<IUser, "personalization"> {
+//   _id?: Types.ObjectId;
+//   name: string;
+//   email: string;
+//   password?: string;
+//   isBlocked: boolean;
+//   role: "client" | "trainer" | "admin";
+//   personalization: ITrainer
+// }
+
+export interface ITrainerWithPersonalization {
+  _id: string;
+  name: string;
+  email: string;
+  password?: string;
+  isBlocked?: boolean;
+  role: "trainer";
+  createdAt: string;
+  updatedAt: string;
   personalization: {
-    _id: Types.ObjectId;
-    userId: Types.ObjectId;
+    _id: string;
+    userId: string;
     role: "trainer";
-    data: ITrainerPersonalization;
-    createdAt: Date;
-    updatedAt: Date;
-    __v: number;
-  } | null;
+    createdAt: string;
+    updatedAt: string;
+    data: {
+      basicInfo: {
+        phoneNumber: string;
+        location: string;
+        timeZone: string;
+        dateOfBirth: string;
+        age: number | null;
+        gender: "male" | "female" | "other";
+        profilePhotoId?: string;
+        profilePhoto?: Array<{
+          fileName: string;
+          filePath: string;
+          fileType: string;
+          uploadedAt: string;
+        }>;
+      };
+      availability: {
+        weeklySlots: Array<{
+          day: string; // e.g., "Monday"
+          timeSlots: string[]; // e.g., ["10:00-11:00", "14:00-15:00"]
+        }>;
+        engagementType: "full-time" | "part-time";
+      };
+      professionalSummary: {
+        yearsOfExperience: number;
+        specializations: string[];
+        coachingType: string[];
+        platformsUsed: string[];
+        certifications?: {
+          title: string;
+          issuer: string;
+          dateIssued: string;
+          proofFile: Array<{
+            fileName: string;
+            filePath: string;
+            fileType: string;
+            uploadedAt: string;
+          }>;
+        };
+      };
+      sampleMaterials: {
+        demoVideoLink: string;
+        portfolioLinks: string[];
+        resumeFileId: string;
+        resumeFile: Array<{
+          fileName: string;
+          filePath: string;
+          fileType: string;
+          uploadedAt: string;
+        }>;
+      };
+      evaluation?: any; // You can define this if you have the structure
+      status: "applied" | "interview scheduled" | "interview completed" | string;
+    };
+  };
 }
+
+export interface IUser {
+ 
+}
+
 
 const ATrainerManagment = () => {
   const [trainerData, setTrainerData] = useState<ITrainerWithPersonalization[]>([]);
@@ -79,10 +150,10 @@ const ATrainerManagment = () => {
 
         // Separate approved and pending trainers
         const approved = trainers.filter(
-          (trainer) => trainer.personalization?.data.isActive === true
+          (trainer) => trainer.personalization?.data.status === 'approved'
         );
         const pending = trainers.filter(
-          (trainer) => trainer.personalization?.data.isActive === false
+          (trainer) => trainer.personalization?.data.status === 'applied'
         );
 
         setApprovedTrainers(approved);
@@ -123,7 +194,7 @@ const ATrainerManagment = () => {
         <main className="px-6 py-8">
           <TrainerStatsCard />
           <ApprovedTrainersTable trainer={approvedTrainers} setRefetch={setRefetch} />
-          <PendingApplicationsTable trainer={pendingTrainers}  />
+          <PendingApplicationsTable  />
         </main>
         <footer className="px-6 py-4 bg-gray-900 mt-8">
           <div className="flex items-center justify-between">

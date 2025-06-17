@@ -4,6 +4,7 @@ import { IAdminRepository } from "../../repositories/interface/IAdmin.respositor
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
 import { IUser } from "@/models/interface/IUser.model";
+import { start } from "repl";
 
 export class AdminService implements IAdminService{
     constructor(private readonly _adminRepository: IAdminRepository) {} // Replace 'any' with the actual type of your repository
@@ -37,5 +38,14 @@ export class AdminService implements IAdminService{
         // console.log('enterd ot update status');
         await this._adminRepository.updateStatusWithId(id,status);
         return 'Update Success Full';
+    }
+
+    async getPendingTrainers(page:number):Promise<any>{
+        const skip = (page-1) * 8;
+        const limit = 8;
+
+        const pendingTrainers = this._adminRepository.getPendingTrainers(skip,limit);
+        console.log('pendingtrainers',pendingTrainers);
+        return pendingTrainers;
     }
 }

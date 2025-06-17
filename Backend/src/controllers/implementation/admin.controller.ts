@@ -65,4 +65,16 @@ export class AdminController implements IAdminController {
       next(error);
     }
   }
+
+  async getPendingTrainers(req:Request, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const page = req.params.page;
+      console.log('entered to pending tainers');
+      const pendingTrainers = await this.adminService.getPendingTrainers(Number(page));
+      res.status(HttpStatus.OK).json(pendingTrainers);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

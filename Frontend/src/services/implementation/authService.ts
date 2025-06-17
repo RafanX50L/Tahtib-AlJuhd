@@ -5,6 +5,9 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { UserInterface } from "@/types/user";
 
+
+//verify otp, GoogleSignup,login,refreshToken
+
 export const AuthService = {
   registerUser: async (formData: any) => {
     try {

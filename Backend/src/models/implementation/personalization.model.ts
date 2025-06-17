@@ -1,5 +1,10 @@
 import mongoose, { Schema, model } from "mongoose";
-import { IAdminPersonalization, IClientPersonalization, ITrainerPersonalization, IPersonalization } from "../interface/IPersonalization";
+import {
+  IAdminPersonalization,
+  IClientPersonalization,
+  IPersonalization,
+} from "../interface/IPersonalization";
+import { TrainerSchema } from "./trainer/sample";
 
 // Sub-schemas for role-specific personalization data
 const clientPersonalizationSchema = new Schema<IClientPersonalization>({
@@ -21,7 +26,14 @@ const clientPersonalizationSchema = new Schema<IClientPersonalization>({
     target_weight: { type: String, required: true },
     fitness_goal: {
       type: String,
-      enum: ["build muscle", "lose weight", "get stronger", "improve endurance", "tone body", "increase flexibility"],
+      enum: [
+        "build muscle",
+        "lose weight",
+        "get stronger",
+        "improve endurance",
+        "tone body",
+        "increase flexibility",
+      ],
       required: true,
     },
     current_fitness_level: {
@@ -36,7 +48,14 @@ const clientPersonalizationSchema = new Schema<IClientPersonalization>({
     },
     equipments: {
       type: [String],
-      enum: ["body weight", "dumbbells", "resistance bands", "kettlebells", "pull-up bar", "yoga mat"],
+      enum: [
+        "body weight",
+        "dumbbells",
+        "resistance bands",
+        "kettlebells",
+        "pull-up bar",
+        "yoga mat",
+      ],
       default: [],
     },
     workout_duration: { type: String, required: true },
@@ -50,28 +69,22 @@ const clientPersonalizationSchema = new Schema<IClientPersonalization>({
       required: true,
     },
     diet_preferences: { type: String },
-    workout_completed_of_28days : { type: Number, default: 0 },
+    workout_completed_of_28days: { type: Number, default: 0 },
   },
   workouts: { type: Schema.Types.ObjectId, ref: "WorkoutPlan", default: null },
-  dietPlan:{ type: Schema.Types.ObjectId, ref: "DietPlan", default: null },
+  dietPlan: { type: Schema.Types.ObjectId, ref: "DietPlan", default: null },
   posts: { type: Schema.Types.ObjectId, ref: "Post", default: null },
   progress: { type: Schema.Types.ObjectId, ref: "ProgressLog", default: null },
-  one_to_one: { type: Schema.Types.ObjectId, ref: "OneToOneSession", default: null },
-});
-
-const trainerPersonalizationSchema = new Schema<ITrainerPersonalization>({
-  specialty: { type: String, required: true, default: "General" },
-  experience: { type: String, required: true, default: "0 years" },
-  monthlyFee: { type: String, required: true, default: "$0" },
-  expertiseLevel: {
-    type: String,
-    enum: ["beginner", "intermediate", "advanced"],
-    required: true,
-    default: "beginner",
+  one_to_one: {
+    type: Schema.Types.ObjectId,
+    ref: "OneToOneSession",
+    default: null,
   },
-  isActive: { type: Boolean, default: false },
 });
 
+
+
+const trainerPersonalizationSchema = TrainerSchema;
 const adminPersonalizationSchema = new Schema<IAdminPersonalization>({
   adminNotes: { type: String },
 });
@@ -90,38 +103,52 @@ const personalizationSchema = new Schema<IPersonalization>(
       enum: ["client", "trainer", "admin"],
       required: true,
     },
+
     data: {
       type: Schema.Types.Mixed,
       required: true,
       validate: {
         validator: async function (value: any) {
           if (!value || typeof value !== "object") return false;
-
+          
+          console.log(this.role,'the role is and rafan and salman   have andi?? ',this,value);
+          console.log('suuuuu',value.role);
           try {
-            // Select the appropriate schema based on role
             let schema: Schema;
-            if (this.role === "client") {
-              console.log('nice enterd');
-              schema = clientPersonalizationSchema as Schema<IClientPersonalization>;
-            } else if (this.role === "trainer") {
-              schema = trainerPersonalizationSchema as Schema<ITrainerPersonalization>;
-            } else if (this.role === "admin") {
-              schema = adminPersonalizationSchema as Schema<IAdminPersonalization>;
-            } else {
-              return false;
+
+            switch (value.role) {
+              case "client":
+                schema =
+                  clientPersonalizationSchema as Schema<IClientPersonalization>;
+                break;
+              case "trainer":
+                schema = trainerPersonalizationSchema as Schema<any>;
+                break;
+              case "admin":
+                schema =
+                  adminPersonalizationSchema as Schema<IAdminPersonalization>;
+                break;
+              default:
+                return false;
             }
 
-            // Create a temporary model to validate the data
-            const TempModel = mongoose.model("TempModel", schema);
+            // Avoid OverwriteModelError by checking for existing model
+            const modelName = `Temp_${this.role}_Personalization`;
+            console.log(modelName);
+            const TempModel =
+              mongoose.models[modelName] || mongoose.model(modelName, schema);
+
             const tempDoc = new TempModel(value);
-            await tempDoc.validate();
+            const temp = await tempDoc.validate();
+            console.log("Validation successful:", temp);
+
             return true;
-          } catch (error) {
-            console.log(error);
+          } catch (err) {
+            console.log("Validation error:", err);
             return false;
           }
         },
-        message: "Invalid personalization data for the specified role",
+        message: () => `Invalid personalization data for the specified role.`,
       },
     },
   },
@@ -132,4 +159,7 @@ const personalizationSchema = new Schema<IPersonalization>(
 // personalizationSchema.index({ userId: 1 });
 
 // Export the model
-export const PersonalizationModel = model<IPersonalization>("Personalization", personalizationSchema);
+export const PersonalizationModel = model<IPersonalization>(
+  "Personalization",
+  personalizationSchema
+);

@@ -4,4 +4,5 @@ export interface IAdminService  {
     updateClientStatus: (id:string,status:boolean)=> Promise<string>;
     getAllTrainers: () => Promise<any>;
     updateTrainertatus: (id:string,status:string)=> Promise<string>;
+    getPendingTrainers(page:number):Promise<any>
 }

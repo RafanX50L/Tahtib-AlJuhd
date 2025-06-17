@@ -6,4 +6,5 @@ export interface IAdminController {
     updateClientStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllTrainers(req: Request, res: Response, next: NextFunction): Promise<void>;
     updateTrainerStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getPendingTrainers(req:Request, res:Response, next:NextFunction):Promise<void>;
 }
