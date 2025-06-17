@@ -1,7 +1,7 @@
 
 export interface IAdminService  {
     getAllClients: (userid:string) => Promise<any>;
-    updateClientStatus: (id:string,status:string)=> Promise<string>;
+    updateClientStatus: (id:string,status:boolean)=> Promise<string>;
     getAllTrainers: () => Promise<any>;
     updateTrainertatus: (id:string,status:string)=> Promise<string>;
     getPendingTrainers(page:number):Promise<any>

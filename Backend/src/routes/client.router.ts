@@ -19,5 +19,9 @@ clientRouter.get('/get-workouts/:week', clientController.getWorkouts.bind(client
 clientRouter.get('/get-week-completion-status', clientController.getWeekCompletionStatus.bind(clientController));
 clientRouter.patch('/update-day-completion-status', clientController.updateDayCompletionStatus.bind(clientController));
 clientRouter.get('/get-workout-report', clientController.getWorkoutReport.bind(clientController));
+clientRouter.get('/get-weekly-challenges', clientController.getWeeklyChallenges.bind(clientController));
+clientRouter.get('/get-weekly-challenges/:id', clientController.getChallengeById.bind(clientController));
+clientRouter.post('/join-weekly-challenge/:id', clientController.joinWeeklyChallenge.bind(clientController));
+clientRouter.patch('/update-day-completion-of-weekly-challenge-status', clientController.updateDayCompletionOfWeeklyChallengeStatus.bind(clientController));
 
 export default clientRouter;

@@ -46,4 +46,12 @@ export const HttpResponse = {
     FAILED_TO_UPDATE_DAY_COMPLETION_STATUS: "Failed to update day completion status",
     FAILED_TO_FETCH_WORKOUT_REPORT: "Failed to fetch workout report",
     FAILED_TO_GENERATE_NEXT_WEEK_WORKOUT: "Failed to generate next week workout",
+
+    // weekly challenges response messages
+    WEEKLY_CHALLENGES_FETCHED: "Weekly challenges fetched successfully",
+    FAILED_TO_FETCH_WEEKLY_CHALLENGES: "Failed to fetch weekly challenges",
+    USER_ALREADY_JOINED_CHALLENGE: "User already joined this challenge",
+    FAILED_TO_JOIN_WEEKLY_CHALLENGE: "Failed to join weekly challenge",
+    FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE: "Failed to fetch user weekly challenge",
+    FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE: "Failed to update user weekly challenge",
 };

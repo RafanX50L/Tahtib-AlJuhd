@@ -32,6 +32,7 @@ export class AdminRepository
     }
   }
 
+
   async findAllTrainersWithPersonalization() {
     try {
       // return await this.model.find({role:'trainer'}).populate('personalization');
@@ -55,6 +56,14 @@ export class AdminRepository
     } catch (error) {
       console.error("Error finding clients", error);
       throw new Error("Error finding clients");
+
+    async updateStatusWithId(id:string,status:boolean){
+        try{
+            return await this.model.findByIdAndUpdate(id, { $set: { isBlocked: status } });
+        }catch(error){
+            console.error('Error finding clients',error);
+            throw new Error("Error finding clients");
+        }
     }
   }
 

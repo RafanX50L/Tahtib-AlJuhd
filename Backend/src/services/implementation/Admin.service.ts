@@ -20,7 +20,7 @@ export class AdminService implements IAdminService{
         // console.log(clientData);
         return clientData;
     }
-    async updateClientStatus(id:string,status:string):Promise<string>{
+    async updateClientStatus(id:string,status:boolean):Promise<string>{
         // console.log('enterd ot update status');
         await this._adminRepository.updateStatusWithId(id,status);
         return 'Update Success Full';
