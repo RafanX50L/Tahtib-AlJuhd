@@ -12,7 +12,7 @@ validateEnv();
 // configs
 import {connectDb} from './config/mongo.config';
 import {env} from './config/env.config';
-import {connectRedis} from './config/redis.config';
+// import {connectRedis} from './config/redis.config';
 
 // middlewares
 import {errorHandler} from './middleware/error.middleware';
@@ -48,14 +48,16 @@ app.use('/api/client',clientRouter);
 app.use('/api/trainer', trainerRouter);
 app.use(errorHandler);
 
-const startServer = async () => {
-    await connectRedis();
-    await connectDb();
-    app.listen(env.PORT, () => {
-        console.log(`Server is running on port ${env.PORT}`);
-    });
-};
+// const startServer = async () => {
+//     await connectRedis();
+//     await connectDb();
+//     app.listen(env.PORT, () => {
+//         console.log(`Server is running on port ${env.PORT}`);
+//     });
+// };
 
-startServer().catch((error) => {
-    console.error('Error starting server:', error);
-});
+// startServer().catch((error) => {
+//     console.error('Error starting server:', error);
+// });
+
+export default app;
