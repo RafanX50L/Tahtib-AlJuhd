@@ -41,7 +41,7 @@ const Sidebar = () => {
   const navItems = [
     { icon: FaHome, text: "Dashboard",path:"/dashboard" },
     { icon: FaDumbbell, text: "Workout" , path:"/workouts" },
-    { icon: FaChartLine, text: "Progress", path: "/progress" },
+    { icon: FaChartLine, text: "Progress", path: "/room/fanu" },
     { icon: FaUsers, text: "Community", path: "/workoutSession", },
     { icon: FaUserTie, text: "Trainer Sessions", path: "/progress", },
     { icon: FaUtensils, text: "Meal Guide", path: "/progress", },

@@ -1,4 +1,4 @@
-"use client";
+ ;
 
 import { useEffect, useState } from "react";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";

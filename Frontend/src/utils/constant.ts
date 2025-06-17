@@ -1,4 +1,6 @@
-export const HOST = "http://localhost:5000"; 
+import { env } from "@/config/env";
+
+export const HOST = env.PUBLIC_DOMAIN; 
 
 const AUTH_ROUTE = "/auth";
 

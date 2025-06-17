@@ -37,33 +37,63 @@ export const ProtectedRoute: React.FC<{ allowedRoles: string }> = ({ allowedRole
     return <Navigate to="/Dashboard" replace />;
   }
 
-  // Trainer job application flow
-  if (
-    user?.role === "trainer" &&
-    user.personalization === null &&
-    location.pathname !== "/trainer/job-application"
-  ) {
-    return <Navigate to="/trainer/job-application" replace />;
-  }
+  // // Trainer job application flow
+  // if (
+  //   user?.role === "trainer" &&
+  //   user.personalization === null &&
+  //   location.pathname !== "/trainer/job-application"
+  // ) {
+  //   return <Navigate to="/trainer/job-application" replace />;
+  // }
 
-  if (
-    user?.role === "trainer" &&
-    user.personalization !== null &&
-    location.pathname === "/trainer/job-application" &&
-    user.status === "approved"
-  ) {
-    return <Navigate to="/trainer/dashboard" replace />;
-  }
+  // if (
+  //   user?.role === "trainer" &&
+  //   user.personalization !== null &&
+  //   location.pathname === "/trainer/job-application" &&
+  //   user.status === "approved"
+  // ) {
+  //   return <Navigate to="/trainer/dashboard" replace />;
+  // }
 
-  // Prevent looping to pendingCase if already there or if still on job-application
-  if (
-    user?.role === "trainer" &&
-    user.status !== "approved" &&
-    location.pathname !== "/trainer/pendingCase" &&
-    location.pathname !== "/trainer/job-application"
-  ) {
-    return <Navigate to="/trainer/pendingCase" replace />;
-  }
+  // // Prevent looping to pendingCase if already there or if still on job-application
+  // if (
+  //   user?.role === "trainer" &&
+  //   user.status !== "approved" &&
+  //   location.pathname !== "/trainer/pendingCase" &&
+  //   location.pathname !== "/trainer/job-application"
+  // ) {
+  //   return <Navigate to="/trainer/pendingCase" replace />;
+  // }
+  const isRoomPath = location.pathname.startsWith("/room/");
+
+// Trainer job application flow
+if (
+  user?.role === "trainer" &&
+  user.personalization === null &&
+  location.pathname !== "/trainer/job-application" &&
+  !isRoomPath
+) {
+  return <Navigate to="/trainer/job-application" replace />;
+}
+
+if (
+  user?.role === "trainer" &&
+  user.personalization !== null &&
+  location.pathname === "/trainer/job-application" &&
+  user.status === "approved"
+) {
+  return <Navigate to="/trainer/dashboard" replace />;
+}
+
+// Prevent looping to pendingCase if already there or if still on job-application or /room/*
+if (
+  user?.role === "trainer" &&
+  user.status !== "approved" &&
+  !["/trainer/pendingCase", "/trainer/job-application"].includes(location.pathname) &&
+  !isRoomPath
+) {
+  return <Navigate to="/trainer/pendingCase" replace />;
+}
 
   return <Outlet />;
 };

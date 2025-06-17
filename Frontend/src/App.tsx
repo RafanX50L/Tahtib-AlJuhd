@@ -11,7 +11,9 @@ import LandingPage from "./pages/landing/LandingPage";
 import { Button } from "./components/ui/button";
 import { usePWA } from "./hooks/usePWA";
 import TrainerForm from "./pages/trainer/TSubmittingDetails";
-
+import VideoCall from "./pages/common/VideoCallP";
+import ProfilePage from "./UserProfile";
+console.warn('rafan');
 const App: React.FC = () => {
   console.log("enterd to react App.tsx page");
   const { promptInstall, canInstall } = usePWA();
@@ -36,6 +38,8 @@ const App: React.FC = () => {
           )}
 
           <Routes>
+            <Route path="/userProfile" element={<ProfilePage/>} />
+            <Route path="/room/:meetId" element={<VideoCall/>} />
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth/*" element={<AuthRoute />}>
               <Route path="*" element={<AuthRotues />} />

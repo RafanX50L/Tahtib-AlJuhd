@@ -1,8 +1,7 @@
 import api from "./api";
 import { ADMIN_ROUTES } from "@/utils/constant";
 import { AxiosError } from "axios";
-import { error } from "console";
-import { toast } from "sonner";
+
 
 export const AdminService = {
   getAllClients: async () => {
