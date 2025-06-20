@@ -27,6 +27,7 @@ export const HttpResponse = {
     TOKEN_GENERATED_SUCCESS : "Token Regenerating Successfull",
     DATA_FETCHING_SUCCESSFULL : "Data fetched successfully",
     INVALID_REQUEST_DATA : "Invalid request data",
+    FAILED_TO_UPDATE_USER_STATUS: "Failed to update user status",
 
     GENERATING_FITNESS_PLAN_SUCCESSFULL : "Creating user fitness plan successfull",
     FAILED_TO_GENERATE_FITNESS_PLAN :  "Failed to generate fitness plan",
@@ -54,4 +55,11 @@ export const HttpResponse = {
     FAILED_TO_JOIN_WEEKLY_CHALLENGE: "Failed to join weekly challenge",
     FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE: "Failed to fetch user weekly challenge",
     FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE: "Failed to update user weekly challenge",
+
+
+    FAILED_TO_UPDATE_INTERVIEW_FEEDBACK: "Failed to update interview feedback",
+    FAILED_TO_UPDATE_TRAINER_STATUS: "Failed to update trainer status",
+    
+    FAILED_TO_UPDATE_PROFILE: "Failed to update profile",
+    FAILED_TO_GET_PROFILE: "Failed to get profile data"
 };

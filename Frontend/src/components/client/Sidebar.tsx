@@ -41,12 +41,12 @@ const Sidebar = () => {
   const navItems = [
     { icon: FaHome, text: "Dashboard",path:"/dashboard" },
     { icon: FaDumbbell, text: "Workout" , path:"/workouts" },
-    { icon: FaChartLine, text: "Progress", path: "/room/fanu" },
-    { icon: FaUsers, text: "Community", path: "/workoutSession", },
-    { icon: FaUserTie, text: "Trainer Sessions", path: "/progress", },
-    { icon: FaUtensils, text: "Meal Guide", path: "/progress", },
-    { icon: FaCommentAlt, text: "Chat Bot", path: "/progress", },
-    { icon: FaUser, text: "Profile", path: "/progress" },
+    { icon: FaChartLine, text: "Progress", path: "/progress" },
+    { icon: FaUsers, text: "Community", path: "/community", },
+    { icon: FaUserTie, text: "Trainer Sessions", path: "/trainerSession", },
+    { icon: FaUtensils, text: "Meal Guide", path: "/diet", },
+    { icon: FaCommentAlt, text: "Chat Bot", path: "/chat", },
+    { icon: FaUser, text: "Profile", path: "/profile" },
   ];
 
   const handleLogout = () => {

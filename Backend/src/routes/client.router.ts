@@ -4,8 +4,11 @@ import { ClientRepository } from "../repositories/implementation/client.reposito
 import { ClientService } from "../services/implementation/Client.service";
 import { Router } from "express";
 import isBlocked from "../middleware/isBlocked.middleware";
+import multer from "multer";
 
 const clientRouter = Router();
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const clientRepository = new ClientRepository();
 const clientService = new ClientService(clientRepository);
@@ -23,5 +26,8 @@ clientRouter.get('/get-weekly-challenges', clientController.getWeeklyChallenges.
 clientRouter.get('/get-weekly-challenges/:id', clientController.getChallengeById.bind(clientController));
 clientRouter.post('/join-weekly-challenge/:id', clientController.joinWeeklyChallenge.bind(clientController));
 clientRouter.patch('/update-day-completion-of-weekly-challenge-status', clientController.updateDayCompletionOfWeeklyChallengeStatus.bind(clientController));
+clientRouter.get('/get-clinet-profile',clientController.getClientProfileData.bind(clientController));
+clientRouter.patch('/update-client-profile-photo',upload.single('profilePicture'),clientController.updateProfilePicture.bind(clientController));
+clientRouter.patch('/update-profile',clientController.updateClientProfile.bind(clientController));
 
 export default clientRouter;

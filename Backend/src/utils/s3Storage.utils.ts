@@ -34,7 +34,7 @@ async function uploadToS3(file: Express.Multer.File, folder: string): Promise<st
     };
 
     const signedUrl = await getSignedUrl(s3Client, new GetObjectCommand(getParams), {
-      expiresIn: 3600, // 1 hour
+      expiresIn:7* 24 * 60 * 60 , // 1 hour month
     });
 
   // return `https://${env.S3_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com/${fileName}`;

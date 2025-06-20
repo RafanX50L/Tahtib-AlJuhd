@@ -1,7 +1,7 @@
 import { AxiosError, get } from "axios";
 import api from "./api";
 import { CLIENT_ROUTES } from "../../utils/constant";
-
+import { toast } from "sonner";
 
 export const ClientService = {
   // service for cleint fitness plan generation
@@ -118,7 +118,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_WEEKLY_CHALLENGES);
       console.log("Weekly challenges response: ", response.data);
-      return response.data ;
+      return response.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -160,8 +160,19 @@ export const ClientService = {
     }
   },
 
-  updateDayCompletionOfWeeklyChallenge: async (exercises: any, day: number, challengeId: string) => {
-    console.log('Updating day completion for weekly challenge:', exercises, 'day:', day, 'challengeId:', challengeId);
+  updateDayCompletionOfWeeklyChallenge: async (
+    exercises: any,
+    day: number,
+    challengeId: string
+  ) => {
+    console.log(
+      "Updating day completion for weekly challenge:",
+      exercises,
+      "day:",
+      day,
+      "challengeId:",
+      challengeId
+    );
     try {
       const response = await api.patch(
         `${CLIENT_ROUTES.UPDATE_DAY_COMPLETION_OF_WEEKLY_CHALLENGE_STATUS}`,
@@ -176,6 +187,58 @@ export const ClientService = {
       console.log("Error updating day completion: ", errorMessage);
       throw new Error(errorMessage);
     }
-  }
+  },
 
+  getClientProfileData: async () => {
+    try {
+      const response = await api.get(CLIENT_ROUTES.GET_CLIENT_PROFILE);
+      console.log("response of profile", response.data);
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch clinet data";
+      console.log("Error fetching client data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  updateClientProfilePicture: async (formData: any) => {
+    try {
+      const response = await api.patch(
+        CLIENT_ROUTES.UPDATE_CLIENT_PROFILE_PHOTO,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Updated day completion response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to update uesr profile Photo";
+      console.log("Error updating user Profile Photo: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  updateClientProfile: async (formData: any) => {
+    try {
+      const response = await api.patch(CLIENT_ROUTES.UPDATE_CLIENT_PROFILE,formData);
+      console.log("response of profile", response.data);
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to update clinet data";
+      console.log("Error update client data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 };

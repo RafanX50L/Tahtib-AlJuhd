@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { platform } from "os";
 import { TrainerService } from "@/services/implementation/trainerServices";
 import moment from "moment-timezone";
+import { useNavigate } from "react-router-dom";
 
 
 // Zod Schema for Validation
@@ -162,6 +163,7 @@ const TrainerForm: React.FC = () => {
     { id: 4, title: "Availability", icon: Calendar },
   ];
 
+  const navigate = useNavigate();
   const nextStep = useCallback(async () => {
     const isValid = await trigger(stepFields[currentStep]);
     if (isValid && currentStep < 4) {
@@ -268,8 +270,12 @@ const TrainerForm: React.FC = () => {
       // }
 
       setSubmissionStatus("success");
-      reset();
-      setCurrentStep(1);
+      // reset();
+      console.log('entered to navigate before');
+      navigate('/trainer/pendingCases');
+      console.log('entered to navigate');
+      location.reload();
+      // setCurrentStep(1);
     } catch (error: any) {
       setSubmissionStatus("error");
       setErrorMessage(error.message || "An error occurred during submission");

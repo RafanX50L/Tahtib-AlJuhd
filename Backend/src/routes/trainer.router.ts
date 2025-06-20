@@ -19,10 +19,14 @@ const upload = multer({ storage: multer.memoryStorage() });
 trainerRouter.use("/", verifyToken("trainer"), isBlocked());
 
 // Route for submitting trainer application
+trainerRouter.get("/application-data",trainerController.getPendingApplicationDetails.bind(trainerController));
 trainerRouter.post(
   "/submit-application",
   upload.any(),
   trainerController.submitApplication.bind(trainerController)
 );
+trainerRouter.get('/profile-data',trainerController.getProfileData.bind(trainerController));
+trainerRouter.patch('/update-trainer-profile-photo',upload.single('profilePicture'),trainerController.updateProfilePicture.bind(trainerController));
+trainerRouter.patch('/update-profile',upload.any(),trainerController.updateProfileData.bind(trainerController));
 
 export default trainerRouter;

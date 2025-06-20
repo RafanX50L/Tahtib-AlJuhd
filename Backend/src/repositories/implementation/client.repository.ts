@@ -14,7 +14,11 @@ import { UserRepository } from "./user.repository";
 import { IWorkoutReport } from "@/models/interface/IWorkout";
 import { generateFitnessPlan } from "../../utils/gemini1.utils";
 import WeeklyChallenge from "../../models/implementation/WeeklyChallenges.model";
-import UserWeeklyChallenge, { IUserDayReport } from "../../models/implementation/UserWeeklyChallenge.model";
+import UserWeeklyChallenge, {
+  IUserDayReport,
+} from "../../models/implementation/UserWeeklyChallenge.model";
+import { PersonalizationData } from "./trainer.repositor";
+import { ClientProfile } from "@/controllers/interface/IClient.controller";
 
 export class ClientRepository
   extends UserRepository
@@ -466,7 +470,7 @@ export class ClientRepository
 
   async getChallengeById(challengeId: string): Promise<any> {
     try {
-      console.log('')
+      console.log("");
       const challenge = await WeeklyChallenge.findById(challengeId);
       if (!challenge) {
         throw createHttpError(
@@ -484,14 +488,15 @@ export class ClientRepository
     }
   }
 
-  async getUserWeeklyChallenge(userId: string, challengeId: string): Promise<any> {
+  async getUserWeeklyChallenge(
+    userId: string,
+    challengeId: string
+  ): Promise<any> {
     try {
       const userChallenge = await UserWeeklyChallenge.findOne({
         user: new mongoose.Types.ObjectId(userId),
         challenge: new mongoose.Types.ObjectId(challengeId),
       });
-
-      
 
       return userChallenge;
     } catch (error) {
@@ -503,10 +508,7 @@ export class ClientRepository
     }
   }
 
-  async joinWeeklyChallenge(
-    userId: string,
-    challengeId: string
-  ): Promise<any> {
+  async joinWeeklyChallenge(userId: string, challengeId: string): Promise<any> {
     try {
       const challenge = await WeeklyChallenge.findById(challengeId);
       if (!challenge) {
@@ -517,7 +519,9 @@ export class ClientRepository
       }
 
       // Check if user is already entered
-      if (challenge.enteredUsers.includes(new mongoose.Types.ObjectId(userId))) {
+      if (
+        challenge.enteredUsers.includes(new mongoose.Types.ObjectId(userId))
+      ) {
         throw createHttpError(
           HttpStatus.BAD_REQUEST,
           HttpResponse.USER_ALREADY_JOINED_CHALLENGE
@@ -548,58 +552,147 @@ export class ClientRepository
   }
 
   async updateDayCompletionOfWeeklyChallengeStatus(
-  userId: string,
-  dayIndex: number,
-  challengeId: string,
-  workoutReport: IWorkoutReport
-) {
-  console.log('userId:', userId, 'dayIndex:', dayIndex, 'challengeId:', challengeId, 'workoutReport:', workoutReport);
-  try {
-    const userChallenge = await UserWeeklyChallenge.findOne({
-      user: new mongoose.Types.ObjectId(userId),
-      challenge: new mongoose.Types.ObjectId(challengeId),
-    });
+    userId: string,
+    dayIndex: number,
+    challengeId: string,
+    workoutReport: IWorkoutReport
+  ) {
+    console.log(
+      "userId:",
+      userId,
+      "dayIndex:",
+      dayIndex,
+      "challengeId:",
+      challengeId,
+      "workoutReport:",
+      workoutReport
+    );
+    try {
+      const userChallenge = await UserWeeklyChallenge.findOne({
+        user: new mongoose.Types.ObjectId(userId),
+        challenge: new mongoose.Types.ObjectId(challengeId),
+      });
 
-    if (!userChallenge) {
+      if (!userChallenge) {
+        throw createHttpError(
+          HttpStatus.NOT_FOUND,
+          HttpResponse.FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE
+        );
+      }
+
+      // Create a new day report entry
+      const newDayReport: IUserDayReport = {
+        dayIndex,
+        completed: true,
+        completedAt: new Date(),
+        report: {
+          caloriesBurned: workoutReport.caloriesBurned ?? 0,
+          feedback: workoutReport.feedback ?? "",
+          intensity: workoutReport.intensity ?? "",
+          estimatedDuration: workoutReport.estimatedDuration ?? "",
+          totalExercises: workoutReport.totalExercises ?? 0,
+          totalSets: workoutReport.totalSets ?? 0,
+        },
+      };
+
+      // Ensure progress array has enough length to accommodate dayIndex
+      if (!userChallenge.progress) {
+        userChallenge.progress = [];
+      }
+
+      // Set the new day report at the specified dayIndex
+      userChallenge.progress[dayIndex] = newDayReport;
+
+      await userChallenge.save();
+
+      return userChallenge;
+    } catch (error) {
+      console.error(
+        "Error updating day completion of weekly challenge status:",
+        error
+      );
       throw createHttpError(
-        HttpStatus.NOT_FOUND,
-        HttpResponse.FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE
+      );
+    }
+  }
+
+  async getClientProfileData(userId: string) {
+    const personalisedData = await this.model.findById(userId).populate({
+      path: "personalization",
+      model: PersonalizationModel,
+    });
+    console.log("data", JSON.stringify(personalisedData));
+    // Now personalization is the full document, not just ObjectId or string
+    const data = (personalisedData.personalization as any)
+      ?.data as IClientPersonalization;
+    const userData = {
+      name: data.user_data.nick_name,
+      email: personalisedData.email,
+      address: data.user_data.address || null,
+      phoneNumber: data.user_data.phoneNumber || null,
+      // age: data.user_data.age,
+      profilePicture: data.user_data.profilePicture || null,
+    };
+    return userData;
+  }
+
+  async updateProfilePicture(clientId: string, signedUrl: string) {
+    const personalData = await PersonalizationModel.findOneAndUpdate(
+      { userId: clientId },
+      { "data.user_data.profilePicture": signedUrl },
+      { upsert: true, new: true }
+    );
+
+    if (!personalData) {
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpResponse.SERVER_ERROR
       );
     }
 
-    // Create a new day report entry
-    const newDayReport: IUserDayReport = {
-      dayIndex,
-      completed: true,
-      completedAt: new Date(),
-      report: {
-        caloriesBurned: (workoutReport.caloriesBurned ?? 0),
-        feedback: workoutReport.feedback ?? "",
-        intensity: workoutReport.intensity ?? "",
-        estimatedDuration: workoutReport.estimatedDuration ?? "",
-        totalExercises: (workoutReport.totalExercises ?? 0),
-        totalSets: (workoutReport.totalSets ?? 0),
-      },
-    };
+    return personalData;
+  }
 
-    // Ensure progress array has enough length to accommodate dayIndex
-    if (!userChallenge.progress) {
-      userChallenge.progress = [];
+  async updateClientProfile(userId: string, formdata: ClientProfile) {
+    const updatedClient = await this.model.findByIdAndUpdate(
+      userId,
+      {
+        name: formdata.name,
+        email: formdata.email,
+      },
+      { new: true }
+    );
+
+    if (!updatedClient) {
+      throw createHttpError(
+        HttpStatus.NOT_FOUND,
+        "Client not found for profile update"
+      );
     }
 
-    // Set the new day report at the specified dayIndex
-    userChallenge.progress[dayIndex] = newDayReport;
-
-    await userChallenge.save();
-
-    return userChallenge;
-  } catch (error) {
-    console.error("Error updating day completion of weekly challenge status:", error);
-    throw createHttpError(
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      HttpResponse.FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE
+    const updatedPersonalData = await PersonalizationModel.findOneAndUpdate(
+      { userId },
+      {
+        "data.user_data.phoneNumber": formdata.phoneNumber,
+        "data.user_data.address": formdata.address,
+      },
+      { new: true}
     );
+
+    if (!updatedPersonalData) {
+      throw createHttpError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to update personalization data"
+      );
+    }
+
+          console.log('enterd to repor');
+
+    return {
+      client: updatedClient,
+      personalization: updatedPersonalData,
+    };
   }
-}
-  
 }

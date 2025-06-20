@@ -6,9 +6,9 @@ const Header = () => (
       <h1 className="text-2xl md:text-3xl font-semibold bg-gradient-to-r from-white to-[#A0A7B8] bg-clip-text text-transparent">Dashboard</h1>
       <p className="text-[#A0A7B8] text-sm md:text-base">Welcome back! Ready for today's workout?</p>
     </div>
-    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5D5FEF] to-[#FF4757] border-2 border-[#2A3042] flex items-center justify-center cursor-pointer hover:scale-110 hover:shadow-lg transition-all">
+    {/* <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5D5FEF] to-[#FF4757] border-2 border-[#2A3042] flex items-center justify-center cursor-pointer hover:scale-110 hover:shadow-lg transition-all">
       <FaUser className="text-white" />
-    </div>
+    </div> */}
   </div>
 );
 

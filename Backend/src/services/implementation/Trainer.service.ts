@@ -1,13 +1,14 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose from "mongoose";
 import { uploadToS3 } from "@/utils/s3Storage.utils";
 import createHttpError from "http-errors";
 import { ITrainerService } from "../interface/ITrainer.service";
 import { ITrainerRepository } from "@/repositories/interface/ITrainer.repository";
-import { TrainerSchema  } from "@/models/implementation/trainer/sample";
-import moment from "moment-timezone"; // For time zone validation
+import { TrainerSchema } from "@/models/implementation/trainer/sample";
+import { HttpStatus } from "@/constants/status.constant";
+import { HttpResponse } from "@/constants/response-message.constant";
 
 export interface TrainerData {
-    role?: "trainer";
+  role?: "trainer";
   basicInfo: {
     phoneNumber: string;
     location: string;
@@ -35,7 +36,14 @@ export interface TrainerData {
   };
   availability: {
     weeklySlots: Array<{
-      day: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+      day:
+        | "Monday"
+        | "Tuesday"
+        | "Wednesday"
+        | "Thursday"
+        | "Friday"
+        | "Saturday"
+        | "Sunday";
       startTime: string;
       endTime: string;
     }>;
@@ -52,13 +60,35 @@ export interface TrainerData {
     evaluatedBy?: mongoose.Types.ObjectId;
     evaluatedAt?: Date;
   };
-  status: "applied" | "interview_scheduled" | "interviewed" | "approved" | "rejected";
+  status:
+    | "applied"
+    | "interview_scheduled"
+    | "interviewed"
+    | "approved"
+    | "rejected";
+}
+
+export interface CertificationData {
+  name: string;
+  issuer: string;
+  proofFile?: any;
+  id: string;
 }
 
 export class TrainerService implements ITrainerService {
   constructor(private trainerRepository: ITrainerRepository) {}
 
-  async submitApplication(files: Express.Multer.File[], body: any, userId: string): Promise<void> {
+  async getPendingApplicationDetails(trainerId: string): Promise<any> {
+    const trainerData =
+      await this.trainerRepository.getPendingApplicationDetails(trainerId);
+    return trainerData;
+  }
+
+  async submitApplication(
+    files: Express.Multer.File[],
+    body: any,
+    userId: string
+  ): Promise<void> {
     // Validate required fields
     const requiredFields = [
       "phoneNumber",
@@ -92,22 +122,35 @@ export class TrainerService implements ITrainerService {
     }
 
     // Parse JSON fields
-    let certifications, specializations, coachingType, platformsUsed, portfolioLinks, weeklySlots;
+    let certifications,
+      specializations,
+      coachingType,
+      platformsUsed,
+      portfolioLinks,
+      weeklySlots;
     try {
       certifications = JSON.parse(body.certifications);
       specializations = JSON.parse(body.specializations);
       coachingType = JSON.parse(body.coachingType);
-      platformsUsed = body.platformsUsed ? JSON.parse(body.platformsUsed) : undefined;
+      platformsUsed = body.platformsUsed
+        ? JSON.parse(body.platformsUsed)
+        : undefined;
       portfolioLinks = body.portfolioLinks
         ? JSON.parse(body.portfolioLinks).filter((link: string) => link)
         : undefined;
       weeklySlots = JSON.parse(body.weeklySlots);
     } catch (error) {
-      throw createHttpError(400, `Failed to parse JSON fields: ${error.message}`);
+      throw createHttpError(
+        400,
+        `Failed to parse JSON fields: ${error.message}`
+      );
     }
 
     // Validate parsed data
-    if (!Array.isArray(certifications) || !certifications.every((cert: any) => cert.name && cert.issuer)) {
+    if (
+      !Array.isArray(certifications) ||
+      !certifications.every((cert: any) => cert.name && cert.issuer)
+    ) {
       throw createHttpError(400, "Invalid certifications format");
     }
     if (!Array.isArray(specializations) || !specializations.length) {
@@ -115,20 +158,24 @@ export class TrainerService implements ITrainerService {
     }
     if (
       !Array.isArray(coachingType) ||
-      !coachingType.every((type: string) => ["One-on-One", "Group", "Hybrid"].includes(type))
+      !coachingType.every((type: string) =>
+        ["One-on-One", "Group", "Hybrid"].includes(type)
+      )
     ) {
       throw createHttpError(400, "Invalid coachingType format");
     }
     if (
       !Array.isArray(weeklySlots) ||
-      !weeklySlots.every((slot: any) => slot.day && slot.startTime && slot.endTime)
+      !weeklySlots.every(
+        (slot: any) => slot.day && slot.startTime && slot.endTime
+      )
     ) {
       throw createHttpError(400, "Invalid weeklySlots format");
     }
 
     // Initialize trainer data
     const trainerData: TrainerData = {
-    role: "trainer",
+      role: "trainer",
       basicInfo: {
         phoneNumber: body.phoneNumber,
         location: body.location,
@@ -168,11 +215,12 @@ export class TrainerService implements ITrainerService {
 
     console.log("Creating trainer personalization for userId:", userId);
     // Create personalization document
-    const personalization = await this.trainerRepository.createTrainerPersonalization({
-      userId,
-      role: "trainer",
-      data: trainerData,
-    });
+    const personalization =
+      await this.trainerRepository.createTrainerPersonalization({
+        userId,
+        role: "trainer",
+        data: trainerData,
+      });
 
     // Handle file uploads
     for (const file of files) {
@@ -181,8 +229,8 @@ export class TrainerService implements ITrainerService {
       const folder = fieldName.startsWith("certificationProof")
         ? "certification-proofs"
         : fieldName === "profilePhoto"
-        ? "profile-photos"
-        : "resumes";
+          ? "profile-photos"
+          : "resumes";
 
       console.log(`Uploading file: ${file.originalname} to folder: ${folder}`);
       const fileUrl = await uploadToS3(file, folder);
@@ -203,8 +251,12 @@ export class TrainerService implements ITrainerService {
         trainerData.sampleMaterials.resumeFileId = fileId;
       } else if (fieldName.startsWith("certificationProof_")) {
         const index = parseInt(fieldName.split("_")[1]);
-        if (index >= 0 && index < trainerData.professionalSummary.certifications.length) {
-          trainerData.professionalSummary.certifications[index].proofFileId = fileId;
+        if (
+          index >= 0 &&
+          index < trainerData.professionalSummary.certifications.length
+        ) {
+          trainerData.professionalSummary.certifications[index].proofFileId =
+            fileId;
         } else {
           console.warn(`Invalid certification index: ${index}`);
         }
@@ -212,30 +264,49 @@ export class TrainerService implements ITrainerService {
     }
 
     // Log trainer data before update
-    console.log("Trainer data before update:", JSON.stringify(trainerData, null, 2));
+    console.log(
+      "Trainer data before update:",
+      JSON.stringify(trainerData, null, 2)
+    );
 
     // Validate trainerData manually
     const modelName = `Temp_Trainer_Personalization`;
-    const TempModel = mongoose.models[modelName] || mongoose.model(modelName, TrainerSchema);
+    const TempModel =
+      mongoose.models[modelName] || mongoose.model(modelName, TrainerSchema);
     const tempDoc = new TempModel(trainerData);
     try {
       await tempDoc.validate();
       console.log("trainerData validated successfully");
     } catch (validationError) {
-      console.error("Manual validation failed:", JSON.stringify(validationError, null, 2));
-      throw createHttpError(400, `Invalid trainer data: ${validationError.message}`);
+      console.error(
+        "Manual validation failed:",
+        JSON.stringify(validationError, null, 2)
+      );
+      throw createHttpError(
+        400,
+        `Invalid trainer data: ${validationError.message}`
+      );
     }
 
     // Update personalization document
     try {
-      await this.trainerRepository.updateTrainerPersonalization(personalization._id.toString(), {
-        userId,
-        role: "trainer",
-        data: trainerData,
-      });
+      await this.trainerRepository.updateTrainerPersonalization(
+        personalization._id.toString(),
+        {
+          userId,
+          role: "trainer",
+          data: trainerData,
+        }
+      );
     } catch (error) {
-      console.error("Failed to update personalization:", JSON.stringify(error, null, 2));
-      throw createHttpError(500, `Failed to update personalization: ${error.message}`);
+      console.error(
+        "Failed to update personalization:",
+        JSON.stringify(error, null, 2)
+      );
+      throw createHttpError(
+        500,
+        `Failed to update personalization: ${error.message}`
+      );
     }
 
     // Create audit log
@@ -246,5 +317,161 @@ export class TrainerService implements ITrainerService {
       entityId: personalization._id.toString(),
       details: { message: "New trainer application submitted" },
     });
+  }
+
+  async getProfileData(userId: string): Promise<TrainerData> {
+    const user = await this.trainerRepository.getProfileData(userId);
+    if (!user) {
+      throw createHttpError(
+        HttpStatus.NO_CONTENT,
+        HttpResponse.FAILED_TO_GET_PROFILE
+      );
+    }
+    return user;
+  }
+
+  async updateProfilePicture(userId: string, file: Express.Multer.File) {
+    const signedUrl = await uploadToS3(file, "profile-photos");
+    const fileType = file.mimetype.split("/")[1];
+
+    const trainerFile = await this.trainerRepository.createTrainerFile({
+      trainerId: userId,
+      fileName: file.originalname,
+      filePath: signedUrl,
+      fileType,
+    });
+
+    console.log(fileType, file.originalname, fileType);
+    const updated = await this.trainerRepository.updateProfilePicture(
+      userId,
+      trainerFile._id
+    );
+    if (!updated) {
+      throw new Error("Client not found");
+    }
+    console.log(signedUrl);
+
+    return { signedUrl };
+  }
+
+  async updateTrainerProfile(
+    trainerId: string,
+    formData: {
+      basicInfo: any;
+      professionalSummary: any;
+      sampleMaterials: any;
+      newCertifications: CertificationData[];
+      files: any[];
+    },
+    userId: string
+  ): Promise<any> {
+    const {
+      basicInfo,
+      professionalSummary,
+      sampleMaterials,
+      newCertifications,
+      files,
+    } = formData;
+
+    console.log("file1", files[0]);
+    // Process certifications
+    const certificationUpdates = await Promise.all(
+      newCertifications.map(async (cert, index) => {
+        if (cert.proofFile) {
+          const s3Url = await uploadToS3(files[index], "certification-proofs");
+          const trainerFile = await this.trainerRepository.createTrainerFile({
+            trainerId,
+            fileName: cert.proofFile.originalname,
+            filePath: s3Url,
+            fileType: cert.proofFile.mimetype.split("/")[1],
+          });
+          return {
+            name: cert.name,
+            issuer: cert.issuer,
+            proofFileId: trainerFile._id,
+          };
+        }
+        return null;
+      })
+    );
+
+    const validCertifications = certificationUpdates.filter(
+      (cert) => cert !== null
+    );
+
+    // Fetch existing trainer
+    const existingTrainer =
+      await this.trainerRepository.findTrainerById(trainerId);
+    if (!existingTrainer) {
+      throw new Error("Trainer not found");
+    }
+
+    console.log("exis", existingTrainer);
+
+    // Parse inputs
+    const parsedBasicInfo = JSON.parse(basicInfo);
+    parsedBasicInfo.profilePhotoId =
+      existingTrainer.data.basicInfo.profilePhotoId; // ✅ use correct key
+
+    const parsedProfessionalSummary = JSON.parse(professionalSummary);
+    const parsedSampleMaterials = JSON.parse(sampleMaterials);
+
+    // Merge certifications
+    const existingCertifications = [
+      ...existingTrainer.data.professionalSummary.certifications,
+      ...validCertifications,
+    ];
+
+    // Construct update object
+    const updateData = {
+      data: {
+        ...existingTrainer.data,
+
+        // Force update only the changed/merged parts
+        basicInfo: {
+          ...existingTrainer.data.basicInfo,
+          ...parsedBasicInfo,
+          profilePhotoId: existingTrainer.data.basicInfo.profilePhotoId, // ensure correct key
+        },
+        professionalSummary: {
+          ...existingTrainer.data.professionalSummary,
+          ...parsedProfessionalSummary,
+          certifications: existingCertifications,
+        },
+        sampleMaterials: {
+          ...existingTrainer.data.sampleMaterials,
+          ...parsedSampleMaterials,
+        },
+
+        // availability is retained from existing data
+        availability: existingTrainer.data.availability,
+
+        // Optional: ensure role stays correct
+        role: "trainer",
+      },
+    };
+
+    // // Update trainer
+    const updatedTrainer = await this.trainerRepository.updateTrainer(
+      trainerId,
+      updateData
+    );
+    if (!updatedTrainer) {
+      throw new Error("Failed to update trainer");
+    }
+
+    // // Create audit log
+    // await this.trainerRepository.createAuditLog({
+    //   userId,
+    //   action: 'update_trainer_profile',
+    //   entityType: 'trainer',
+    //   entityId: trainerId,
+    //   details: {
+    //     updatedFields: Object.keys(updateData),
+    //     newCertifications: validCertifications.map(({ name, issuer, id }) => ({ name, issuer, id })),
+    //   },
+    // });
+
+    return updatedTrainer;
   }
 }

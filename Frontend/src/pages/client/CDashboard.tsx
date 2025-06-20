@@ -13,41 +13,41 @@ import CFooter from '@/components/client/Footer';
 
 const CDashboard = () => {
   const {user} = useSelector((state:RootState)=>state.auth);
-  useEffect(() => {
-    // Register Service Worker for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('/sw.js')
-          .then((registration) => {
-            console.log('ServiceWorker registration successful',registration);
-          })
-          .catch((err) => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
+  // useEffect(() => {
+  //   // Register Service Worker for PWA
+  //   if ('serviceWorker' in navigator) {
+  //     window.addEventListener('load', () => {
+  //       navigator.serviceWorker
+  //         .register('/sw.js')
+  //         .then((registration) => {
+  //           console.log('ServiceWorker registration successful',registration);
+  //         })
+  //         .catch((err) => {
+  //           console.log('ServiceWorker registration failed: ', err);
+  //         });
+  //     });
+  //   }
 
-    // Handle install prompt
-    let deferredPrompt:any;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      setTimeout(() => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult:any) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('User accepted install');
-            } else {
-              console.log('User dismissed install');
-            }
-            deferredPrompt = null;
-          });
-        }
-      }, 3000);
-    });
-  }, []);
+  //   // Handle install prompt
+  //   let deferredPrompt:any;
+  //   window.addEventListener('beforeinstallprompt', (e) => {
+  //     e.preventDefault();
+  //     deferredPrompt = e;
+  //     setTimeout(() => {
+  //       if (deferredPrompt) {
+  //         deferredPrompt.prompt();
+  //         deferredPrompt.userChoice.then((choiceResult:any) => {
+  //           if (choiceResult.outcome === 'accepted') {
+  //             console.log('User accepted install');
+  //           } else {
+  //             console.log('User dismissed install');
+  //           }
+  //           deferredPrompt = null;
+  //         });
+  //       }
+  //     }, 3000);
+  //   });
+  // }, []);
 
  
   return (

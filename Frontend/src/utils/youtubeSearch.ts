@@ -13,6 +13,7 @@ const searchYouTube = async (query) => {
     },
   });
 
+  console.log('data',response.data.items[0]);
   return response.data.items[0];
 };
 

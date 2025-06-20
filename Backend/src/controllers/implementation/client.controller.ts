@@ -4,6 +4,7 @@ import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
 import { Request, Response, NextFunction } from "express";
 import { userData } from "@/middleware/verify.token.middleware";
+import { createHttpError } from "@/utils";
 
 export class ClientController implements IClientController {
   constructor(private _clientService: IClientService) {}
@@ -232,4 +233,48 @@ export class ClientController implements IClientController {
       next(error);
     }
   }
+
+  async updateProfilePicture(req: userData, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      const file = req.file;
+
+      console.log(file);
+      if (!file) {
+        return next(createHttpError(400, "No file uploaded"));
+      }
+
+      const { signedUrl} = await this._clientService.updateProfilePicture(userId, file);
+
+      res.status(200).json({
+        message: "Profile picture updated successfully",
+        profilePicture: signedUrl,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getClientProfileData(req:userData, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const userId = req.user.id;
+      const result = await this._clientService.getClientProfileData(userId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateClientProfile(req:userData, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const userId = req.user.id;
+      const formdata = req.body;
+      await this._clientService.updateClientProfile(userId,formdata);
+      console.log('enterd to controller');
+      res.status(HttpStatus.OK).json( {success:true,message: "Updated the Client Profile"});
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

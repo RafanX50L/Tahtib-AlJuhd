@@ -22,6 +22,16 @@ export class AdminController implements IAdminController {
     }
   }
 
+  async blockOrUnblock(req:Request,res:Response,next:NextFunction):Promise<void>{
+    try {
+      const userId = req.body.id;
+      const result = await this.adminService.blockOrUnblock(userId);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updateClientStatus(
     req: Request,
     res: Response,
@@ -72,6 +82,59 @@ export class AdminController implements IAdminController {
       console.log('entered to pending tainers');
       const pendingTrainers = await this.adminService.getPendingTrainers(Number(page));
       res.status(HttpStatus.OK).json(pendingTrainers);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getApprovedTrainers(req:Request, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const page = req.params.page;
+      console.log('entered to pending tainers');
+      const approvedTrainers = await this.adminService.getApprovedTrainers(Number(page));
+      res.status(HttpStatus.OK).json(approvedTrainers);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async scheduleInterview(req:userData, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const trainerId = req.body.id;
+      const adminId = req.user.id;
+      const {date,time} = req.body;
+      const result = await this.adminService.scheduleInterview(trainerId,adminId,date,time);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async submitInterviewFeedback(req:userData, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const trainerId = req.body.id;
+      const adminId = req.user.id;
+      const { feedback } = req.body;
+      const result = await this.adminService.submitInterviewFeedback(trainerId,adminId,feedback);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async approveTrainer(req:Request, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const trainerId = req.body.id;
+      const salary = req.body.salary;
+      const result = await this.adminService.approveTrainer(trainerId,salary);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async rejectTrainer(req:Request, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const trainerId = req.body.id;
+      const result = await this.adminService.rejectTrainer(trainerId);
+      res.status(HttpStatus.OK).json(result);
     } catch (error) {
       next(error);
     }

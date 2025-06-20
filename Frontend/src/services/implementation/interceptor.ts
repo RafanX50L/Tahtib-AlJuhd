@@ -33,6 +33,8 @@ export const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => 
       console.log('error response',error.response);
       if(error.response.status === 401 && error.response.data.error === "User is Blocked"){
         console.log('enterd to blocked user');
+        localStorage.removeItem('accessToken');
+        location.reload();
         return Promise.reject(error);
       }
 

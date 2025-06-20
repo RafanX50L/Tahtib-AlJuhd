@@ -3,6 +3,7 @@ import { IBaseRepository } from "../IBase.respository";
 import { IClientUserData } from "@/models/interface/IPersonalization";
 import mongoose from "mongoose";
 import { IWorkoutPlan, IWorkoutReport } from "@/models/interface/IWorkout";
+import { ClientProfile } from "@/controllers/interface/IClient.controller";
 
 export interface IClientRepository extends IBaseRepository<IUserModel> {
   SaveWorkoutsDietsPersonalization(
@@ -49,4 +50,7 @@ export interface IClientRepository extends IBaseRepository<IUserModel> {
     challengeId: string,
     workoutReport: IWorkoutReport
   ): Promise<any>;
+  getClientProfileData(userId:string);
+  updateProfilePicture(clientId: string, signedUrl: string);
+  updateClientProfile(userId:string,formdata:ClientProfile);
 }

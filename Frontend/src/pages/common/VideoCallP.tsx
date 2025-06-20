@@ -106,16 +106,20 @@ const VideoCall = () => {
   }
 
   return (
-    <div className="flex h-screen bg-slate-900 text-white">
+    <div className="flex h-screen bg-slate-900 text-white overflow-hidden">
       {/* Main Video Area */}
-      <div className={`flex-1 flex flex-col ${isChatOpen ? "pr-4" : ""}`}>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${
+        isChatOpen ? "mr-2" : ""
+      }`}>
         {/* Header */}
-        <VideoCallHeader callStatus={callStatus} />
+        <div className="flex-shrink-0">
+          <VideoCallHeader callStatus={callStatus} />
+        </div>
 
-        {/* Video Grid */}
-        <div className="flex-1 p-4 flex flex-col h-full relative">
-          {/* Main Remote Video */}
-          <div className="flex-1 bg-slate-800 border-slate-700 rounded-xl overflow-hidden shadow-lg mb-4 relative">
+        {/* Video Container - Full height minus header and controls */}
+        <div className="flex-1 flex flex-col min-h-0 p-4">
+          {/* Main Remote Video Container */}
+          <div className="flex-1 bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-lg relative min-h-0">
             <RemoteVideo
               setVideoRef={setVideoRef}
               remoteVideoEnabled={remoteVideoEnabled}
@@ -124,36 +128,42 @@ const VideoCall = () => {
               setIsPinned={setIsPinned}
             />
 
-            {/* Local video (picture-in-picture) */}
-            <LocalVideo
-              localRef={localRef}
-              isVideoOn={isVideoOn}
-              isConnected={!!peers}
-            />
+            {/* Local video (picture-in-picture) - Fixed positioning */}
+            <div className="top-4 right-4 z-10">
+              <LocalVideo
+                localRef={localRef}
+                isVideoOn={isVideoOn}
+                isConnected={!!peers}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Controls */}
-        <VideoCallControls
-          isMicOn={isMicOn}
-          isVideoOn={isVideoOn}
-          isChatOpen={isChatOpen}
-          handleAudioToggle={handleAudioToggle}
-          handleVideoToggle={handleVideoToggle}
-          setIsChatOpen={setIsChatOpen}
-          //   router={router}
-          navigate={navigate}
-        />
+        {/* Controls - Fixed at bottom */}
+        <div className="flex-shrink-0 p-4 pt-0">
+          <VideoCallControls
+            isMicOn={isMicOn}
+            isVideoOn={isVideoOn}
+            isChatOpen={isChatOpen}
+            handleAudioToggle={handleAudioToggle}
+            handleVideoToggle={handleVideoToggle}
+            setIsChatOpen={setIsChatOpen}
+            //   router={router}
+            navigate={navigate}
+          />
+        </div>
       </div>
 
       {/* Chat Sidebar */}
       {isChatOpen && (
-        <VideoCallChat
-          messages={messages}
-          setIsChatOpen={setIsChatOpen}
-          user={user}
-          sendMessage={sendMessage}
-        />
+        <div className="w-80 flex-shrink-0 border-l border-slate-700">
+          <VideoCallChat
+            messages={messages}
+            setIsChatOpen={setIsChatOpen}
+            user={user}
+            sendMessage={sendMessage}
+          />
+        </div>
       )}
     </div>
   );

@@ -20,6 +20,7 @@
     "bcryptjs": "^3.0.2",
     "cheerio": "^1.0.0",
     "cookie-parser": "^1.4.7",
+    "date-fns": "^4.1.0",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "moment-timezone": "^0.6.0",

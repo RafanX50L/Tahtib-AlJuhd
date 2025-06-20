@@ -10,9 +10,9 @@ const CWHeader = () => (
         Track your progress in the 28-Day Challenge
       </p>
     </div>
-    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5D5FEF] to-[#FF4757] border-2 border-gray-700 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-lg">
+    {/* <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5D5FEF] to-[#FF4757] border-2 border-gray-700 flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-lg">
       <FaUser className="text-white" />
-    </div>
+    </div> */}
   </div>
 );
 

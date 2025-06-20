@@ -6,12 +6,14 @@ import { HttpStatus } from "../../constants/status.constant";
 import { generateFitnessPlan, generateWorkoutReport } from "../../utils/gemini1.utils";
 import { IClientUserData } from "@/models/interface/IPersonalization";
 import { IExercise, IWorkoutReport } from "@/models/interface/IWorkout";
+import { uploadToS3 } from "@/utils/s3Storage.utils";
+import { ClientProfile } from "@/controllers/interface/IClient.controller";
 // import { writeFile } from "fs";
 
 export class ClientService implements IClientService {
   constructor(private readonly _clientRepository: IClientRepository) {}
 
-  async generateFitnessPlan(userData: any) {
+  async generateFitnessPlan(userData) {
     try {
       // Validate required fields
       const requiredFields: (keyof IClientUserData)[] = [
@@ -549,16 +551,16 @@ export class ClientService implements IClientService {
           totalSets: 0
         } as IWorkoutReport;
       } else {
-        // const workoutReport = await generateWorkoutReport(workout);
-        workoutReport = {
-          caloriesBurned: 500, // Example value
-          duration: 60, // Example value in minutes
-          feedback: "Great job! Keep it up!", // Example feedback
-          intensity: "low",
-          estimatedDuration: "60 minutes",
-          totalExercises: 5,
-          totalSets: 15,
-        } as IWorkoutReport;
+        workoutReport = await generateWorkoutReport(workout);
+        // workoutReport = {
+        //   caloriesBurned: 500, // Example value
+        //   duration: 60, // Example value in minutes
+        //   feedback: "Great job! Keep it up!", // Example feedback
+        //   intensity: "low",
+        //   estimatedDuration: "60 minutes",
+        //   totalExercises: 5,
+        //   totalSets: 15,
+        // } as IWorkoutReport;
       }
       const updateDay = await this._clientRepository.updateDayCompletion(
         userId,
@@ -693,4 +695,32 @@ export class ClientService implements IClientService {
       );
     }
   }
+
+  async getClientProfileData(userId:string){
+    const user = await this._clientRepository.getClientProfileData(userId);
+    return user;
+  }
+
+  async updateProfilePicture(userId: string, file: Express.Multer.File) {
+    const signedUrl =  await uploadToS3(file, "profile-photos");
+
+    const updated = await this._clientRepository.updateProfilePicture(userId, signedUrl);
+    if (!updated) {
+      throw new Error("Client not found");
+    }
+    console.log(signedUrl);
+
+    return { signedUrl };
+  }
+
+  async updateClientProfile(userId:string,formdata:ClientProfile){
+    const upated = await this._clientRepository.updateClientProfile(userId,formdata);
+    if(!upated){
+      throw createHttpError(HttpStatus.NOT_FOUND,HttpResponse.FAILED_TO_UPDATE_PROFILE);
+    }
+          console.log('enterd to service');
+
+    return upated;
+  }
+
 }

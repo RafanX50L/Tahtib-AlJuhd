@@ -4,7 +4,7 @@ import { IAdminRepository } from "../../repositories/interface/IAdmin.respositor
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
 import { IUser } from "@/models/interface/IUser.model";
-import { start } from "repl";
+import { TrainerInterviewSchedule } from "@/models/implementation/TrainerInterview";
 
 export class AdminService implements IAdminService{
     constructor(private readonly _adminRepository: IAdminRepository) {} // Replace 'any' with the actual type of your repository
@@ -20,6 +20,14 @@ export class AdminService implements IAdminService{
         // console.log(clientData);
         return clientData;
     }
+
+    async blockOrUnblock(userId:string):Promise<{success:boolean,message:string}>{
+        const response = await this._adminRepository.blockOrUnblockUser(userId);
+        return {success: response.success,message:response.message};
+    }
+
+    
+
     async updateClientStatus(id:string,status:boolean):Promise<string>{
         // console.log('enterd ot update status');
         await this._adminRepository.updateStatusWithId(id,status);
@@ -44,8 +52,37 @@ export class AdminService implements IAdminService{
         const skip = (page-1) * 8;
         const limit = 8;
 
-        const pendingTrainers = this._adminRepository.getPendingTrainers(skip,limit);
-        console.log('pendingtrainers',pendingTrainers);
+        const pendingTrainers = await this._adminRepository.getPendingTrainers(skip,limit);
         return pendingTrainers;
+    
+    }
+    async getApprovedTrainers(page:number):Promise<any>{
+        const skip = (page-1) * 8;
+        const limit = 8;
+
+        const approvedTrainers = await this._adminRepository.getApprovedTrainers(skip,limit);
+        return approvedTrainers;
+    
+    }
+
+    async scheduleInterview(trainerId:string,adminId:string,date:Date,time:string):Promise<{success:boolean,message:string}>{
+        const response = await this._adminRepository.scheduleInterview(trainerId,adminId,date,time);
+        return {success: response.success,message:response.message};
+    }
+    
+    async submitInterviewFeedback(trainerId:string,adminId:string,feedback:TrainerInterviewSchedule["result"]):Promise<{success:boolean,message:string}>{
+        const response = await this._adminRepository.submitInterviewFeedback(trainerId,adminId,feedback);
+        return {success: response.success,message:response.message};
+    }
+    
+    async approveTrainer(trainerId:string,salary:number):Promise<{success:boolean,message:string}>{
+        const response = await this._adminRepository.approveTrainer(trainerId,salary);
+        return {success: response.success,message:response.message};
+
+    }
+    async rejectTrainer(trainerId:string):Promise<{success:boolean,message:string}>{
+        const response = await this._adminRepository.rejectTrainer(trainerId);
+        return {success: response.success,message:response.message};
+
     }
 }

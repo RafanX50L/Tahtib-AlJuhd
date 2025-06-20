@@ -1,10 +1,11 @@
+import { ClientProfile } from "@/controllers/interface/IClient.controller";
 import { IExercise, IWorkoutReport } from "@/models/interface/IWorkout";
 
 export interface IClientService {
-  generateFitnessPlan(userData: any): Promise<string>;
-  getBasicFitnessPlan(userId: string): Promise<any>;
-  getWorkouts(userId: string, week: string): Promise<any>;
-  getWeekCompletionStatus(userId: string): Promise<any>;
+  generateFitnessPlan(userData);
+  getBasicFitnessPlan(userId: string);
+  getWorkouts(userId: string, week: string);
+  getWeekCompletionStatus(userId: string);
   updateDayCompletionStatus(
     userId: string,
     week: string,
@@ -16,12 +17,15 @@ export interface IClientService {
     week: string,
     day: string
   ): Promise<IWorkoutReport | null>;
-  getWeeklyChallenges(): Promise<any>;
-  getChallengeById(userId: string, challengeId: string): Promise<any>;
-  joinWeeklyChallenge(userId: string, challengeId: string): Promise<any>;
+  getWeeklyChallenges();
+  getChallengeById(userId: string, challengeId: string);
+  joinWeeklyChallenge(userId: string, challengeId: string);
   updateDayCompletionOfWeeklyChallengeStatus(
      userId: string,
     challengeId: string,
     dayIndex: number,
-  ): Promise<any>;
+  );
+  getClientProfileData(userId:string);
+  updateProfilePicture(userId: string, file: Express.Multer.File);
+  updateClientProfile(userId:string,formdata:ClientProfile):Promise<void>;
 }

@@ -51,16 +51,5 @@ app.use('/api/client',clientRouter);
 app.use('/api/trainer', trainerRouter);
 app.use(errorHandler);
 
-// const startServer = async () => {
-//     await connectRedis();
-//     await connectDb();
-//     app.listen(env.PORT, () => {
-//         console.log(`Server is running on port ${env.PORT}`);
-//     });
-// };
-
-// startServer().catch((error) => {
-//     console.error('Error starting server:', error);
-// });
 
 export default app;

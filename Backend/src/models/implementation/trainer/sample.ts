@@ -123,6 +123,7 @@ const BasicInfoSchema = new Schema({
     ref: "TrainerFile",
     required: false,
   },
+  weeklySalary:{type:Number, require: false, min: 500, max: 2500}
 });
 
 // Sub-schema: Certification
@@ -218,6 +219,11 @@ export const TrainerSchema = new Schema(
     sampleMaterials: { type: SampleMaterialsSchema, required: true },
     availability: { type: AvailabilitySchema, required: true },
     evaluation: { type: EvaluationSchema, required: false },
+    interviewDetails: {
+      type: Schema.Types.ObjectId,
+      default: null,
+      required: false
+    },
     status: {
       type: String,
       enum: [

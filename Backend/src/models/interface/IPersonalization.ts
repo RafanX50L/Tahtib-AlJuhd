@@ -30,6 +30,9 @@ export interface IClientUserData {
   nick_name: string;
   age: string;
   gender: 'male' | 'female' | 'others';
+  phoneNumber: string,
+  address: string,
+  profilePicture: string,
   height: string;
   current_weight: string;
   target_weight: string;

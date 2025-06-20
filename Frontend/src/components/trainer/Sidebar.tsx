@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaBars, FaTachometerAlt, FaCalendarAlt, FaUsers, FaComments, FaStar, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
+import path from 'path';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,12 +27,12 @@ const Sidebar = () => {
   const closeSidebar = () => setIsOpen(false);
 
   const navItems = [
-    { icon: FaTachometerAlt, text: 'Overview', active: true, href: 'index.html' },
-    { icon: FaCalendarAlt, text: 'Schedule', href: 'schedule.html' },
-    { icon: FaUsers, text: 'Clients', href: 'clients.html' },
-    { icon: FaComments, text: 'Messages', href: 'messages.html' },
-    { icon: FaStar, text: 'Reviews', href: '#' },
-    { icon: FaUser, text: 'Profile', href: '#' },
+    { icon: FaTachometerAlt, text: 'Overview', path: '/trainer/dashboard' },
+    { icon: FaCalendarAlt, text: 'Schedule', path: '/trainer/schedule' },
+    { icon: FaUsers, text: 'Clients', path: '/trainer/clients' },
+    { icon: FaComments, text: 'Messages', path: '/trainer/messages' },
+    { icon: FaStar, text: 'Reviews', path: '/trainer/reviews' },
+    { icon: FaUser, text: 'Profile', path: '/trainer/profile' },
   ];
 
   const handleLogout = () => {
@@ -63,14 +64,22 @@ const Sidebar = () => {
         </div>
         <nav className="flex flex-col gap-1">
           {navItems.map((item) => (
-            <a
+            <NavLink
               key={item.text}
-              href={item.href}
-              className={`flex items-center gap-3 p-3 rounded-md text-[#b0b0b0] hover:bg-[#6366f1]/10 hover:text-[#6366f1] transition-all ${item.active ? 'bg-[#6366f1]/10 text-[#6366f1] border-l-4 border-[#6366f1]' : ''}`}
+              to={item.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 p-3 rounded-md text-[#b0b0b0] hover:bg-[#6366f1]/10 hover:text-[#6366f1] transition-all${
+                  isActive
+                    ? " bg-[#6366f1]/10 text-[#6366f1] border-l-4 border-[#6366f1]"
+                    : ""
+                }`
+              }
             >
-              <item.icon className="w-5 text-center" />
-              <span>{item.text}</span>
-            </a>
+              <>
+                <item.icon className="w-5 text-center" />
+                <span>{item.text}</span>
+              </>
+            </NavLink>
           ))}
         </nav>
         <nav className="flex flex-col gap-1 mt-4">
