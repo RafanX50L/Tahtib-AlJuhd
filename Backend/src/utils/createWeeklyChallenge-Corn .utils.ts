@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import WeeklyChallenge from '../models/implementation/WeeklyChallenges.model';
+import { WeeklyChallengeModel } from '@/models/WeeklyChallenge.model';
 import { generateExercisesForWeek } from './gemini1.utils';
 
 
@@ -11,7 +11,7 @@ const createWeeklyChallenge = async () => {
     endOfWeek.setDate(endOfWeek.getDate() + 6);
 
     // Check for both types
-    const existingBeginner = await WeeklyChallenge.findOne({
+    const existingBeginner = await WeeklyChallengeModel.findOne({
       type: 'beginner',
       startDate: {
         $gte: startOfWeek,
@@ -19,7 +19,7 @@ const createWeeklyChallenge = async () => {
       }
     });
 
-    const existingIntermediate = await WeeklyChallenge.findOne({
+    const existingIntermediate = await WeeklyChallengeModel.findOne({
       type: 'intermediate',
       startDate: {
         $gte: startOfWeek,
@@ -27,7 +27,7 @@ const createWeeklyChallenge = async () => {
       }
     });
 
-    const existingAdvanced = await WeeklyChallenge.findOne({
+    const existingAdvanced = await WeeklyChallengeModel.findOne({
       type: 'advanced',
       startDate: {
         $gte: startOfWeek,
@@ -48,7 +48,7 @@ const createWeeklyChallenge = async () => {
     console.log('Beginner Tasks:', beginnerTasks,'/n Intermediate Tasks:', intermediateTasks,'/n Advanced Tasks:', advancedTasks);
 
     if (!existingBeginner) {
-      await new WeeklyChallenge({
+      await new WeeklyChallengeModel({
         type: 'beginner',
         startDate: startOfWeek,
         endDate: endOfWeek,
@@ -59,7 +59,7 @@ const createWeeklyChallenge = async () => {
       console.log('✅ Beginner challenge created');
     }
     if (!existingIntermediate) {
-      await new WeeklyChallenge({
+      await new WeeklyChallengeModel({
         type: 'intermediate',
         startDate: startOfWeek,
         endDate: endOfWeek,
@@ -71,7 +71,7 @@ const createWeeklyChallenge = async () => {
     }
 
     if (!existingAdvanced) {
-      await new WeeklyChallenge({
+      await new WeeklyChallengeModel({
         type: 'advanced',
         startDate: startOfWeek,
         endDate: endOfWeek,
@@ -97,7 +97,7 @@ const createWeeklyChallenge = async () => {
 // │ │ │ │ │
 // * * * * *
 
-cron.schedule('41 07 * * *', () => {
+cron.schedule('27 14 * * 0', () => {
   console.log('🕐 Running weekly challenge cron job...');
   createWeeklyChallenge();
 });

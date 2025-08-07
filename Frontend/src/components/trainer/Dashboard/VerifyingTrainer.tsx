@@ -46,7 +46,8 @@ const VerifyingTrainer = () => {
       try {
         const response = await TrainerService.getPendingApplicationDetails();
 
-        setTrainerData(response);
+        console.log(response);
+        setTrainerData(response.data);
         toast.success("Trainer details fetched successfully");
 
         // setError("No trainer data found");
@@ -124,7 +125,7 @@ const VerifyingTrainer = () => {
       case "interview_scheduled":
         return (
           <>
-            {new Date(trainerData.interviewDetails.endTime).getTime() >=
+            {new Date(interviewDetails.endTime).getTime() >=
             new Date().getTime() ? (
               <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 w-full max-w-md">
                 <div className="flex items-center gap-4 mb-4">
@@ -177,8 +178,10 @@ const VerifyingTrainer = () => {
                 </div>
                 <Button
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  onClick={() =>
-                    navigate(`/room/${interviewDetails?.roomId}`)
+                  onClick={() => navigate(`/room/${interviewDetails?.roomId}`)}
+                  disabled={
+                    new Date(trainerData.interviewDetails.startTime).getTime() >=
+                    new Date().getTime()
                   }
                 >
                   Join Now

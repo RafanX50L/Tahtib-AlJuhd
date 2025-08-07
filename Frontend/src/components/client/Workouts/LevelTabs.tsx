@@ -1,22 +1,33 @@
-const LevelTabs = ({ setActiveTab,activeTab}) => {
-  const handleTabClick = (tab) => {
+interface levelTabs {
+  setActiveTab: (tab: number) => void;
+  activeTab: number;
+}
+
+interface LevelTabProps {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const LevelTabs: React.FC<levelTabs> = ({ setActiveTab, activeTab }) => {
+  const handleTabClick = (tab: number) => {
     setActiveTab(tab);
     // In a real app, you would load the appropriate content
   };
   const tabs = [
-    'Week 1: Foundation',
-    'Week 2: Build',
-    'Week 3: Intensity',
-    'Week 4: Transformation',
+    "Week 1: Foundation",
+    "Week 2: Build",
+    "Week 3: Intensity",
+    "Week 4: Transformation",
   ];
   return (
     <div className="flex gap-3 mb-6 border-b border-gray-700 pb-3">
-      {tabs.map((tab,index) => (
+      {tabs.map((tab, index) => (
         <LevelTab
           key={tab}
           label={tab}
-          isActive={activeTab === index+1}
-          onClick={() => handleTabClick(index+1)}
+          isActive={activeTab === index + 1}
+          onClick={() => handleTabClick(index + 1)}
         />
       ))}
     </div>
@@ -25,7 +36,7 @@ const LevelTabs = ({ setActiveTab,activeTab}) => {
 
 export default LevelTabs;
 
-const LevelTab = ({ label, isActive, onClick }) => {
+const LevelTab: React.FC<LevelTabProps> = ({ label, isActive, onClick }) => {
   return (
     <div
       className={`px-4 py-2 rounded-lg cursor-pointer text-sm transition-all duration-300 ${

@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import logo from "../../assets/images/logo.jpg";
+import { secureTokenStorage } from "@/services/implementation/api";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const access = localStorage.getItem("accessToken");
+  const tokenData = secureTokenStorage.get();
+  const token = tokenData ? tokenData.token : null;
   return (
     <header className="bg-slate-900/95 shadow-sm backdrop-blur-md fixed w-full top-0 z-50">
       <div className="container mx-auto px-5">
@@ -49,7 +51,7 @@ export default function Navbar() {
           </nav>
 
           <div className="flex gap-4 flex-wrap">
-            {access ? (
+            {token ? (
               <Button
                 onClick={() => navigate("/dashboard")}
                 className="bg-blue-600 hover:bg-blue-900 text-white px-5 py-2 rounded-md shadow-md transition duration-200"

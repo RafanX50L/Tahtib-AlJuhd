@@ -12,7 +12,8 @@ export default defineConfig([
     extends: ["ts/recommended"],
     rules: {
     "no-console": "off",
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "camelcase": ["warn", { "properties": "always" }]
     } 
   },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], languageOptions: { globals: globals.browser } },

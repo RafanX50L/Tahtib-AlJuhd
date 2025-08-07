@@ -1,12 +1,12 @@
 import { createHttpError } from "../utils";
-import { userData } from "./verify.token.middleware";
+import { AddedRequest } from "./verify.token.middleware";
 import { HttpResponse } from "../constants/response-message.constant";
 import { HttpStatus } from "../constants/status.constant";
-import { UserModel } from "../models/implementation/user.model";
+import { UserModel } from "../models/user.model";
 import { NextFunction, Response } from "express";
 
 export default  function isBlocked() {
-  return async (req: userData, res: Response, next: NextFunction) => {
+  return async (req: AddedRequest, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?.id;
 

@@ -10,66 +10,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      devOptions: {
-        enabled: true,
-      },
-      includeAssets: ['favicon.ico', 'icon-192x192.png', 'icon-512x512.png'],
-      manifest: {
-        name: 'FormFit',
-        short_name: 'FormFit',
-        description: 'Personalized workout plan generator',
-        theme_color: '#000000',
-        background_color: '#1F2937',
-        display: 'standalone',
-        start_url: '/',
-        icons: [
-          {
-            src: '/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.destination === 'document',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'html-cache',
-            },
-          },
-          {
-            urlPattern: ({ request }) =>
-              ['style', 'script', 'worker'].includes(request.destination),
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'asset-cache',
-            },
-          },
-          {
-            urlPattern: ({ request }) => request.destination === 'image',
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'image-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-              },
-            },
-          },
-        ],
-      },
-    }),
-     nodePolyfills(),
+    nodePolyfills(),
   ],
   optimizeDeps:{
     include: ['simple-peer']
@@ -80,4 +21,70 @@ export default defineConfig({
       stream: 'stream-browserify',
     },
   },
+  server: {
+    host: true,        // same as 0.0.0.0 → allows LAN access
+    port: 5173,        // you can keep 5173
+    strictPort: true,  // prevents automatic port switching
+  },
 })
+
+
+// VitePWA({
+//       registerType: 'autoUpdate',
+//       devOptions: {
+//         enabled: true,
+//       },
+//       includeAssets: ['favicon.ico', 'icon-192x192.png', 'icon-512x512.png'],
+//       manifest: {
+//         name: 'FormFit',
+//         short_name: 'FormFit',
+//         description: 'Personalized workout plan generator',
+//         theme_color: '#000000',
+//         background_color: '#1F2937',
+//         display: 'standalone',
+//         start_url: '/',
+//         icons: [
+//           {
+//             src: '/icon-192x192.png',
+//             sizes: '192x192',
+//             type: 'image/png',
+//           },
+//           {
+//             src: '/icon-512x512.png',
+//             sizes: '512x512',
+//             type: 'image/png',
+//           },
+//         ],
+//       },
+//       workbox: {
+//         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+//         runtimeCaching: [
+//           {
+//             urlPattern: ({ request }) => request.destination === 'document',
+//             handler: 'NetworkFirst',
+//             options: {
+//               cacheName: 'html-cache',
+//             },
+//           },
+//           {
+//             urlPattern: ({ request }) =>
+//               ['style', 'script', 'worker'].includes(request.destination),
+//             handler: 'StaleWhileRevalidate',
+//             options: {
+//               cacheName: 'asset-cache',
+//             },
+//           },
+//           {
+//             urlPattern: ({ request }) => request.destination === 'image',
+//             handler: 'CacheFirst',
+//             options: {
+//               cacheName: 'image-cache',
+//               expiration: {
+//                 maxEntries: 50,
+//                 maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+//               },
+//             },
+//           },
+//         ],
+//       },
+//     }),

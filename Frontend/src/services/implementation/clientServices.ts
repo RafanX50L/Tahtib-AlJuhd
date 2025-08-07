@@ -1,16 +1,43 @@
-import { AxiosError, get } from "axios";
+import { AxiosError } from "axios";
 import api from "./api";
 import { CLIENT_ROUTES } from "../../utils/constant";
 import { toast } from "sonner";
+import { Types } from "mongoose";
+
+export interface IClientUserData{
+  nickName: string;
+  age: number;
+  gender: string;
+  address?: string;
+  phoneNumber?: string;
+  profilePictureId?: Types.ObjectId;
+  height: number;
+  currentWeight: number;
+  targetWeight: number;
+  fitnessGoal: 'build muscle' | 'lose weight' | 'get stronger' | 'improve endurance' | 'tone body' | 'increase flexibility';
+  currentFitnessLevel: 'beginner' | 'intermediate' | 'advanced' | 'athlete';
+  activityLevel: 'sedentary' | 'lightly active' | 'moderately active' | 'very active';
+  equipment: ('body weight' | 'dumbbells' | 'resistance bands' | 'kettlebells' | 'pull-up bar' | 'yoga mat')[];
+  workoutDuration: string;
+  workoutDaysPerWeek: number;
+  healthIssues?: string[];
+  medicalCondition?: string;
+  dietAllergies?: string[];
+  dietMealsPerDay: ('3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals')[];
+  dietPreferences?: string;
+  workoutsCompletedIn28Days: number;
+}
+
 
 export const ClientService = {
   // service for cleint fitness plan generation
 
-  generateFitnessPlan: async (userData) => {
+  generatePersonalization: async (userData:Partial<IClientUserData>) => {
     try {
       const response = await api.post(
-        CLIENT_ROUTES.GENERATE_FITNESS_PLAN,
-        userData
+        CLIENT_ROUTES.GENERATE_PERSONALIZATION,
+        userData,
+        { timeout: 60000 }
       );
       return { data: response.data };
     } catch (error: unknown) {
@@ -24,9 +51,9 @@ export const ClientService = {
 
   // Services for workouts pages
 
-  getBasicFitnessDetails: async () => {
+  getBasicWorkoutDetails: async () => {
     try {
-      const response = await api.get(CLIENT_ROUTES.GET_BASIC_FITNESS_DETAILS);
+      const response = await api.get(CLIENT_ROUTES.GET_BASIC_WORKOUT_DETAILS);
       console.log("basic finess response: ", response.data);
       return { data: response.data };
     } catch (error: unknown) {
@@ -68,7 +95,7 @@ export const ClientService = {
     }
   },
 
-  updateDayCompletionAndGetWorkoutReport: async (
+  completeDailyWorkoutAndFetchReport: async (
     workout: any,
     currentDay: string,
     currentWeek: string
@@ -83,11 +110,11 @@ export const ClientService = {
     );
     try {
       const response = await api.patch(
-        `${CLIENT_ROUTES.UPDATE_DAY_COMPLETION_STATUS}`,
+        `${CLIENT_ROUTES.COMPLETE_DAILY_WORKOUT}`,
         { workout, day: currentDay, week: currentWeek }
       );
       console.log("Updated workout response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -118,7 +145,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_WEEKLY_CHALLENGES);
       console.log("Weekly challenges response: ", response.data);
-      return response.data;
+      return response.data.weeklyChallenges;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -133,8 +160,8 @@ export const ClientService = {
       const response = await api.get(
         `${CLIENT_ROUTES.GET_WEEKLY_CHALLENGES}/${challengeId}`
       );
-      console.log("Challenge response: ", response.data);
-      return { data: response.data };
+      console.log("Challenge response: ", response.data.challenge);
+      return { data: response.data.challenge };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -160,7 +187,7 @@ export const ClientService = {
     }
   },
 
-  updateDayCompletionOfWeeklyChallenge: async (
+  markChallengeDayComplete: async (
     exercises: any,
     day: number,
     challengeId: string
@@ -175,7 +202,7 @@ export const ClientService = {
     );
     try {
       const response = await api.patch(
-        `${CLIENT_ROUTES.UPDATE_DAY_COMPLETION_OF_WEEKLY_CHALLENGE_STATUS}`,
+        `${CLIENT_ROUTES.MARK_CHALLENGE_DAY_COMPLETE(challengeId,day)}`,
         { exercises, day, challengeId }
       );
       console.log("Updated day completion response: ", response.data);
@@ -193,7 +220,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_CLIENT_PROFILE);
       console.log("response of profile", response.data);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -241,4 +268,30 @@ export const ClientService = {
       throw new Error(errorMessage);
     }
   },
+  
+  getAvailabeTrainers: async (
+    pageNum: number,
+    trainersPerPage: number,
+    search: string,
+    specialty: string
+  ): Promise<any[]> => {
+    try {
+      const response = await api.get<{ trainerData: {currentPage:number,total:number,totalPages:number,trainers:any[]} }>(
+        `${CLIENT_ROUTES.GET_AVAILABLE_TRAINERS}/?page=${pageNum}&limit=${trainersPerPage}&search=${encodeURIComponent(
+          search
+        )}&specialty=${encodeURIComponent(specialty)}`
+      );
+      console.log("Available trainers response: ", response.data);
+      return response.data.trainerData;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch trainer data";
+      console.log("Error fetch trainer data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+  // getAvailableTrainers: async()
 };

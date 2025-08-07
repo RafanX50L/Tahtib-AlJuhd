@@ -28,7 +28,7 @@ export default class HandleSocket {
         //     socket.emit(chatEnum.error, "unknown user");
         //   }
           this.handleJoinRoom(socket, room);
-        } catch (error: any) {
+        } catch (error) {
           console.error("Error joining room:", error);
           socket.emit(chatEnum.error, error.message || "An error occurred");
         }
@@ -46,7 +46,7 @@ export default class HandleSocket {
         //   this.handleJoinRoom(socket, { roomId: room, username, email });
         // }
         this.handleJoinRoom(socket, { roomId: room, username, email });
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error in joinmeet:", error);
         socket.emit(chatEnum.error, error.message || "An error occurred");
       }
@@ -106,7 +106,7 @@ export default class HandleSocket {
           socket.to(room.roomId).emit("u-disconnect", room.username);
         }
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error in handleJoinRoom:", error);
       socket.emit(chatEnum.error, error.message || "Failed to join room");
     }
@@ -179,7 +179,7 @@ export default class HandleSocket {
 
   //       socket.broadcast.to(roomId).emit(chatEnum.receive, savedMessage);
 
-  //     } catch (error: any) {
+  //     } catch (error) {
   //       console.error("Error in handleSendMessage:", error);
   //       socket.emit(chatEnum.error, error.message || "Failed to send message");
   //     }

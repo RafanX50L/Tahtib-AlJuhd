@@ -10,7 +10,7 @@ import {
   FaSignOutAlt,
 } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -22,13 +22,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from "@/store/slices/authSlice";
+import { RootState } from '@/store/store';
 
 interface NavItem {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-  href: string;
+  path: string;
   active?: boolean;
 }
 
@@ -38,14 +39,15 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { user } = useSelector((state: RootState) => state.auth);
   const navItems: NavItem[] = [
-    { name: 'Dashboard', icon: FaTachometerAlt, href: `${pathadmin}/dashboard`, active: false },
-    { name: 'Trainer Management', icon: FaUsers, href: `${pathadmin}/trainer-management` },
-    { name: 'Client Management', icon: FaUser, href: `${pathadmin}/client-management` },
-    { name: 'Interview Schedule', icon: FaCalendar, href: '#' },
-    { name: 'Payments', icon: FaDollarSign, href: '#' },
-    { name: 'Notifications', icon: FaBell, href: '#' },
-    { name: 'Settings', icon: FaCog, href: '#' },
+    { name: 'Dashboard', icon: FaTachometerAlt, path: `${pathadmin}/dashboard`, active: true },
+    { name: 'Trainer Management', icon: FaUsers, path: `${pathadmin}/trainer-management` },
+    { name: 'Client Management', icon: FaUser, path: `${pathadmin}/client-management` },
+    { name: 'Interview Schedule', icon: FaCalendar, path: `${pathadmin}/interview-schedule` },
+    { name: 'Payments', icon: FaDollarSign, path: `${pathadmin}/payments` },
+    { name: 'Notifications', icon: FaBell, path: `${pathadmin}/notifications` },
+    { name: 'Settings', icon: FaCog, path: `${pathadmin}/settings` },
   ];
 
   const handleLogout = () => {
@@ -69,11 +71,11 @@ const Sidebar = () => {
       <nav className="flex-1 px-2">
         <div className="space-y-1">
           {navItems.map((item) => (
-            <a
+            <NavLink
               key={item.name}
-              onClick={()=>navigate(item.href)}
-              className={`flex items-center px-4 py-3 rounded-md group transition-colors mb-3 ${
-                item.active ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              to={item.path}
+              className= {({isActive})=>`flex items-center px-4 py-3 rounded-md group transition-colors mb-3 ${
+                isActive ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
               }`}
             >
               <item.icon
@@ -82,7 +84,7 @@ const Sidebar = () => {
                 }`}
               />
               <span>{item.name}</span>
-            </a>
+            </NavLink>
           ))}
         </div>
         <div className="space-y-1 ">
@@ -130,8 +132,8 @@ const Sidebar = () => {
             alt="Admin profile"
           />
           <div>
-            <p className="text-sm font-medium text-white">Admin User</p>
-            <p className="text-xs text-gray-400">admin@fitconnect.com</p>
+            <p className="text-sm font-medium text-white">{user?.name}</p>
+            <p className="text-xs text-gray-400">{user?.email}</p>
           </div>
         </div>
       </div>

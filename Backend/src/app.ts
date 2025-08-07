@@ -12,7 +12,6 @@ validateEnv();
 // configs
 import {connectDb} from './config/mongo.config';
 import {env} from './config/env.config';
-// import {connectRedis} from './config/redis.config';
 
 // middlewares
 import {errorHandler} from './middleware/error.middleware';
@@ -21,10 +20,10 @@ import {errorHandler} from './middleware/error.middleware';
 import './utils/createWeeklyChallenge-Corn .utils';
 
 //routes
-import authRoutes from './routes/auth.router';
-import adminRouter from './routes/admin.router';
-import clientRouter from './routes/client.router';
-import trainerRouter from './routes/trainer.router';
+import authRoutes from '@/routes/auth.routes';
+import userRoutes from '@/routes/user.routes';
+import trainerRouter from './routes/trainer.routes';
+import adminRouter from './routes/admin.routes';
 
 const app = express();
 
@@ -33,7 +32,7 @@ app.use(
         origin: env.CLIENT_URL,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'x-token-version'],
     }),
 );
 
@@ -44,11 +43,10 @@ app.use(express.urlencoded({extended: true}));
 
 connectDb();
 
-// app.use('/api',isUserBlocked);
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRouter);
-app.use('/api/client',clientRouter);
+app.use('/api/client/',userRoutes);
 app.use('/api/trainer', trainerRouter);
+app.use('/api/admin', adminRouter);
 app.use(errorHandler);
 
 

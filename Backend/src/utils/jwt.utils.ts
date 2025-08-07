@@ -2,46 +2,51 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env.config';
 
 const ACCESS_KEY = env.JWT_ACCESS_SECRET as string;
-const REFRESH_KEY =env.JWT_REFRESH_SECRET as string;
+const REFRESH_KEY = env.JWT_REFRESH_SECRET as string;
 
 const ACCESS_TOKEN_EXPIRY = "15m";
-const REFRESH_TOKEN_EXPIRY = "7day";
+const REFRESH_TOKEN_EXPIRY = "7d";
 
-export function generateAccessToken(payload:object):string{
-    return jwt.sign(payload,ACCESS_KEY,{expiresIn:ACCESS_TOKEN_EXPIRY});
+export function generateAccessToken(payload: object): string {
+  return jwt.sign(payload, ACCESS_KEY, { 
+    expiresIn: ACCESS_TOKEN_EXPIRY,
+    algorithm: 'HS256'
+  });
 }
 
-export function generateRefreshToken(payload:object):string{
-    return jwt.sign(payload,REFRESH_KEY,{expiresIn:REFRESH_TOKEN_EXPIRY});
+export function generateRefreshToken(payload: object): string {
+  return jwt.sign(payload, REFRESH_KEY, { 
+    expiresIn: REFRESH_TOKEN_EXPIRY,
+    algorithm: 'HS256'
+  });
 }
 
-export function verifyAccessToken(token:string){
-        console.log('step 3');
-    try{
-        return jwt.verify(token,ACCESS_KEY);
-    }catch(err){
-            console.log('step 4');
-
-        console.error(err);
-        return null;
-    }
-}
-
-export function verifyRefreshToken(token:string){
-    try{
-        return jwt.verify(token,REFRESH_KEY);
-    }catch(err){
-        console.log(err);
-        return null;
-    }
-}
-
-export function decodeAndVerifyToken(token: string): Record<string, null> | null {
+export function verifyAccessToken(token: string) {
   try {
-    const decoded = jwt.verify(token, ACCESS_KEY);
+    const decode = jwt.verify(token, ACCESS_KEY, { algorithms: ['HS256'] });
+    console.log('Acess Data decoded', decode);
+    return decode;
+  } catch (err) {
+    console.error("Access token verification failed:", err);
+    return null;
+  }
+}
+
+export function verifyRefreshToken(token: string) {
+  try {
+    return jwt.verify(token, REFRESH_KEY, { algorithms: ['HS256'] });
+  } catch (err) {
+    console.error("Refresh token verification failed:", err);
+    return null;
+  }
+}
+
+export function decodeAndVerifyToken(token: string): Record<string, {_id:string}> | null {
+  try {
+    const decoded = jwt.verify(token, ACCESS_KEY, { algorithms: ['HS256'] });
     return typeof decoded === 'object' && decoded !== null ? decoded : null;
   } catch (err) {
-    console.error("Invalid or expired token:", err);
+    console.error("Token verification failed:", err);
     return null;
   }
 }

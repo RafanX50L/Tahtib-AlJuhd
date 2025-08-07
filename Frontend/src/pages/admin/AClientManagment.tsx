@@ -10,15 +10,27 @@ import { toast } from "sonner";
 const AClientManagment = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [clientData, setClientData] = useState<IClient[]>([]);
-  const [refetch, setRefetch] = useState(true);
+  const [totalItems, setTotalItems] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<"active" | "blocked" | "all">("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
+    console.log("Fetching clients with searchTerm:", JSON.stringify(searchTerm)); // Debug log with JSON.stringify to catch special characters
     const fetchClientData = async () => {
       try {
-        const response = await AdminService.getAllClients();
-        // Validate response.data is an array
-        if (Array.isArray(response.data)) {
-          setClientData(response.data);
+        // Sanitize searchTerm to prevent invalid values
+        const sanitizedSearchTerm = searchTerm.trim() === "%7D" || searchTerm.trim() === "}" ? "" : searchTerm.trim();
+        const response = await AdminService.getAllClients(
+          statusFilter,
+          sanitizedSearchTerm,
+          currentPage,
+          itemsPerPage
+        );
+        if (Array.isArray(response.data?.data)) {
+          setClientData(response.data.data);
+          setTotalItems(response.data.totalCount || 0);
         } else {
           console.error("Unexpected response format:", response.data);
           toast.error("Failed to load client data: Invalid response format");
@@ -28,22 +40,11 @@ const AClientManagment = () => {
         console.error("Error fetching client data:", error);
         const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
         toast.error(errorMessage);
-        setIsLoading(false); // Ensure loading state is stopped on error
+        setIsLoading(false);
       }
     };
     fetchClientData();
-  }, [refetch]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-white">Loading Client Management page...</p>
-        </div>
-      </div>
-    );
-  }
+  }, [statusFilter, searchTerm, currentPage]);
 
   return (
     <div className="flex min-h-screen bg-black text-white">
@@ -52,7 +53,16 @@ const AClientManagment = () => {
         <Header />
         <main className="flex-1 px-6 py-8 overflow-y-auto">
           <StatsCard />
-          <ClientsTable clientData={clientData} setRefetch={setRefetch} />
+          <ClientsTable
+            clientData={clientData}
+            totalItems={totalItems}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            setCurrentPage={setCurrentPage}
+            setStatusFilter={setStatusFilter}
+            setSearchTerm={setSearchTerm}
+            setClientData={setClientData}
+          />
         </main>
         <footer className="px-6 py-4 bg-gray-900">
           <div className="flex items-center justify-between">

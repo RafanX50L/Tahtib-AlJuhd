@@ -19,14 +19,11 @@ const WorkoutReport = () => {
   const day = queryParams.get("day") ?? "";
 
   useEffect(() => {
-    console.log("data", week, day);
     const fetchReport = async () => {
       try {
         const response = await ClientService.getWorkoutReport(week, day);
-        console.log(`Google Login Successfull with status ${response}`);
         setWorkoutReport(response.data);
       } catch (error: unknown) {
-        console.log(error);
         const errorMessage =
           error instanceof Error
             ? error.message

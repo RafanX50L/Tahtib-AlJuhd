@@ -9,27 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
 import { AdminService } from "@/services/implementation/adminServices";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-// import { CalendarIcon } from "@radix-ui/react-icons";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import {
   Select,
   SelectContent,
@@ -39,8 +28,41 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-
 import { z } from "zod";
+
+type FeedbackData = z.infer<typeof feedbackSchema>;
+
+// Define the ITrainerWithPersonalization interface based on the provided structure
+interface ITrainerWithPersonalization {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  location: string;
+  dateOfBirth: string;
+  gender: string;
+  timeZone: string;
+  yearsOfExperience: number;
+  certifications: Array<{ name: string; issuer: string; filePath: string }>;
+  specializations: string[];
+  coachingType: string[];
+  platformsUsed: string[];
+  demoVideoLink: string;
+  portfolioLinks: string[];
+  availability: {
+    weeklySlots: Array<{ day: string; startTime: string; endTime: string }>;
+    engagementType: string;
+  };
+  profilePhoto: string | null;
+  resumeFile: string | null;
+  status?: string; // Optional, as it's not in the provided data
+  interviewDetails?: {
+    startTime?: string;
+    endTime?: string;
+    roomId?: string;
+    result?: FeedbackData;
+  }; // Optional, as it's not in the provided data
+}
 
 const feedbackSchema = z.object({
   communicationSkills: z.number().min(1, "Communication Skills is required"),
@@ -52,11 +74,291 @@ const feedbackSchema = z.object({
   notes: z.string().min(1, "Notes are required"),
 });
 
+interface TrainerTableProps {
+  applications: ITrainerWithPersonalization[];
+  handleAction: (
+    application: ITrainerWithPersonalization,
+    action: string
+  ) => void;
+}
+
+const ratingLabels: Record<number, string> = {
+  1: "Poor",
+  2: "Fair",
+  3: "Average",
+  4: "Impressive",
+  5: "Excellent",
+};
+
+const TrainerTable: React.FC<TrainerTableProps> = ({
+  applications,
+  handleAction,
+}) => {
+  return (
+    <Card className="bg-gray-800 rounded-lg overflow-hidden border-none">
+
+      <Table className="border-none">
+        <TableHeader>
+          <TableRow className="bg-gray-900 hover:bg-gray-900 border-none">
+            <TableHead className="text-gray-400">Trainer</TableHead>
+            <TableHead className="text-gray-400">Specialization</TableHead>
+            <TableHead className="text-gray-400">Experience</TableHead>
+            <TableHead className="text-gray-400">Applied On</TableHead>
+            <TableHead className="text-gray-400">Status</TableHead>
+            <TableHead className="text-gray-400 text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {applications.map((application) => {
+            const status = application.status?.toLowerCase() || "applied"; // Default to "applied" if status is missing
+            const profilePhoto = application.profilePhoto;
+
+            let statusClass = "bg-purple-200 text-purple-800";
+            let statusText = "Not Scheduled";
+
+            if (status === "interviewed" || status === "interview completed") {
+              statusClass = "bg-yellow-200 text-yellow-800";
+              statusText = "Interview Completed";
+            } else if (
+              status === "interview_scheduled" ||
+              status === "interview scheduled"
+            ) {
+              statusClass = "bg-green-200 text-green-800";
+              statusText = "Interview Scheduled";
+            }
+
+            return (
+              <TableRow
+                key={application.id}
+                className="bg-gray-800 hover:bg-gray-700"
+              >
+                <TableCell>
+                  <div className="flex items-center">
+                    <div className="relative">
+                      {profilePhoto ? (
+                        <img
+                          className="h-10 w-10 rounded-full"
+                          src={profilePhoto}
+                          alt={application.name}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const avatarDiv =
+                              target.previousElementSibling as HTMLDivElement;
+                            avatarDiv.classList.remove("opacity-0");
+                          }}
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium uppercase">
+                          {application.name?.charAt(0) || "N/A"}
+                        </div>
+                      )}
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-white">
+                        {application.name || "N/A"}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {application.email || "N/A"}
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-white">
+                  {application.specializations?.join(", ") || "N/A"}
+                </TableCell>
+                <TableCell className="text-white">
+                  {application.yearsOfExperience || "N/A"} years
+                </TableCell>
+                <TableCell className="text-gray-400">
+                  {application.dateOfBirth
+                    ? new Date(application.dateOfBirth).toLocaleDateString()
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`}
+                  >
+                    {statusText}
+                    {application.status === "interview_scheduled" &&
+                      application.interviewDetails?.startTime && (
+                        <span className="text-blue-600">
+                          {new Date(
+                            application.interviewDetails.startTime
+                          ).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </span>
+                      )}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      className="text-indigo-400 hover:text-indigo-300"
+                      onClick={() => handleAction(application, "View Details")}
+                    >
+                      View
+                    </Button>
+                    {status === "interviewed" ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          className="text-indigo-400 hover:text-indigo-300"
+                          onClick={() => handleAction(application, "Approve")}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="text-red-400 hover:text-red-300"
+                          onClick={() => handleAction(application, "Reject")}
+                        >
+                          Reject
+                        </Button>
+                      </>
+                    ) : status === "interview_scheduled" &&
+                      application.interviewDetails?.endTime &&
+                      new Date(application.interviewDetails.endTime).getTime() <=
+                        Date.now() ? (
+                      <Button
+                        variant="ghost"
+                        className="text-indigo-400 hover:text-indigo-300"
+                        onClick={() => handleAction(application, "Feedback")}
+                      >
+                        Feedback
+                      </Button>
+                    ) : status === "applied" ? (
+                      <Button
+                        variant="ghost"
+                        className="text-indigo-400 hover:text-indigo-300"
+                        onClick={() =>
+                          handleAction(application, "Schedule Review")
+                        }
+                      >
+                        Schedule
+                      </Button>
+                    ) : status === "interview_scheduled" ? (
+                      <>
+                        {application.interviewDetails?.startTime &&
+                        new Date(
+                          application.interviewDetails.startTime
+                        ).getTime() <= Date.now() ? (
+                          <Button
+                            variant="ghost"
+                            className="text-indigo-400 hover:text-indigo-300"
+                            onClick={() =>
+                              handleAction(application, "Join Room")
+                            }
+                          >
+                            Meet Link
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            disabled
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            Meet Link
+                          </Button>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </Card>
+  );
+};
+
+interface SearchBarProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm }) => {
+  return (
+    <div className="mb-4">
+      <Input
+        type="text"
+        placeholder="Search trainers by name..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="bg-gray-700 text-white border-gray-600"
+      />
+    </div>
+  );
+};
+
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  setCurrentPage,
+  totalItems,
+  itemsPerPage,
+}) => {
+  return (
+    <div className="flex justify-between items-center px-6 py-4 mt-4 bg-gray-800 rounded-lg">
+      <div className="text-sm text-gray-400">
+        Showing {(currentPage - 1) * itemsPerPage + 1}–
+        {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{" "}
+        applications
+      </div>
+      <div className="flex space-x-2">
+        <Button
+          className="bg-gray-700 hover:bg-gray-600"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev: number) => prev - 1)}
+        >
+          Previous
+        </Button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <Button
+            key={page}
+            className={
+              currentPage === page
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-700 hover:bg-gray-600"
+            }
+            onClick={() => setCurrentPage(page)}
+          >
+            {page}
+          </Button>
+        ))}
+        <Button
+          className="bg-gray-700 hover:bg-gray-600"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const PendingApplicationsTable: React.FC = () => {
   const [applications, setApplications] = useState<
     ITrainerWithPersonalization[]
   >([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedApplication, setSelectedApplication] =
     useState<ITrainerWithPersonalization | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -66,20 +368,13 @@ const PendingApplicationsTable: React.FC = () => {
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>(
     new Date()
   );
-
+  const [scheduleTime, setScheduleTime] = useState("");
+  const [weeklySalary, setWeeklySalary] = useState<number>(0);
+  const itemsPerPage = 5;
+  const limit = 5;
   const navigate = useNavigate();
 
-  const [scheduleTime, setScheduleTime] = useState("");
-
   type FeedbackData = z.infer<typeof feedbackSchema>;
-
-  const ratingLabels: Record<number, string> = {
-    1: "Poor",
-    2: "Fair",
-    3: "Average",
-    4: "Impressive",
-    5: "Excellent",
-  };
 
   const [feedbackData, setFeedbackData] = useState<FeedbackData>({
     communicationSkills: 0,
@@ -91,48 +386,58 @@ const PendingApplicationsTable: React.FC = () => {
     notes: "",
   });
 
-  const itemsPerPage = 5;
-
-  const [weeklySalary, setWeeklySalary] = useState<number>(0);
-
   useEffect(() => {
     const fetchData = async () => {
-      const trainers = await AdminService.getPendingTrainers(currentPage);
-      setApplications(Array.isArray(trainers.data) ? trainers.data : []);
+      try {
+        const trainers = await AdminService.getPendingTrainers(
+          currentPage,
+          limit,
+          searchTerm
+        );
+        const trainerData = trainers.data?.data?.trainers || [];
+        const totalCount = trainers.data?.data?.totalCount || 0;
+        setApplications(trainerData);
+        setTotalItems(totalCount);
+      } catch (error) {
+        console.error("Error fetching trainers:", error);
+        toast.error("Failed to fetch trainers");
+      }
     };
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, searchTerm]);
 
   const handleScheduleInterview = async (id: string) => {
     if (!scheduleDate || !scheduleTime) {
       toast.error("Please select both date and time");
       return;
     }
-    console.log(
-      "schemaDate",
-      typeof scheduleDate,
-      "\n",
-      "time",
-      typeof scheduleTime
-    );
     try {
-      // Call API to schedule interview
-      const response = await AdminService.scheduleInterview(id, {
+      await AdminService.scheduleInterview(id, {
         date: scheduleDate,
         time: scheduleTime,
       });
-
-      console.log("response", response);
-
-      // Refresh data
-      const trainers = await AdminService.getPendingTrainers(currentPage);
-      setApplications(Array.isArray(trainers.data) ? trainers.data : []);
-
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === id
+            ? {
+                ...app,
+                status: "interview_scheduled",
+                interviewDetails: {
+                  startTime: scheduleDate.toISOString(),
+                  endTime: new Date(
+                    scheduleDate.getTime() + 30 * 60 * 1000
+                  ).toISOString(),
+                  roomId: `room-${id}`,
+                },
+              }
+            : app
+        )
+      );
       setIsScheduleModalOpen(false);
       toast.success("Interview scheduled successfully");
     } catch (error) {
       console.error("Error scheduling interview:", error);
-      alert("Failed to schedule interview");
+      toast.error("Failed to schedule interview");
     }
   };
 
@@ -145,17 +450,26 @@ const PendingApplicationsTable: React.FC = () => {
       )
         .flat()
         .filter(Boolean);
-
       toast.error("Please fix the following:\n\n" + errorMessages.join("\n"));
       return;
     }
 
     try {
       await AdminService.submitInterviewFeedback(id, feedbackData);
-
-      const trainers = await AdminService.getPendingTrainers(currentPage);
-      setApplications(Array.isArray(trainers.data) ? trainers.data : []);
-
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === id
+            ? {
+                ...app,
+                status: "interviewed",
+                interviewDetails: {
+                  ...app.interviewDetails,
+                  result: feedbackData,
+                },
+              }
+            : app
+        )
+      );
       setIsFeedbackModalOpen(false);
       toast.success("Feedback submitted successfully");
     } catch (error) {
@@ -167,38 +481,31 @@ const PendingApplicationsTable: React.FC = () => {
   const handleApproval = async (id: string) => {
     try {
       if (weeklySalary < 500) {
-        toast.error("Weekly salary at least 500");
-      } else {
-        await AdminService.approveTrainer(id,weeklySalary);
-
-        const trainers = await AdminService.getPendingTrainers(currentPage);
-        setApplications(Array.isArray(trainers.data) ? trainers.data : []);
-
-        setIsApprovalModalOpen(false);
-        toast.success("Approal Of Trainer successfully");
+        toast.error("Weekly salary must be at least 500");
+        return;
       }
+      await AdminService.approveTrainer(id, weeklySalary);
+      setApplications((prev) => prev.filter((app) => app.id !== id));
+      setTotalItems((prev) => prev - 1);
+      setIsApprovalModalOpen(false);
+      toast.success("Trainer approved successfully");
     } catch (error) {
-      console.error("Error approving trainer", error);
-      toast.error("Failed to Approve");
+      console.error("Error approving trainer:", error);
+      toast.error("Failed to approve trainer");
     }
   };
-  
-  const handleReject = async (id:string)=>{
+
+  const handleReject = async (id: string) => {
     try {
-      
-        await AdminService.rejectTrainer(id);
-  
-        const trainers = await AdminService.getPendingTrainers(currentPage);
-        setApplications(Array.isArray(trainers.data) ? trainers.data : []);
-  
-        setIsApprovalModalOpen(false);
-        toast.success("Reject of Trainer successfully");
-      
+      await AdminService.rejectTrainer(id);
+      setApplications((prev) => prev.filter((app) => app.id !== id));
+      setTotalItems((prev) => prev - 1);
+      toast.success("Trainer rejected successfully");
     } catch (error) {
-      console.error("Error rejecting trainer", error);
-      toast.error("Failed to reject");
+      console.error("Error rejecting trainer:", error);
+      toast.error("Failed to reject trainer");
     }
-  }
+  };
 
   const handleJoinRoom = (roomId: string) => {
     navigate(`/room/${roomId}`);
@@ -209,7 +516,6 @@ const PendingApplicationsTable: React.FC = () => {
     action: string
   ) => {
     setSelectedApplication(application);
-
     switch (action) {
       case "View Details":
         setIsDetailsModalOpen(true);
@@ -224,14 +530,17 @@ const PendingApplicationsTable: React.FC = () => {
         setIsApprovalModalOpen(true);
         break;
       case "Reject":
-        handleReject(application._id);
+        handleReject(application.id);
+        break;
+      case "Join Room":
+        handleJoinRoom(application.interviewDetails?.roomId || "");
         break;
       default:
         break;
     }
   };
 
-  const totalPages = Math.ceil(applications.length / itemsPerPage);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
   const paginatedApplications = applications.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -245,6 +554,8 @@ const PendingApplicationsTable: React.FC = () => {
         </h2>
       </div>
 
+      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
       {/* Details Modal */}
       <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
         <DialogContent className="max-w-4xl bg-gray-800 text-white border-gray-700">
@@ -253,7 +564,6 @@ const PendingApplicationsTable: React.FC = () => {
           </DialogHeader>
           {selectedApplication && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Basic Info */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-indigo-400">
                   Basic Information
@@ -261,34 +571,46 @@ const PendingApplicationsTable: React.FC = () => {
                 <div className="space-y-2">
                   <div>
                     <Label className="text-gray-400">Name</Label>
-                    <p className="text-white">{selectedApplication.name}</p>
+                    <p className="text-white">{selectedApplication.name || "N/A"}</p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Email</Label>
-                    <p className="text-white">{selectedApplication.email}</p>
+                    <p className="text-white">{selectedApplication.email || "N/A"}</p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Phone</Label>
                     <p className="text-white">
-                      {selectedApplication.basicInfo?.phoneNumber || "N/A"}
+                      {selectedApplication.phoneNumber || "N/A"}
                     </p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Location</Label>
                     <p className="text-white">
-                      {selectedApplication.basicInfo?.location || "N/A"}
+                      {selectedApplication.location || "N/A"}
                     </p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Gender</Label>
                     <p className="text-white">
-                      {selectedApplication.basicInfo?.gender || "N/A"}
+                      {selectedApplication.gender || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-gray-400">Date of Birth</Label>
+                    <p className="text-white">
+                      {selectedApplication.dateOfBirth
+                        ? new Date(selectedApplication.dateOfBirth).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-gray-400">Time Zone</Label>
+                    <p className="text-white">
+                      {selectedApplication.timeZone || "N/A"}
                     </p>
                   </div>
                 </div>
               </div>
-
-              {/* Professional Summary */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-indigo-400">
                   Professional Summary
@@ -297,32 +619,32 @@ const PendingApplicationsTable: React.FC = () => {
                   <div>
                     <Label className="text-gray-400">Experience</Label>
                     <p className="text-white">
-                      {selectedApplication.professionalSummary
-                        ?.yearsOfExperience || "N/A"}{" "}
-                      years
+                      {selectedApplication.yearsOfExperience || "N/A"} years
                     </p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Specializations</Label>
                     <p className="text-white">
-                      {selectedApplication.professionalSummary?.specializations?.join(
-                        ", "
-                      ) || "N/A"}
+                      {selectedApplication.specializations?.join(", ") || "N/A"}
                     </p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Coaching Type</Label>
                     <p className="text-white">
-                      {selectedApplication.professionalSummary?.coachingType?.join(
-                        ", "
-                      ) || "N/A"}
+                      {selectedApplication.coachingType?.join(", ") || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-gray-400">Platforms Used</Label>
+                    <p className="text-white">
+                      {selectedApplication.platformsUsed?.join(", ") || "N/A"}
                     </p>
                   </div>
                   <div>
                     <Label className="text-gray-400">Resume</Label>
-                    {selectedApplication.sampleMaterials?.demoVideoLink ? (
+                    {selectedApplication.resumeFile ? (
                       <a
-                        href={selectedApplication.sampleMaterials.resumeFile}
+                        href={selectedApplication.resumeFile}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-indigo-400 hover:underline"
@@ -336,19 +658,19 @@ const PendingApplicationsTable: React.FC = () => {
                   <div>
                     <Label className="text-gray-400">Certifications</Label>
                     <div className="space-y-1">
-                      {selectedApplication.professionalSummary?.certifications?.map(
-                        (cert, index) => (
+                      {selectedApplication.certifications?.length ? (
+                        selectedApplication.certifications.map((cert, index) => (
                           <div key={index} className="text-white">
                             <div>
                               {cert.name} ({cert.issuer})
                             </div>
                             <div>
                               <Label className="text-white">
-                                Proof:
+                                Proof:{" "}
                                 <span>
-                                  {cert.proofFile ? (
+                                  {cert.filePath ? (
                                     <a
-                                      href={cert.proofFile}
+                                      href={cert.filePath}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-indigo-400 hover:underline"
@@ -362,14 +684,14 @@ const PendingApplicationsTable: React.FC = () => {
                               </Label>
                             </div>
                           </div>
-                        )
-                      ) || "N/A"}
+                        ))
+                      ) : (
+                        <p className="text-white">N/A</p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Sample Materials */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-indigo-400">
                   Sample Materials
@@ -377,9 +699,9 @@ const PendingApplicationsTable: React.FC = () => {
                 <div className="space-y-2">
                   <div>
                     <Label className="text-gray-400">Demo Video</Label>
-                    {selectedApplication.sampleMaterials?.demoVideoLink ? (
+                    {selectedApplication.demoVideoLink ? (
                       <a
-                        href={selectedApplication.sampleMaterials.demoVideoLink}
+                        href={selectedApplication.demoVideoLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-indigo-400 hover:underline"
@@ -393,8 +715,8 @@ const PendingApplicationsTable: React.FC = () => {
                   <div>
                     <Label className="text-gray-400">Portfolio Links</Label>
                     <div className="space-y-1">
-                      {selectedApplication.sampleMaterials?.portfolioLinks?.map(
-                        (link, index) => (
+                      {selectedApplication.portfolioLinks?.length ? (
+                        selectedApplication.portfolioLinks.map((link, index) => (
                           <a
                             key={index}
                             href={link}
@@ -404,14 +726,14 @@ const PendingApplicationsTable: React.FC = () => {
                           >
                             Portfolio {index + 1}
                           </a>
-                        )
-                      ) || "N/A"}
+                        ))
+                      ) : (
+                        <p className="text-white">N/A</p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Availability */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-indigo-400">
                   Availability
@@ -429,20 +751,22 @@ const PendingApplicationsTable: React.FC = () => {
                   <div>
                     <Label className="text-gray-400">Weekly Availability</Label>
                     <div className="space-y-1">
-                      {selectedApplication.availability?.weeklySlots?.map(
-                        (slot, index) => (
-                          <div key={index} className="text-white">
-                            {slot.day}: {slot.startTime} - {slot.endTime}
-                          </div>
+                      {selectedApplication.availability?.weeklySlots?.length ? (
+                        selectedApplication.availability.weeklySlots.map(
+                          (slot, index) => (
+                            <div key={index} className="text-white">
+                              {slot.day}: {slot.startTime} - {slot.endTime}
+                            </div>
+                          )
                         )
-                      ) || "N/A"}
+                      ) : (
+                        <p className="text-white">N/A</p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Feedback*/}
-              {selectedApplication?.interviewDetails?.result?.notes &&  (
+              {selectedApplication?.interviewDetails?.result?.notes && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-indigo-400">
                     Feedback
@@ -455,7 +779,7 @@ const PendingApplicationsTable: React.FC = () => {
                       <p className="text-white">
                         {ratingLabels[
                           selectedApplication.interviewDetails?.result
-                            .communicationSkills
+                            ?.communicationSkills
                         ] || "N/A"}
                       </p>
                     </div>
@@ -466,7 +790,7 @@ const PendingApplicationsTable: React.FC = () => {
                       <p className="text-white">
                         {ratingLabels[
                           selectedApplication.interviewDetails?.result
-                            .technicalKnowledge
+                            ?.technicalKnowledge
                         ] || "N/A"}
                       </p>
                     </div>
@@ -475,7 +799,7 @@ const PendingApplicationsTable: React.FC = () => {
                       <p className="text-white">
                         {ratingLabels[
                           selectedApplication.interviewDetails?.result
-                            .coachingStyle
+                            ?.coachingStyle
                         ] || "N/A"}
                       </p>
                     </div>
@@ -486,7 +810,7 @@ const PendingApplicationsTable: React.FC = () => {
                       <p className="text-white">
                         {ratingLabels[
                           selectedApplication.interviewDetails?.result
-                            .confidencePresence
+                            ?.confidencePresence
                         ] || "N/A"}
                       </p>
                     </div>
@@ -495,7 +819,7 @@ const PendingApplicationsTable: React.FC = () => {
                       <p className="text-white">
                         {ratingLabels[
                           selectedApplication.interviewDetails?.result
-                            .brandAlignment
+                            ?.brandAlignment
                         ] || "N/A"}
                       </p>
                     </div>
@@ -504,14 +828,14 @@ const PendingApplicationsTable: React.FC = () => {
                       <p className="text-white">
                         {ratingLabels[
                           selectedApplication.interviewDetails?.result
-                            .equipmentQuality
+                            ?.equipmentQuality
                         ] || "N/A"}
                       </p>
                     </div>
                     <div>
                       <Label className="text-gray-400">Notes</Label>
                       <p className="text-white">
-                        {selectedApplication.interviewDetails?.result.notes ||
+                        {selectedApplication.interviewDetails?.result?.notes ||
                           "N/A"}
                       </p>
                     </div>
@@ -529,18 +853,13 @@ const PendingApplicationsTable: React.FC = () => {
           <DialogHeader>
             <DialogTitle className="text-white">Schedule Interview</DialogTitle>
           </DialogHeader>
-
           {selectedApplication && (
             <div className="space-y-4">
-              {/* Trainer Info */}
               <div>
                 <Label className="text-gray-400">Trainer</Label>
-                <p className="text-white">{selectedApplication.name}</p>
+                <p className="text-white">{selectedApplication.name || "N/A"}</p>
               </div>
-
-              {/* Date and Time Inputs */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Date Picker */}
                 <div>
                   <label className="block mb-1 text-gray-400">Date</label>
                   <input
@@ -554,8 +873,6 @@ const PendingApplicationsTable: React.FC = () => {
                     onChange={(e) => setScheduleDate(new Date(e.target.value))}
                   />
                 </div>
-
-                {/* Time Picker */}
                 <div>
                   <label className="block mb-1 text-gray-400">Time</label>
                   <input
@@ -566,8 +883,6 @@ const PendingApplicationsTable: React.FC = () => {
                   />
                 </div>
               </div>
-
-              {/* Action Buttons */}
               <div className="flex justify-end space-x-2 pt-4">
                 <button
                   className="px-4 py-2 rounded border border-gray-600 bg-gray-700 text-white hover:bg-gray-600 transition"
@@ -577,9 +892,7 @@ const PendingApplicationsTable: React.FC = () => {
                 </button>
                 <button
                   className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white transition"
-                  onClick={() =>
-                    handleScheduleInterview(selectedApplication._id)
-                  }
+                  onClick={() => handleScheduleInterview(selectedApplication.id)}
                 >
                   Schedule Interview
                 </button>
@@ -589,21 +902,18 @@ const PendingApplicationsTable: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Approval  Modal */}
+      {/* Approval Modal */}
       <Dialog open={isApprovalModalOpen} onOpenChange={setIsApprovalModalOpen}>
         <DialogContent className="bg-gray-800 text-white border border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-white">Schedule Interview</DialogTitle>
+            <DialogTitle className="text-white">Approve Trainer</DialogTitle>
           </DialogHeader>
-
           {selectedApplication && (
             <div className="space-y-4">
-              {/* Trainer Info */}
               <div>
                 <Label className="text-gray-400">Trainer</Label>
-                <p className="text-white">{selectedApplication.name}</p>
+                <p className="text-white">{selectedApplication.name || "N/A"}</p>
               </div>
-
               <div>
                 <label className="block mb-1 text-gray-400">
                   Weekly Salary (Max ₹2500)
@@ -618,20 +928,16 @@ const PendingApplicationsTable: React.FC = () => {
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === "") {
-                      setWeeklySalary(0); // or null if you want to allow emptiness
+                      setWeeklySalary(0);
                     } else {
                       const num = parseInt(value);
-                      if (!isNaN(num)) {
-                        if (num <= 2500) {
-                          setWeeklySalary(num);
-                        }
+                      if (!isNaN(num) && num <= 2500) {
+                        setWeeklySalary(num);
                       }
                     }
                   }}
                 />
               </div>
-
-              {/* Action Buttons */}
               <div className="flex justify-end space-x-2 pt-4">
                 <button
                   className="px-4 py-2 rounded border border-gray-600 bg-gray-700 text-white hover:bg-gray-600 transition"
@@ -641,7 +947,7 @@ const PendingApplicationsTable: React.FC = () => {
                 </button>
                 <button
                   className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white transition"
-                  onClick={() => handleApproval(selectedApplication._id)}
+                  onClick={() => handleApproval(selectedApplication.id)}
                 >
                   Approve Trainer
                 </button>
@@ -661,9 +967,8 @@ const PendingApplicationsTable: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <Label className="text-gray-400">Trainer</Label>
-                <p className="text-white">{selectedApplication.name}</p>
+                <p className="text-white">{selectedApplication.name || "N/A"}</p>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { id: "communicationSkills", label: "Communication Skills" },
@@ -676,7 +981,7 @@ const PendingApplicationsTable: React.FC = () => {
                   <div key={item.id}>
                     <Label className="text-gray-400">{item.label}</Label>
                     <Select
-                      value={feedbackData[item.id].toString()}
+                      value={feedbackData[item.id as keyof FeedbackData].toString()}
                       onValueChange={(value) =>
                         setFeedbackData({
                           ...feedbackData,
@@ -688,20 +993,17 @@ const PendingApplicationsTable: React.FC = () => {
                         <SelectValue placeholder="Select rating" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                        {[1, 2, 3, 4, 5].map((num) => {
-                          return (
-                            <SelectItem key={num} value={num.toString()}>
-                              {num} -{" "}
-                              {ratingLabels[num as keyof typeof ratingLabels]}
-                            </SelectItem>
-                          );
-                        })}
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num} -{" "}
+                            {ratingLabels[num as keyof typeof ratingLabels]}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                 ))}
               </div>
-
               <div>
                 <Label className="text-gray-400">Notes</Label>
                 <Textarea
@@ -713,7 +1015,6 @@ const PendingApplicationsTable: React.FC = () => {
                   }
                 />
               </div>
-
               <div className="flex justify-end space-x-2 pt-4">
                 <Button
                   variant="outline"
@@ -724,7 +1025,7 @@ const PendingApplicationsTable: React.FC = () => {
                 </Button>
                 <Button
                   className="bg-indigo-600 hover:bg-indigo-700"
-                  onClick={() => handleSubmitFeedback(selectedApplication._id)}
+                  onClick={() => handleSubmitFeedback(selectedApplication.id)}
                 >
                   Submit Feedback
                 </Button>
@@ -734,242 +1035,17 @@ const PendingApplicationsTable: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Applications Table */}
-      <Card className="bg-gray-800 rounded-lg overflow-hidden border-none">
-        <Table className="border-none">
-          <TableHeader>
-            <TableRow className="bg-gray-900 hover:bg-gray-900 border-none">
-              <TableHead className="text-gray-400">Trainer</TableHead>
-              <TableHead className="text-gray-400">Specialization</TableHead>
-              <TableHead className="text-gray-400">Experience</TableHead>
-              <TableHead className="text-gray-400">Applied On</TableHead>
-              <TableHead className="text-gray-400">Status</TableHead>
-              <TableHead className="text-gray-400 text-right">
-                Actions
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedApplications.map((application) => {
-              const status = application.status?.toLowerCase() || "unknown";
-              const profilePhoto = application.basicInfo?.profilePhoto;
-
-              let statusClass = "bg-gray-200 text-gray-800";
-              let statusText = application.status || "Unknown";
-
-              if (
-                status === "interviewed" ||
-                status === "interview completed"
-              ) {
-                statusClass = "bg-yellow-200 text-yellow-800";
-                statusText = "Interview Completed";
-              } else if (
-                status === "interview_scheduled" ||
-                status === "interview scheduled"
-              ) {
-                statusClass = "bg-green-200 text-green-800";
-                statusText = "Interview Scheduled, Time: ";
-              } else if (status === "applied" || status === "not scheduled") {
-                statusClass = "bg-purple-200 text-purple-800";
-                statusText = "Not Scheduled";
-              }
-
-              return (
-                <TableRow
-                  key={application._id}
-                  className="bg-gray-800 hover:bg-gray-700"
-                >
-                  <TableCell>
-                    <div className="flex items-center">
-                      <div className="relative">
-                        {profilePhoto ? (
-                          <>
-                            <img
-                              className="h-10 w-10 rounded-full"
-                              src={profilePhoto}
-                              alt={application.name}
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = "none";
-                                const avatarDiv =
-                                  target.previousElementSibling as HTMLDivElement;
-                                avatarDiv.classList.remove("opacity-0");
-                              }}
-                            />
-                          </>
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium uppercase">
-                            {application.name?.charAt(0)}
-                          </div>
-                        )}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-white">
-                          {application.name}
-                        </div>
-                        <div className="text-sm text-gray-400">
-                          {application.email}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-white">
-                    {application.professionalSummary?.specializations?.join(
-                      ", "
-                    ) || "N/A"}
-                  </TableCell>
-                  <TableCell className="text-white">
-                    {application.professionalSummary?.yearsOfExperience ??
-                      "N/A"}{" "}
-                    years
-                  </TableCell>
-                  <TableCell className="text-gray-400">
-                    {new Date(
-                      application.createdAt || application.createdAt
-                    ).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`}
-                    >
-                      {statusText}
-                      {application.status === "interview_scheduled" && (
-                        <span className="text-blue-600">
-                          {new Date(
-                            application.interviewDetails.startTime
-                          ).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          })}
-                        </span>
-                      )}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        className="text-indigo-400 hover:text-indigo-300"
-                        onClick={() => {
-                          setSelectedApplication(application);
-                          setIsDetailsModalOpen(true);
-                        }}
-                      >
-                        View
-                      </Button>
-
-                      {status === "interviewed" ? (
-                        <>
-                          <Button
-                            variant="ghost"
-                            className="text-indigo-400 hover:text-indigo-300"
-                            onClick={() => handleAction(application, "Approve")}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            className="text-red-400 hover:text-red-300"
-                            onClick={() => handleAction(application, "Reject")}
-                          >
-                            Reject
-                          </Button>
-                        </>
-                      ) : status === "interview_scheduled" &&
-                        new Date(
-                          application.interviewDetails.endTime
-                        ).getTime() <= Date.now() ? (
-                        <Button
-                          variant="ghost"
-                          className="text-indigo-400 hover:text-indigo-300"
-                          onClick={() => handleAction(application, "Feedback")}
-                        >
-                          Feedback
-                        </Button>
-                      ) : status === "applied" ? (
-                        <Button
-                          variant="ghost"
-                          className="text-indigo-400 hover:text-indigo-300"
-                          onClick={() =>
-                            handleAction(application, "Schedule Review")
-                          }
-                        >
-                          Schedule
-                        </Button>
-                      ) : status === "interview_scheduled" ? (
-                        <>
-                          {new Date(
-                            application.interviewDetails.startTime
-                          ).getTime() <= Date.now() ? (
-                            <Button
-                              variant="ghost"
-                              className="text-indigo-400 hover:text-indigo-300"
-                              onClick={() =>
-                                handleJoinRoom(
-                                  application.interviewDetails.roomId
-                                )
-                              }
-                            >
-                              Meet Link
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              disabled
-                              className="text-indigo-400 hover:text-indigo-300"
-                            >
-                              Meet Link
-                            </Button>
-                          )}
-                        </>
-                      ) : null}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Card>
-
-      {/* Pagination */}
-      <div className="flex justify-between items-center px-6 py-4 mt-4 bg-gray-800 rounded-lg">
-        <div className="text-sm text-gray-400">
-          Showing {(currentPage - 1) * itemsPerPage + 1}–
-          {Math.min(currentPage * itemsPerPage, applications.length)} of{" "}
-          {applications.length} applications
-        </div>
-        <div className="flex space-x-2">
-          <Button
-            className="bg-gray-700 hover:bg-gray-600"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            Previous
-          </Button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <Button
-              key={page}
-              className={
-                currentPage === page
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-700 hover:bg-gray-600"
-              }
-              onClick={() => setCurrentPage(page)}
-            >
-              {page}
-            </Button>
-          ))}
-          <Button
-            className="bg-gray-700 hover:bg-gray-600"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <TrainerTable
+        applications={paginatedApplications}
+        handleAction={handleAction}
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+      />
     </div>
   );
 };

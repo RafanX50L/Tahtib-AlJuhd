@@ -1,5 +1,3 @@
- ;
-
 import { useEffect, useState } from "react";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";
 import WorkoutCards from "@/components/client/Workouts/WorkoutCards";
@@ -11,6 +9,13 @@ import MainCard from "@/components/client/Workouts/MainCard";
 import ChatbotButton from "@/components/client/ChatbotButton";
 import { ClientService } from "@/services/implementation/clientServices";
 
+// Define the response type for ClientService.getWorkouts
+interface WorkoutResponse {
+  data: {
+    workouts: Workout[];
+    notes?: string; // Notes are optional, as per previous context
+  };
+}
 
 interface Exercise {
   name: string;
@@ -24,11 +29,11 @@ interface Workout {
   action: "view" | "start" | "locked";
 }
 
-interface MainData {
-  notes: string;
-  Workout_Duration: string;
-  Workout_Days_Per_Week: number;
-  Workout_Completed: number;
+export interface MainData {
+  notes?: string;
+  workoutDuration: string;
+  workoutDaysPerWeek: number;
+  workoutCompleted: number;
 }
 
 interface WeekStatuses {
@@ -48,17 +53,12 @@ const WorkoutPlan = () => {
 
   // Fetch initial data on component mount
   useEffect(() => {
-    localStorage.setItem("page", "workout");
     fetchInitialData();
-
-    return () => {
-      localStorage.setItem("page", "workout");
-    };
   }, []);
 
-  // Fetch workouts when activeTab changes
+  // Fetch workouts when activeTab or weekStatuses changes
   useEffect(() => {
-    if (weekStatuses) {
+    if (weekStatuses && `week${activeTab}` in weekStatuses) {
       fetchWorkoutsForTab();
     }
   }, [activeTab, weekStatuses]);
@@ -66,13 +66,12 @@ const WorkoutPlan = () => {
   const fetchInitialData = async () => {
     try {
       setIsLoading(true);
-      const [fitnessResponse, weekStatusResponse] = await Promise.all([
-        ClientService.getBasicFitnessDetails(),
-        ClientService.getWeekCompletionStatus(),
-      ]);
+      const workoutDetails = await ClientService.getBasicWorkoutDetails();
 
-      setMainData(fitnessResponse.data);
-      setWeekStatuses(weekStatusResponse.data);
+      const { basicData, weekStatus } = workoutDetails.data.workoutDetails;
+      setMainData(basicData);
+      setWeekStatuses(weekStatus);
+      setCurrentWeekStatus(weekStatus[`week${activeTab}`]);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to fetch initial data."
@@ -85,16 +84,17 @@ const WorkoutPlan = () => {
   const fetchWorkoutsForTab = async () => {
     try {
       setIsLoading(true);
-      const response = await ClientService.getWorkouts(activeTab);
-
+      const response: WorkoutResponse =
+        await ClientService.getWorkouts(activeTab);
       setWorkouts(response.data.workouts);
-      setMainData((prev) =>
-        prev ? { ...prev, notes: response.data.notes } : null
+      setMainData(
+        (prev) =>
+          prev
+            ? { ...prev, notes: response.data.notes || prev.notes } // Update notes if prev exists
+            : null // Return null if prev is null, as we can't construct a full MainData
       );
-
-      // Update current week status
       setCurrentWeekStatus(
-        activeTab === 1 ? true : (weekStatuses?.[`week${activeTab}`] ?? null)
+        weekStatuses ? weekStatuses[`week${activeTab}`] : false
       );
     } catch (err) {
       setError(
@@ -107,9 +107,8 @@ const WorkoutPlan = () => {
 
   const handleRetry = () => {
     setError(null);
-    fetchInitialData().then(() => fetchWorkoutsForTab());
+    fetchInitialData();
   };
-
 
   const renderWorkoutNotAvailable = () => (
     <div
@@ -149,7 +148,7 @@ const WorkoutPlan = () => {
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
       <Sidebar />
       <main
-        className={`lg:ml-[280px] p-8 min-h-screen transition-all duration-300 ${styles.container}`}
+        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all ${styles.container}`}
       >
         {isLoading ? (
           <div
@@ -180,8 +179,7 @@ const WorkoutPlan = () => {
             <CWHeader />
             {mainData && <MainCard data={mainData} />}
             <LevelTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
-            {workouts && currentWeekStatus ? (
+            {workouts && currentWeekStatus !== null ? (
               <WorkoutCards
                 workouts={workouts}
                 weekStatus={currentWeekStatus}
@@ -190,7 +188,6 @@ const WorkoutPlan = () => {
             ) : (
               renderWorkoutNotAvailable()
             )}
-
             <ChatbotButton />
             <CFooter />
           </>

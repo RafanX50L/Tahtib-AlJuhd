@@ -71,6 +71,7 @@ export default function LoginPage() {
         setCredentials({
           user: response.user,
           accessToken: response.accessToken,
+          tokenVersion: response.tokenVersion,
         })
       );
       toast.success(response.message);
@@ -141,6 +142,7 @@ export default function LoginPage() {
         setCredentials({
           user: response.user,
           accessToken: response.accessToken,
+          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);
