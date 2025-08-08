@@ -1,5 +1,6 @@
 import { createClient, RedisClientType } from 'redis';
 import { env } from './env.config';
+import logger from '@/utils/logger.utils';
 
 let redisClient: RedisClientType ;
 
@@ -25,7 +26,7 @@ async function connectRedis() {
     });
 
     await redisClient.connect();
-    console.log('Connected to Redis successfully');
+    logger.info('Connected to Redis successfully');
 };
 
 export {connectRedis, redisClient};

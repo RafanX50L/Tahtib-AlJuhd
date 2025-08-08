@@ -1,22 +1,21 @@
-// store/slices/authSlice.ts
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/services/implementation/api";
 import { UserInterface } from "@/types/user";
 
 console.log("Auth slice importing API instance:", (api as any).__instanceId);
 
-interface AuthState {
+export interface AuthState {
   isAuthenticated: boolean;
   user: UserInterface | null;
-  accessToken: string | null;
   status: "idle" | "loading" | "succeeded" | "failed";
+  lastLocation: string | null;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   status: "idle",
-  accessToken: null,
+  lastLocation: null,
 };
 
 export const refreshAccessToken = createAsyncThunk(
@@ -24,16 +23,22 @@ export const refreshAccessToken = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       console.log("Sending refresh token request...");
+      const { tokenVersion } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
       const response = await api.post(
         "/auth/refresh-token",
-        {},
+        { tokenVersion },
         { withCredentials: true }
       );
       console.log("Refresh token response:", response.data);
       if (!response.data.accessToken) {
         throw new Error("No access token in response");
       }
-      return response.data;
+      dispatch(setCredentials({ user: response.data.user, accessToken: response.data.accessToken, tokenVersion: response.data.tokenVersion }));
+      return {
+        user: response.data.user,
+        accessToken: response.data.accessToken,
+        tokenVersion: response.data.tokenVersion || tokenVersion + 1
+      };
     } catch (error) {
       console.error("Refresh token error:", error);
       dispatch(logout());
@@ -48,30 +53,34 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: UserInterface; accessToken: string }>
+      action: PayloadAction<{ user: UserInterface; accessToken: string; tokenVersion: number }>
     ) => {
       console.log("Setting credentials:", action.payload);
       state.user = action.payload.user;
-      localStorage.setItem("accessToken", action.payload.accessToken);
       state.isAuthenticated = true;
+      localStorage.setItem("accessTokenData", JSON.stringify({accessToken:action.payload.accessToken, tokenVersion:action.payload.tokenVersion}));
       localStorage.setItem("sessionActive", "true");
     },
     logout: (state) => {
       console.log("Logging out...");
       state.isAuthenticated = false;
-      localStorage.removeItem("accessToken");
       state.user = null;
+      state.lastLocation = null;
+      localStorage.removeItem("sessionActive");
+      localStorage.removeItem("accessTokenData");
     },
     updateUserProfile: (state, action: PayloadAction<Partial<UserInterface>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }
     },
-    setUserPersonalization: (state, action: PayloadAction<{ _id: string}>) => {
+    setUserPersonalization: (state, action: PayloadAction<{ _id: string }>) => {
       if (state.user) {
         (state.user as any).personalization = action.payload._id;
-        // ['userBasicInfo', 'fitnessGoal', 'fitnessLevel', 'activityLevel', 'workoutPreferences', 'healthInfo', 'dietPreferences'].forEach(key => localStorage.removeItem(key));
       }
+    },
+    setLastLocation: (state, action: PayloadAction<string>) => {
+      state.lastLocation = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -81,17 +90,25 @@ const authSlice = createSlice({
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         console.log("Refresh token fulfilled:", action.payload);
-        authSlice.caseReducers.setCredentials(state, action);
+        authSlice.caseReducers.setCredentials(state, {
+          payload: {
+            user: action.payload.user,
+            accessToken: action.payload.accessToken,
+            tokenVersion: action.payload.tokenVersion,
+          },
+          type: action.type,
+        });
         state.status = "succeeded";
       })
       .addCase(refreshAccessToken.rejected, (state) => {
         console.log("Refresh token rejected");
         state.isAuthenticated = false;
         state.user = null;
-        state.status = "failed";
+        state.lastLocation = null;
+        localStorage.removeItem("sessionActive");
       });
   },
 });
 
-export const { setCredentials, logout, updateUserProfile, setUserPersonalization } = authSlice.actions;
+export const { setCredentials, logout, updateUserProfile, setUserPersonalization, setLastLocation } = authSlice.actions;
 export default authSlice.reducer;

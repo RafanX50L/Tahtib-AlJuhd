@@ -24,6 +24,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "@/store/slices/authSlice";
 import { RootState } from "@/store/store";
+import Loading from "../client/Loading";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
@@ -71,6 +72,7 @@ export default function LoginPage() {
         setCredentials({
           user: response.user,
           accessToken: response.accessToken,
+          tokenVersion: response.tokenVersion,
         })
       );
       toast.success(response.message);
@@ -141,6 +143,7 @@ export default function LoginPage() {
         setCredentials({
           user: response.user,
           accessToken: response.accessToken,
+          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);
@@ -158,14 +161,7 @@ export default function LoginPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-white">Loading login form...</p>
-        </div>
-      </div>
-    );
+    <Loading content="Loading login form..."/>
   }
 
   return (

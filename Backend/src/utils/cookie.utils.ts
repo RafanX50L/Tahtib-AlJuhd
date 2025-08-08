@@ -1,47 +1,63 @@
+
+
+
 import { env } from '../config/env.config';
 import { Response, Request } from 'express';
-import { decodeAndVerifyToken } from './jwt.utils';
+import {  verifyRefreshToken } from './jwt.utils';
 import { createHttpError } from './http-error.util';
 import { HttpStatus } from '../constants/status.constant';
 
+interface CookieOptions {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: 'strict' | 'lax' | 'none';
+  maxAge?: number;
+  path?: string;
+}
 
-export const setCookie = (res: Response, refreshToken: string) => {
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        sameSite: env.NODE_ENV === 'production' ? 'none' : 'strict',
-    });
+export const setCookie = (res: Response, refreshToken: string, options: CookieOptions = {
+  httpOnly: true,
+  secure: env.NODE_ENV === 'production',
+  sameSite: env.NODE_ENV === 'production' ? 'none' : 'strict',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: '/',
+}) => {
+  res.cookie('refreshToken', refreshToken, options);
 };
 
-export const getCookie = (req: Request, name: string): string => {
-  return req.cookies?.[name]; // Requires cookie-parser middleware
+export const getCookie = (req: Request, name: string): string | undefined => {
+  if (!req.cookies) {
+    console.warn('Cookie-parser middleware is not initialized or cookies are not present');
+    return undefined;
+  }
+  return req.cookies[name];
 };
 
 export const deleteCookie = (res: Response) => {
-    res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: env.NODE_ENV === 'production' ? 'none' : 'strict',
-    });
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: env.NODE_ENV === 'production',
+    sameSite: env.NODE_ENV === 'production' ? 'none' : 'strict',
+    path: '/',
+  });
 };
 
-export const getIdFromCookie = (req: Request, cookieName: string): string | null => {
-  console.log('enterd in get id form cookiew');
+export const getIdFromCookie = (req: Request, cookieName: string = 'refreshToken'): string => {
+  console.log('Entered getIdFromCookie for:', cookieName);
   try {
-    const token = getCookie(req,cookieName);
-    if(token){
-      const decoded = decodeAndVerifyToken(token);
-      if(decoded){
-        return decoded._id ?? null;
-      }else{
-        createHttpError(HttpStatus.NOT_FOUND,"Not able to get decoded data");
-      }
+    const token = getCookie(req, cookieName);
+    if (!token) {
+      throw createHttpError(HttpStatus.BAD_REQUEST, 'Refresh token not found in cookie');
     }
-    return null;
-    
+
+    const decoded = verifyRefreshToken(token);
+    if (!decoded || typeof decoded !== 'object' || !('id' in decoded)) {
+      throw createHttpError(HttpStatus.FORBIDDEN, 'Invalid refresh token');
+    }
+
+    return decoded.id as string;
   } catch (error) {
-    console.error("Invalid or expired token in cookie:", error);
-    return null;
+    console.error('Error in getIdFromCookie:', error);
+    throw error; // Propagate the error to be handled by the caller
   }
 };

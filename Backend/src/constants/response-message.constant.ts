@@ -19,6 +19,7 @@ export const HttpResponse = {
     LOGOUT_SUCCESS: "Logged out successfully",
     INVALID_PASSWORD: "Invalid password",
     EMAIL_SENT_SUCCESS: "Email sent successfully", 
+    FAILED_TO_SENT_EMAIL: "Email sent is failed",
     RESET_PASS_LINK: "Password reset link sent to your email",
     PASSWORD_RESET_SUCCESS: "Password reset successfully",
     TOKEN_EXPIRED: "Token expired",
@@ -28,6 +29,7 @@ export const HttpResponse = {
     DATA_FETCHING_SUCCESSFULL : "Data fetched successfully",
     INVALID_REQUEST_DATA : "Invalid request data",
     FAILED_TO_UPDATE_USER_STATUS: "Failed to update user status",
+    USER_STATUS_UPDATED_SUCCESSFULL: " User status Updated successfull",
 
     GENERATING_FITNESS_PLAN_SUCCESSFULL : "Creating user fitness plan successfull",
     FAILED_TO_GENERATE_FITNESS_PLAN :  "Failed to generate fitness plan",
@@ -37,6 +39,7 @@ export const HttpResponse = {
 
     //workouts respnse messages
     WORKOUTS_FETCHED_SUCCESSFULL: "Workouts fetched successfully",
+    WORKOUT_STATUS_UPDATED_SUCCESSFULL: "Workout status updated successfully",
     FAILED_TO_FETCH_BASIC_FITNESS_PLAN: "Failed to fetch basic fitness plan",
     FAILED_TO_FETCH_WORKOUTS: "Failed to fetch workouts",
     FAILED_TO_FETCH_DIET_PLAN: "Failed to fetch diet plan",
@@ -52,14 +55,27 @@ export const HttpResponse = {
     WEEKLY_CHALLENGES_FETCHED: "Weekly challenges fetched successfully",
     FAILED_TO_FETCH_WEEKLY_CHALLENGES: "Failed to fetch weekly challenges",
     USER_ALREADY_JOINED_CHALLENGE: "User already joined this challenge",
+    WEEKLY_CHALLENGE_JOINED_SUCCESSFULL: "User join weekly challenge successfull",
+    MARK_CHALLENGE_DAY_COMPLETED_SUCCESSFULL: "Successfully marked challenge day completed",
     FAILED_TO_JOIN_WEEKLY_CHALLENGE: "Failed to join weekly challenge",
     FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE: "Failed to fetch user weekly challenge",
     FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE: "Failed to update user weekly challenge",
 
 
+    INTERVIEW_FEEDBACK_UPDATED_SUCCESSFULL:'Interview feedback updated successfull',
     FAILED_TO_UPDATE_INTERVIEW_FEEDBACK: "Failed to update interview feedback",
     FAILED_TO_UPDATE_TRAINER_STATUS: "Failed to update trainer status",
     
+    TRAINER_APPROVAL_SUCCESSFULL:"Trainer Approval Successfull",
+    TRAINER_REJECTED_SUCCESSFULL:"Trainer Rejected Successfull",
+
+    PROFILE_DATA_UPDATION_SUCCESSFULL: "Profile data updation successfull",
     FAILED_TO_UPDATE_PROFILE: "Failed to update profile",
-    FAILED_TO_GET_PROFILE: "Failed to get profile data"
+    FAILED_TO_GET_PROFILE: "Failed to get profile data",
+
+    FAILED_TO_FETCH_DATA: "Failed to fetchthe data",
+    FAILED_TO_FETCH_AVAILABLE_TRAINERS: "Failed to fetch available trainers",
+    FAILED_TO_FETCH_PENDING_TRAINERS: "Failed to fetch pending trainers",
+
+    APPLICATION_SUBMISSION_SUCCESSFULL: "Application Submission Succesfull"
 };

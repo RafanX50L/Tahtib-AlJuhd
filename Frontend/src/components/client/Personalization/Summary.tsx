@@ -1,5 +1,4 @@
- ;
-
+// Summary.tsx
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -7,79 +6,73 @@ import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { current } from "@reduxjs/toolkit";
-import { ClientService } from "@/services/implementation/clientServices";
 import { useDispatch, useSelector } from "react-redux";
-import {setUserPersonalization} from "@/store/slices/authSlice"
+import { setUserPersonalization } from "@/store/slices/authSlice";
 import { RootState } from "@/store/store";
+import { ClientService, IClientUserData } from "@/services/implementation/clientServices";
 
 export default function Summary() {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   const [summaryData, setSummaryData] = useState({
     basicInfo: {
-      name: "",
+      nickName: "",
       age: "",
       gender: "",
+      address: "",
+      phoneNumber: "",
       height: "",
-      weight: "",
+      currentWeight: "",
       targetWeight: "",
     },
     fitnessGoal: { goal: "" },
-    fitnessLevel: "",
+    currentFitnessLevel: "",
     activityLevel: "",
-    workoutPreferences: { equipment: [], duration: "", daysPerWeek: "" },
-    healthInfo: { injuries: [], conditions: "" },
-    dietPreferences: { allergies: [], dietaryPreferences: [], mealsPerDay: "" },
+    workoutPreferences: { equipment: [], workoutDuration: "", workoutDaysPerWeek: "" },
+    healthInfo: { healthIssues: [], medicalCondition: "" },
+    dietPreferences: { dietAllergies: [], dietPreferences: "", dietMealsPerDay: "" },
   });
 
-  const { user } = useSelector((state:RootState)=>state.auth)
-  const dispath = useDispatch();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
 
-  // Load data from localStorage
   useEffect(() => {
     try {
-      const basicInfo = JSON.parse(
-        localStorage.getItem("userBasicInfo") || "{}"
-      );
-      const fitnessGoal = JSON.parse(
-        localStorage.getItem("fitnessGoal") || "{}"
-      );
-      const fitnessLevel = localStorage.getItem("fitnessLevel") || "";
+      const basicInfo = JSON.parse(localStorage.getItem("userBasicInfo") || "{}");
+      const fitnessGoal = JSON.parse(localStorage.getItem("fitnessGoal") || "{}");
+      const currentFitnessLevel = localStorage.getItem("currentFitnessLevel") || "";
       const activityLevel = localStorage.getItem("activityLevel") || "";
-      const workoutPreferences = JSON.parse(
-        localStorage.getItem("workoutPreferences") || "{}"
-      );
+      const workoutPreferences = JSON.parse(localStorage.getItem("workoutPreferences") || "{}");
       const healthInfo = JSON.parse(localStorage.getItem("healthInfo") || "{}");
-      const dietPreferences = JSON.parse(
-        localStorage.getItem("dietPreferences") || "{}"
-      );
+      const dietPreferences = JSON.parse(localStorage.getItem("dietPreferences") || "{}");
 
       setSummaryData({
         basicInfo: {
-          name: basicInfo.nick_name || "Not provided",
+          nickName: basicInfo.nickName || "Not provided",
           age: basicInfo.age || "Not provided",
-          gender: basicInfo.gender || "Not Provided",
+          gender: basicInfo.gender || "Not provided",
+          address: basicInfo.address || "Not provided",
+          phoneNumber: basicInfo.phoneNumber || "Not provided",
           height: basicInfo.height || "--",
-          weight: basicInfo.weight || "--",
+          currentWeight: basicInfo.currentWeight || "--",
           targetWeight: basicInfo.targetWeight || "--",
         },
         fitnessGoal: { goal: fitnessGoal.goal || "Not selected" },
-        fitnessLevel: fitnessLevel || "Not selected",
+        currentFitnessLevel: currentFitnessLevel || "Not selected",
         activityLevel: activityLevel || "Not selected",
         workoutPreferences: {
           equipment: workoutPreferences.equipment || [],
-          duration: workoutPreferences.duration || "Not selected",
-          daysPerWeek: workoutPreferences.daysPerWeek || "Not selected",
+          workoutDuration: workoutPreferences.workoutDuration || "Not selected",
+          workoutDaysPerWeek: workoutPreferences.workoutDaysPerWeek || "Not selected",
         },
         healthInfo: {
-          injuries: healthInfo.injuries || [],
-          conditions: healthInfo.conditions || "None reported",
+          healthIssues: healthInfo.healthIssues || [],
+          medicalCondition: healthInfo.medicalCondition || "None reported",
         },
         dietPreferences: {
-          allergies: dietPreferences.allergies || [],
-          dietaryPreferences: dietPreferences.dietaryPreferences || [],
-          mealsPerDay: dietPreferences.mealsPerDay || "Not selected",
+          dietAllergies: dietPreferences.dietAllergies || [],
+          dietPreferences: dietPreferences.dietPreferences || "None reported",
+          dietMealsPerDay: dietPreferences.dietMealsPerDay || "Not selected",
         },
       });
     } catch (error) {
@@ -92,50 +85,143 @@ export default function Summary() {
     navigate("/personalization?path=diet-preferences");
   };
 
-  const handleGeneratePlan = async () => {
-    setIsGenerating(true);
-    try {
-      const data = {
-        userId: user?._id,
-        nick_name: summaryData.basicInfo.name,
-        age: summaryData.basicInfo.age,
-        gender: summaryData.basicInfo.gender,
-        height: summaryData.basicInfo.height,
-        current_weight: summaryData.basicInfo.weight,
-        target_weight: summaryData.basicInfo.targetWeight,
-        fitness_goal: summaryData.fitnessGoal.goal,
-        current_fitness_level: summaryData.fitnessLevel,
-        activity_level: summaryData.activityLevel,
-        equipments: summaryData.workoutPreferences.equipment,
-        workout_duration: summaryData.workoutPreferences.duration,
-        workout_days_perWeek: summaryData.workoutPreferences.daysPerWeek,
-        health_issues: summaryData.healthInfo.injuries,
-        medical_condition: summaryData.healthInfo.conditions,
-        diet_allergies: summaryData.dietPreferences.allergies,
-        diet_meals_perDay: summaryData.dietPreferences.mealsPerDay,
-        diet_preferences: summaryData.dietPreferences.dietaryPreferences,
-      };
-      console.log('entered to here for generate fintess plan')
-      const response = await ClientService.generateFitnessPlan(data);
-      toast.success(response.data.message);
-      dispath(setUserPersonalization({_id:'done'}));
-      // localStorage.removeItem()
-      // localStorage.setItem("workoutPlanGenerated", "true");
-      // toast.success("Workout plan generated successfully!");
-      navigate("/dashboard");
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred.";
-      toast.error(errorMessage);
-      setIsGenerating(false);
+  // const handleGeneratePlan = async () => {
+  //   setIsGenerating(true);
+  //   try {
+  //     const data :IClientUserData = {
+  //       nickName: summaryData.basicInfo.nickName,
+  //       age: Number(summaryData.basicInfo.age) ,
+  //       gender: summaryData.basicInfo.gender ,
+  //       address: summaryData.basicInfo.address || undefined,
+  //       phoneNumber: summaryData.basicInfo.phoneNumber || undefined,
+  //       height: Number(summaryData.basicInfo.height) ,
+  //       currentWeight: Number(summaryData.basicInfo.currentWeight) ,
+  //       targetWeight: Number(summaryData.basicInfo.targetWeight),
+  //       fitnessGoal: summaryData.fitnessGoal.goal || undefined,
+  //       currentFitnessLevel: summaryData.currentFitnessLevel || undefined,
+  //       activityLevel: summaryData.activityLevel || undefined,
+  //       equipment: summaryData.workoutPreferences.equipment || [],
+  //       workoutDuration: summaryData.workoutPreferences.workoutDuration ,
+  //       workoutDaysPerWeek: Number(summaryData.workoutPreferences.workoutDaysPerWeek),
+  //       healthIssues: summaryData.healthInfo.healthIssues || [],
+  //       medicalCondition: summaryData.healthInfo.medicalCondition || undefined,
+  //       dietAllergies: summaryData.dietPreferences.dietAllergies || [],
+  //       dietPreferences: summaryData.dietPreferences.dietPreferences || undefined,
+  //       dietMealsPerDay: summaryData.dietPreferences.dietMealsPerDay || undefined,
+  //     };
+
+  //     if (!user?._id) {
+  //       throw new Error("User ID not found");
+  //     }
+
+  //     const response = await ClientService.generatePersonalization(data);
+  //     dispatch(setUserPersonalization({_id:'done'}));
+      
+  //     localStorage.removeItem("userBasicInfo");
+  //     localStorage.removeItem("fitnessGoal");
+  //     localStorage.removeItem("currentFitnessLevel");
+  //     localStorage.removeItem("activityLevel");
+  //     localStorage.removeItem("workoutPreferences");
+  //     localStorage.removeItem("healthInfo");
+  //     localStorage.removeItem("dietPreferences");
+
+  //     toast.success("Personalized plan generated successfully!");
+  //     setTimeout(() => {
+  //       navigate("/dashboard");
+  //     }, 500);
+  //   } catch (error) {
+  //     const errorMessage = error instanceof Error ? error.message : "Failed to generate plan";
+  //     toast.error(errorMessage);
+  //   } finally {
+  //     setIsGenerating(false);
+  //   }
+  // };
+
+  // Summary.tsx (updated handleGeneratePlan function)
+
+const handleGeneratePlan = async () => {
+  setIsGenerating(true);
+  try {
+    // Define valid enum values for type checking
+    const validFitnessGoals = [
+      "build muscle",
+      "lose weight",
+      "get stronger",
+      "improve endurance",
+      "tone body",
+      "increase flexibility",
+    ] as const;
+    const validFitnessLevels = ["beginner", "intermediate", "advanced", "athlete"] as const;
+    const validActivityLevels = ["sedentary", "lightly active", "moderately active", "very active"] as const;
+    const validMealsPerDay = ["3 meals", "3 meals + 1 snack", "3 meals + 2 snacks", "6 meals"] as const;
+
+    // Validate and cast values
+    const fitnessGoal = validFitnessGoals.includes(summaryData.fitnessGoal.goal as any)
+      ? summaryData.fitnessGoal.goal as IClientUserData['fitnessGoal']
+      : validFitnessGoals[0]; // Default to first valid value if invalid
+    const currentFitnessLevel = validFitnessLevels.includes(summaryData.currentFitnessLevel as any)
+      ? summaryData.currentFitnessLevel as IClientUserData['currentFitnessLevel']
+      : validFitnessLevels[0]; // Default to first valid value if invalid
+    const activityLevel = validActivityLevels.includes(summaryData.activityLevel as any)
+      ? summaryData.activityLevel as IClientUserData['activityLevel']
+      : validActivityLevels[0]; // Default to first valid value if invalid
+    const dietMealsPerDay = validMealsPerDay.includes(summaryData.dietPreferences.dietMealsPerDay as any)
+      ? [summaryData.dietPreferences.dietMealsPerDay] as IClientUserData['dietMealsPerDay']
+      : []; // Default to empty array if invalid
+
+    const data: Partial<IClientUserData> = {
+      nickName: summaryData.basicInfo.nickName || "Unknown",
+      age: Number(summaryData.basicInfo.age) ,
+      gender: summaryData.basicInfo.gender ,
+      address: summaryData.basicInfo.address || undefined,
+      phoneNumber: summaryData.basicInfo.phoneNumber || undefined,
+      height: Number(summaryData.basicInfo.height) ,
+      currentWeight: Number(summaryData.basicInfo.currentWeight) ,
+      targetWeight: Number(summaryData.basicInfo.targetWeight) ,
+      fitnessGoal,
+      currentFitnessLevel,
+      activityLevel,
+      equipment: summaryData.workoutPreferences.equipment || [],
+      workoutDuration: summaryData.workoutPreferences.workoutDuration ,
+      workoutDaysPerWeek: Number(summaryData.workoutPreferences.workoutDaysPerWeek) ,
+      healthIssues: summaryData.healthInfo.healthIssues || [],
+      medicalCondition: summaryData.healthInfo.medicalCondition || undefined,
+      dietAllergies: summaryData.dietPreferences.dietAllergies || [],
+      dietPreferences: summaryData.dietPreferences.dietPreferences || undefined,
+      dietMealsPerDay,
+    };
+
+    if (!user?._id) {
+      throw new Error("User ID not found");
     }
-  };
+
+    const response = await ClientService.generatePersonalization(data);
+    dispatch(setUserPersonalization({_id:'done'}));
+
+    // Clear localStorage
+    localStorage.removeItem("userBasicInfo");
+    localStorage.removeItem("fitnessGoal");
+    localStorage.removeItem("currentFitnessLevel");
+    localStorage.removeItem("activityLevel");
+    localStorage.removeItem("workoutPreferences");
+    localStorage.removeItem("healthInfo");
+    localStorage.removeItem("dietPreferences");
+
+    toast.success("Personalized plan generated successfully!");
+    setTimeout(() => {
+      navigate("/dashboard");
+    }, 500);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to generate plan";
+    toast.error(errorMessage);
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
-      <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-2xl p-8 w-full max-w-md border border-gray-700">
+      <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-2xl p-8 w-full max-w-2xl border border-gray-700">
         <div className="mb-8">
           <div className="flex justify-between mb-2 text-sm text-gray-400">
             <span>Step 8 of 8</span>
@@ -151,278 +237,95 @@ export default function Summary() {
 
         <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className="w-full"
           >
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
-                Review Your Plan
+              <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+                Your Personalized Plan Summary
               </h1>
               <p className="text-sm text-gray-400 mt-2">
-                Everything looks good? Let's generate your personalized workout
+                Review your details below before generating your plan
               </p>
             </div>
 
-            <div className="border-2 border-gray-700 rounded-xl p-6 bg-gray-800/50">
-              <div className="mb-6 pb-6 border-b border-gray-700 last:mb-0 last:pb-0 last:border-b-0">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-                  <svg
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                  Personal Info
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">Name:</strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.basicInfo.name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">Age:</strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.basicInfo.age}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Gender:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.basicInfo.gender}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Height/Weight:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.basicInfo.height}cm /{" "}
-                      {summaryData.basicInfo.weight}kg
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Target Weight:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.basicInfo.targetWeight}kg
-                    </span>
-                  </div>
+            <div className="space-y-6">
+              <div className="bg-gray-700/50 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Basic Information</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
+                  <p><span className="font-medium">Name:</span> {summaryData.basicInfo.nickName}</p>
+                  <p><span className="font-medium">Age:</span> {summaryData.basicInfo.age}</p>
+                  <p><span className="font-medium">Gender:</span> {summaryData.basicInfo.gender}</p>
+                  <p><span className="font-medium">Address:</span> {summaryData.basicInfo.address}</p>
+                  <p><span className="font-medium">Phone:</span> {summaryData.basicInfo.phoneNumber}</p>
+                  <p><span className="font-medium">Height:</span> {summaryData.basicInfo.height} cm</p>
+                  <p><span className="font-medium">Current Weight:</span> {summaryData.basicInfo.currentWeight} kg</p>
+                  <p><span className="font-medium">Target Weight:</span> {summaryData.basicInfo.targetWeight} kg</p>
                 </div>
               </div>
 
-              <div className="mb-6 pb-6 border-b border-gray-700 last:mb-0 last:pb-0 last:border-b-0">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-                  <svg
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 8H4V16H6M20 8H18V16H20M14 6H10V8H14V6ZM14 16H10V18H14V16ZM6 12H18V14H6V12Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  Fitness Goals
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Primary Goal:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.fitnessGoal.goal}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Fitness Level:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.fitnessLevel}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Activity Level:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.activityLevel}
-                    </span>
-                  </div>
+              <div className="bg-gray-700/50 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Fitness Goals</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
+                  <p><span className="font-medium">Goal:</span> {summaryData.fitnessGoal.goal}</p>
+                  <p><span className="font-medium">Fitness Level:</span> {summaryData.currentFitnessLevel}</p>
+                  <p><span className="font-medium">Activity Level:</span> {summaryData.activityLevel}</p>
                 </div>
               </div>
 
-              <div className="mb-6 pb-6 border-b border-gray-700 last:mb-0 last:pb-0 last:border-b-0">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-                  <svg
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 12H15M12 16H15M9 8H15"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  Workout Preferences
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Equipment:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.workoutPreferences.equipment.length > 0
-                        ? summaryData.workoutPreferences.equipment.join(", ")
-                        : "Not selected"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Duration:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.workoutPreferences.duration}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Days/Week:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.workoutPreferences.daysPerWeek}
-                    </span>
-                  </div>
+              <div className="bg-gray-700/50 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Workout Preferences</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
+                  <p>
+                    <span className="font-medium">Equipment:</span>{" "}
+                    {summaryData.workoutPreferences.equipment.length > 0
+                      ? summaryData.workoutPreferences.equipment.join(", ")
+                      : "None selected"}
+                  </p>
+                  <p><span className="font-medium">Duration:</span> {summaryData.workoutPreferences.workoutDuration}</p>
+                  <p>
+                    <span className="font-medium">Days/Week:</span>{" "}
+                    {summaryData.workoutPreferences.workoutDaysPerWeek}
+                  </p>
                 </div>
               </div>
 
-              <div className="mb-6 pb-6 border-b border-gray-700 last:mb-0 last:pb-0 last:border-b-0">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-                  <svg
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M19 14C19 15.1046 18.1046 16 17 16H15.3431C14.404 16 13.5 16.3125 12.7574 16.8881L11.4142 18H7C5.89543 18 5 17.1046 5 16V8C5 6.89543 5.89543 6 7 6H17C18.1046 6 19 6.89543 19 8V14Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M12 11C13.1046 11 14 10.1046 14 9C14 7.89543 13.1046 7 12 7C10.8954 7 10 7.89543 10 9C10 10.1046 10.8954 11 12 11Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                  Health Info
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Injuries:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.healthInfo.injuries.length > 0
-                        ? summaryData.healthInfo.injuries.join(", ")
-                        : "None reported"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Conditions:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.healthInfo.conditions}
-                    </span>
-                  </div>
+              <div className="bg-gray-700/50 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Health Considerations</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
+                  <p>
+                    <span className="font-medium">Health Issues:</span>{" "}
+                    {summaryData.healthInfo.healthIssues.length > 0
+                      ? summaryData.healthInfo.healthIssues.join(", ")
+                      : "None"}
+                  </p>
+                  <p>
+                    <span className="font-medium">Medical Conditions:</span>{" "}
+                    {summaryData.healthInfo.medicalCondition}
+                  </p>
                 </div>
               </div>
 
-              <div className="mb-6 pb-6 border-b border-gray-700 last:mb-0 last:pb-0 last:border-b-0">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-                  <svg
-                    className="w-5 h-5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 8C13.6569 8 15 6.65685 15 5C15 3.34315 13.6569 2 12 2C10.3431 2 9 3.34315 9 5C9 6.65685 10.3431 8 12 8Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M6 22V12H18V22H6Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                  Diet Preferences
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Allergies:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.dietPreferences.allergies.length > 0
-                        ? summaryData.dietPreferences.allergies.join(", ")
-                        : "None reported"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Dietary Preferences:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.dietPreferences.dietaryPreferences.length > 0
-                        ? summaryData.dietPreferences.dietaryPreferences.join(
-                            ", "
-                          )
-                        : "None reported"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <strong className="text-gray-400 font-medium">
-                      Meals Per Day:
-                    </strong>
-                    <span className="text-white font-semibold text-right">
-                      {summaryData.dietPreferences.mealsPerDay}
-                    </span>
-                  </div>
+              <div className="bg-gray-700/50 rounded-lg p-6">
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Diet Preferences</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
+                  <p>
+                    <span className="font-medium">Allergies:</span>{" "}
+                    {summaryData.dietPreferences.dietAllergies.length > 0
+                      ? summaryData.dietPreferences.dietAllergies.join(", ")
+                      : "None"}
+                  </p>
+                  <p>
+                    <span className="font-medium">Preferences:</span>{" "}
+                    {summaryData.dietPreferences.dietPreferences}
+                  </p>
+                  <p>
+                    <span className="font-medium">Meals/Day:</span>{" "}
+                    {summaryData.dietPreferences.dietMealsPerDay}
+                  </p>
                 </div>
               </div>
             </div>
@@ -452,23 +355,16 @@ export default function Summary() {
                 {isGenerating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating your perfect workout plan...
+                    Generating Plan...
                   </>
                 ) : (
                   <>
-                    Generate Plan
+                    Generate My Plan
                     <ChevronRight className="ml-1 h-4 w-4" />
                   </>
                 )}
               </Button>
             </div>
-
-            {isGenerating && (
-              <div className="text-center mt-4 text-gray-400">
-                <div className="w-6 h-6 border-2 border-gray-700 border-t-indigo-600 rounded-full animate-spin mx-auto mb-2"></div>
-                <p>Creating your perfect workout plan...</p>
-              </div>
-            )}
           </motion.div>
         </AnimatePresence>
       </div>

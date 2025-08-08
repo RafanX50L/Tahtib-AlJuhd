@@ -4,11 +4,25 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const AdminService = {
-  getAllClients: async () => {
+  getAllClients: async (
+    statusFilter: string,
+    searchTerm: string,
+    page: number,
+    limit: number
+  ) => {
     try {
-      const response = await api.get(ADMIN_ROUTES.GET_ALL_CLIENTS);
-      console.log('clients ',response);
-      return { data: response.data[0], error: null };
+      searchTerm = searchTerm.toString();
+      console.log("datafasdfa", searchTerm, statusFilter, page, limit);
+      const response = await api.get(ADMIN_ROUTES.GET_ALL_CLIENTS, {
+        params: {
+          page,
+          limit,
+          search: searchTerm,
+          planStatus: statusFilter,
+        },
+      });
+      console.log("clients ", response);
+      return { data: response.data.data, error: null };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -20,30 +34,9 @@ export const AdminService = {
     }
   },
 
-  // updateClinetStatus: async (id: string, status: boolean) => {
-  //   console.log("afaskdfjjk");
-  //   try {
-  //     console.log("afdnasjfkas");
-  //     const response = await api.post(ADMIN_ROUTES.UPDATE_CLIENT_STATUS, {
-  //       id,
-  //       status,
-  //     });
-  //     console.log("updated serfsdfas", response);
-  //     return { data: response.data[0], error: null };
-  //   } catch (error) {
-  //     const err = error as AxiosError<{ error: string }>;
-  //     const errorMessage =
-  //       err.response?.data.error ||
-  //       "Failed to Update client status. Please try again.";
-  //     console.log("Error Update client status:", errorMessage);
-  //     toast.error(errorMessage);
-  //     throw new Error(errorMessage);
-  //   }
-  // },
-
-  blockOrUnblockUser : async (id:string) =>{
+  blockOrUnblockUser: async (id: string) => {
     try {
-      const response = await api.patch(ADMIN_ROUTES.BLOCK_OR_UNBLOCK, { id });
+      const response = await api.patch(`${ADMIN_ROUTES.BLOCK_OR_UNBLOCK}/${id}`);
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {
@@ -72,14 +65,14 @@ export const AdminService = {
     }
   },
 
-  getApprovedTrainers: async (page:number) => {
+  getApprovedTrainers: async (page: number, limit: number, search: string) => {
     try {
       console.log("jkdsakfjsadklfjsadkfj");
       const response = await api.get(
-        `${ADMIN_ROUTES.GET_APPROVED_TRAINERS}/${page}`
+        ADMIN_ROUTES.GET_APPROVED_TRAINERS(page, limit, search)
       );
       console.log("response from pending tariners", response.data);
-      return response.data
+      return response.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -91,11 +84,11 @@ export const AdminService = {
     }
   },
 
-  getPendingTrainers: async (page: number) => {
+  getPendingTrainers: async (page: number, limit: number, search: string) => {
     try {
       console.log("jkdsakfjsadklfjsadkfj");
       const response = await api.get(
-        `${ADMIN_ROUTES.GET_PENDING_TRAINERS}/${page}`
+        `${ADMIN_ROUTES.GET_PENDING_TRAINERS}/${page}/limit/${limit}/search/${search}`
       );
       console.log("response from pending tariners", response.data);
       return { data: response.data, error: null };
@@ -135,11 +128,9 @@ export const AdminService = {
     { date, time }: { date: Date; time: string }
   ) => {
     try {
-      const response = await api.post(ADMIN_ROUTES.SCHEDULE_INTERVIEW, {
-        id,
-        date,
-        time,
-      });
+      const response = await api.post(
+        `${ADMIN_ROUTES.SCHEDULE_INTERVIEW}/id/${id}/date/${date}/time/${time}`
+      );
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {
@@ -155,7 +146,7 @@ export const AdminService = {
 
   submitInterviewFeedback: async (id: string, feedback: any) => {
     try {
-      const response = await api.post(ADMIN_ROUTES.SUBMIT_INTERVIEW_FEEDBACK, {
+      const response = await api.patch(ADMIN_ROUTES.SUBMIT_INTERVIEW_FEEDBACK, {
         id,
         feedback,
       });
@@ -171,9 +162,12 @@ export const AdminService = {
     }
   },
 
-  approveTrainer: async (id: string,salary:number) => {
+  approveTrainer: async (id: string, salary: number) => {
     try {
-      const response = await api.patch(ADMIN_ROUTES.APPROVE_TRAINER, { id,salary });
+      const response = await api.patch(ADMIN_ROUTES.APPROVE_TRAINER, {
+        id,
+        salary,
+      });
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {

@@ -119,7 +119,7 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
         ) : !trainerData ? (
           <div className="text-white/80 text-center text-lg">No profile data available.</div>
         ) : (
-          <TrainerProfile trainerData={trainerData} refetchTrainerData={refetchTrainerData} />
+          <TrainerProfile trainerData={trainerData} setTrainerData={setTrainerData} />
         )}
       </main>
     </div>

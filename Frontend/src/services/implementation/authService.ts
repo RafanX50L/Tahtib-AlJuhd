@@ -24,9 +24,9 @@ export const AuthService = {
 
   login: async (formData: any) => {
     try {
-      const res = await api.post<{message:string,user:UserInterface,accessToken:string}>(AUTH_ROUTES.LOGIN, formData);
+      const res = await api.post<{message:string,user:UserInterface,accessToken:string,tokenVersion:number}>(AUTH_ROUTES.LOGIN, formData);
       const response = res.data;
-      return { user: response.user, message: response.message,accessToken:response.accessToken, status: res.status };
+      return { user: response.user, message: response.message,accessToken:response.accessToken, tokenVersion:response.tokenVersion, status: res.status };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -37,9 +37,9 @@ export const AuthService = {
 
   verifyOtp: async (data: OtpData) => {
     try {
-      const res = await api.post<{ message: string; user: UserInterface, accessToken:string }>(AUTH_ROUTES.VERIFY_OTP, data);
+      const res = await api.post<{ message: string; user: UserInterface, accessToken:string, tokenVersion:number }>(AUTH_ROUTES.VERIFY_OTP, data);
       const response = res.data;
-      return { user: response.user, message: response.message,accessToken:response.accessToken, status:res.status };
+      return { user: response.user, message: response.message,accessToken:response.accessToken,tokenVersion:response.tokenVersion, status:res.status };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -86,9 +86,9 @@ export const AuthService = {
   },
   GoogleSignUP: async (data: any) => {
     try {
-      const res = await api.post<{message:string, user:UserInterface, accessToken:string}>(AUTH_ROUTES.GOOGLE_SIGNUP, data);
+      const res = await api.post<{message:string, user:UserInterface, accessToken:string, tokenVersion:number}>(AUTH_ROUTES.GOOGLE_SIGNUP, data);
       const response = res.data;
-      return { message: response.message, user: response.user, accessToken:response.accessToken, status: res.status };
+      return { message: response.message, user: response.user, accessToken:response.accessToken, tokenVersion:response.tokenVersion, status: res.status };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -98,17 +98,17 @@ export const AuthService = {
   },
 
  
-  refreshToken: async () => {
-    return new Promise(async(resolve,reject)=>{
-      try {
-      const response = await api.post(AUTH_ROUTES.REFRESH_ACESS_TOKEN);
-      resolve( response.data )
-    } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
-      const errorMessage =
-        err.response?.data.error || "Creating new Acess Token failed";
-      throw new Error(errorMessage);
-    }
-    })
-  },
+  // refreshToken: async () => {
+  //   return new Promise(async(resolve,reject)=>{
+  //     try {
+  //     const response = await api.post(AUTH_ROUTES.REFRESH_ACESS_TOKEN);
+  //     resolve( response.data )
+  //   } catch (error) {
+  //     const err = error as AxiosError<{ error: string }>;
+  //     const errorMessage =
+  //       err.response?.data.error || "Creating new Acess Token failed";
+  //     throw new Error(errorMessage);
+  //   }
+  //   })
+  // },
 };

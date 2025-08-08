@@ -1,5 +1,5 @@
 import { ClientService } from "@/services/implementation/clientServices";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaCamera,
   FaEdit,
@@ -21,14 +21,23 @@ export interface ClientProfile {
   profilePicture: string;
 }
 
-const ProfilePicture = ({ user, onPictureUpdate }) => {
+interface ProfilePictureProps {
+  user: {
+    profileImage?: string;
+    [key: string]: any; // Adjust to match your actual user shape
+  };
+  onPictureUpdate: (file: File) => void;
+}
+
+
+const ProfilePicture:React.FC<ProfilePictureProps> = ({ user, onPictureUpdate }) => {
   console.log("user", user);
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [tempProfilePic, setTempProfilePic] = useState(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e:any) => {
     const file = e.target.files[0];
     if (
       file &&
@@ -137,8 +146,21 @@ const ProfilePicture = ({ user, onPictureUpdate }) => {
     </div>
   );
 };
+import { ChangeEvent } from "react";
+import { IconType } from "react-icons"; // assuming you're using react-icons
 
-const ProfileInfoField = ({
+interface ProfileInfoFieldProps {
+  icon: IconType;
+  label: string;
+  value: string;
+  name: string;
+  type?: string;
+  isEditing: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  formData: Record<string, any>; // or a more specific type if available
+}
+
+const ProfileInfoField:React.FC<ProfileInfoFieldProps> = ({
   icon: Icon,
   label,
   value,
@@ -310,16 +332,7 @@ const ProfilePage = () => {
               onChange={handleChange}
               formData={formData}
             />
-            <ProfileInfoField
-              icon={FaEnvelope}
-              label="Email Address"
-              value={user.email}
-              name="email"
-              type="email"
-              isEditing={isEditing}
-              onChange={handleChange}
-              formData={formData}
-            />
+           
             <ProfileInfoField
               icon={FaPhone}
               label="Phone Number"
@@ -330,16 +343,7 @@ const ProfilePage = () => {
               onChange={handleChange}
               formData={formData}
             />
-            {/* <ProfileInfoField
-              icon={FaCalendar}
-              label="Date of Birth"
-              value={user.dateOfBirth}
-              name="dateOfBirth"
-              type="date"
-              isEditing={isEditing}
-              onChange={handleChange}
-              formData={formData}
-            /> */}
+            
             <ProfileInfoField
               icon={FaMapMarkerAlt}
               label="Address"

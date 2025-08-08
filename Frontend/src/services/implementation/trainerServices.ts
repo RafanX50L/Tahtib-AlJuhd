@@ -10,7 +10,7 @@ export const TrainerService = {
         TRAINER_ROUTES.GET_PENDING_TRAINER_APPLICATION
       );
       console.log("response form backned", response.data[0]);
-      return response.data[0];
+      return response.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
       const errorMessage =
@@ -51,7 +51,7 @@ export const TrainerService = {
     try {
       const response = await api.get(TRAINER_ROUTES.GET_PROFILE_DATA);
       console.log("response form backned", response.data);
-      return response.data[0];
+      return response.data.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
       const errorMessage =
@@ -91,11 +91,6 @@ export const TrainerService = {
       const response = await api.patch(
         TRAINER_ROUTES.UPDATE_TRAINER_PROFILE,
         formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
       );
       console.log("Updated response: ", response.data);
       return { data: response.data };

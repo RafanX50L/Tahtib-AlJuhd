@@ -180,107 +180,204 @@ const TrainerForm: React.FC = () => {
     }
   }, [currentStep]);
 
+  // const onSubmit = async (data: TrainerFormData) => {
+  //   setSubmissionStatus("submitting");
+  //   setErrorMessage(null);
+
+  //   try {
+  //     // Validate required fields
+  //     if (!data.phoneNumber || !data.location || !data.specializations.length) {
+  //       throw new Error(
+  //         "Required fields are missing: phoneNumber, location, and specializations are mandatory."
+  //       );
+  //     }
+
+  //     const formData = new FormData();
+
+  //     // File validation
+  //     const maxSize = 5 * 1024 * 1024; // 5MB
+  //     if (data.profilePhoto) {
+  //       if (data.profilePhoto.size > maxSize) {
+  //         throw new Error("Profile photo must be less than 5MB.");
+  //       }
+  //       if (!["image/jpeg", "image/png"].includes(data.profilePhoto.type)) {
+  //         throw new Error("Profile photo must be a JPEG or PNG image.");
+  //       }
+  //       formData.append("profilePhoto", data.profilePhoto);
+  //     }
+  //     data.certifications.forEach((cert, index) => {
+  //       if (cert.proof) {
+  //         if (cert.proof.size > maxSize) {
+  //           throw new Error(
+  //             `Certification proof ${index + 1} must be less than 5MB.`
+  //           );
+  //         }
+  //         if (
+  //           !["application/pdf", "image/jpeg", "image/png"].includes(
+  //             cert.proof.type
+  //           )
+  //         ) {
+  //           throw new Error(
+  //             `Certification proof ${index + 1} must be a PDF, JPEG, or PNG.`
+  //           );
+  //         }
+  //         formData.append(`certificationProof_${index}`, cert.proof);
+  //       }
+  //     });
+  //     if (data.resume) {
+  //       if (data.resume.size > maxSize) {
+  //         throw new Error("Resume must be less than 5MB.");
+  //       }
+  //       formData.append("resume", data.resume);
+  //     }
+
+  //     // Append text fields
+  //     formData.append("phoneNumber", data.phoneNumber);
+  //     formData.append("location", data.location);
+  //     formData.append("timeZone", data.timeZone);
+  //     if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
+  //     if (data.gender) formData.append("gender", data.gender);
+  //     formData.append("yearsOfExperience", String(data.yearsOfExperience));
+  //     formData.append("specializations", JSON.stringify(data.specializations));
+  //     formData.append("coachingType", JSON.stringify(data.coachingType));
+  //     if (data.platformsUsed?.length)
+  //       formData.append("platformsUsed", JSON.stringify(data.platformsUsed));
+  //     formData.append("demoVideoLink", data.demoVideoLink);
+  //     if (data.portfolioLinks?.length)
+  //       formData.append("portfolioLinks", JSON.stringify(data.portfolioLinks));
+  //     formData.append("engagementType", data.engagementType);
+  //     formData.append("weeklySlots", JSON.stringify(data.weeklySlots));
+  //     formData.append(
+  //       "certifications",
+  //       JSON.stringify(
+  //         data.certifications.map((cert, index) => ({
+  //           ...cert,
+  //           proofFileName: cert.proof ? `certificationProof_${index}` : null,
+  //         }))
+  //       )
+  //     );
+
+  //     // Log FormData for debugging
+  //     console.log("formData entries:");
+  //     for (const [key, value] of formData.entries()) {
+  //       console.log(`${key}: ${value}`);
+  //     }
+
+  //     // Send to the backend
+  //     const response = await TrainerService.submitTrainerApplication(formData);
+  //     // if (!response.ok) {
+  //     //   throw new Error(response.data.message || "Submission Failed");
+  //     // }
+
+  //     setSubmissionStatus("success");
+  //     // reset();
+  //     console.log('entered to navigate before');
+  //     navigate('/trainer/pendingCases');
+  //     console.log('entered to navigate');
+  //     location.reload();
+  //     // setCurrentStep(1);
+  //   } catch (error: any) {
+  //     setSubmissionStatus("error");
+  //     setErrorMessage(error.message || "An error occurred during submission");
+  //   }
+  // };
+
   const onSubmit = async (data: TrainerFormData) => {
-    setSubmissionStatus("submitting");
-    setErrorMessage(null);
+  setSubmissionStatus("submitting");
+  setErrorMessage(null);
 
-    try {
-      // Validate required fields
-      if (!data.phoneNumber || !data.location || !data.specializations.length) {
-        throw new Error(
-          "Required fields are missing: phoneNumber, location, and specializations are mandatory."
-        );
-      }
-
-      const formData = new FormData();
-
-      // File validation
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (data.profilePhoto) {
-        if (data.profilePhoto.size > maxSize) {
-          throw new Error("Profile photo must be less than 5MB.");
-        }
-        if (!["image/jpeg", "image/png"].includes(data.profilePhoto.type)) {
-          throw new Error("Profile photo must be a JPEG or PNG image.");
-        }
-        formData.append("profilePhoto", data.profilePhoto);
-      }
-      data.certifications.forEach((cert, index) => {
-        if (cert.proof) {
-          if (cert.proof.size > maxSize) {
-            throw new Error(
-              `Certification proof ${index + 1} must be less than 5MB.`
-            );
-          }
-          if (
-            !["application/pdf", "image/jpeg", "image/png"].includes(
-              cert.proof.type
-            )
-          ) {
-            throw new Error(
-              `Certification proof ${index + 1} must be a PDF, JPEG, or PNG.`
-            );
-          }
-          formData.append(`certificationProof_${index}`, cert.proof);
-        }
-      });
-      if (data.resume) {
-        if (data.resume.size > maxSize) {
-          throw new Error("Resume must be less than 5MB.");
-        }
-        formData.append("resume", data.resume);
-      }
-
-      // Append text fields
-      formData.append("phoneNumber", data.phoneNumber);
-      formData.append("location", data.location);
-      formData.append("timeZone", data.timeZone);
-      if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
-      if (data.gender) formData.append("gender", data.gender);
-      formData.append("yearsOfExperience", String(data.yearsOfExperience));
-      formData.append("specializations", JSON.stringify(data.specializations));
-      formData.append("coachingType", JSON.stringify(data.coachingType));
-      if (data.platformsUsed?.length)
-        formData.append("platformsUsed", JSON.stringify(data.platformsUsed));
-      formData.append("demoVideoLink", data.demoVideoLink);
-      if (data.portfolioLinks?.length)
-        formData.append("portfolioLinks", JSON.stringify(data.portfolioLinks));
-      formData.append("engagementType", data.engagementType);
-      formData.append("weeklySlots", JSON.stringify(data.weeklySlots));
-      formData.append(
-        "certifications",
-        JSON.stringify(
-          data.certifications.map((cert, index) => ({
-            ...cert,
-            proofFileName: cert.proof ? `certificationProof_${index}` : null,
-          }))
-        )
+  try {
+    // Validate required fields
+    if (!data.phoneNumber || !data.location || !data.specializations.length) {
+      throw new Error(
+        "Required fields are missing: phoneNumber, location, and specializations are mandatory."
       );
-
-      // Log FormData for debugging
-      console.log("formData entries:");
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
-      // Send to the backend
-      const response = await TrainerService.submitTrainerApplication(formData);
-      // if (!response.ok) {
-      //   throw new Error(response.data.message || "Submission Failed");
-      // }
-
-      setSubmissionStatus("success");
-      // reset();
-      console.log('entered to navigate before');
-      navigate('/trainer/pendingCases');
-      console.log('entered to navigate');
-      location.reload();
-      // setCurrentStep(1);
-    } catch (error: any) {
-      setSubmissionStatus("error");
-      setErrorMessage(error.message || "An error occurred during submission");
     }
-  };
+
+    const formData = new FormData();
+
+    // File validation
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    // Append profile photo
+    if (data.profilePhoto) {
+      if (data.profilePhoto.size > maxSize) {
+        throw new Error("Profile photo must be less than 5MB.");
+      }
+      if (!["image/jpeg", "image/png"].includes(data.profilePhoto.type)) {
+        throw new Error("Profile photo must be a JPEG or PNG image.");
+      }
+      formData.append("profilePhoto", data.profilePhoto);
+    }
+
+    // Append certification proofs under a single field name
+    data.certifications.forEach((cert) => {
+      if (cert.proof) {
+        if (cert.proof.size > maxSize) {
+          throw new Error(`Certification proof for "${cert.name}" must be less than 5MB.`);
+        }
+        if (!["application/pdf", "image/jpeg", "image/png"].includes(cert.proof.type)) {
+          throw new Error(
+            `Certification proof for "${cert.name}" must be a PDF, JPEG, or PNG.`
+          );
+        }
+        formData.append("certificationProofs", cert.proof);
+      }
+    });
+
+    // Append resume
+    if (data.resume) {
+      if (data.resume.size > maxSize) {
+        throw new Error("Resume must be less than 5MB.");
+      }
+      formData.append("resume", data.resume);
+    }
+
+    // Append text fields
+    formData.append("phoneNumber", data.phoneNumber);
+    formData.append("location", data.location);
+    formData.append("timeZone", data.timeZone);
+    if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
+    if (data.gender) formData.append("gender", data.gender);
+    formData.append("yearsOfExperience", String(data.yearsOfExperience));
+    formData.append("specializations", JSON.stringify(data.specializations));
+    formData.append("coachingType", JSON.stringify(data.coachingType));
+    if (data.platformsUsed?.length)
+      formData.append("platformsUsed", JSON.stringify(data.platformsUsed));
+    formData.append("demoVideoLink", data.demoVideoLink);
+    if (data.portfolioLinks?.length)
+      formData.append("portfolioLinks", JSON.stringify(data.portfolioLinks));
+    formData.append("engagementType", data.engagementType);
+    formData.append("weeklySlots", JSON.stringify(data.weeklySlots));
+
+    // Append certifications with a hasProof flag
+    formData.append(
+      "certifications",
+      JSON.stringify(
+        data.certifications.map((cert) => ({
+          name: cert.name,
+          issuer: cert.issuer,
+          hasProof: !!cert.proof, // True if proof exists, false otherwise
+        }))
+      )
+    );
+
+    // Log FormData for debugging (optional)
+    console.log("formData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
+    // Send to the backend
+    const response = await TrainerService.submitTrainerApplication(formData);
+    setSubmissionStatus("success");
+    navigate("/trainer/pendingCases");
+    location.reload();
+  } catch (error: any) {
+    setSubmissionStatus("error");
+    setErrorMessage(error.message || "An error occurred during submission");
+  }
+};
 
   const RenderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">

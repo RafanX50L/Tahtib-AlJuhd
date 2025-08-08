@@ -13,27 +13,45 @@ import { Eye, PlayCircle, PauseCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
 import { AdminService } from "@/services/implementation/adminServices";
-
+export interface TrainerCardDTO {
+  _id: string;
+  name: string;
+  email: string;
+  isBlocked: boolean;
+  profilePhoto: string;
+  specializations: string[];
+  yearsOfExperience: number;
+  weeklySalary: number;
+  phoneNumber: string;
+  location: string;
+  certifications: {
+    name: string;
+    issuer: string;
+    proofFile?: string;
+  }[];
+}
 const ApprovedTrainersTable = () => {
-  const [trainers, setTrainers] = useState<ITrainerWithPersonalization[]>([]);
+  const [trainers, setTrainers] = useState<TrainerCardDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrainer, setSelectedTrainer] =
-    useState<ITrainerWithPersonalization | null>(null);
+    useState<TrainerCardDTO | null>(null);
   const [confirmAction, setConfirmAction] = useState({
     trainerId: "",
     isOpen: false,
     willBlock: false,
   });
+  const [totalItems, setTotalItems] = useState(0);
 
   const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
-        const response = await AdminService.getApprovedTrainers(currentPage);
+        const response = await AdminService.getApprovedTrainers(currentPage,itemsPerPage,searchTerm,);
         console.log("approved trainers", response);
-        setTrainers(Array.isArray(response) ? response : []);
+        setTrainers(response.data.data ? response.data.data : []);
+        setTotalItems(response.total || 0);
       } catch (error) {
         toast.error("Failed to fetch trainers");
         console.error(error);
@@ -41,27 +59,15 @@ const ApprovedTrainersTable = () => {
     };
 
     fetchTrainers();
-  }, [currentPage]);
+  }, [currentPage, searchTerm]);
 
-  const filteredTrainers = trainers.filter(
-    (trainer) =>
-      trainer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trainer.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const paginatedTrainers = filteredTrainers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(filteredTrainers.length / itemsPerPage);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const toggleBlockStatus = async (
     trainerId: string,
     currentBlockStatus: boolean
   ) => {
     try {
-      // Here you would typically call an API to update the block status
       await AdminService.blockOrUnblockUser(trainerId);
       setTrainers((prev) =>
         prev.map((trainer) =>
@@ -113,7 +119,10 @@ const ApprovedTrainersTable = () => {
             placeholder="Search trainers..."
             className="px-4 py-2 bg-gray-700 text-white rounded-md w-full mb-4"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // Reset to first page when searching
+            }}
           />
 
           <Table>
@@ -132,19 +141,19 @@ const ApprovedTrainersTable = () => {
             </TableHeader>
 
             <TableBody>
-              {paginatedTrainers.map((trainer) => (
+              {trainers.map((trainer) => (
                 <TableRow
                   key={trainer._id}
                   className="bg-gray-800 hover:bg-gray-700"
                 >
                   <TableCell className="text-white">
                     <div className="flex items-center space-x-3">
-                      {trainer.basicInfo.profilePhoto ? (
+                      {trainer.profilePhoto ? (
                         <>
                           {" "}
                           <img
                             className="h-10 w-10 rounded-full"
-                            src={trainer.basicInfo.profilePhoto}
+                            src={trainer.profilePhoto}
                             alt={trainer.name}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -171,11 +180,11 @@ const ApprovedTrainersTable = () => {
                     {trainer.email}
                   </TableCell>
                   <TableCell className="text-gray-400">
-                    {trainer.professionalSummary?.specializations?.join(", ") ||
+                    {trainer.specializations?.join(", ") ||
                       "N/A"}
                   </TableCell>
                   <TableCell className="text-gray-400">
-                    {trainer.professionalSummary?.yearsOfExperience || "N/A"}{" "}
+                    {trainer.yearsOfExperience || "N/A"}{" "}
                     years
                   </TableCell>
                   <TableCell>
@@ -187,7 +196,7 @@ const ApprovedTrainersTable = () => {
                   </TableCell>
                   <TableCell>
                     <span className="text-green-500">
-                      {trainer.basicInfo.weeklySalary || "N/A"}
+                      {trainer.weeklySalary || "N/A"}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -231,8 +240,8 @@ const ApprovedTrainersTable = () => {
       <div className="flex justify-between mt-5 items-center px-6 py-4 bg-gray-800 rounded-lg">
         <div className="text-sm text-gray-400">
           Showing {(currentPage - 1) * itemsPerPage + 1}-
-          {Math.min(currentPage * itemsPerPage, filteredTrainers.length)} of{" "}
-          {filteredTrainers.length} trainers
+          {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{" "}
+          trainers
         </div>
         <div className="flex space-x-2">
           <Button
@@ -289,7 +298,7 @@ const ApprovedTrainersTable = () => {
                 <img
                   className="h-16 w-16 rounded-full mr-4"
                   src={
-                    selectedTrainer.basicInfo?.profilePhoto ||
+                    selectedTrainer.profilePhoto ||
                     "https://via.placeholder.com/40"
                   }
                   alt={selectedTrainer.name}
@@ -316,19 +325,19 @@ const ApprovedTrainersTable = () => {
                 <div>
                   <p className="text-sm text-gray-400">Phone</p>
                   <p className="text-white">
-                    {selectedTrainer.basicInfo?.phoneNumber || "N/A"}
+                    {selectedTrainer.phoneNumber || "N/A"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Location</p>
                   <p className="text-white">
-                    {selectedTrainer.basicInfo?.location || "N/A"}
+                    {selectedTrainer.location || "N/A"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Experience</p>
                   <p className="text-white">
-                    {selectedTrainer.professionalSummary?.yearsOfExperience ||
+                    {selectedTrainer.yearsOfExperience ||
                       "N/A"}{" "}
                     years
                   </p>
@@ -336,7 +345,7 @@ const ApprovedTrainersTable = () => {
                 <div>
                   <p className="text-sm text-gray-400">Specializations</p>
                   <p className="text-white">
-                    {selectedTrainer.professionalSummary?.specializations?.join(
+                    {selectedTrainer.specializations?.join(
                       ", "
                     ) || "N/A"}
                   </p>
@@ -344,7 +353,7 @@ const ApprovedTrainersTable = () => {
                 <div>
                   <p className="text-sm text-gray-400">Certifications</p>
                   <p className="text-white">
-                    {selectedTrainer.professionalSummary?.certifications
+                    {selectedTrainer.certifications
                       ?.map((c) => c.name)
                       .join(", ") || "N/A"}
                   </p>

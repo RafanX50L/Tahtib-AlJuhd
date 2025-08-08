@@ -97,6 +97,7 @@ export function RegisterPage() {
         setCredentials({
           user: response.user,
           accessToken: response.accessToken,
+          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);

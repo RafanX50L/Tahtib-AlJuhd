@@ -1,0 +1,88 @@
+{
+  "dietPlan": {
+    "mealPlan": {
+      "breakfast": {
+        "options": [
+          {
+            "name": "Tofu Scramble with Spinach and Whole Wheat Toast",
+            "ingredients": [
+              "1 block firm or extra-firm tofu, crumbled",
+              "1 cup fresh spinach, chopped",
+              "1/4 cup chopped onion",
+              "1 tbsp nutritional yeast",
+              "1 tsp turmeric",
+              "Salt and pepper to taste",
+              "2 slices gluten-free whole wheat toast"
+            ],
+            "instructions": "Sauté onion until softened. Add crumbled tofu, spinach, nutritional yeast, and turmeric. Cook until tofu is heated through and spinach is wilted. Season with salt and pepper. Serve with gluten-free toast.",
+            "videoLink": "https://www.youtube.com/results?search_query=vegan+tofu+scramble"
+          }
+        ]
+      },
+      "lunch": {
+        "options": [
+          {
+            "name": "Quinoa Salad with Black Beans, Corn, and Avocado",
+            "ingredients": [
+              "1 cup cooked quinoa",
+              "1 can (15oz) black beans, rinsed and drained",
+              "1 cup frozen corn, thawed",
+              "1 avocado, diced",
+              "1/2 red onion, diced",
+              "1/4 cup chopped cilantro",
+              "2 tbsp lime juice",
+              "1 tbsp olive oil",
+              "Salt and pepper to taste"
+            ],
+            "instructions": "Combine all ingredients in a bowl and mix well.  Adjust seasonings to taste.",
+            "videoLink": "https://www.youtube.com/results?search_query=quinoa+salad+black+beans+corn+avocado"
+          }
+        ]
+      },
+      "dinner": {
+        "options": [
+          {
+            "name": "Lentil Shepherd's Pie with Sweet Potato Topping",
+            "ingredients": [
+              "1 cup brown or green lentils",
+              "2 cups vegetable broth",
+              "1 cup chopped carrots",
+              "1 cup chopped celery",
+              "1 onion, chopped",
+              "2 cloves garlic, minced",
+              "1 tbsp tomato paste",
+              "1 tsp dried thyme",
+              "Salt and pepper to taste",
+              "2 large sweet potatoes, peeled and cubed",
+              "2 tbsp olive oil"
+            ],
+            "instructions": "Sauté onion, carrots, and celery until softened. Add garlic and tomato paste and cook for 1 minute. Stir in lentils, vegetable broth, thyme, salt, and pepper. Bring to a boil, then reduce heat and simmer until lentils are tender (about 30 minutes).  Meanwhile, boil sweet potatoes until tender. Mash with olive oil and season with salt and pepper. Top the lentil mixture with the sweet potato mash and bake at 375°F (190°C) for 20 minutes, or until heated through and slightly browned.",
+            "videoLink": "https://www.youtube.com/results?search_query=vegan+lentil+shepherd%27s+pie+sweet+potato+topping"
+          }
+        ]
+      },
+      "snack": {
+        "options": [
+          {
+            "name": "Banana with Peanut Butter (Sunflower Seed Butter Alternative)",
+            "ingredients": [
+              "1 banana",
+              "2 tablespoons sunflower seed butter"
+            ],
+            "instructions": "Spread sunflower seed butter on a banana slice.",
+            "videoLink": "No video available"
+          },
+          {
+            "name": "Edamame",
+            "ingredients": [
+              "1 cup shelled edamame, steamed or boiled"
+            ],
+            "instructions": "Steam or boil edamame until tender.",
+            "videoLink": "No video available"
+          }
+        ]
+      }
+    },
+    "notes": "This diet plan is designed for adhnu, a 19-year-old male, to gain weight and improve endurance while adhering to a vegetarian diet and excluding nuts and dairy.  The focus is on incorporating sufficient protein from sources like lentils, tofu, quinoa, and edamame.  Gluten-free options are prioritized.  The plan includes three meals and a snack to ensure adequate calorie intake throughout the day.  It's crucial to monitor adhnu's progress and adjust calorie intake as needed to achieve the target weight of 55kg.  Remember to stay hydrated by drinking plenty of water throughout the day.  Consider incorporating regular exercise, especially endurance-focused activities, to complement the diet and maximize results."
+  }
+}

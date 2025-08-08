@@ -82,7 +82,7 @@ export function OTPVerificationPage() {
       console.log("Submitting OTP:", data.otp);
       const response = await AuthService.verifyOtp({ ...data, email });
       console.log(`OTP verification response with Status ${response.status}`);
-      dispath(setCredentials({ user: response.user , accessToken:response.accessToken}))
+      dispath(setCredentials({ user: response.user, accessToken: response.accessToken, tokenVersion: response.tokenVersion }))
       toast.success(response.message);
       navigate(`/dashboard`)
     } catch (error: unknown) {

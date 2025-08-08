@@ -3,7 +3,7 @@ export interface UserInterface {
   name: string;
   email: string;
   role: "client" | "admin" | "trainer";
-  personalization: string | null;
+  personalizationId: string | null;
   status?:
     | "applied"
     | "interview_scheduled"

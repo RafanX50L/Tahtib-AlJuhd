@@ -8,7 +8,10 @@ import { Provider } from "react-redux";
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     {/* <StrictMode> */}
-      <App />
+    <div className="overflow-hidden scrollbar-none">
+
+      <App/>
+    </div>
     {/* </StrictMode> */}
   </Provider>
 );
