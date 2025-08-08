@@ -19,7 +19,7 @@ const App: React.FC = () => {
       <Toaster richColors position="top-right" />
       <BrowserRouter>
         <AuthInitializer>
-          <div className="relative min-h-screen">
+          <div className="relative min-h-screen overflow-hidden scrollbar-none">
             <Routes>
               <Route path="/room/:meetId" element={<VideoCall />} />
               <Route path="/" element={<LandingPage />} />

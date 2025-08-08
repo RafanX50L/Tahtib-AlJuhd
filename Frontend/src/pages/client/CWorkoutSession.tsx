@@ -704,7 +704,9 @@ const WorkoutSession: React.FC = () => {
       setShowRepSelectionModal(true);
     } else if (metrics.rangeType === "time") {
       setCustomDuration(null);
-      setSliderValue([metrics.range.min]);
+      if(metrics.range){
+        setSliderValue([ metrics.range.min]);
+      }
       setShowDurationModal(true);
     }
   }, [currentExerciseIndex, workout, parseExerciseMetrics]);

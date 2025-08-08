@@ -13,18 +13,54 @@ import {
   FaAppleAlt,
 } from "react-icons/fa";
 import { toast } from "sonner";
+import Loading from "../Loading";
+import { TrainerService } from "@/services/implementation/trainerServices";
+import { ClientService } from "@/services/implementation/clientServices";
 
-const DietPlanPage = () => {
-  const [selectedDish, setSelectedDish] = useState(null);
-  const [dietPlans, setDietPlan] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+interface Dish {
+  name: string;
+  ingredients: string[];
+  instructions: string;
+  videoLink: string;
+  _id: string;
+}
+
+interface MealPlan {
+  breakfast?: { options: Dish[]; _id: string };
+  snacks?: { options: Dish[]; _id: string };
+  lunch?: { options: Dish[]; _id: string };
+  dinner?: { options: Dish[]; _id: string };
+  [key: string]: { options: Dish[]; _id: string } | undefined;
+}
+
+interface DietPlan {
+  mealPlan: MealPlan;
+  notes: string;
+  created: string;
+  updated: string;
+}
+
+interface SelectedDish extends Dish {
+  mealType: string;
+}
+
+const DietPlanPage: React.FC = () => {
+  const [selectedDish, setSelectedDish] = useState<SelectedDish | null>(null);
+  const [dietPlan, setDietPlan] = useState<DietPlan>({
+    mealPlan: {},
+    notes: "",
+    created: "",
+    updated: "",
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchChallenges = async () => {
       setIsLoading(true);
       try {
-        // const weeklyChallenges = await ClientService.getWeeklyChallenges();
-        // setChallenges(weeklyChallenges as WeeklyChallenges);
+        const response = await ClientService.getDietPlan();
+        console.log(response);
+        setDietPlan(response);
       } catch (error) {
         toast.error(
           error instanceof Error
@@ -36,244 +72,8 @@ const DietPlanPage = () => {
       }
     };
 
-    setTimeout(() => {
-      fetchChallenges();
-    }, 3000);
+    fetchChallenges();
   }, []);
-  // Sample data with multiple options to demonstrate handling
-  const dietPlan = {
-    _id: "6893455a6bd67e4b83ebb379",
-    mealPlan: {
-      breakfast: {
-        options: [
-          {
-            name: "High-Protein Oatmeal with Berries",
-            ingredients: [
-              "1/2 cup rolled oats",
-              "1 scoop vegan protein powder (soy or pea-based)",
-              "1 cup unsweetened almond milk",
-              "1/2 cup mixed berries",
-              "1 tbsp chia seeds",
-            ],
-            instructions:
-              "Combine oats, protein powder, and almond milk in a saucepan. Cook over medium heat, stirring frequently, until oats are cooked through. Stir in berries and chia seeds.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=high+protein+oatmeal+recipe",
-            _id: "6893455a6bd67e4b83ebb37b",
-          },
-        ],
-        _id: "6893455a6bd67e4b83ebb37a",
-      },
-      snacks: {
-        options: [
-          {
-            name: "Greek Yogurt with Hemp Seeds",
-            ingredients: [
-              "1 cup Greek yogurt",
-              "1 tbsp hemp seeds",
-              "1/2 cup mixed berries",
-              "1 tsp honey (optional)",
-            ],
-            instructions:
-              "Mix Greek yogurt with hemp seeds, top with berries and drizzle with honey if desired.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=greek+yogurt+hemp+seeds",
-            _id: "6893455a6bd67e4b83ebb37b1",
-          },
-          {
-            name: "Greek Yogurt with Hemp Seeds",
-            ingredients: [
-              "1 cup Greek yogurt",
-              "1 tbsp hemp seeds",
-              "1/2 cup mixed berries",
-              "1 tsp honey (optional)",
-            ],
-            instructions:
-              "Mix Greek yogurt with hemp seeds, top with berries and drizzle with honey if desired.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=greek+yogurt+hemp+seeds",
-            _id: "6893455a6bd67e4b83ebb37b1",
-          },
-          {
-            name: "Greek Yogurt with Hemp Seeds",
-            ingredients: [
-              "1 cup Greek yogurt",
-              "1 tbsp hemp seeds",
-              "1/2 cup mixed berries",
-              "1 tsp honey (optional)",
-            ],
-            instructions:
-              "Mix Greek yogurt with hemp seeds, top with berries and drizzle with honey if desired.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=greek+yogurt+hemp+seeds",
-            _id: "6893455a6bd67e4b83ebb37b1",
-          },
-          {
-            name: "Hummus with Veggie Sticks",
-            ingredients: [
-              "3 tbsp hummus",
-              "1 carrot (cut into sticks)",
-              "1 cucumber (sliced)",
-              "1/4 bell pepper (strips)",
-            ],
-            instructions:
-              "Prepare vegetables and serve with hummus for dipping.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=hummus+vegetable+snack",
-            _id: "6893455a6bd67e4b83ebb37b2",
-          },
-        ],
-        _id: "6893455a6bd67e4b83ebb37a",
-      },
-      lunch: {
-        options: [
-          {
-            name: "Quinoa Salad with Black Beans and Avocado",
-            ingredients: [
-              "1 cup cooked quinoa",
-              "1/2 cup black beans (rinsed and drained)",
-              "1/2 avocado (diced)",
-              "1/4 cup chopped red onion",
-              "1/4 cup chopped cilantro",
-              "2 tbsp lime juice",
-              "1 tbsp olive oil",
-              "Salt and pepper to taste",
-            ],
-            instructions: "Combine all ingredients in a bowl and mix well.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=quinoa+salad+vegetarian+recipe",
-            _id: "6893455a6bd67e4b83ebb37d1",
-          },
-          {
-            name: "Mediterranean Chickpea Bowl",
-            ingredients: [
-              "1 cup cooked chickpeas",
-              "1/2 cucumber (diced)",
-              "1/4 cup cherry tomatoes",
-              "1/4 cup red onion",
-              "2 tbsp olive oil",
-              "1 tbsp lemon juice",
-              "Fresh herbs",
-            ],
-            instructions: "Mix all ingredients in a bowl and season to taste.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=mediterranean+chickpea+bowl",
-            _id: "6893455a6bd67e4b83ebb37d2",
-          },
-          {
-            name: "Protein-Packed Hummus Wrap",
-            ingredients: [
-              "1 whole wheat tortilla",
-              "3 tbsp hummus",
-              "1/4 cup sprouts",
-              "1/2 cucumber sliced",
-              "1/4 avocado",
-              "Mixed greens",
-            ],
-            instructions:
-              "Spread hummus on tortilla, add vegetables and wrap tightly.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=hummus+vegetarian+wrap",
-            _id: "6893455a6bd67e4b83ebb37d3",
-          },
-          {
-            name: "Lentil Power Bowl",
-            ingredients: [
-              "3/4 cup cooked lentils",
-              "1/2 cup brown rice",
-              "1/4 cup roasted vegetables",
-              "2 tbsp tahini dressing",
-              "1 tbsp hemp seeds",
-            ],
-            instructions:
-              "Layer ingredients in bowl and drizzle with dressing.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=lentil+power+bowl",
-            _id: "6893455a6bd67e4b83ebb37d4",
-          },
-          {
-            name: "Greek-Style Quinoa Salad",
-            ingredients: [
-              "1 cup quinoa",
-              "1/4 cup olives",
-              "1/2 cup cherry tomatoes",
-              "1/4 cup feta cheese",
-              "2 tbsp olive oil",
-              "1 tbsp lemon juice",
-            ],
-            instructions: "Combine cooked quinoa with vegetables and dressing.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=greek+quinoa+salad",
-            _id: "6893455a6bd67e4b83ebb37d5",
-          },
-          {
-            name: "Asian-Inspired Tofu Bowl",
-            ingredients: [
-              "150g firm tofu",
-              "1/2 cup brown rice",
-              "1/4 cup edamame",
-              "1/4 cup shredded carrots",
-              "2 tbsp soy sauce",
-              "1 tsp sesame oil",
-            ],
-            instructions:
-              "Pan-fry tofu, serve over rice with vegetables and sauce.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=tofu+bowl+recipe",
-            _id: "6893455a6bd67e4b83ebb37d6",
-          },
-        ],
-        _id: "6893455a6bd67e4b83ebb37c",
-      },
-      dinner: {
-        options: [
-          {
-            name: "Lentil Shepherd's Pie with Sweet Potato Topping",
-            ingredients: [
-              "1 cup brown or green lentils",
-              "2 cups vegetable broth",
-              "1 cup chopped carrots",
-              "1 cup chopped celery",
-              "1 onion (chopped)",
-              "2 cloves garlic (minced)",
-              "1 tbsp tomato paste",
-              "1 tsp dried thyme",
-              "Salt and pepper to taste",
-              "2 large sweet potatoes (cooked and mashed)",
-            ],
-            instructions:
-              "Sauté onion, carrots, and celery until softened. Add garlic and tomato paste and cook for 1 minute. Stir in lentils, vegetable broth, thyme, salt, and pepper. Bring to a boil, then reduce heat and simmer for 20-25 minutes, or until lentils are tender. Top with mashed sweet potatoes and bake at 375°F (190°C) for 20 minutes, or until heated through.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=vegetarian+lentil+shepherd%27s+pie",
-            _id: "6893455a6bd67e4b83ebb37f",
-          },
-          {
-            name: "Stuffed Bell Peppers with Quinoa",
-            ingredients: [
-              "4 bell peppers (tops cut, seeds removed)",
-              "1 cup cooked quinoa",
-              "1/2 cup black beans",
-              "1/4 cup corn",
-              "1/4 cup diced tomatoes",
-              "1/4 cup cheese (optional)",
-              "1 tsp cumin",
-              "Salt and pepper to taste",
-            ],
-            instructions:
-              "Mix quinoa, beans, corn, tomatoes, and seasonings. Stuff peppers with mixture, top with cheese if using. Bake at 375°F for 25-30 minutes.",
-            videoLink:
-              "https://www.youtube.com/results?search_query=stuffed+bell+peppers+quinoa",
-            _id: "6893455a6bd67e4b83ebb37f2",
-          },
-        ],
-        _id: "6893455a6bd67e4b83ebb37e",
-      },
-    },
-    notes:
-      "This vegetarian diet plan focuses on building muscle mass for a 20-year-old female, aiming for a weight gain of 5kg. It prioritizes vegetarian protein sources like lentils, quinoa, Greek yogurt, eggs, and edamame, while excluding nuts and gluten as per the user's specifications. The plan includes 6 meals to support consistent energy levels and muscle protein synthesis. Remember to adjust portion sizes based on individual needs and activity levels. Consult a healthcare professional or registered dietitian for personalized advice.",
-    createdAt: "2025-08-06T12:06:50.080Z",
-    updatedAt: "2025-08-06T12:06:50.080Z",
-  };
 
   // Separate main meals from snacks
   const mainMeals = ["breakfast", "lunch", "dinner"];
@@ -309,7 +109,7 @@ const DietPlanPage = () => {
     }
   };
 
-  const handleDishClick = (dish, mealType) => {
+  const handleDishClick = (dish: Dish, mealType: string) => {
     setSelectedDish({ ...dish, mealType });
   };
 
@@ -318,16 +118,18 @@ const DietPlanPage = () => {
   };
 
   // Function to limit displayed options and handle "show more"
-  const [showAllOptions, setShowAllOptions] = useState({});
+  const [showAllOptions, setShowAllOptions] = useState<{
+    [key: string]: boolean;
+  }>({});
 
-  const toggleShowAllOptions = (mealType) => {
+  const toggleShowAllOptions = (mealType: string) => {
     setShowAllOptions((prev) => ({
       ...prev,
       [mealType]: !prev[mealType],
     }));
   };
 
-  const getDisplayedOptions = (options, mealType) => {
+  const getDisplayedOptions = (options: Dish[], mealType: string) => {
     const maxDisplay = 3;
     if (showAllOptions[mealType] || options.length <= maxDisplay) {
       return options;
@@ -335,9 +137,13 @@ const DietPlanPage = () => {
     return options.slice(0, maxDisplay);
   };
 
-  const MealCard = ({ mealType, mealData, isSnack = false }) => (
+  const MealCard: React.FC<{
+    mealType: string;
+    mealData: { options: Dish[]; _id: string };
+    isSnack?: boolean;
+  }> = ({ mealType, mealData, isSnack = false }) => (
     <div
-      className={`bg-gradient-to-br from-[#1E2235] to-[#2A3042] rounded-2xl border border-[#3A4255] overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 ${isSnack ? "md:col-span-2 lg:col-span-1" : ""}`}
+      className={`bg-gradient-to-br from-[#1E2235] to-[#2A3042] rounded-2xl border border-[#3A4255] overflow不便overflow-hidden shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 ${isSnack ? "md:col-span-2 lg:col-span-1" : ""}`}
     >
       <div className="p-6">
         {/* Meal Header */}
@@ -497,6 +303,7 @@ const DietPlanPage = () => {
   }
 
   if (isLoading) {
+    return <Loading content="Loading Diet Plan...." />;
   } else {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#12151E] to-[#1E2235] p-6">
@@ -568,13 +375,13 @@ const DietPlanPage = () => {
               <div>
                 <h3 className="text-white font-semibold mb-2">Plan Created</h3>
                 <p className="text-[#A0A7B8]">
-                  {new Date(dietPlan.createdAt).toLocaleDateString()}
+                  {new Date(dietPlan.created).toLocaleDateString()}
                 </p>
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-2">Last Updated</h3>
                 <p className="text-[#A0A7B8]">
-                  {new Date(dietPlan.updatedAt).toLocaleDateString()}
+                  {new Date(dietPlan.updated).toLocaleDateString()}
                 </p>
               </div>
             </div>

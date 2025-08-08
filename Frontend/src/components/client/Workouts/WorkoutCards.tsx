@@ -12,7 +12,7 @@ interface Exercise {
   duration?: string
 }
 
-interface WorkoutData {
+export interface WorkoutData {
   title: string
   completed: boolean
   exercises: Exercise[]

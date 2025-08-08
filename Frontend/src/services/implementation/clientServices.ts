@@ -291,7 +291,20 @@ export const ClientService = {
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
-  }
+  },
 
-  // getAvailableTrainers: async()
+  getDietPlan: async()=>{
+    try {
+      console.log('');
+      const response = await api.get(CLIENT_ROUTES.GET_DIET_PLAN);
+      return response.data.data;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch Diet Plan data";
+      console.log("Error fetch diet Plan data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
 };

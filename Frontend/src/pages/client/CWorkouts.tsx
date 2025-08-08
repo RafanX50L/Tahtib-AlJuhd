@@ -47,9 +47,7 @@ const WorkoutPlan = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [weekStatuses, setWeekStatuses] = useState<WeekStatuses | null>(null);
-  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(
-    null
-  );
+  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(null);
 
   // Fetch initial data on component mount
   useEffect(() => {
@@ -84,22 +82,16 @@ const WorkoutPlan = () => {
   const fetchWorkoutsForTab = async () => {
     try {
       setIsLoading(true);
-      const response: WorkoutResponse =
-        await ClientService.getWorkouts(activeTab);
+      const response: WorkoutResponse = await ClientService.getWorkouts(activeTab);
       setWorkouts(response.data.workouts);
-      setMainData(
-        (prev) =>
-          prev
-            ? { ...prev, notes: response.data.notes || prev.notes } // Update notes if prev exists
-            : null // Return null if prev is null, as we can't construct a full MainData
+      setMainData((prev) =>
+        prev
+          ? { ...prev, notes: response.data.notes || prev.notes } // Update notes if prev exists
+          : null // Return null if prev is null, as we can't construct a full MainData
       );
-      setCurrentWeekStatus(
-        weekStatuses ? weekStatuses[`week${activeTab}`] : false
-      );
+      setCurrentWeekStatus(weekStatuses ? weekStatuses[`week${activeTab}`] : false);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch workouts."
-      );
+      setError(err instanceof Error ? err.message : "Failed to fetch workouts.");
     } finally {
       setIsLoading(false);
     }
@@ -148,7 +140,7 @@ const WorkoutPlan = () => {
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
       <Sidebar />
       <main
-        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all ${styles.container}`}
+        className={`lg:ml-[280px] p-8 min-h-screen transition-all duration-300 ${styles.container}`}
       >
         {isLoading ? (
           <div

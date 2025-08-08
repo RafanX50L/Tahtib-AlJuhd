@@ -50,6 +50,7 @@ export const CLIENT_ROUTES = {
   `${CLIENT_ROUTE}/challenges/${challengeId}/days/${day}/complete`,
   UPDATE_CLIENT_PROFILE_PHOTO: `${CLIENT_ROUTE}/update-profile-photo`,
   GET_AVAILABLE_TRAINERS: `${CLIENT_ROUTE}/available-trainers`,
+  GET_DIET_PLAN: `${CLIENT_ROUTE}/diet-plan`,
 };
 
 const TRAINER_ROUTE = "/trainer";
