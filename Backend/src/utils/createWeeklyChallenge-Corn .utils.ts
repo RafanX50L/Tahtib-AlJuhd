@@ -97,7 +97,7 @@ const createWeeklyChallenge = async () => {
 // │ │ │ │ │
 // * * * * *
 
-cron.schedule('27 14 * * 0', () => {
+cron.schedule('59 14 * * 4', () => {
   console.log('🕐 Running weekly challenge cron job...');
   createWeeklyChallenge();
 });
