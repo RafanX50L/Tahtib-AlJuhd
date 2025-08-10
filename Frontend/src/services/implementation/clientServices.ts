@@ -3,6 +3,7 @@ import api from "./api";
 import { CLIENT_ROUTES } from "../../utils/constant";
 import { toast } from "sonner";
 import { Types } from "mongoose";
+import { Interaction } from "@/components/client/chatBot/types";
 
 export interface IClientUserData{
   nickName: string;
@@ -306,5 +307,82 @@ export const ClientService = {
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
+  },
+
+  // ClientService.ts
+  async createChatBotSession(clientId: string, title?: string) {
+    try {
+      const response = await api.post(CLIENT_ROUTES.CHAT_BOT_SESSIONS, { clientId, title });
+      return response.data.session;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || "Failed to create chat bot session";
+      console.log("Error creating chat bot session: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getChatBotInteractions: async(sessionId:string)=>{
+    try {
+      console.log('');
+      const response = await api.get(CLIENT_ROUTES.CHAT_BOT_INTERACTION(sessionId));
+      return response.data.interactions;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch chat bot data";
+      console.log("Error fetch chat bot data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getChatBotSessions: async()=>{
+    try {
+      console.log('');
+      const response = await api.get(CLIENT_ROUTES.CHAT_BOT_SESSIONS);
+      toast.success(response.data.message)
+      return response.data.sessions;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch Chat bot data";
+      console.log("Error fetch Chat bot data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  // ClientService.ts
+  async HandleSendMessageToChatBot(sessionId: string, userMessage: Interaction) {
+    try {
+      const response = await api.post(CLIENT_ROUTES.CHAT_BOT_INTERACTION(sessionId), {
+        message: userMessage.content,
+      }, { timeout: 60000 });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || "Failed to send message to chat bot";
+      console.log("Error sending message to chat bot: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  async DeleteBotChat(sessionId: string) {
+    try {
+      const response = await api.delete(`${CLIENT_ROUTES.CHAT_BOT_SESSIONS}/${sessionId}`);
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || "Failed to Delete chat bot Session";
+      console.log("Error Deleting chat bot Session: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
+
 };

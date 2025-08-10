@@ -6,6 +6,7 @@ import workoutPlanRouter from "./client/client.workoutPlan.routes";
 import weeklyChallengeRouter from "./client/client.weeklyChallenge.route";
 import userFileRouter from "./common/userFile.routes";
 import dietPlanRouter from "./client/clinet.dietPlan.routes";
+import chatBotRouter from "./client/client.chatBot.routes";
 
 const routerRoot = Router();
 
@@ -16,6 +17,6 @@ routerRoot.use(workoutPlanRouter);
 routerRoot.use(weeklyChallengeRouter);
 routerRoot.use(userFileRouter);
 routerRoot.use(dietPlanRouter);
-
+routerRoot.use(chatBotRouter);
 
 export default routerRoot;

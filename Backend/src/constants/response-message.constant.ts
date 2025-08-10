@@ -77,5 +77,9 @@ export const HttpResponse = {
     FAILED_TO_FETCH_AVAILABLE_TRAINERS: "Failed to fetch available trainers",
     FAILED_TO_FETCH_PENDING_TRAINERS: "Failed to fetch pending trainers",
 
-    APPLICATION_SUBMISSION_SUCCESSFULL: "Application Submission Succesfull"
+    APPLICATION_SUBMISSION_SUCCESSFULL: "Application Submission Succesfull",
+
+    // chatbot
+    CREATING_CHAT_BOT_SESSION_SUCCESSFULL: "Chat bot session created succesfully",
+    CHAT_BOT_SESSION_DELETION_SUCCESSFULL: "Chat bot session deleted successfully",
 };

@@ -8,6 +8,9 @@ import MessageInput from './MessageInput';
 import SuggestedQuestions from './SuggestedQuestions';
 import WelcomeScreen from './WelcomeScreen';
 import { ChatSession, Interaction } from './types';
+import { ClientService } from '@/services/implementation/clientServices';
+import { toast } from 'sonner';
+import DeleteSessionModal from './DeleteSessionModal';
 
 const dummySessions: ChatSession[] = [
   {
@@ -17,7 +20,6 @@ const dummySessions: ChatSession[] = [
     createdAt: new Date().toISOString(),
     messageCount: 6,
   },
-  // ... (other dummy sessions remain the same)
 ];
 
 const dummyInteractionsMap: Record<string, Interaction[]> = {
@@ -29,9 +31,7 @@ const dummyInteractionsMap: Record<string, Interaction[]> = {
       createdAt: new Date(Date.now() - 300000).toISOString(),
       isUser: true,
     },
-    // ... (other dummy interactions remain the same)
   ],
-  // ... (other session interactions remain the same)
 };
 
 const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
@@ -43,6 +43,7 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [deletionModal, setDeletionModal] = useState<{ isOpen: boolean; sessionId: string | null }>({ isOpen: false, sessionId: null });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -51,102 +52,121 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
   useEffect(scrollToBottom, [interactions, isTyping]);
 
   useEffect(() => {
-    // TODO: Fetch sessions from backend
-    // const fetchSessions = async () => {
-    //   const response = await axios.get(`/api/clients/${clientId}/sessions`);
-    //   setSessions(response.data);
-    // };
-    // fetchSessions();
-
-    setSessions(dummySessions);
-    handleNewChat(); // Start with a new chat on page load
-  }, [clientId]);
+    const fetchSessions = async () => {
+      try {
+        const response = await ClientService.getChatBotSessions();
+        setSessions(response);
+      } catch (error) {
+        console.error("Failed to fetch sessions:", error);
+        toast.error("Failed to load chat sessions");
+      }
+    };
+    fetchSessions();
+  }, [clientId]); // Only trigger when clientId changes
 
   useEffect(() => {
     if (selectedSession) {
-      // TODO: Fetch interactions for the session
-      // const fetchInteractions = async () => {
-      //   const response = await axios.get(`/api/sessions/${selectedSession}/interactions`);
-      //   setInteractions(response.data);
-      // };
-      // fetchInteractions();
-
-      setInteractions(dummyInteractionsMap[selectedSession] || []);
+      const fetchInteractions = async () => {
+        try {
+          const response = await ClientService.getChatBotInteractions(selectedSession);
+          setInteractions(response);
+        } catch (error) {
+          console.error("Failed to fetch interactions:", error);
+          toast.error("Failed to load interactions");
+        }
+      };
+      fetchInteractions();
+    } else {
+      setInteractions([]);
     }
   }, [selectedSession]);
 
-  const handleNewChat = () => {
-    const newSessionId = `session${Date.now()}`;
-    const newSession: ChatSession = {
-      _id: newSessionId,
-      title: 'New Chat',
-      lastInteraction: 'Start a new conversation...',
-      createdAt: new Date().toISOString(),
-      messageCount: 0,
-    };
-    setSessions(prev => [newSession, ...prev]);
-    setSelectedSession(newSessionId);
-    setInteractions([]);
-    dummyInteractionsMap[newSessionId] = [];
-    setIsSidebarOpen(false);
+  const handleNewChat = async () => {
+    try {
+      const newSession = await ClientService.createChatBotSession(clientId, 'New Chat');
+      setSessions((prev) => [newSession, ...prev]);
+      setSelectedSession(newSession._id);
+      setInteractions([]);
+      setIsSidebarOpen(false);
+    } catch (error) {
+      console.error("Failed to create new chat session:", error);
+      toast.error("Failed to create new chat session");
+    }
   };
 
-  const handleDeleteSession = (sessionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSessions(prev => prev.filter(s => s._id !== sessionId));
-    if (selectedSession === sessionId) {
-      const remainingSessions = sessions.filter(s => s._id !== sessionId);
-      setSelectedSession(remainingSessions[0]?._id || null);
+  const handleDeleteSession = (sessionId: string) => {
+    setDeletionModal({ isOpen: true, sessionId });
+  };
+
+  const confirmDelete = async () => {
+    if (!deletionModal.sessionId) return;
+    try {
+      const response = await ClientService.DeleteBotChat(deletionModal.sessionId);
+      if (response) {
+        // Update frontend state directly
+        setSessions((prev) => prev.filter((s) => s._id !== deletionModal.sessionId));
+        if (selectedSession === deletionModal.sessionId) {
+          const remainingSessions = sessions.filter((s) => s._id !== deletionModal.sessionId);
+          setSelectedSession(remainingSessions[0]?._id || null);
+        }
+        delete dummyInteractionsMap[deletionModal.sessionId];
+        toast.success("Chat session deleted successfully");
+      } else {
+        toast.error("Failed to delete chat session");
+      }
+    } catch (error) {
+      console.error("Failed to delete session:", error);
+      toast.error("Failed to delete chat session");
+    } finally {
+      setDeletionModal({ isOpen: false, sessionId: null });
     }
-    delete dummyInteractionsMap[sessionId];
   };
 
   const handleSendMessage = async () => {
     if (!message.trim() || !selectedSession) return;
 
     const userMessage: Interaction = {
-      _id: `msg${Date.now()}`,
-      question: message,
-      response: '',
-      createdAt: new Date().toISOString(),
+      sessionId: selectedSession,
+      content: message,
       isUser: true,
-    };
+      createdAt: new Date().toISOString(),
+    }as Interaction;
 
-    // TODO: Post message to backend
-    // await axios.post(`/api/sessions/${selectedSession}/interactions`, userMessage);
+    try {
+      setInteractions((prev) => [...prev, userMessage]);
+      setSessions((prev) =>
+        prev.map((session) =>
+          session._id === selectedSession
+            ? { ...session, lastInteraction: message, messageCount: session.messageCount + 1 }
+            : session
+        )
+      );
 
-    setInteractions(prev => [...prev, userMessage]);
-    dummyInteractionsMap[selectedSession] = [...(dummyInteractionsMap[selectedSession] || []), userMessage];
-    
-    setSessions(prev => prev.map(session => 
-      session._id === selectedSession 
-        ? { ...session, lastInteraction: message, messageCount: session.messageCount + 1 }
-        : session
-    ));
+      setMessage('');
+      setIsTyping(true);
 
-    const currentMessage = message;
-    setMessage('');
-    setIsTyping(true);
-
-    setTimeout(() => {
+      const response = await ClientService.HandleSendMessageToChatBot(selectedSession, userMessage);
       const botResponse: Interaction = {
-        _id: `bot${Date.now()}`,
-        question: '',
-        response: "This is a dummy response.", // Replace with getBotResponse in real app
-        createdAt: new Date().toISOString(),
+        sessionId: selectedSession,
+        content: response[1].content,
         isUser: false,
-      };
+        createdAt: new Date().toISOString(),
+      } as Interaction;
 
-      setInteractions(prev => [...prev, botResponse]);
-      dummyInteractionsMap[selectedSession] = [...(dummyInteractionsMap[selectedSession] || []), botResponse];
+      setInteractions((prev) => [...prev, botResponse]);
+      setSessions((prev) =>
+        prev.map((session) =>
+          session._id === selectedSession
+            ? { ...session, messageCount: session.messageCount + 1 }
+            : session
+        )
+      );
       setIsTyping(false);
-
-      setSessions(prev => prev.map(session => 
-        session._id === selectedSession 
-          ? { ...session, messageCount: session.messageCount + 1 }
-          : session
-      ));
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message");
+      setIsTyping(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -156,7 +176,7 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
     }
   };
 
-  const selectedSessionData = sessions.find(s => s._id === selectedSession);
+  const selectedSessionData = sessions.find((s) => s._id === selectedSession);
 
   return (
     <div className="bg-slate-950 text-white h-screen flex overflow-hidden">
@@ -174,8 +194,11 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
 
       {isSidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setIsSidebarOpen(false)}></div>
-          <div className="absolute left-0 top-0 bottom-0 w-80 bg-slate-900">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+          <div className="absolute left-0 top-0 bottom-0 w-3/4 sm:w-2/3 max-w-[85vw] bg-slate-900">
             <ChatSidebar
               sessions={sessions}
               selectedSession={selectedSession}
@@ -192,15 +215,23 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
         </div>
       )}
 
-      <div className="flex-1 flex flex-col h-screen">
+      {deletionModal.isOpen && (
+        <DeleteSessionModal
+          isOpen={deletionModal.isOpen}
+          onClose={() => setDeletionModal({ isOpen: false, sessionId: null })}
+          onConfirm={confirmDelete}
+          x={window.innerWidth / 2}
+          y={window.innerHeight / 3}
+        />
+      )}
+
+      <div className="flex-1 flex flex-col h-screen w-full">
         {selectedSession ? (
           <>
             <ChatHeader session={selectedSessionData} onNewChat={handleNewChat} setIsSidebarOpen={setIsSidebarOpen} />
             <div className="flex-1 overflow-hidden">
-              <ScrollArea className="h-full p-6 bg-slate-950">
-                {/* TODO: Implement infinite scroll */}
-                {/* onScroll={(e) => if (e.target.scrollTop < 100) loadMoreMessages()} */}
-                <div className="space-y-6 max-w-4xl mx-auto pb-6">
+              <ScrollArea className="h-full p-4 sm:p-6 bg-slate-950">
+                <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto pb-6">
                   {interactions.map((interaction) => (
                     <Message key={interaction._id} interaction={interaction} />
                   ))}

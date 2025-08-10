@@ -1,7 +1,8 @@
 export interface Interaction {
-  _id: string;
-  question: string;
-  response: string;
+  _id?: string;
+  question?: string;
+  response?: string;
+  content?: string;
   createdAt: string;
   isUser: boolean;
   isTyping?: boolean;

@@ -12,7 +12,7 @@ const CChatBotPage = () => {
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
       <Sidebar />
       <main
-        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all ${styles.container}`}
+        className={`pt-[70px] lg:pt-0 px py-8 lg:px-8 lg:ml-[250px] transition-all ${styles.container}`}
       >
         <ChatHistory clientId={user?._id as string} />
         <CFooter />

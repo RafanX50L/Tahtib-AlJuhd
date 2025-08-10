@@ -1765,3 +1765,308 @@
     at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
     at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
     at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-08 19:29:53 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-08 19:51:59 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-08 19:58:11 [[31merror[39m]: CastError: Cast to ObjectId failed for value "session1754663291621" (type string) at path "sessionId" for model "ChatBotInteraction"
+    at SchemaObjectId.cast (C:\Users\USER\node_modules\mongoose\lib\schema\objectId.js:250:11)
+    at SchemaObjectId.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaObjectId.SchemaType.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1673:17)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:390:32)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-08 20:00:54 [[31merror[39m]: CastError: Cast to ObjectId failed for value "session1754663454829" (type string) at path "sessionId" for model "ChatBotInteraction"
+    at SchemaObjectId.cast (C:\Users\USER\node_modules\mongoose\lib\schema\objectId.js:250:11)
+    at SchemaObjectId.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaObjectId.SchemaType.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1673:17)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:390:32)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 10:10:56 [[31merror[39m]: CastError: Cast to ObjectId failed for value "session1754714456466" (type string) at path "sessionId" for model "ChatBotInteraction"
+    at SchemaObjectId.cast (C:\Users\USER\node_modules\mongoose\lib\schema\objectId.js:250:11)
+    at SchemaObjectId.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaObjectId.SchemaType.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1673:17)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:390:32)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 10:32:43 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-09 10:32:45 [[31merror[39m]: CastError: Cast to ObjectId failed for value "session1754715765488" (type string) at path "sessionId" for model "ChatBotInteraction"
+    at SchemaObjectId.cast (C:\Users\USER\node_modules\mongoose\lib\schema\objectId.js:250:11)
+    at SchemaObjectId.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaObjectId.SchemaType.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1673:17)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:390:32)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 10:33:41 [[31merror[39m]: ValidationError: ChatBotSession validation failed: _id: Cast to ObjectId failed for value "cbf48aee-f530-4d7e-836a-e20cdf167c25" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at C:\Users\USER\node_modules\mongoose\lib\model.js:2691:20
+    at Array.map (<anonymous>)
+    at Function.create (C:\Users\USER\node_modules\mongoose\lib\model.js:2679:34)
+    at ChatBotSessionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\base.repository.ts:14:29)
+2025-08-09 10:34:27 [[31merror[39m]: ValidationError: ChatBotSession validation failed: _id: Cast to ObjectId failed for value "4300141e-3b16-472e-8590-73116c2d8e81" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at C:\Users\USER\node_modules\mongoose\lib\model.js:2691:20
+    at Array.map (<anonymous>)
+    at Function.create (C:\Users\USER\node_modules\mongoose\lib\model.js:2679:34)
+    at ChatBotSessionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\base.repository.ts:14:29)
+2025-08-09 10:35:45 [[31merror[39m]: ValidationError: ChatBotSession validation failed: _id: Cast to ObjectId failed for value "57c188e4-65d0-4206-9912-3ffefdd31ae1" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at C:\Users\USER\node_modules\mongoose\lib\model.js:2691:20
+    at Array.map (<anonymous>)
+    at Function.create (C:\Users\USER\node_modules\mongoose\lib\model.js:2679:34)
+    at ChatBotSessionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\base.repository.ts:14:29)
+2025-08-09 10:41:47 [[31merror[39m]: ValidationError: ChatBotInteraction validation failed: _id: Cast to ObjectId failed for value "9ecda721-2a4f-4a59-b305-3311ea0621bf" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at ChatBotInteractionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:16:28)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:8:71
+    at new Promise (<anonymous>)
+2025-08-09 10:48:31 [[31merror[39m]: ValidationError: ChatBotInteraction validation failed: _id: Cast to ObjectId failed for value "f5c1b785-9c4b-4a6f-9be5-0eff81fac110" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at ChatBotInteractionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:16:28)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:8:71
+    at new Promise (<anonymous>)
+2025-08-09 10:49:58 [[31merror[39m]: ValidationError: ChatBotInteraction validation failed: _id: Cast to ObjectId failed for value "152dfabb-eae3-4605-94e8-f1202a6f2659" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at ChatBotInteractionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:16:28)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:8:71
+    at new Promise (<anonymous>)
+2025-08-09 11:26:24 [[31merror[39m]: ValidationError: ChatBotInteraction validation failed: _id: Cast to ObjectId failed for value "acd2010d-6ac0-4d83-97d8-30b32e08e71f" (type string) at path "_id" because of "BSONError"
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1485:12)
+    at model.$set (C:\Users\USER\node_modules\mongoose\lib\document.js:1137:16)
+    at model.Document (C:\Users\USER\node_modules\mongoose\lib\document.js:178:12)
+    at model.Model (C:\Users\USER\node_modules\mongoose\lib\model.js:129:12)
+    at new model (C:\Users\USER\node_modules\mongoose\lib\model.js:4656:15)
+    at ChatBotInteractionRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:16:28)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\ChatBotInteraction.repository.ts:8:71
+    at new Promise (<anonymous>)
+2025-08-09 13:25:28 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 13:31:15 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 13:36:02 [[31merror[39m]: ValidationError: ChatBotInteraction validation failed: content: Path `content` is required.
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at C:\Users\USER\node_modules\mongoose\lib\document.js:3095:17
+    at C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1407:9
+    at processTicksAndRejections (node:internal/process/task_queues:85:11)
+2025-08-09 13:38:48 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 13:39:07 [[31merror[39m]: ValidationError: ChatBotInteraction validation failed: content: Path `content` is required.
+    at model.Document.invalidate (C:\Users\USER\node_modules\mongoose\lib\document.js:3334:32)
+    at C:\Users\USER\node_modules\mongoose\lib\document.js:3095:17
+    at C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1407:9
+    at processTicksAndRejections (node:internal/process/task_queues:85:11)
+2025-08-09 14:06:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-09 14:06:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-09 14:51:47 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-09 14:51:47 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-09 16:43:21 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-09 16:43:25 [[31merror[39m]: TypeError: history.map is not a function
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:16:53
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:4:12)
+    at PromtMaker (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:15:45)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:6:25
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:8:71
+    at new Promise (<anonymous>)
+2025-08-09 16:44:28 [[31merror[39m]: TypeError: history.map is not a function
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:16:53
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:4:12)
+    at PromtMaker (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:15:45)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:6:25
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\ChatBot.gemini.ts:8:71
+    at new Promise (<anonymous>)
+2025-08-09 16:44:48 [[31merror[39m]: Error: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.
+    at GoogleAuth.getApplicationDefaultAsync (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:287:15)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at GoogleAuth._GoogleAuth_determineClient (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:834:32)
+    at GoogleAuth.getClient (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:698:20)
+    at GoogleAuth.getRequestHeaders (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:730:24)
+    at NodeAuth.addGoogleAuthHeaders (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:16860:29)
+    at ApiClient.getHeadersInternal (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13299:9)
+    at ApiClient.includeExtraHttpOptionsToRequestInit (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13174:31)
+    at ApiClient.request (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13113:23)
+    at Models.generateContent (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:14448:24)
+2025-08-09 16:48:58 [[31merror[39m]: Error: Could not load the default credentials. Browse to https://cloud.google.com/docs/authentication/getting-started for more information.
+    at GoogleAuth.getApplicationDefaultAsync (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:287:15)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at GoogleAuth._GoogleAuth_determineClient (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:834:32)
+    at GoogleAuth.getClient (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:698:20)
+    at GoogleAuth.getRequestHeaders (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\google-auth-library\build\src\auth\googleauth.js:730:24)
+    at NodeAuth.addGoogleAuthHeaders (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:16860:29)
+    at ApiClient.getHeadersInternal (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13299:9)
+    at ApiClient.includeExtraHttpOptionsToRequestInit (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13174:31)
+    at ApiClient.request (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13113:23)
+    at Models.generateContent (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:14448:24)
+2025-08-09 17:54:29 [[31merror[39m]: ApiError: {"error":{"code":400,"message":"Please use a valid role: user, model.","status":"INVALID_ARGUMENT"}}
+    at throwErrorIfNotOK (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13404:30)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13180:13
+    at Models.generateContent (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:14448:24)
+2025-08-09 17:55:31 [[31merror[39m]: ApiError: {"error":{"code":400,"message":"Please use a valid role: user, model.","status":"INVALID_ARGUMENT"}}
+    at throwErrorIfNotOK (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13404:30)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:13180:13
+    at Models.generateContent (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\node_modules\@google\genai\dist\node\index.cjs:14448:24)
+2025-08-09 18:08:11 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 18:11:14 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:108:26
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-09 19:27:35 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:45:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:20:22
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9

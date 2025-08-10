@@ -51,6 +51,8 @@ export const CLIENT_ROUTES = {
   UPDATE_CLIENT_PROFILE_PHOTO: `${CLIENT_ROUTE}/update-profile-photo`,
   GET_AVAILABLE_TRAINERS: `${CLIENT_ROUTE}/available-trainers`,
   GET_DIET_PLAN: `${CLIENT_ROUTE}/diet-plan`,
+  CHAT_BOT_INTERACTION:(sessionId: string)=> `${CLIENT_ROUTE}/chatBot/sessions/${sessionId}/interactions`,
+  CHAT_BOT_SESSIONS:`${CLIENT_ROUTE}/chatBot/sessions`,
 };
 
 const TRAINER_ROUTE = "/trainer";
