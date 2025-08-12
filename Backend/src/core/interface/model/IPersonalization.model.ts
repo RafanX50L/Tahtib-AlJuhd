@@ -35,7 +35,10 @@ export interface IClientPersonalization {
   dietPlanId?: Types.ObjectId;
   progressLogId: Types.ObjectId | null;
   sessionsId: Types.ObjectId[] | null;
-  chatsId: Types.ObjectId[] | null;
+  chatsId?: { trainerId: Types.ObjectId; chatId: Types.ObjectId }[]; // Non-nullable, defaults to empty array
+  currentTrainerId?: Types.ObjectId | null; // Optional, nullable to match schema
+  previousTrainers: { trainerId: Types.ObjectId; startDate: Date; endDate: Date }[];
+  contracts?: Types.ObjectId[];
 }
 
 export interface ITrainerPersonalization {
@@ -81,6 +84,8 @@ export interface ITrainerPersonalization {
   ratings: { clientId: Types.ObjectId; rating: number; comment?: string }[];
   sessions: Types.ObjectId[];
   chats: Types.ObjectId[];
+  plans?: Types.ObjectId[]; // Array of Plan IDs (new)
+  contracts?: Types.ObjectId[];
 }
 
 export interface IAdminPersonalization {

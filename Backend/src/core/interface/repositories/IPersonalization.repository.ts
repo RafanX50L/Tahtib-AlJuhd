@@ -21,5 +21,8 @@ export interface IPersonalizationRepository
   updateProfilePictureId(clientId: string, signedUrl: string);
   updateClientProfileData(userId:string,formdata:ClientProfileData):Promise<IPersonalization>;
   updateClientWorkoutCompletionCounter(userId:string):Promise<IPersonalization>;
+  findByUserId(userId: string): Promise<IPersonalization | null>;
+  updateTrainerData(trainerId: string, updates: Partial<ITrainerPersonalization>): Promise<IPersonalization>;
+  updateClientData(clientId: string, updates: Partial<IClientPersonalization>): Promise<IPersonalization>
   // getAllClientFilter(page:number,limit:number,statusFilter:string,searchTerm:string):Promise<{data:IPersonalization,totalCount:number}>;
 }

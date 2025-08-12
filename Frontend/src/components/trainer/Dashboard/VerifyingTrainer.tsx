@@ -229,37 +229,37 @@ const VerifyingTrainer = () => {
                   <div>
                     <p>Communication Skills:</p>
                     <p className="text-green-400">
-                      {interviewDetails.result.communicationSkills}/10
+                      {interviewDetails.result.communicationSkills}/5
                     </p>
                   </div>
                   <div>
                     <p>Technical Knowledge:</p>
                     <p className="text-green-400">
-                      {interviewDetails.result.technicalKnowledge}/10
+                      {interviewDetails.result.technicalKnowledge}/5
                     </p>
                   </div>
                   <div>
                     <p>Coaching Style:</p>
                     <p className="text-green-400">
-                      {interviewDetails.result.coachingStyle}/10
+                      {interviewDetails.result.coachingStyle}/5
                     </p>
                   </div>
                   <div>
                     <p>Confidence & Presence:</p>
                     <p className="text-green-400">
-                      {interviewDetails.result.confidencePresence}/10
+                      {interviewDetails.result.confidencePresence}/5
                     </p>
                   </div>
                   <div>
                     <p>Brand Alignment:</p>
                     <p className="text-green-400">
-                      {interviewDetails.result.brandAlignment}/10
+                      {interviewDetails.result.brandAlignment}/5
                     </p>
                   </div>
                   <div>
                     <p>Equipment Quality:</p>
                     <p className="text-green-400">
-                      {interviewDetails.result.equipmentQuality}/10
+                      {interviewDetails.result.equipmentQuality}/5
                     </p>
                   </div>
                 </div>

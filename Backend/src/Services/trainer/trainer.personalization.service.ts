@@ -187,17 +187,20 @@ export class TrainerPersonalizationService
     console.log("returnig data", basicInfo, interview);
     return {
       basicInfo,
-      interviewDetails: {
-        adminId: interview.adminId,
-        trainerId: interview.trainerId,
-        startTime: interview.startTime,
-        endTime: interview.endTime,
-        date: interview.date,
-        roomId: interview.roomId,
-        completed: interview.completed,
-        result: interview.result ||null,
-      },
+      interviewDetails: interview
+        ? {
+            adminId: interview.adminId,
+            trainerId: interview.trainerId,
+            startTime: interview.startTime,
+            endTime: interview.endTime,
+            date: interview.date,
+            roomId: interview.roomId,
+            completed: interview.completed,
+            result: interview.result || null,
+          }
+        : null,
     };
+
   }
 
   async getTrainerProfile(userId: string): Promise<TrainerProfileDTO> {

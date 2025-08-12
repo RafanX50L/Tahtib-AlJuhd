@@ -11,4 +11,5 @@ export interface ITrainerPersonalizationRepository extends IBaseRepository<IPers
     approveTrainer(trainerId: string, salary: number):Promise<IPersonalization>;
     getTrainerProfileData(id: string);
     updateProfilePictureId(clientId: string, id: Types.ObjectId):Promise<IPersonalization>;
+    getAvailableTrainer(currentTrainerId:string,page: number, limit: number, search: string, specialty: string);
 }

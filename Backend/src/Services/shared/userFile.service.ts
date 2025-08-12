@@ -3,7 +3,7 @@ import { HttpStatus } from "@/constants/status.constant";
 import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
-import {  IUserFileService } from "@/core/interface/services/common/IUserFile.Service";
+import {  IUserFileService } from "@/core/interface/services/shared/IUserFile.Service";
 import { createHttpError } from "@/utils";
 import { uploadToS3 } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";

@@ -2,6 +2,8 @@ import api from "./api";
 import { TRAINER_ROUTES } from "../../utils/constant";
 import type { AxiosError } from "axios";
 import { toast } from "sonner";
+import { IPlan } from "@/components/trainer/SetPlan/plan";
+import { Slot } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
 
 export const TrainerService = {
   getPendingApplicationDetails: async () => {
@@ -102,5 +104,66 @@ export const TrainerService = {
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
+  },
+
+  getPlans: async (trainerId: string) => {
+    try {
+      const response = await api.get(`${TRAINER_ROUTES.PLAN}?trainerId=${trainerId}`);
+      console.log("Fetched plans response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch plans";
+      console.log("Error fetching plans: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  AddnewPlan: async (formData:Partial<IPlan>,trainerId:string) => {
+    try {
+      const response = await api.post(TRAINER_ROUTES.PLAN, { ...formData, trainerId});
+      console.log("Added new plan response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to add new plan";
+      console.log("Error adding new plan: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getSlots: async()=>{
+    try {
+      const response = await api.get(TRAINER_ROUTES.AVAILABILITY);
+      console.log("Fetched slots response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch slots";
+      console.log("Error fetching slots: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  addSlot: async (formData: Partial<Slot[]>, trainerId: string) => {
+    try {
+      const response = await api.post(TRAINER_ROUTES.AVAILABILITY, { ...formData, trainerId });
+      console.log("Added new slot response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to add new slot";
+      console.log("Error adding new slot: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
+
 };

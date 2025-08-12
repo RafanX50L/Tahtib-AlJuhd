@@ -144,3 +144,12 @@ export default function verifyToken(userLevel: "client" | "admin" | "trainer") {
     }
   };
 }
+
+export const restrictTo = (...roles: string[]) => {
+  return (req: AddedRequest, res: Response, next: NextFunction) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    next();
+  };
+};

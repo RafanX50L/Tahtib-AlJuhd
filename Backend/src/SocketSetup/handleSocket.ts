@@ -5,7 +5,6 @@ export default class HandleSocket {
   constructor(private io: Server) {}
 
   public registerEvent(socket: Socket) {
-    console.log('enterd to soket handling');
     socket.on("sendNotification", (data) => {
       this.io.emit("receiveNotification", data);
     });
@@ -15,7 +14,6 @@ export default class HandleSocket {
     socket.on(
       chatEnum.joinRoom,
       async (room: { roomId: string; username: string; email: string }) => {
-          console.log('userconnected',room.roomId,room.username);
         try {
         //   const res = await this.socketusecase.validatoinUser(
         //     room.roomId,
@@ -36,7 +34,6 @@ export default class HandleSocket {
     );
 
     socket.on(chatEnum.joinmeet, async (room, email, username) => {
-        console.log('entered to joinmeet');
       try {
         // const ans = await this.socketusecase.valiateMeeting(room, email);
 
@@ -58,9 +55,6 @@ export default class HandleSocket {
     room: { roomId: string; username: string; email: string }
   ): void {
     try {
-      console.log(
-        `User ${room.username} is trying to join room: ${room.roomId} ${socket.id}`
-      );
       socket.on("leave-room", async (data) => {
         socket.leave(data.roomId);
 
@@ -101,7 +95,6 @@ export default class HandleSocket {
       //   );
 
       socket.on("disconnect", () => {
-        console.log('socket disconected',room.roomId);
         if (room && room.roomId) {
           socket.to(room.roomId).emit("u-disconnect", room.username);
         }
@@ -117,11 +110,6 @@ export default class HandleSocket {
     room: { roomId: string; username: string; email: string }
   ) {
     socket.on(chatEnum.videoState, (data) => {
-      console.log(
-        `Video state change from ${room.username}: ${
-          data.enabled ? "ON" : "OFF"
-        }`
-      );
       socket.broadcast.to(room.roomId).emit(chatEnum.videoState, {
         email: room.email,
         username: room.username,
@@ -130,11 +118,6 @@ export default class HandleSocket {
     });
 
     socket.on(chatEnum.audioState, (data) => {
-      console.log(
-        `Audio state change from ${room.username}: ${
-          data.enabled ? "ON" : "OFF"
-        }`
-      );
       socket.broadcast.to(room.roomId).emit(chatEnum.audioState, {
         email: room.email,
         username: room.username,
@@ -147,9 +130,7 @@ export default class HandleSocket {
     });
 
     socket.on(chatEnum.signal, (data) => {
-        console.log('datacoming',data);
       if (data.to !== socket.id) {
-        console.log('emitting signal to ',data.to,'data',data);
         this.io.to(data.to).emit(chatEnum.signal, {
           ...data,
           from: socket.id,
@@ -185,3 +166,28 @@ export default class HandleSocket {
   //     }
   //   }
 }
+
+
+// ```typescript
+// import { Server, Socket } from 'socket.io';
+// import { ChatService } from '../services/ChatService';
+// import { ChatRepository } from '../repositories/ChatRepository';
+
+// const chatRepo = new ChatRepository();
+// const chatService = new ChatService(chatRepo);
+
+// export const setupChatSocket = (io: Server) => {
+//   io.on('connection', (socket: Socket) => {
+//     socket.on('joinChat', async (chatId: string) => {
+//       socket.join(chatId);
+//       const chat = await chatService.getChatById(chatId);
+//       if (chat) socket.emit('chatHistory', chat.messages);
+//     });
+
+//     socket.on('sendMessage', async ({ chatId, senderId, content }) => {
+//       await chatService.addMessage(chatId, senderId, content);
+//       io.to(chatId).emit('newMessage', { senderId, content, timestamp: new Date() });
+//     });
+//   });
+// };
+// ```

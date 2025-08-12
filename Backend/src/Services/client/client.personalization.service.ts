@@ -83,7 +83,9 @@ export class ClientPersonalizationService
       progressLogId: null,
       sessionsId: null,
       chatsId: null,
+      previousTrainers:[]
     };
+    
 
     // const personalization =
     //   await this._personalizationRepository.createPersonalization(

@@ -1,4 +1,4 @@
-import { IUserFileService } from "@/core/interface/services/common/IUserFile.Service";
+import { IUserFileService } from "@/core/interface/services/shared/IUserFile.Service";
 import { IUserFileController } from "@/core/interface/controllers/common/IUserFile.controller";
 import { AddedRequest } from "@/middleware/verify.token.middleware";
 import { createHttpError } from "@/utils";

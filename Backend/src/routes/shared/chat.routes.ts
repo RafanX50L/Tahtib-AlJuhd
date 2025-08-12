@@ -1,0 +1,24 @@
+import { ChatController } from '@/Controller/shared/Chat.controller';
+import { AddedRequest } from '@/middleware/verify.token.middleware';
+import { ChatRepository } from '@/Repository/Chat.repository';
+import { ChatService } from '@/Services/shared/Chat.service';
+import express, { NextFunction, Response } from 'express';
+import { Types } from 'mongoose';
+
+const router = express.Router();
+
+const chatRepo = new ChatRepository();
+const chatService = new ChatService(chatRepo);
+const chatController = new ChatController(chatService);
+
+// Middleware to ensure user is a participant in the chat
+const restrictToChatParticipant = async (req: AddedRequest, res: Response, next: NextFunction) => {
+  const chat = await chatRepo.findById(new Types.ObjectId(req.params.chatId));
+  if (!chat || !req.user || !chat.participants.some(p => p.toString() === req.user!.id.toString())) {
+    return res.status(403).json({ error: 'Access denied to chat' });
+  }
+  next();
+};
+
+router.get('/:chatId', restrictToChatParticipant, chatController.getChat.bind(chatController));
+export default router;

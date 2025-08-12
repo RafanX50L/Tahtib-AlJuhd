@@ -49,7 +49,7 @@ export const CLIENT_ROUTES = {
   MARK_CHALLENGE_DAY_COMPLETE: (challengeId: string, day: number) =>
   `${CLIENT_ROUTE}/challenges/${challengeId}/days/${day}/complete`,
   UPDATE_CLIENT_PROFILE_PHOTO: `${CLIENT_ROUTE}/update-profile-photo`,
-  GET_AVAILABLE_TRAINERS: `${CLIENT_ROUTE}/available-trainers`,
+  GET_AVAILABLE_TRAINERS: `${CLIENT_ROUTE}/trainers`,
   GET_DIET_PLAN: `${CLIENT_ROUTE}/diet-plan`,
   CHAT_BOT_INTERACTION:(sessionId: string)=> `${CLIENT_ROUTE}/chatBot/sessions/${sessionId}/interactions`,
   CHAT_BOT_SESSIONS:`${CLIENT_ROUTE}/chatBot/sessions`,
@@ -62,4 +62,6 @@ export const TRAINER_ROUTES = {
   GET_PROFILE_DATA: `${TRAINER_ROUTE}/profile-data`,
   UPDATE_TRAINER_PROFILE_PHOTO: `${TRAINER_ROUTE}/update-profile-photo`,
   UPDATE_TRAINER_PROFILE: `${TRAINER_ROUTE}/update-profile`,
+  PLAN: `${TRAINER_ROUTE}/plan`,
+  AVAILABILITY: `${TRAINER_ROUTE}/availability`
 };

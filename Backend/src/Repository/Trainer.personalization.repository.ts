@@ -327,4 +327,91 @@ export class TrainerPersonalizationRepository
 
     return personalData;
   }
-}
+
+  async getAvailableTrainer(
+    currentTrainerId: string,
+    page: number,
+    limit: number,
+    search: string,
+    specialty: string
+  ) {
+    const skip = (page - 1) * limit;
+
+    const matchStage: Record<string, any> = {
+      role: "trainer",
+      "data.status": "approved"
+    };
+
+    if (currentTrainerId) {
+      matchStage.userId = { $ne: new Types.ObjectId(currentTrainerId) };
+    }
+
+    const pipeline: any[] = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $lookup: {
+          from: "userfiles",
+          localField: "data.basicInfo.profilePictureId",
+          foreignField: "_id",
+          as: "profilePicture"
+        }
+      },
+      { $unwind: "$user" }
+    ];
+
+
+    // Search filter on user.name (case-insensitive)
+    if (search) {
+      pipeline.push({
+        $match: {
+          "user.name": { $regex: search, $options: "i" }
+        }
+      });
+    }
+
+    // Specialty filter on data.professionalSummary.specializations
+    if (specialty) {
+      pipeline.push({
+        $match: {
+          "data.professionalSummary.specializations": { $in: [specialty] }
+        }
+      });
+    }
+
+    // // Sort and paginate
+    pipeline.push(
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    );
+
+    // Total count for pagination
+    const countPipeline = [...pipeline];
+    countPipeline.splice(countPipeline.findIndex(stage => "$skip" in stage), countPipeline.length); // remove skip/limit
+    countPipeline.splice(countPipeline.findIndex(stage => "$sort" in stage), 1); // remove sort
+    countPipeline.push({ $count: "total" });
+
+    const [trainers, totalResult] = await Promise.all([
+      this.model.aggregate(pipeline),
+      this.model.aggregate(countPipeline)
+    ]);
+    console.log(trainers, totalResult);
+
+    const total = totalResult[0]?.total || 0;
+    return {
+      trainers,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      total
+    };
+  }
+
+};

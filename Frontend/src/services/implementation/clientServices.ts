@@ -277,13 +277,12 @@ export const ClientService = {
     specialty: string
   ): Promise<any[]> => {
     try {
-      const response = await api.get<{ trainerData: {currentPage:number,total:number,totalPages:number,trainers:any[]} }>(
-        `${CLIENT_ROUTES.GET_AVAILABLE_TRAINERS}/?page=${pageNum}&limit=${trainersPerPage}&search=${encodeURIComponent(
-          search
-        )}&specialty=${encodeURIComponent(specialty)}`
+      const response = await api.get<{ trainerData: { currentPage: number; total: number; totalPages: number; trainers: any[] } }>(
+        `${CLIENT_ROUTES.GET_AVAILABLE_TRAINERS}?specialty=${encodeURIComponent(specialty)}&page=${pageNum}&limit=${trainersPerPage}&search=${encodeURIComponent(search)}`
       );
-      console.log("Available trainers response: ", response.data);
-      return response.data.trainerData;
+
+      console.log("Available trainers response: ", response);
+      return response.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -310,7 +309,7 @@ export const ClientService = {
   },
 
   // ClientService.ts
-  async createChatBotSession(clientId: string, title?: string) {
+  createChatBotSession: async (clientId: string, title?: string) => {
     try {
       const response = await api.post(CLIENT_ROUTES.CHAT_BOT_SESSIONS, { clientId, title });
       return response.data.session;
@@ -355,7 +354,7 @@ export const ClientService = {
   },
 
   // ClientService.ts
-  async HandleSendMessageToChatBot(sessionId: string, userMessage: Interaction) {
+  HandleSendMessageToChatBot: async(sessionId: string, userMessage: Interaction) => {
     try {
       const response = await api.post(CLIENT_ROUTES.CHAT_BOT_INTERACTION(sessionId), {
         message: userMessage.content,
@@ -371,7 +370,7 @@ export const ClientService = {
     }
   },
 
-  async DeleteBotChat(sessionId: string) {
+  DeleteBotChat: async(sessionId: string) => {
     try {
       const response = await api.delete(`${CLIENT_ROUTES.CHAT_BOT_SESSIONS}/${sessionId}`);
       console.log(response);
