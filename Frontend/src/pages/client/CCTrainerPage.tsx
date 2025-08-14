@@ -10,23 +10,18 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import styles from '../../components/client/Personalization/styles/BasicDetails.module.css'
 import CFooter from '@/components/client/Footer';
+import CurrentTrainer from '@/components/client/Trainer/CCurrentTrainers';
 
-const CDashboard = () => {
+const CCurrentTrainerPage = () => {
  
   return (
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
       <Sidebar />
       <main className={`lg:ml-[280px]  pt-[70px] lg:pt-0 p-4 lg:p-8 transition-all p-32 ${styles.container}`}>
-        <Header />
-        <StatsGrid />
-        <WeeklyChallenge />
-        <WorkoutLevels />
-        <Leaderboard />
-        <ChatbotButton />
-        <CFooter/>
+        <CurrentTrainer/>
       </main>
     </div>
   );
 };
 
-export default CDashboard;
+export default CCurrentTrainerPage;

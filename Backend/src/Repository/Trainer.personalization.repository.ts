@@ -403,7 +403,6 @@ export class TrainerPersonalizationRepository
       this.model.aggregate(pipeline),
       this.model.aggregate(countPipeline)
     ]);
-    console.log(trainers, totalResult);
 
     const total = totalResult[0]?.total || 0;
     return {

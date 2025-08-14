@@ -9,6 +9,9 @@ import dietPlanRouter from "./client/clinet.dietPlan.routes";
 import chatBotRouter from "./client/client.chatBot.routes";
 import clientTraienrRoot from "./client/client.trainer.routes";
 import planRouter from "./domain/plan.routes";
+import bookingRouter from "./domain/booking.routes";
+import availabilityRouter from "./domain/availability.routes";
+import chatRouter from "./shared/chat.routes";
 
 const routerRoot = Router();
 
@@ -22,5 +25,8 @@ routerRoot.use(dietPlanRouter);
 routerRoot.use(chatBotRouter);
 routerRoot.use(clientTraienrRoot);
 routerRoot.use(planRouter);
+routerRoot.use(bookingRouter);  
+routerRoot.use(availabilityRouter);
+routerRoot.use('/current-trainer',chatRouter);
 
 export default routerRoot;

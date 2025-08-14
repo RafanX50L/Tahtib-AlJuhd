@@ -12,6 +12,7 @@ export class AvailabilityController implements IAvailabilityController {
   async setAvailability  (req: Request, res: Response, next: NextFunction)  {
     try {
       const { trainerId, slots } = req.body;
+      console.log(req.body);
       await this._availabilityService.setAvailability(trainerId, slots);
       res.status(HttpStatus.OK).json({ message: 'Availability set and slots generated' });
     } catch (err) {

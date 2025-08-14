@@ -31,21 +31,7 @@ export class ChatBotService implements IChatBotService {
     } as IChatBotSession;
     return this._chatBotSessionRepo.create(session);
   }
-  
-  //  async createSession(clientId: string, title?: string): Promise<IChatBotSession> {
-  //   const sessionId = uuidv4();
-  //   const createdAt = new Date();
-  //   // Use a plain object type for session creation
-  //   const session = {
-  //     _id: sessionId,
-  //     clientId,
-  //     title,
-  //     lastInteraction: 'Start a new conversation...',
-  //     createdAt,
-  //     messageCount: 0,
-  //   };
-  //   return this._chatBotSessionRepo.create(session as any);
-  // }
+
 
   async deleteSession(sessionId: string): Promise<void> {
     await this._chatBotSessionRepo.delete(sessionId);

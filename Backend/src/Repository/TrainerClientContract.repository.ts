@@ -18,6 +18,38 @@ export class TrainerClientContractRepository extends BaseRepository<ITrainerClie
   //   return await TrainerClientContractModel.findById(id);
   // }
 
+  async findActiveContractByClientId(clientId: string): Promise<ITrainerClientContract | null> {
+    return await TrainerClientContractModel.findOne({
+      clientId,
+      sessionsRemaining: { $gt: 0 },
+      endDate: { $gte: new Date() },
+    })
+      .populate('planId')
+      .exec();
+  }
+  async findActiveContractsByTrainerId(trainerId: string): Promise<ITrainerClientContract[]> {
+    return await TrainerClientContractModel.find({
+      trainerId: new Types.ObjectId(trainerId),
+      endDate: { $gte: new Date() },
+    })
+      .populate({
+        path: 'clientId',
+        select: 'name',
+        populate: {
+          path: 'personalizationId',
+          select: 'data.userData.nickName data.userData.profilePictureId',
+          match: { role: 'client' },
+        },
+      })
+      .populate('planId', 'title')
+      .populate({
+        path: 'chatId',
+        select: 'messages',
+        options: { sort: { 'messages.timestamp': -1 }, limit: 1 },
+      })
+      .exec();
+  }
+
   async findActiveByClientAndTrainer(clientId: string, trainerId: string): Promise<ITrainerClientContract | null> {
     return await this.model.findOne({
       clientId: new Types.ObjectId(clientId),

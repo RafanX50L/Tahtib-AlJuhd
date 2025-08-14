@@ -70,4 +70,14 @@ export class TrainerPersonalizationController
     }
   }
 
+  async getSalary(req:AddedRequest, res:Response, next:NextFunction):Promise<void>{
+    try {
+      const userId = req.user.id;
+      const salary = await this._personalizationService.getSalary(userId);
+      res.status(HttpStatus.OK).json({message:HttpResponse.DATA_FETCHING_SUCCESSFULL,salary});
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

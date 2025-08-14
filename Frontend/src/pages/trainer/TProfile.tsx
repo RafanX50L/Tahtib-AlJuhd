@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import Header from "@/components/trainer/Profile/Header";
 import TrainerProfile from "@/components/trainer/Profile/Profile";
 import Sidebar from "@/components/trainer/Sidebar";
 import { TrainerService } from "@/services/implementation/trainerServices";
+import Header from "@/components/trainer/Dashboard/Header";
 
 export interface ITrainerWithPersonalization {
   _id: string;
@@ -113,7 +113,7 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
     <div className="min-h-screen bg-[#121212] text-[#ffffff] font-sans flex">
       <Sidebar />
       <main className="flex-1 p-4 md:p-6 lg:p-8 transition-all duration-300 lg:ml-[280px]">
-        <Header />
+        <Header text="Profile" />
         {error ? (
           <div className="text-red-400 text-center text-lg">{error}</div>
         ) : !trainerData ? (

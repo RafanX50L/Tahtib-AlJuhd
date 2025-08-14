@@ -18,7 +18,7 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
       <div className="flex items-center gap-4 w-full sm:w-auto relative">
         <div className="relative">
           <img
-            src={trainer.personalization?.data.basicInfo.profilePhoto}
+            src={trainer.photo}
             alt={trainer.name}
             className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-2 ring-[#5D5FEF] shadow-lg"
           />
@@ -32,9 +32,11 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
 
         {/* Name and basic info - visible on mobile */}
         <div className="flex-1 sm:hidden">
-          <h3 className="text-white font-bold text-xl leading-tight">{trainer.name}</h3>
+          <h3 className="text-white font-bold text-xl leading-tight">
+            {trainer.name}
+          </h3>
           <p className="text-[#A0A7B8] text-sm mt-1 line-clamp-2">
-            {trainer.personalization?.data.professionalSummary?.specializations?.slice(0, 2).join(", ") || "No specialties"}
+            {trainer.speciality?.slice(0, 2).join(", ") || "No specialties"}
           </p>
         </div>
       </div>
@@ -49,7 +51,7 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
         {/* Specializations */}
         <div className="mb-4">
           <p className="text-[#A0A7B8] text-sm sm:text-base leading-relaxed">
-            {trainer.personalization?.data.professionalSummary?.specializations?.join(", ") || "No specialties"}
+            {trainer.speciality?.join(", ") || "No specialties"}
           </p>
         </div>
 
@@ -61,9 +63,11 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
               <Clock size={16} />
             </div>
             <div>
-              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">Experience</p>
+              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">
+                Experience
+              </p>
               <span className="font-semibold">
-                {trainer.personalization?.data.professionalSummary?.yearsOfExperience || "N/A"}
+                {trainer.experience || "N/A"}
               </span>
             </div>
           </div>
@@ -74,10 +78,10 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
               <DollarSign size={16} />
             </div>
             <div>
-              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">Rate/Week</p>
-              <span className="font-semibold">
-                {trainer.personalization?.data.basicInfo.weeklySalary || "N/A"}
-              </span>
+              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">
+                Rate/Week
+              </p>
+              <span className="font-semibold">{trainer.price || "N/A"}</span>
             </div>
           </div>
         </div>
@@ -86,7 +90,11 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
       {/* Action Button */}
       <div className="w-full sm:w-auto mt-4 sm:mt-0">
         <button
-          onClick={() => navigate("/current-trainer")}
+          onClick={() =>
+            navigate(
+              `/current-trainer?name=${encodeURIComponent(trainer.name)}&photo=${encodeURIComponent(trainer.photo)}`
+            )
+          }
           className="w-full sm:w-auto px-6 py-3 bg-[#5D5FEF] text-white rounded-xl font-medium hover:bg-[#4C4EE5] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-[0_4px_20px_rgba(93,95,239,0.4)]"
         >
           View Profile
@@ -96,14 +104,13 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
   );
 };
 
-
-
-
 interface PreviousTrainerCardProps {
   trainer: Trainer;
 }
 
-const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) => {
+const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({
+  trainer,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -115,7 +122,7 @@ const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) =>
       <div className="flex items-center gap-4 w-full sm:w-auto relative">
         <div className="relative">
           <img
-            src={trainer.personalization?.data.basicInfo.profilePhoto}
+            src={trainer.photo}
             alt={trainer.name}
             className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-[#2A3042] group-hover:ring-[#FF4757] transition-all duration-300 shadow-md opacity-80"
           />
@@ -127,9 +134,11 @@ const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) =>
 
         {/* Name and basic info - visible on mobile */}
         <div className="flex-1 sm:hidden">
-          <h3 className="text-white font-bold text-lg leading-tight opacity-90">{trainer.name}</h3>
+          <h3 className="text-white font-bold text-lg leading-tight opacity-90">
+            {trainer.name}
+          </h3>
           <p className="text-[#A0A7B8] text-sm mt-1 line-clamp-2 opacity-90">
-            {trainer.personalization?.data.professionalSummary?.specializations?.slice(0, 2).join(", ") || "No specialties"}
+            {trainer.speciality?.slice(0, 2).join(", ") || "No specialties"}
           </p>
         </div>
       </div>
@@ -144,7 +153,7 @@ const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) =>
         {/* Specializations */}
         <div className="mb-3">
           <p className="text-[#A0A7B8] text-sm sm:text-base leading-relaxed opacity-90">
-            {trainer.personalization?.data.professionalSummary?.specializations?.join(", ") || "No specialties"}
+            {trainer.speciality?.join(", ") || "No specialties"}
           </p>
         </div>
 
@@ -156,9 +165,11 @@ const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) =>
               <Clock size={14} />
             </div>
             <div>
-              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">Experience</p>
+              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">
+                Experience
+              </p>
               <span className="font-semibold">
-                {trainer.personalization?.data.professionalSummary?.yearsOfExperience || "N/A"}
+                {trainer.experience || "N/A"}
               </span>
             </div>
           </div>
@@ -169,10 +180,10 @@ const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) =>
               <DollarSign size={14} />
             </div>
             <div>
-              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">Rate/Week</p>
-              <span className="font-semibold">
-                {trainer.personalization?.data.basicInfo.weeklySalary || "N/A"}
-              </span>
+              <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">
+                Rate/Week
+              </p>
+              <span className="font-semibold">{trainer.price || "N/A"}</span>
             </div>
           </div>
         </div>
@@ -191,4 +202,4 @@ const PreviousTrainerCard: React.FC<PreviousTrainerCardProps> = ({ trainer }) =>
   );
 };
 
-export {CurrentTrainerCard, PreviousTrainerCard}
+export { CurrentTrainerCard, PreviousTrainerCard };

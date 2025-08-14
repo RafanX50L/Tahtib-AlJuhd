@@ -17,8 +17,8 @@ const personalizationRepo = new PersonalizationRepository();
 const bookingService = new BookingService(contractRepo, sessionRepo, chatRepo, planRepo, personalizationRepo);
 const bookingController = new BookingController(bookingService);
 
-router.post('/purchase', bookingController.purchasePlan);
-router.post('/book', bookingController.bookSlot);
-router.post('/cancel/:sessionId', bookingController.cancelSession);
+router.post('/purchase-plan', bookingController.purchasePlan.bind(bookingController));
+router.post('/book', bookingController.bookSlot.bind(bookingController));
+router.post('/cancel/:sessionId', bookingController.cancelSession.bind(bookingController));
 
 export default router;

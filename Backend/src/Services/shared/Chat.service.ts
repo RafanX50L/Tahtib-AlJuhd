@@ -14,11 +14,11 @@ export class ChatService implements IChatService {
   }
 
   async addMessage(chatId: string, senderId: string, content: string): Promise<void> {
-    const message = {
-      senderId: new Types.ObjectId(senderId),
-      content,
-      timestamp: new Date(),
-    };
-    await this._chatRepo.addMessage(chatId, message);
+    // const message = {
+    //   senderId: new Types.ObjectId(senderId),
+    //   content,
+    //   timestamp: new Date(),
+    // };
+    await this._chatRepo.addMessage(chatId, senderId, content);
   }
 }

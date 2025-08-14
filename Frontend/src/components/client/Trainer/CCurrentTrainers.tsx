@@ -1,45 +1,65 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import React, { useState, useEffect, useRef } from "react";
+import io from "socket.io-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Calendar, Clock, User, Video, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { format, differenceInMinutes } from "date-fns";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { ClientService } from "@/services/implementation/clientServices";
+import { useLocation } from "react-router-dom";
+import { useSocket } from "@/hooks/socketio";
 
 interface Session {
-  time: string;
-  type: string;
-  location: string;
-  duration: string;
+  _id: string;
+  trainerId: string;
+  clientId?: string | null;
+  startTime: string;
+  endTime: string;
+  status: "free" | "booked" | "cancelled";
+  meetingLink?: string;
+  clientName?: string;
+  type?: string; // Optional, as not provided in API response
+  location?: string; // Optional, as not provided in API response
+  duration?: string; // Computed from startTime and endTime
 }
 
+interface Contract {
+  chatId: string;
+  sessionsRemaining: number;
+  trainerId: string;
+  planName: string;
+  trainerName?: string; // Optional, assuming it might be included
+}
+
+interface Message {
+  text: string;
+  type: "sent" | "received";
+  time: string;
+  senderId?: string;
+}
+
+// const socket = io("http://localhost:5000"); // Adjust to your backend Socket.IO server URL
+
 const CurrentTrainer: React.FC = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
   const [hasSessions, setHasSessions] = useState(true);
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<
-    { text: string; type: 'sent' | 'received'; time: string }[]
-  >([
-    {
-      text: "Hey there! Ready for our session tomorrow? I've prepared a special workout focusing on your strength goals.",
-      type: 'received',
-      time: 'Today, 10:30 AM',
-    },
-    // ... other initial messages
-  ]);
-  const [isRecording, setIsRecording] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isMobileView, setIsMobileView] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
-
-  const sampleSessions: Session[] = [
-    {
-      time: 'Tomorrow, 2:00 PM',
-      type: 'Strength Training',
-      location: 'Gym Floor A',
-      duration: '60 min',
-    },
-    // ... other sessions
-  ];
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [slots, setSlots] = useState<Session[]>([]);
+  const [contract, setContract] = useState<Contract | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const [trainerName, setTrainerName] = useState("");
+  const [trainerPhoto, setTrainerPhoto] = useState("");
+  const socket = useSocket();
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,8 +69,8 @@ const CurrentTrainer: React.FC = () => {
       }
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -59,349 +79,479 @@ const CurrentTrainer: React.FC = () => {
     }
   }, [messages]);
 
-  const toggleMobileView = () => {
-    if (isMobileView) {
-      setShowSidebar(!showSidebar);
+  useEffect(() => {
+    if (user?._id) {
+      const trainername = queryParams.get("name");
+      const trainerphoto = queryParams.get("photo");
+
+      if (trainername) setTrainerName(trainername);
+      if (trainerphoto) setTrainerPhoto(trainerphoto);
+
+      console.log("nice", trainername, trainerphoto);
+
+      fetchContract();
+    }
+
+    return () => {
+      socket?.off("message");
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (contract?.chatId) {
+      fetchMessages(contract.chatId);
+      fetchSlots(selectedDate);
+      joinChatRoom(contract.chatId);
+    }
+  }, [contract, selectedDate]);
+
+  const joinChatRoom = (chatId: string) => {
+    socket?.emit("joinChat", chatId);
+    socket?.on("message", (msg: Message) => {
+      setMessages((prev) => [...prev, { ...msg, type: "received" }]);
+    });
+  };
+
+  const fetchContract = async () => {
+    try {
+      const response = await ClientService.getCurrentTrainerContract();
+      setContract(response);
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      toast.error("Failed to fetch contract data");
+    }
+  };
+
+  const fetchMessages = async (chatId: string) => {
+    try {
+      const response = await ClientService.getCurrentTrainerMessages(chatId);
+      setMessages(
+        response.map((msg: Message) => ({
+          ...msg,
+          type: msg.senderId === user?._id ? "sent" : "received",
+        }))
+      );
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      toast.error("Failed to fetch chat messages");
+    }
+  };
+
+  const fetchSlots = async (date: Date) => {
+    setIsLoading(true);
+    try {
+      const fromDate = new Date(date);
+      fromDate.setHours(0, 0, 0, 0);
+      const toDate = new Date(date);
+      toDate.setHours(23, 59, 59, 999);
+      const response = await ClientService.getSlots(
+        contract?.trainerId || "",
+        fromDate.toISOString(),
+        toDate.toISOString()
+      );
+      // Map API response to Session interface
+      const mappedSlots: Session[] = response.data.map((slot: any) => ({
+        _id: slot._id,
+        trainerId: slot.trainerId,
+        clientId: slot.clientId,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        status: slot.status,
+        meetingLink: slot.meetingLink,
+        clientName: slot.clientName || undefined, // Adjust if API provides clientName
+        type: slot.type || "Training Session", // Default type if not provided
+        location: slot.location || "TBD", // Default location if not provided
+        duration: `${differenceInMinutes(new Date(slot.endTime), new Date(slot.startTime))} min`, // Compute duration
+      }));
+      setSlots(mappedSlots);
+      setHasSessions(mappedSlots.length > 0);
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+      toast.error("Failed to fetch slots");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const sendChatMessage = () => {
-    if (message.trim()) {
-      const time = format(new Date(), 'p');
-      setMessages([...messages, { text: message, type: 'sent', time: `Today, ${time}` }]);
-      setMessage('');
-      setTimeout(() => {
-        const responses = [
-          "Thanks for letting me know! I'll adjust our plan accordingly.",
-          // ... other responses
-        ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        setMessages((prev) => [
-          ...prev,
-          { text: randomResponse, type: 'received', time: `Today, ${format(new Date(), 'p')}` },
-        ]);
-      }, 1000 + Math.random() * 2000);
-    }
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      Array.from(files).forEach((file) => {
-        const icon = file.type.startsWith('image/') ? 'fa-image' : file.type.startsWith('video/') ? 'fa-video' : 'fa-file';
-        setMessages((prev) => [
-          ...prev,
-          {
-            text: `<i class="fas ${icon} mr-2 text-indigo-500"></i>${file.name}`,
-            type: 'sent',
-            time: `Today, ${format(new Date(), 'p')}`,
-          },
-        ]);
+    if (message.trim() && contract?.chatId) {
+      const time = format(new Date(), "p");
+      const newMessage = {
+        text: message,
+        type: "sent" as const,
+        time: `Today, ${time}`,
+        senderId: user?._id,
+      };
+      setMessages([...messages, newMessage]);
+      socket?.emit("sendMessage", {
+        chatId: contract.chatId,
+        senderId: user?._id,
+        text: message,
       });
+      setMessage("");
     }
   };
 
-  const toggleVoiceRecording = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording) {
-      setTimeout(() => {
-        setIsRecording(false);
-        setMessages((prev) => [
-          ...prev,
-          {
-            text: '<i class="fas fa-microphone mr-2 text-indigo-500"></i>Voice message (0:03)',
-            type: 'sent',
-            time: `Today, ${format(new Date(), 'p')}`,
-          },
-        ]);
-      }, 3000);
+  const handleBookSlot = async (slotId: string) => {
+    if (!user?._id) {
+      toast.error("Please log in to book a slot");
+      return;
+    }
+    if (contract?.sessionsRemaining! <= 0) {
+      toast.error("No sessions remaining in your plan");
+      return;
+    }
+    try {
+      // Assume ClientService.bookSlot exists
+      await ClientService.bookSlot(slotId, user._id);
+      setSlots((prev) =>
+        prev.map((s) =>
+          s._id === slotId
+            ? {
+                ...s,
+                status: "booked",
+                clientId: user._id,
+                clientName: user.name || "Client",
+                meetingLink:
+                  s.meetingLink ||
+                  `room_${Math.random().toString().slice(2, 8)}`,
+              }
+            : s
+        )
+      );
+      setContract((prev) =>
+        prev ? { ...prev, sessionsRemaining: prev.sessionsRemaining - 1 } : prev
+      );
+      toast.success("Slot booked successfully");
+    } catch (error: any) {
+      console.error("Error booking slot:", error);
+      toast.error(error.message || "Failed to book slot");
     }
   };
 
-  const handleSessionRequest = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Implement session request logic
+  const handleCancelBooking = async (slotId: string) => {
+    if (!user?._id) {
+      toast.error("Please log in to cancel a booking");
+      return;
+    }
+    try {
+      // Assume ClientService.cancelSlotBooking exists
+      await ClientService.cancelSlotBooking(slotId);
+      setSlots((prev) =>
+        prev.map((s) =>
+          s._id === slotId
+            ? {
+                ...s,
+                status: "free",
+                clientId: undefined,
+                clientName: undefined,
+              }
+            : s
+        )
+      );
+      setContract((prev) =>
+        prev ? { ...prev, sessionsRemaining: prev.sessionsRemaining + 1 } : prev
+      );
+      toast.success("Booking cancelled successfully");
+    } catch (error: any) {
+      console.error("Error cancelling booking:", error);
+      toast.error(error.message || "Failed to cancel booking");
+    }
   };
+
+  const formatTime = (dateString: string) => {
+    return format(new Date(dateString), "hh:mm a");
+  };
+
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "EEE, MMM d");
+  };
+
+  const isSlotStartingSoon = (startTime: string) => {
+    const now = new Date();
+    const slotStart = new Date(startTime);
+    const timeDiff = slotStart.getTime() - now.getTime();
+    return timeDiff > 0 && timeDiff <= 30 * 60 * 1000; // 30 minutes
+  };
+
+  const getStatusColor = (status: Session["status"]) => {
+    switch (status) {
+      case "free":
+        return "border-green-500";
+      case "booked":
+        return "border-blue-500";
+      case "cancelled":
+        return "border-red-500";
+      default:
+        return "border-gray-700";
+    }
+  };
+
+  const getStatusIcon = (status: Session["status"]) => {
+    switch (status) {
+      case "free":
+        return <Clock className="w-4 h-4 text-green-500" />;
+      case "booked":
+        return <User className="w-4 h-4 text-blue-500" />;
+      case "cancelled":
+        return <X className="w-4 h-4 text-red-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const todaySlots = slots.filter(
+    (slot) =>
+      new Date(slot.startTime).toDateString() === new Date().toDateString()
+  );
+  const selectedDateSlots = slots.filter(
+    (slot) =>
+      new Date(slot.startTime).toDateString() === selectedDate.toDateString()
+  );
+  const isToday = selectedDate.toDateString() === new Date().toDateString();
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white overflow-x-hidden">
-      <Button
-        className={cn(
-          'fixed top-4 left-4 z-50 bg-gray-900 border border-gray-700 rounded-lg p-3 text-indigo-500',
-          'lg:hidden'
-        )}
-        onClick={toggleMobileView}
-      >
-        <i className="fas fa-bars"></i>
-      </Button>
-
-      <Button
-        className={cn(
-          'fixed bottom-5 right-5 z-50 bg-indigo-500 text-white rounded-full w-12 h-12',
-          'lg:hidden flex items-center justify-center'
-        )}
-        onClick={toggleMobileView}
-      >
-        <i className={showSidebar ? 'fas fa-comments' : 'fas fa-user'}></i>
-      </Button>
-
-      <div className="flex min-h-screen flex-col lg:flex-row">
-        <div
-          className={cn(
-            'flex-1 bg-gray-900 flex flex-col border-r border-gray-700',
-            isMobileView && !showSidebar ? 'h-screen' : 'h-[60vh] lg:h-screen'
-          )}
-        >
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 border-b border-gray-700 flex items-center gap-4">
-            <img
-              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-              alt="Alex Johnson"
-              className="w-12 h-12 rounded-full object-cover border-2 border-indigo-500"
-            />
-            <div>
-              <h3 className="text-lg font-semibold">Alex Johnson</h3>
-              <div className="flex items-center gap-2 text-emerald-500 text-sm">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span>Online now</span>
-              </div>
-            </div>
-            <div className="ml-auto flex gap-2">
-              <Button variant="outline" size="icon" className="bg-gray-800 border-gray-700 text-gray-400">
-                <i className="fas fa-phone"></i>
-              </Button>
-              <Button variant="outline" size="icon" className="bg-gray-800 border-gray-700 text-gray-400">
-                <i className="fas fa-video"></i>
-              </Button>
-              <Button variant="outline" size="icon" className="bg-gray-800 border-gray-700 text-gray-400">
-                <i className="fas fa-ellipsis-h"></i>
-              </Button>
-            </div>
-          </div>
-
-          <div
-            ref={chatMessagesRef}
-            className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-900 to-gray-900/80 relative"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(99,102,241,0.05)_0%,transparent_50%),radial-gradient(circle_at_80%_20%,rgba(236,72,153,0.05)_0%,transparent_50%)] pointer-events-none"></div>
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={cn(
-                  'mb-6 z-10',
-                  msg.type === 'sent' ? 'flex justify-end' : 'flex justify-start'
-                )}
-              >
-                <div
-                  className={cn(
-                    'max-w-[70%] p-4 rounded-3xl shadow-md backdrop-blur',
-                    msg.type === 'sent'
-                      ? 'bg-gradient-to-br from-indigo-500 to-indigo-400 text-white rounded-br-lg'
-                      : 'bg-gray-800 border border-gray-700 text-white rounded-bl-lg'
-                  )}
-                >
-                  <div dangerouslySetInnerHTML={{ __html: msg.text }} />
-                  <div className={cn('text-xs opacity-70 mt-2', msg.type === 'received' ? 'text-left' : 'text-right')}>
-                    {msg.time}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-gray-900 p-6 border-t border-gray-700 flex gap-4 items-center flex-wrap">
-            <Button variant="outline" size="icon" className="bg-gray-800 border-gray-700 text-gray-400">
-              <input type="file" accept="image/*,video/*,.pdf,.doc,.docx" multiple className="hidden" onChange={handleFileUpload} />
-              <i className="fas fa-paperclip"></i>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn('bg-gray-800 border-gray-700 text-gray-400', isRecording && 'bg-pink-500 text-white')}
-              onClick={toggleVoiceRecording}
-            >
-              <i className={isRecording ? 'fas fa-stop' : 'fas fa-microphone'}></i>
-            </Button>
-            <Input
-              className="flex-1 bg-gray-800 border-gray-700 rounded-full text-white placeholder-gray-400"
-              placeholder="Type your message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-            />
-            <Button
-              className="bg-gradient-to-r from-indigo-500 to-indigo-400 text-white rounded-full"
-              size="icon"
-              onClick={sendChatMessage}
-            >
-              <i className="fas fa-paper-plane"></i>
-            </Button>
+    <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">
+              Your Trainer: {trainerName}
+            </h1>
+            <p className="text-gray-400 mt-1">
+              Sessions remaining: {contract?.sessionsRemaining || 0}
+            </p>
           </div>
         </div>
 
-        <div
-          className={cn(
-            'w-full lg:w-[350px] bg-gray-950 border-t lg:border-t-0 lg:border-l border-gray-700 flex flex-col',
-            isMobileView && !showSidebar && 'hidden'
-          )}
-        >
-          <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 p-4 border-b border-gray-700">
-            <div className="flex items-center gap-4 mb-4">
+        {/* Main Layout */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Chat Section */}
+          <div
+            className={cn(
+              "flex-1 bg-gray-900 flex flex-col border-r border-gray-700",
+              isMobileView && !showSidebar ? "h-screen" : "h-[60vh] lg:h-[80vh]"
+            )}
+          >
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 border-b border-gray-700 flex items-center gap-4">
               <img
-                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
-                alt="Alex Johnson"
-                className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500"
+                src={trainerPhoto as string}
+                alt={contract?.trainerName || "Trainer"}
+                className="w-12 h-12 rounded-full object-cover border-2 border-indigo-500"
               />
               <div>
-                <h2 className="text-lg font-semibold">Alex Johnson</h2>
-                <p className="text-sm text-gray-400">Strength & Conditioning</p>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="text-amber-500">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-star-half-alt"></i>
-                  </div>
-                  <span>4.8 (124 reviews)</span>
+                <h3 className="text-lg font-semibold">
+                  {trainerName || "Loading..."}
+                </h3>
+                <div className="flex items-center gap-2 text-emerald-500 text-sm">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  {/* <span>Online now</span> */}
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { number: '5+', label: 'Years Exp' },
-                { number: '200+', label: 'Clients' },
-                { number: '95%', label: 'Success' },
-                { number: '24/7', label: 'Support' },
-              ].map((stat, index) => (
+
+            <div
+              ref={chatMessagesRef}
+              className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-900 to-gray-900/80 relative"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(99,102,241,0.05)_0%,transparent_50%),radial-gradient(circle_at_80%_20%,rgba(236,72,153,0.05)_0%,transparent_50%)] pointer-events-none"></div>
+              {messages.map((msg, index) => (
                 <div
                   key={index}
-                  className="text-center p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg"
+                  className={cn(
+                    "mb-6 z-10",
+                    msg.type === "sent"
+                      ? "flex justify-end"
+                      : "flex justify-start"
+                  )}
                 >
-                  <span className="block text-lg font-semibold text-indigo-500">{stat.number}</span>
-                  <span className="text-xs text-gray-400">{stat.label}</span>
+                  <div
+                    className={cn(
+                      "max-w-[70%] p-4 rounded-3xl shadow-md backdrop-blur",
+                      msg.type === "sent"
+                        ? "bg-gradient-to-br from-indigo-500 to-indigo-400 text-white rounded-br-lg"
+                        : "bg-gray-800 border border-gray-700 text-white rounded-bl-lg"
+                    )}
+                  >
+                    <div dangerouslySetInnerHTML={{ __html: msg.text }} />
+                    <div
+                      className={cn(
+                        "text-xs opacity-70 mt-2",
+                        msg.type === "received" ? "text-left" : "text-right"
+                      )}
+                    >
+                      {msg.time}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
 
-          <div className="flex-1 p-4 bg-gray-950">
-            <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-              <i className="fas fa-calendar-check"></i>
-              Upcoming Sessions
-            </h3>
-            {hasSessions ? (
-              <div className="space-y-4">
-                {sampleSessions.map((session, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-indigo-500 hover:-translate-y-0.5 transition-all"
-                  >
-                    <div className="font-semibold text-indigo-500">{session.time}</div>
-                    <div className="text-sm text-gray-400">{`${session.type} • ${session.duration}`}</div>
-                    <div className="text-sm text-gray-400 flex items-center gap-2">
-                      <i className="fas fa-map-marker-alt"></i>
-                      {session.location}
-                    </div>
-                    <div className="flex gap-2 mt-3">
-                      <Button className="flex-1 bg-gradient-to-r from-indigo-500 to-indigo-400 text-white">
-                        Join
-                      </Button>
-                      <Button variant="outline" className="flex-1 border-gray-700 text-gray-400">
-                        Reschedule
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center p-8 text-gray-400">
-                <i className="fas fa-calendar-plus text-4xl text-indigo-500 mb-4"></i>
-                <h4 className="text-lg">No Upcoming Sessions</h4>
-                <p>Schedule a session to get started!</p>
-              </div>
-            )}
-          </div>
-
-          {!hasSessions && (
-            <div className="p-4 bg-gray-800 border-t border-gray-700">
-              <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                <i className="fas fa-plus-circle"></i>
-                Request Session
-              </h3>
-              <form onSubmit={handleSessionRequest} className="bg-black/30 p-4 rounded-lg">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Session Type</label>
-                  <Select>
-                    <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="personal">Personal Training (60min)</SelectItem>
-                      <SelectItem value="strength">Strength Training (45min)</SelectItem>
-                      <SelectItem value="nutrition">Nutrition Coaching (30min)</SelectItem>
-                      <SelectItem value="recovery">Recovery Session (45min)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Preferred Time</label>
-                  <Select>
-                    <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="morning">Morning (6AM-12PM)</SelectItem>
-                      <SelectItem value="afternoon">Afternoon (12PM-6PM)</SelectItem>
-                      <SelectItem value="evening">Evening (6PM-10PM)</SelectItem>
-                      <SelectItem value="flexible">Flexible</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Notes (Optional)</label>
-                  <Textarea
-                    className="bg-gray-900 border-gray-700 text-white resize-y"
-                    placeholder="Any specific preferences or requirements..."
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-amber-500 to-amber-400 text-white"
-                >
-                  <i className="fas fa-paper-plane mr-2"></i>
-                  Send Request
-                </Button>
-              </form>
+            <div className="bg-gray-900 p-6 border-t border-gray-700 flex gap-4 items-center flex-wrap">
+              <Input
+                className="flex-1 bg-gray-800 border-gray-700 rounded-full text-white placeholder-gray-400"
+                placeholder="Type your message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendChatMessage()}
+              />
+              <Button
+                className="bg-gradient-to-r from-indigo-500 to-indigo-400 text-white rounded-full"
+                size="icon"
+                onClick={sendChatMessage}
+              >
+                <i className="fas fa-paper-plane"></i>
+              </Button>
             </div>
-          )}
+          </div>
+
+          {/* Sessions Section */}
+          <div
+            className={cn(
+              "w-full lg:w-[350px] bg-gray-950 border-t lg:border-t-0 lg:border-l border-gray-700 flex flex-col",
+              isMobileView && !showSidebar && "hidden"
+            )}
+          >
+            {/* Date Selector */}
+            <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 p-4 border-b border-gray-700">
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5 text-[#6366f1]" />
+                <h2 className="text-lg font-semibold">Select Date</h2>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <input
+                  type="date"
+                  value={format(selectedDate, "yyyy-MM-dd")}
+                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                  className="p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-md text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none"
+                  min={format(new Date(), "yyyy-MM-dd")}
+                />
+                <div className="text-sm text-gray-400">
+                  {isToday ? (
+                    <span className="text-green-400">Today's sessions</span>
+                  ) : (
+                    <span>
+                      Sessions for {format(selectedDate, "MMMM d, yyyy")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Sessions List */}
+            <div className="flex-1 p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-[#6366f1]" />
+                <h3 className="text-lg font-semibold">
+                  {isToday
+                    ? "Today's Sessions"
+                    : `Sessions for ${formatDate(selectedDate.toISOString())}`}
+                </h3>
+                <span className="bg-[#6366f1] text-white text-xs px-2 py-1 rounded-full">
+                  {selectedDateSlots.length}
+                </span>
+              </div>
+
+              {isLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6366f1]"></div>
+                </div>
+              ) : selectedDateSlots.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No sessions scheduled for this date</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {selectedDateSlots.map((slot) => (
+                    <div
+                      key={slot._id}
+                      className={`p-4 rounded-lg border-2 ${getStatusColor(slot.status)} ${
+                        isSlotStartingSoon(slot.startTime)
+                          ? "ring-2 ring-yellow-500 ring-opacity-50"
+                          : ""
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(slot.status)}
+                          <span className="font-medium capitalize">
+                            {slot.status}
+                          </span>
+                        </div>
+                        {isSlotStartingSoon(slot.startTime) && (
+                          <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
+                            Starting Soon
+                          </span>
+                        )}
+                      </div>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <Clock className="w-4 h-4" />
+                          <span>{formatTime(slot.startTime)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <span>
+                            {slot.type || "Training Session"} • {slot.duration}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-300">
+                          <span>{slot.location || "TBD"}</span>
+                        </div>
+                        {slot.clientId && slot.clientName && (
+                          <div className="flex items-center gap-2 text-gray-300">
+                            <User className="w-4 h-4" />
+                            <span>{slot.clientName}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {slot.status === "booked" &&
+                          slot.clientId === user?._id && (
+                            <>
+                              <Button
+                                size="sm"
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() =>
+                                  window.open(
+                                    `/room/${slot.meetingLink}`,
+                                    "_blank"
+                                  )
+                                }
+                              >
+                                <Video className="w-4 h-4 mr-1" />
+                                Join
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+                                onClick={() => handleCancelBooking(slot._id)}
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          )}
+                        {slot.status === "free" &&
+                          contract?.sessionsRemaining! > 0 && (
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={() => handleBookSlot(slot._id)}
+                            >
+                              Book
+                            </Button>
+                          )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes pulse {
-          0% { opacity: 1; }
-          50% { opacity: 0.5; }
-          100% { opacity: 1; }
-        }
-        @keyframes typingDots {
-          0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
-          40% { transform: scale(1); opacity: 1; }
-        }
-        .typing-dots {
-          display: flex;
-          gap: 4px;
-          padding: 8px 0;
-        }
-        .typing-dots span {
-          width: 8px;
-          height: 8px;
-          background: #9CA3AF;
-          border-radius: 50%;
-          animation: typingDots 1.4s infinite ease-in-out;
-        }
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-      `}</style>
     </div>
   );
 };

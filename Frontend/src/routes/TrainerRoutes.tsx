@@ -7,6 +7,8 @@ import NotFoundPage from "@/pages/common/NotFond";
 import TrainerSetAvailability from "@/pages/trainer/TSetAvailabilityPage";
 import TSetPlanPage from "@/pages/trainer/TSetPlans";
 import TSetAvailabilityPage from "@/pages/trainer/TSetAvailabilityPage";
+import TClientPage from "@/pages/trainer/TClientPage";
+import TCChatPage from "@/pages/trainer/TCChatPage";
 
 const TrainerRotues: React.FC = () => {
   return (
@@ -14,6 +16,8 @@ const TrainerRotues: React.FC = () => {
       <Route path="/job-application" element={<TrainerForm />} />
       <Route path="/pendingCase" element={<VerifyingTrainer />} />
       <Route path="/dashboard" element={<TDashboard />} />
+      <Route path="/clients" element={<TClientPage />} />
+      <Route path="/chat/:id" element={<TCChatPage />} />
       <Route path="/profile" element={<TProfile />} />
       <Route path="/plans" element={<TSetPlanPage />} />
       <Route path="/availability" element={<TSetAvailabilityPage />} />

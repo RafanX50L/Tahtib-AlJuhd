@@ -243,4 +243,11 @@ export class TrainerPersonalizationService
     }
   }
 
+  async getSalary(userId: string): Promise<number> {
+    const { basicInfo } = (
+      await this._personalizationRepository.findOne({ userId: userId })
+    ).data as ITrainerPersonalization;
+    return basicInfo?.weeklySalary || 0 ;
+  }
+
 }

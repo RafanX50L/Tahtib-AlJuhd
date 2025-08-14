@@ -294,7 +294,7 @@ const VerifyingTrainer = () => {
             </div>
             <Button
               className="w-full bg-green-600 hover:bg-green-700 text-white"
-              onClick={() => navigate("/trainer/profile/setup")}
+              onClick={() => navigate("/trainer/profile")}
             >
               Set Up Profile
             </Button>

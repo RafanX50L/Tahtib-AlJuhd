@@ -11,8 +11,9 @@ import NotFoundPage from '@/pages/common/NotFond';
 import CTrainerSession from '@/pages/client/CTrainerSession';
 import CChatBotPage from '@/pages/client/CChatbot';
 import CTProfilePage from '@/pages/client/CTProfile';
-import CurrentTrainer from '@/components/client/Trainer/CCurrentTrainers';
 import CDietPlanPage from '@/pages/client/CDietPlan';
+import CATrainerDetailsPage from '@/pages/client/CATProfilePage';
+import CCurrentTrainerPage from '@/pages/client/CCTrainerPage';
 
 const UserRoutes: React.FC = () => {
   console.log('Entered UserRoutes');
@@ -27,9 +28,10 @@ const UserRoutes: React.FC = () => {
       <Route path="/profile" element={<CProfile />} />
       <Route path="/trainerSession" element={<CTrainerSession />} />
       <Route path="/trainer-details" element={<CTProfilePage />} />
-      <Route path="/current-trainer" element={<CurrentTrainer />} />
+      <Route path="/current-trainer" element={<CCurrentTrainerPage />} />
       <Route path="/diet" element={<CDietPlanPage />} />
       <Route path="/chat" element={<CChatBotPage />} />
+      <Route path="/trainer-details/:trainerId" element={<CATrainerDetailsPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

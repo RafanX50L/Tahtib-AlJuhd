@@ -82,4 +82,7 @@ export const HttpResponse = {
     // chatbot
     CREATING_CHAT_BOT_SESSION_SUCCESSFULL: "Chat bot session created succesfully",
     CHAT_BOT_SESSION_DELETION_SUCCESSFULL: "Chat bot session deleted successfully",
+
+    // availability
+    SLOTS_CONFLICT : "Slots conflict with existing sessions"
 };

@@ -9,5 +9,6 @@ export interface ITrainerPersonalizationService {
   submitApplication(userId: string, req: Request): Promise<void>;
   getPendingApplicationDetails(uesrId: string):Promise<Partial<ITrainerPersonalization>>;
   getTrainerProfile(userId: string): Promise<TrainerProfileDTO>;
-  updateProfileData(userId: string, data:Partial<{name:string,location:string,phoneNumber:string}>): Promise<void> 
+  updateProfileData(userId: string, data:Partial<{name:string,location:string,phoneNumber:string}>): Promise<void>;
+  getSalary(userId: string): Promise< number >;
 }

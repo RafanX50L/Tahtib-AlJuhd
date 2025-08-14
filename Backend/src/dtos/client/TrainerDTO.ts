@@ -1,3 +1,5 @@
+import { generateSignedUrl } from "@/utils/s3Storage.utils";
+
 interface TrainerData{
     id: string;
     name: string;
@@ -8,7 +10,7 @@ interface TrainerData{
 };
 
 export class ClientTrainerDTO{
-    static mapToTrainerData(raw):TrainerData{
+    static async mapToTrainerData(raw):Promise<TrainerData>{
         console.log(raw);
         const data = raw.data;
         const user = raw.user;
@@ -16,7 +18,7 @@ export class ClientTrainerDTO{
             id: user._id.toString(),
             name: user.name,
             speciality: data.professionalSummary.specializations,
-            photo: raw.profilePicture[0].filePath,
+            photo: await generateSignedUrl( raw.profilePicture[0].filePath),
             experience: data.professionalSummary.yearsOfExperience.toString(),
             price: data.basicInfo.weeklySalary
         };

@@ -17,7 +17,17 @@ export class ChatRepository extends BaseRepository<IChat> implements IChatReposi
   //   return await ChatModel.findById(id);
   // }
 
-  async addMessage(chatId: string, message: IChat['messages'][0]): Promise<void> {
-    await this.model.findByIdAndUpdate(chatId, { $push: { messages: message } });
+  async addMessage(chatId: string, senderId: string, content: string): Promise<IChat | null> {
+    const message = {
+      senderId,
+      content,
+      timestamp: new Date(),
+    };
+    return this.model.findByIdAndUpdate(
+      chatId,
+      { $push: { messages: message } },
+      { new: true } // This ensures the updated doc is returned
+    );
   }
+
 }

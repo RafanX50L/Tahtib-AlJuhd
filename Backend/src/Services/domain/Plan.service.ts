@@ -13,10 +13,11 @@ export class PlanService implements IPlanService{
   ) {}
 
   async createPlan(plan: IPlan): Promise<IPlan> {
-    const newPlan = await this._planRepo.create(plan);
     const trainerPers = await this._personalizationRepo.findByUserId(plan.trainerId.toString());
     if (!trainerPers) throw new Error('Trainer not found');
     const trainerData = trainerPers.data as ITrainerPersonalization;
+    plan.price = (trainerData.basicInfo.weeklySalary + 100) * plan.durationWeeks! - 1;
+    const newPlan = await this._planRepo.create(plan);
     await this._personalizationRepo.updateTrainerData(plan.trainerId.toString(), {
       ...trainerData,
       ...(trainerData),

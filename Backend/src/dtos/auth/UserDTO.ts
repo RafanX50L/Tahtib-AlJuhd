@@ -11,7 +11,7 @@ export class UserDTO {
       role: user.role,
       personalizationId: user.personalizationId,
       status: null,
-      tokenVersion: user.tokenVersion
+      tokenVersion: user.tokenVersion,
     };
 
     if (user.role === "trainer" && user.personalizationId !== null) {

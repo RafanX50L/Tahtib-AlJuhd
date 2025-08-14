@@ -1,8 +1,9 @@
 import { HttpStatus } from '@/constants/status.constant';
+import { IBookingController } from '@/core/interface/controllers/domain/IBooking.Controller';
 import { IBookingService } from '@/core/interface/services/domain/IBooking.Service';
 import { NextFunction, Request, Response } from 'express';
 
-export class BookingController {
+export class BookingController implements IBookingController {
 
   constructor(
     private readonly _bookingService: IBookingService,

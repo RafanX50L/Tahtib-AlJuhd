@@ -270,6 +270,8 @@ export const ClientService = {
     }
   },
   
+  // trainer Session Services
+
   getAvailabeTrainers: async (
     pageNum: number,
     trainersPerPage: number,
@@ -293,6 +295,100 @@ export const ClientService = {
     }
   },
 
+  getTrainerById: async (trainerId: string) => {
+    try {
+      const response = await api.get(`${CLIENT_ROUTES.TRAINER}/${trainerId}`);
+      console.log("Trainer details response: ", response.data);
+      return response.data.trainerData;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch trainer details";
+      console.log("Error fetch trainer details: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  purchasePlan: async (clientId: string, trainerId: string, planId: string) => {
+    if (!clientId || !trainerId || !planId) {
+      console.error('Missing required fields:', { clientId, trainerId, planId });
+      throw new Error('Client ID, Trainer ID, and Plan ID are required');
+    }
+
+    const payload = { clientId, trainerId, planId };
+    console.log('ClientService.purchasePlan payload:', payload); // Debug log
+
+    try {
+      const response = await api.post(`${CLIENT_ROUTES.PURCHASE_PLAN}`, payload);
+      console.log('Purchase plan response:', response.data); // Debug log
+      return response.data;
+    } catch (error: any) {
+      console.error('Error in purchasePlan:', error);
+      throw new Error(error.response?.data?.error || 'Failed to purchase plan');
+    }
+  },
+
+  getCurrentTrainerPartialData: async () => {
+    try {
+      const response = await api.get(CLIENT_ROUTES.CURRENT_TRAINER);
+      return response.data.trainerData;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch current trainer data";
+      console.log("Error fetch current trainer data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  // current Trainer Services
+
+  getCurrentTrainerContract: async () => {
+    try {
+      const response = await api.get(CLIENT_ROUTES.CURRENT_TRAINER_CONTRACT);
+      return response.data.contractData;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch current trainer data";
+      console.log("Error fetch current trainer data: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+  getCurrentTrainerMessages: async (chatId:string) => {
+    try {
+      const response = await api.get(`${CLIENT_ROUTES.CURRENT_TRAINER}/${chatId}`);
+      return response.data.messages;
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch current trainer messages";
+      console.log("Error fetch current trainer messages: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getSlots: async(trainerId:string, fromDate:string, toDate: string)=>{
+    try {
+      const response = await api.get(`${CLIENT_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}`);
+      console.log("Fetched slots response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch slots";
+      console.log("Error fetching slots: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  // diet Plan Services
+
   getDietPlan: async()=>{
     try {
       console.log('');
@@ -308,7 +404,7 @@ export const ClientService = {
     }
   },
 
-  // ClientService.ts
+  // chat bot service
   createChatBotSession: async (clientId: string, title?: string) => {
     try {
       const response = await api.post(CLIENT_ROUTES.CHAT_BOT_SESSIONS, { clientId, title });
@@ -353,7 +449,6 @@ export const ClientService = {
     }
   },
 
-  // ClientService.ts
   HandleSendMessageToChatBot: async(sessionId: string, userMessage: Interaction) => {
     try {
       const response = await api.post(CLIENT_ROUTES.CHAT_BOT_INTERACTION(sessionId), {

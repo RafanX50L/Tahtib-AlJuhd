@@ -12,7 +12,7 @@ const sessionRepo = new SessionRepository();
 const availabilityService = new AvailabilityService(personalizationRepo, sessionRepo);
 const availabilityController = new AvailabilityController(availabilityService);
 
-router.post('/',restrictTo('trainer'), availabilityController.setAvailability.bind(availabilityController));
-router.get('/slots',restrictTo('trainer','client'), availabilityController.getFreeSlots.bind(availabilityController));
+router.post('/availability/',restrictTo('trainer'), availabilityController.setAvailability.bind(availabilityController));
+router.get('/availability/slots',restrictTo('trainer','client'), availabilityController.getFreeSlots.bind(availabilityController));
 
 export default router;

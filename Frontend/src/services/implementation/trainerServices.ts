@@ -4,6 +4,7 @@ import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import { IPlan } from "@/components/trainer/SetPlan/plan";
 import { Slot } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
+import TrainerRotues from "@/routes/TrainerRoutes";
 
 export const TrainerService = {
   getPendingApplicationDetails: async () => {
@@ -136,9 +137,9 @@ export const TrainerService = {
     }
   },
 
-  getSlots: async()=>{
+  getSlots: async(trainerId:string, fromDate:string, toDate: string)=>{
     try {
-      const response = await api.get(TRAINER_ROUTES.AVAILABILITY);
+      const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}`);
       console.log("Fetched slots response: ", response.data);
       return { data: response.data };
     } catch (error: unknown) {
@@ -151,9 +152,10 @@ export const TrainerService = {
     }
   },
 
-  addSlot: async (formData: Partial<Slot[]>, trainerId: string) => {
+  addSlot: async (slots: Partial<Slot[]>, trainerId: string) => {
     try {
-      const response = await api.post(TRAINER_ROUTES.AVAILABILITY, { ...formData, trainerId });
+      console.log("Adding slots: ", slots, " for trainerId: ", trainerId);
+      const response = await api.post(TRAINER_ROUTES.AVAILABILITY, { slots, trainerId });
       console.log("Added new slot response: ", response.data);
       return { data: response.data };
     } catch (error: unknown) {
@@ -164,6 +166,44 @@ export const TrainerService = {
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
+  },
+
+  getSalary: async () => {
+    try {
+      const response = await api.get(TRAINER_ROUTES.SALARY);
+      console.log("Fetched salary response: ", response.data);
+      return { data: response.data.salary };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to fetch salary";
+      console.log("Error fetching salary: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  // trainer client Services
+
+  getClients: async (trainerId: string) => {
+    try {
+      const response = await api.get(`${TRAINER_ROUTES.CLIENTS}?trainerId=${trainerId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+      throw new Error('Failed to fetch clients');
+    }
+  },
+
+  getChatMessages: async (chatId: string) => {
+    try {
+      const response = await api.get(`${TRAINER_ROUTES.CHAT}/${chatId}/messages`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching chat messages:', error);
+      throw new Error('Failed to fetch chat messages');
+    }
+
   }
 
 };
