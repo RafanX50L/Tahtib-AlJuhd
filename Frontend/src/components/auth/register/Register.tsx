@@ -96,6 +96,7 @@ export function RegisterPage() {
       dispath(
         setCredentials({
           user: response.user,
+          notifications: response.notifications,
           accessToken: response.accessToken,
           tokenVersion: response.tokenVersion
         })

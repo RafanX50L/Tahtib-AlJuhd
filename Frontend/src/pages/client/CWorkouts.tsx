@@ -4,10 +4,10 @@ import WorkoutCards from "@/components/client/Workouts/WorkoutCards";
 import LevelTabs from "@/components/client/Workouts/LevelTabs";
 import Sidebar from "@/components/client/Sidebar";
 import CFooter from "@/components/client/Footer";
-import CWHeader from "@/components/client/Workouts/CWHeader";
 import MainCard from "@/components/client/Workouts/MainCard";
 import ChatbotButton from "@/components/client/ChatbotButton";
 import { ClientService } from "@/services/implementation/clientServices";
+import Header from "@/components/client/Header";
 
 // Define the response type for ClientService.getWorkouts
 interface WorkoutResponse {
@@ -168,7 +168,7 @@ const WorkoutPlan = () => {
           </div>
         ) : (
           <>
-            <CWHeader />
+            <Header title="My Workouts" content="Track your progress in the 28-Day Challenge"/>
             {mainData && <MainCard data={mainData} />}
             <LevelTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             {workouts && currentWeekStatus !== null ? (

@@ -2,7 +2,7 @@ import { IPersonalization } from "@/core/interface/model/IPersonalization.model"
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { BaseRepository } from "./base.repository";
 import { PersonalizationModel } from "@/models/Personalization.model";
-import { Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
@@ -346,7 +346,7 @@ export class TrainerPersonalizationRepository
       matchStage.userId = { $ne: new Types.ObjectId(currentTrainerId) };
     }
 
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
       {
         $lookup: {
@@ -365,7 +365,7 @@ export class TrainerPersonalizationRepository
         }
       },
       { $unwind: "$user" }
-    ];
+    ] as PipelineStage[];
 
 
     // Search filter on user.name (case-insensitive)

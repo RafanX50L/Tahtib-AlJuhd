@@ -22,6 +22,7 @@ export const useSocket = () => {
       console.error('Socket connection error:', error);
     });
 
+    
     return () => {
       instance.disconnect();
     };

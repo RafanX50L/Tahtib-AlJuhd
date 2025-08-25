@@ -1,9 +1,9 @@
 import isBlocked from "@/middleware/isBlocked.middleware";
-import verifyToken from "@/middleware/verify.token.middleware";
 import { Router } from "express";
 import adminClinetRoutes from "./admin/admin.clinet.routes";
 import adminTrainerRoutes from "./admin/admin.trainer.routes";
 import adminCommonRoutes from "./admin/admin.common.routes";
+import { verifyToken } from "@/middleware/verify.token.middleware";
 
 const routerRoot = Router();
 

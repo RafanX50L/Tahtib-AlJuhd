@@ -11,6 +11,7 @@ import { RootState } from "@/store/store";
 import { ClientService } from "@/services/implementation/clientServices";
 import { useLocation } from "react-router-dom";
 import { useSocket } from "@/hooks/socketio";
+import { chatEnum } from "@/lib/chat-enum";
 
 interface Session {
   _id: string;
@@ -38,7 +39,8 @@ interface Message {
   text: string;
   type: "sent" | "received";
   time: string;
-  senderId?: string;
+  date: string;
+  sender?: string;
 }
 
 // const socket = io("http://localhost:5000"); // Adjust to your backend Socket.IO server URL
@@ -97,6 +99,7 @@ const CurrentTrainer: React.FC = () => {
     };
   }, [user]);
 
+  // File: CCurrentTrainers.tsx
   useEffect(() => {
     if (contract?.chatId) {
       fetchMessages(contract.chatId);
@@ -106,9 +109,15 @@ const CurrentTrainer: React.FC = () => {
   }, [contract, selectedDate]);
 
   const joinChatRoom = (chatId: string) => {
-    socket?.emit("joinChat", chatId);
-    socket?.on("message", (msg: Message) => {
-      setMessages((prev) => [...prev, { ...msg, type: "received" }]);
+    socket?.on("connect", () => {
+      console.log("Socket connected, joining chat:", chatId);
+      socket.emit("joinChat", chatId);
+    });
+    socket?.on(chatEnum.receive, (msg: Message) => {
+      console.log(`Received message for chat ${contract?.chatId}:`, msg);
+      if (msg.sender !== user?._id) {
+        setMessages((prev) => [...prev, { ...msg, type: "received" }]);
+      }
     });
   };
 
@@ -128,7 +137,7 @@ const CurrentTrainer: React.FC = () => {
       setMessages(
         response.map((msg: Message) => ({
           ...msg,
-          type: msg.senderId === user?._id ? "sent" : "received",
+          type: msg.sender === user?._id ? "sent" : "received",
         }))
       );
     } catch (error) {
@@ -173,20 +182,27 @@ const CurrentTrainer: React.FC = () => {
     }
   };
 
+  // File: CCurrentTrainers.tsx
   const sendChatMessage = () => {
-    if (message.trim() && contract?.chatId) {
+    if (message.trim() && contract?.chatId && user?._id && socket) {
       const time = format(new Date(), "p");
       const newMessage = {
         text: message,
         type: "sent" as const,
         time: `Today, ${time}`,
-        senderId: user?._id,
+        sender: user._id,
       };
-      setMessages([...messages, newMessage]);
-      socket?.emit("sendMessage", {
+      setMessages((prev:any) => [...prev, newMessage]);
+      socket.emit(chatEnum.sendMessage, {
         chatId: contract.chatId,
-        senderId: user?._id,
+        sender: user._id,
         text: message,
+      });
+      socket.emit(chatEnum.sendNotification, {
+        senderId: user._id,
+        recipientId: contract.trainerId, // Assume clientId is available in contract
+        message: `New message from ${user.name}`,
+        type: "new_message",
       });
       setMessage("");
     }
@@ -316,9 +332,7 @@ const CurrentTrainer: React.FC = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold">
-              Your Trainer: {trainerName}
-            </h1>
+            <h1 className="text-2xl font-bold">Your Trainer: {trainerName}</h1>
             <p className="text-gray-400 mt-1">
               Sessions remaining: {contract?.sessionsRemaining || 0}
             </p>
@@ -326,11 +340,11 @@ const CurrentTrainer: React.FC = () => {
         </div>
 
         {/* Main Layout */}
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6 overflow-y-scroll">
           {/* Chat Section */}
           <div
             className={cn(
-              "flex-1 bg-gray-900 flex flex-col border-r border-gray-700",
+              "flex-1 bg-gray-900 flex flex-col border-r border-gray-700 overflow-y-auto scrollbar-hide",
               isMobileView && !showSidebar ? "h-screen" : "h-[60vh] lg:h-[80vh]"
             )}
           >
@@ -353,7 +367,7 @@ const CurrentTrainer: React.FC = () => {
 
             <div
               ref={chatMessagesRef}
-              className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-900 to-gray-900/80 relative"
+              className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-900 to-gray-900/80 relative scrollbar-hide"
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(99,102,241,0.05)_0%,transparent_50%),radial-gradient(circle_at_80%_20%,rgba(236,72,153,0.05)_0%,transparent_50%)] pointer-events-none"></div>
               {messages.map((msg, index) => (

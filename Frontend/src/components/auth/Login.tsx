@@ -71,6 +71,7 @@ export default function LoginPage() {
       dispath(
         setCredentials({
           user: response.user,
+          notifications: response.notifications,
           accessToken: response.accessToken,
           tokenVersion: response.tokenVersion,
         })
@@ -142,6 +143,7 @@ export default function LoginPage() {
       dispath(
         setCredentials({
           user: response.user,
+          notifications: response.notifications,
           accessToken: response.accessToken,
           tokenVersion: response.tokenVersion
         })

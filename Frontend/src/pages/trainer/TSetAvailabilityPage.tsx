@@ -1,5 +1,5 @@
 import Sidebar from "../../components/trainer/Sidebar";
-import Header from "../../components/trainer/Dashboard/Header";
+import Header from "../../components/trainer/Header";
 import SetAvailabilityPage from "@/components/trainer/SetAvailability/SetAvailabilityPage";
 
 const TSetAvailabilityPage = () => {

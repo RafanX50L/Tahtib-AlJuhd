@@ -1,6 +1,5 @@
 import { Router } from "express";
 import personalizationRouter from "./client/client.personalization.routes";
-import verifyToken from "@/middleware/verify.token.middleware";
 import isBlocked from "@/middleware/isBlocked.middleware";
 import workoutPlanRouter from "./client/client.workoutPlan.routes";
 import weeklyChallengeRouter from "./client/client.weeklyChallenge.route";
@@ -12,6 +11,8 @@ import planRouter from "./domain/plan.routes";
 import bookingRouter from "./domain/booking.routes";
 import availabilityRouter from "./domain/availability.routes";
 import chatRouter from "./shared/chat.routes";
+import notificationRouter from "./shared/notification.routes";
+import { verifyToken } from "@/middleware/verify.token.middleware";
 
 const routerRoot = Router();
 
@@ -28,5 +29,6 @@ routerRoot.use(planRouter);
 routerRoot.use(bookingRouter);  
 routerRoot.use(availabilityRouter);
 routerRoot.use('/current-trainer',chatRouter);
+routerRoot.use('/notifications', notificationRouter);
 
 export default routerRoot;

@@ -277,8 +277,7 @@ const TrainersMain: React.FC = () => {
    * RENDER
    * ------------------------------------------------------------------ */
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#0F1419] to-[#1A1F2E] transition-all duration-300">
-      <div className="p-4 lg:pt-[calc(70px+1rem)] xl:p-6 2xl:p-8 max-w-7xl mx-auto lg:mx-0">
+      <div className="p-4 lg:pt-[calc(70px+1rem)] xl:p-6 2xl:p-8 max-w-7xl mx-auto lg:mx-0 ">
         {/* Current Trainer Section */}
         <section className="relative mb-8 animate-[fadeIn_0.6s_ease-out_0.1s_forwards]">
           <div className="bg-gradient-to-br from-[#1E2235] via-[#252A40] to-[rgba(30,34,53,0.8)] border border-[#2A3042] rounded-2xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-sm">
@@ -543,7 +542,6 @@ const TrainersMain: React.FC = () => {
           </div>
         </section>
       </div>
-    </main>
   );
 };
 

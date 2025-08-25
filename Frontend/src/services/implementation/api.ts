@@ -1,11 +1,10 @@
-
 import axios from "axios";
 import { HOST } from "@/utils/constant";
-import { AppDispatch, RootState } from "@/store/store";
-import { refreshAccessToken, setCredentials } from "@/store/slices/authSlice";
-import { useSelector } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { setCredentials } from "@/store/slices/authSlice";
 import { AxiosInstance } from "axios";
 import { UserInterface } from "@/types/user";
+import { INotification } from "@/components/client/CNotificationDropDown";
 
 interface TokenData {
   token: string;
@@ -30,9 +29,9 @@ export const secureTokenStorage = {
     }
   },
 
-  set: (user: UserInterface, token: string, version: number, dispatch: AppDispatch) => {
+  set: (user: UserInterface, notifications: INotification[], token: string, version: number, dispatch: AppDispatch) => {
     try {
-      dispatch(setCredentials({ user, accessToken: token, tokenVersion: version }));
+      dispatch(setCredentials({ user,notifications, accessToken: token, tokenVersion: version }));
       console.log('Token stored successfully, version:', version);
     } catch (error) {
       console.error('Failed to store token:', error);

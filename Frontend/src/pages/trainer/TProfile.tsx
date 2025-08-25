@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import TrainerProfile from "@/components/trainer/Profile/Profile";
 import Sidebar from "@/components/trainer/Sidebar";
 import { TrainerService } from "@/services/implementation/trainerServices";
-import Header from "@/components/trainer/Dashboard/Header";
+import Header from "@/components/trainer/Header";
 
 export interface ITrainerWithPersonalization {
   _id: string;

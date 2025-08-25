@@ -119,14 +119,14 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
           const response = await dispatch(refreshAccessToken()).unwrap();
           console.log("Refresh token response:", response);
 
-          const { accessToken, tokenVersion, user } = response;
+          const { accessToken, tokenVersion, user, notifications } = response;
           if (!accessToken || tokenVersion === undefined) {
             throw new Error(
               "Invalid refresh response: missing accessToken or tokenVersion"
             );
           }
 
-          secureTokenStorage.set(user,accessToken, tokenVersion,dispatch);
+          secureTokenStorage.set(user,notifications,accessToken, tokenVersion,dispatch);
           originalRequest.headers = {
             ...originalRequest.headers,
             Authorization: `Bearer ${accessToken}`,

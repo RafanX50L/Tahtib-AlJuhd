@@ -22,8 +22,9 @@ import './utils/createWeeklyChallenge-Corn .utils';
 //routes
 import authRoutes from '@/routes/auth.routes';
 import userRoutes from '@/routes/user.routes';
-import trainerRouter from './routes/trainer.routes';
-import adminRouter from './routes/admin.routes';
+import trainerRouter from '@/routes/trainer.routes';
+import adminRouter from '@/routes/admin.routes';
+import notificationRoute from '@/routes/shared/notification.routes';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/client/',userRoutes);
 app.use('/api/trainer', trainerRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/notifications',notificationRoute);
 app.use(errorHandler);
 
 

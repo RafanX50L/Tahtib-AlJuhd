@@ -1,5 +1,5 @@
 import Sidebar from "../../components/trainer/Sidebar";
-import Header from "../../components/trainer/Dashboard/Header";
+import Header from "../../components/trainer/Header";
 import StatsGrid from "../../components/trainer/Dashboard/StatsGrid";
 import PerformanceTrends from "../../components/trainer/Dashboard/PerfomanceTrends";
 import PaymentHistory from "../../components/trainer/Dashboard/PaymentHistory";

@@ -11,9 +11,45 @@ import LandingPage from "./pages/landing/LandingPage";
 import VideoCall from "./pages/common/VideoCallP";
 import NotFoundPage from "./pages/common/NotFond";
 import { AuthInitializer } from "./routes/AuthInitializer";
+import NotificationsPage from "./components/client/Notification/Notifications";
+import { useEffect } from "react";
+import { useSocket } from "./hooks/socketio";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/store";
+import { chatEnum } from "./lib/chat-enum";
 
 const App: React.FC = () => {
   console.log("Entered App.tsx");
+  const socket = useSocket();
+  const { user } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    if (socket && user?._id) {
+      socket.on("connect", () => {
+        console.log("Socket connected, ID:", socket.id);
+        socket.emit(chatEnum.joinUser, {
+          userId: user._id,
+          role: user.role,
+        });
+        console.log("Emitted joinUser for user:", user._id, "role:", user.role);
+      });
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Socket disconnected");
+      });
+    }
+
+    return () => {
+      socket?.off("connect");
+      socket?.off("connect_error");
+      socket?.off("disconnect");
+    };
+  }, [socket, user]);
+
   return (
     <>
       <Toaster richColors position="top-right" />

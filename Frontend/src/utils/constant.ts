@@ -58,7 +58,8 @@ export const CLIENT_ROUTES = {
   CURRENT_TRAINER: `${CLIENT_ROUTE}/current-trainer`,
   CURRENT_TRAINER_CONTRACT: `${CLIENT_ROUTE}/current-trainer/contract`,
   CURRENT_TRAINER_MESSAGES: `${CLIENT_ROUTE}/current-trainer/messages`,
-  AVAILABILITY: `${CLIENT_ROUTE}/availability`
+  AVAILABILITY: `${CLIENT_ROUTE}/availability`,
+  NOTIFICATIONS: `${CLIENT_ROUTE}/notifications`,
 };
 
 const TRAINER_ROUTE = "/trainer";

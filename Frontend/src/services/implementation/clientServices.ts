@@ -361,7 +361,8 @@ export const ClientService = {
   getCurrentTrainerMessages: async (chatId:string) => {
     try {
       const response = await api.get(`${CLIENT_ROUTES.CURRENT_TRAINER}/${chatId}`);
-      return response.data.messages;
+      console.log('chat messages',response);
+      return response.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =

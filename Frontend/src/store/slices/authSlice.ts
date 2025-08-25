@@ -1,19 +1,22 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/services/implementation/api";
 import { UserInterface } from "@/types/user";
+import { INotification } from "@/components/client/CNotificationDropDown";
 
 console.log("Auth slice importing API instance:", (api as any).__instanceId);
 
 export interface AuthState {
   isAuthenticated: boolean;
   user: UserInterface | null;
+  notifications:INotification[] |[];
   status: "idle" | "loading" | "succeeded" | "failed";
   lastLocation: string | null;
-}
+};
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  notifications: [],
   status: "idle",
   lastLocation: null,
 };
@@ -33,9 +36,10 @@ export const refreshAccessToken = createAsyncThunk(
       if (!response.data.accessToken) {
         throw new Error("No access token in response");
       }
-      dispatch(setCredentials({ user: response.data.user, accessToken: response.data.accessToken, tokenVersion: response.data.tokenVersion }));
+      dispatch(setCredentials({ user: response.data.user, notifications:response.data.notifications, accessToken: response.data.accessToken, tokenVersion: response.data.tokenVersion }));
       return {
         user: response.data.user,
+        notifications: response.data.notifications,
         accessToken: response.data.accessToken,
         tokenVersion: response.data.tokenVersion || tokenVersion + 1
       };
@@ -53,10 +57,11 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: UserInterface; accessToken: string; tokenVersion: number }>
+      action: PayloadAction<{ user: UserInterface; notifications: INotification[]; accessToken: string; tokenVersion: number }>
     ) => {
       console.log("Setting credentials:", action.payload);
       state.user = action.payload.user;
+      state.notifications = action.payload.notifications;
       state.isAuthenticated = true;
       localStorage.setItem("accessTokenData", JSON.stringify({accessToken:action.payload.accessToken, tokenVersion:action.payload.tokenVersion}));
       localStorage.setItem("sessionActive", "true");
@@ -93,6 +98,7 @@ const authSlice = createSlice({
         authSlice.caseReducers.setCredentials(state, {
           payload: {
             user: action.payload.user,
+            notifications: action.payload.notifications,
             accessToken: action.payload.accessToken,
             tokenVersion: action.payload.tokenVersion,
           },

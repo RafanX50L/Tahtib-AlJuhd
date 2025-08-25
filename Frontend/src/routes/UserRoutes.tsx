@@ -14,6 +14,7 @@ import CTProfilePage from '@/pages/client/CTProfile';
 import CDietPlanPage from '@/pages/client/CDietPlan';
 import CATrainerDetailsPage from '@/pages/client/CATProfilePage';
 import CCurrentTrainerPage from '@/pages/client/CCTrainerPage';
+import NotificationsPage from '@/components/client/Notification/Notifications';
 
 const UserRoutes: React.FC = () => {
   console.log('Entered UserRoutes');
@@ -32,6 +33,7 @@ const UserRoutes: React.FC = () => {
       <Route path="/diet" element={<CDietPlanPage />} />
       <Route path="/chat" element={<CChatBotPage />} />
       <Route path="/trainer-details/:trainerId" element={<CATrainerDetailsPage />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

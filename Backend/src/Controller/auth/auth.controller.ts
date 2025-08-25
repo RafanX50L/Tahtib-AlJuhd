@@ -9,9 +9,13 @@ import {
   setCookie,
 } from "../../utils/cookie.utils";
 import { createHttpError } from "../../utils";
+import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
 
 export class AuthController implements IAuthController {
-  constructor(private _authService: IAuthService) {}
+  constructor(
+    private _authService: IAuthService,
+    private _notificationService: INotificationService,
+  ) {}
 
   async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -29,7 +33,8 @@ export class AuthController implements IAuthController {
       const { email, password } = req.body;
       const { user, accessToken, refreshToken, tokenVersion } =
         await this._authService.signIn(email, password);
-
+        console.log('user',user);
+      const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -38,9 +43,11 @@ export class AuthController implements IAuthController {
       });
 
       console.log("Refresh Token:", refreshToken);
+      console.log("notifications",notifications);
       res.status(HttpStatus.OK).json({
         message: HttpResponse.LOGIN_SUCCESS,
         user,
+        notifications,
         accessToken,
         tokenVersion: tokenVersion || 0,
       });
@@ -58,7 +65,7 @@ export class AuthController implements IAuthController {
       const { email, otp } = req.body;
       const { user, accessToken, refreshToken, tokenVersion } =
         await this._authService.verifyOtp(email, otp);
-
+      const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -69,6 +76,7 @@ export class AuthController implements IAuthController {
       res.status(HttpStatus.CREATED).json({
         message: HttpResponse.USER_CREATION_SUCCESS,
         user,
+        notifications,
         accessToken,
         tokenVersion: tokenVersion || 0,
       });
@@ -134,7 +142,7 @@ export class AuthController implements IAuthController {
       const { email, name, role } = req.body;
       const { user, accessToken, refreshToken, tokenVersion } =
         await this._authService.googleSignUp(email, name, role);
-
+      const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -145,6 +153,7 @@ export class AuthController implements IAuthController {
       res.status(HttpStatus.OK).json({
         message: HttpResponse.LOGIN_SUCCESS,
         user,
+        notifications,
         accessToken,
         tokenVersion: tokenVersion || 0,
       });
@@ -193,6 +202,7 @@ export class AuthController implements IAuthController {
       }
 
       const result = await this._authService.refreshAccessToken(refreshToken);
+      const notifications = await this._notificationService.getLastFiveNotification((result.user._id as string));
 
       setCookie(res, result.refreshToken, {
         httpOnly: true,
@@ -204,6 +214,7 @@ export class AuthController implements IAuthController {
       res.status(HttpStatus.OK).json({
         accessToken: result.accessToken,
         user: result.user,
+        notifications,
         tokenVersion: result.tokenVersion,
       });
     } catch (error) {

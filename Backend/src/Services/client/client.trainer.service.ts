@@ -40,8 +40,6 @@ export class clientTrainerService implements IClientTrainerService{
         const plans = await this._planRepo.findByTrainerId(id);
         if (!trainer) throw new Error('Trainer not found');
         const data = trainer.data;
-        console.log('Trainer data:', trainer);
-        console.log('plans data:', plans);
         return {
             id: id,
             name: user.name,
@@ -68,7 +66,6 @@ export class clientTrainerService implements IClientTrainerService{
         if (!currentTrainerId) throw new Error('No current trainer found for this user');
         const trainer = (await this._userRepo.findById(currentTrainerId));
         const result = await this._trainerRepo.getTrainerProfileData(trainer.personalizationId.toString());
-        console.log(result);
         const data = result.data;
         return {
             id: currentTrainerId.toString(),

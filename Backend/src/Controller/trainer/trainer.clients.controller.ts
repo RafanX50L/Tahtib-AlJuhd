@@ -2,8 +2,8 @@ import {  Response, NextFunction } from 'express';
 import { ITrainerClientService } from '@/core/interface/services/trainer/ITrainer.Clients.Service';
 import { IChatService } from '@/core/interface/services/shared/IChat.Service';
 import { AddedRequest } from '@/middleware/verify.token.middleware';
-import { ITrainerClientsController } from '@/core/interface/controllers/trainer/ITrainer.clients.controller';
 import { HttpStatus } from '@/constants/status.constant';
+import { ITrainerClientsController } from '@/core/interface/controllers/trainer/ITrainer.Clients.Controller';
 
 
 export class TrainerClientsController implements ITrainerClientsController {

@@ -2,12 +2,16 @@ import { Router } from "express";
 import { UserRepository } from "@/Repository/user.Repository";
 import { AuthService } from "@/Services/auth/auth.service";
 import { AuthController } from "@/Controller/auth/auth.controller";
+import { NotificationRepository } from "@/Repository/Notification.repository";
+import { NotificationService } from "@/Services/shared/Notification.service";
 
 const authRouter = Router();
 
 const userRepository = new UserRepository();
+const notificationRepo = new NotificationRepository();
 const authService = new AuthService(userRepository);
-const authController = new AuthController(authService);
+const notificationService = new NotificationService(notificationRepo);
+const authController = new AuthController(authService,notificationService);
 
 
 

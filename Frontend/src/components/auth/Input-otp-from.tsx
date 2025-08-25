@@ -27,7 +27,6 @@ export function OTPVerificationPage() {
   const dispath = useDispatch();
   const navigate = useNavigate();
 
-
   const form = useForm<OTPFormData>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -82,7 +81,7 @@ export function OTPVerificationPage() {
       console.log("Submitting OTP:", data.otp);
       const response = await AuthService.verifyOtp({ ...data, email });
       console.log(`OTP verification response with Status ${response.status}`);
-      dispath(setCredentials({ user: response.user, accessToken: response.accessToken, tokenVersion: response.tokenVersion }))
+      dispath(setCredentials({ user: response.user,notifications:response.notifications, accessToken: response.accessToken, tokenVersion: response.tokenVersion }))
       toast.success(response.message);
       navigate(`/dashboard`)
     } catch (error: unknown) {
