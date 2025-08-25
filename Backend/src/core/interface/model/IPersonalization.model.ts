@@ -65,7 +65,18 @@ export interface ITrainerPersonalization {
     resumeFileId?: Types.ObjectId;
   };
   availability: {
-    weeklySlots: { day: string; startTime: string; endTime: string, date: string }[];
+    weeklyAvailability: {
+      [key: string]: {
+        isAvailable: boolean;
+        timeSlots: Array<{
+          startTime: string;
+          endTime: string;
+          duration: number;
+          price: number;
+        }>;
+      };
+    };
+    timezone: string;
     engagementType: 'full-time' | 'part-time' | 'contract' | 'freelance';
   };
   evaluation?: {

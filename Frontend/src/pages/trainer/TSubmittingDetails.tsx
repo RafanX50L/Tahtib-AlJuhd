@@ -25,29 +25,6 @@ const certificationSchema = z.object({
   proof: z.instanceof(File).nullable().optional(),
 });
 
-const weeklySlotSchema = z.object({
-  day: z.enum(
-    [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ],
-    {
-      errorMap: () => ({ message: "Day is required" }),
-    }
-  ),
-  startTime: z
-    .string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
-  endTime: z
-    .string()
-    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
-});
-
 const trainerFormSchema = z.object({
   phoneNumber: z.string().min(1, "Phone number is required"),
   location: z.string().min(1, "Location is required"),
@@ -85,9 +62,6 @@ const trainerFormSchema = z.object({
     .array(z.string().url("Invalid URL").or(z.string().length(0)))
     .optional(),
   resume: z.instanceof(File).nullable().optional(),
-  weeklySlots: z
-    .array(weeklySlotSchema)
-    .min(1, "At least one time slot is required"),
   engagementType: z.enum(["full-time", "part-time", "contract", "freelance"], {
     errorMap: () => ({ message: "Engagement type is required" }),
   }),
@@ -114,7 +88,7 @@ const stepFields: Record<number, (keyof TrainerFormData)[]> = {
     "platformsUsed",
   ],
   3: ["demoVideoLink", "portfolioLinks", "resume"],
-  4: ["weeklySlots", "engagementType"],
+  4: ["engagementType"],
 };
 
 const TrainerForm: React.FC = () => {
@@ -143,7 +117,6 @@ const TrainerForm: React.FC = () => {
       demoVideoLink: "",
       portfolioLinks: [""],
       resume: null,
-      weeklySlots: [{ day: undefined, startTime: "", endTime: "" }],
       engagementType: undefined,
     },
   });
@@ -181,101 +154,89 @@ const TrainerForm: React.FC = () => {
   }, [currentStep]);
 
   const onSubmit = async (data: TrainerFormData) => {
-  setSubmissionStatus("submitting");
-  setErrorMessage(null);
+    setSubmissionStatus("submitting");
+    setErrorMessage(null);
 
-  try {
-    // Validate required fields
-    if (!data.phoneNumber || !data.location || !data.specializations.length) {
-      throw new Error(
-        "Required fields are missing: phoneNumber, location, and specializations are mandatory."
-      );
-    }
-
-    const formData = new FormData();
-
-    // File validation
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    // Append profile photo
-    if (data.profilePhoto) {
-      if (data.profilePhoto.size > maxSize) {
-        throw new Error("Profile photo must be less than 5MB.");
+    try {
+      // Validate required fields
+      if (!data.phoneNumber || !data.location || !data.specializations.length) {
+        throw new Error(
+          "Required fields are missing: phoneNumber, location, and specializations are mandatory."
+        );
       }
-      if (!["image/jpeg", "image/png"].includes(data.profilePhoto.type)) {
-        throw new Error("Profile photo must be a JPEG or PNG image.");
-      }
-      formData.append("profilePhoto", data.profilePhoto);
-    }
 
-    // Append certification proofs under a single field name
-    data.certifications.forEach((cert) => {
-      if (cert.proof) {
-        if (cert.proof.size > maxSize) {
-          throw new Error(`Certification proof for "${cert.name}" must be less than 5MB.`);
+      const formData = new FormData();
+
+      // File validation
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      // Append profile photo
+      if (data.profilePhoto) {
+        if (data.profilePhoto.size > maxSize) {
+          throw new Error("Profile photo must be less than 5MB.");
         }
-        if (!["application/pdf", "image/jpeg", "image/png"].includes(cert.proof.type)) {
-          throw new Error(
-            `Certification proof for "${cert.name}" must be a PDF, JPEG, or PNG.`
-          );
+        if (!["image/jpeg", "image/png"].includes(data.profilePhoto.type)) {
+          throw new Error("Profile photo must be a JPEG or PNG image.");
         }
-        formData.append("certificationProofs", cert.proof);
+        formData.append("profilePhoto", data.profilePhoto);
       }
-    });
 
-    // Append resume
-    if (data.resume) {
-      if (data.resume.size > maxSize) {
-        throw new Error("Resume must be less than 5MB.");
+      // Append certification proofs under a single field name
+      data.certifications.forEach((cert) => {
+        if (cert.proof) {
+          if (cert.proof.size > maxSize) {
+            throw new Error(`Certification proof for "${cert.name}" must be less than 5MB.`);
+          }
+          if (!["application/pdf", "image/jpeg", "image/png"].includes(cert.proof.type)) {
+            throw new Error(
+              `Certification proof for "${cert.name}" must be a PDF, JPEG, or PNG.`
+            );
+          }
+          formData.append("certificationProofs", cert.proof);
+        }
+      });
+
+      // Append resume
+      if (data.resume) {
+        if (data.resume.size > maxSize) {
+          throw new Error("Resume must be less than 5MB.");
+        }
+        formData.append("resume", data.resume);
       }
-      formData.append("resume", data.resume);
+
+      // Append text fields
+      formData.append("phoneNumber", data.phoneNumber);
+      formData.append("location", data.location);
+      formData.append("timeZone", data.timeZone);
+      if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
+      if (data.gender) formData.append("gender", data.gender);
+      formData.append("yearsOfExperience", String(data.yearsOfExperience));
+      formData.append("specializations", JSON.stringify(data.specializations));
+      formData.append("coachingType", JSON.stringify(data.coachingType));
+      if (data.platformsUsed?.length)
+        formData.append("platformsUsed", JSON.stringify(data.platformsUsed));
+      formData.append("demoVideoLink", data.demoVideoLink);
+      if (data.portfolioLinks?.length)
+        formData.append("portfolioLinks", JSON.stringify(data.portfolioLinks));
+      formData.append("engagementType", data.engagementType);
+      // Do NOT append weekly availability or timezone here
+
+      // Log FormData for debugging (optional)
+      console.log("formData entries:");
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      // Send to the backend
+      const response = await TrainerService.submitTrainerApplication(formData);
+      setSubmissionStatus("success");
+      navigate("/trainer/pendingCases");
+      location.reload();
+    } catch (error: any) {
+      setSubmissionStatus("error");
+      setErrorMessage(error.message || "An error occurred during submission");
     }
-
-    // Append text fields
-    formData.append("phoneNumber", data.phoneNumber);
-    formData.append("location", data.location);
-    formData.append("timeZone", data.timeZone);
-    if (data.dateOfBirth) formData.append("dateOfBirth", data.dateOfBirth);
-    if (data.gender) formData.append("gender", data.gender);
-    formData.append("yearsOfExperience", String(data.yearsOfExperience));
-    formData.append("specializations", JSON.stringify(data.specializations));
-    formData.append("coachingType", JSON.stringify(data.coachingType));
-    if (data.platformsUsed?.length)
-      formData.append("platformsUsed", JSON.stringify(data.platformsUsed));
-    formData.append("demoVideoLink", data.demoVideoLink);
-    if (data.portfolioLinks?.length)
-      formData.append("portfolioLinks", JSON.stringify(data.portfolioLinks));
-    formData.append("engagementType", data.engagementType);
-    formData.append("weeklySlots", JSON.stringify(data.weeklySlots));
-
-    // Append certifications with a hasProof flag
-    formData.append(
-      "certifications",
-      JSON.stringify(
-        data.certifications.map((cert) => ({
-          name: cert.name,
-          issuer: cert.issuer,
-          hasProof: !!cert.proof, // True if proof exists, false otherwise
-        }))
-      )
-    );
-
-    // Log FormData for debugging (optional)
-    console.log("formData entries:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
-    // Send to the backend
-    const response = await TrainerService.submitTrainerApplication(formData);
-    setSubmissionStatus("success");
-    navigate("/trainer/pendingCases");
-    location.reload();
-  } catch (error: any) {
-    setSubmissionStatus("error");
-    setErrorMessage(error.message || "An error occurred during submission");
-  }
-};
+  };
 
   const RenderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
@@ -287,149 +248,119 @@ const TrainerForm: React.FC = () => {
         return (
           <div key={step.id} className="flex items-center">
             <div
-              className={`flex items-center justify-center w-12 h-12 rounded-full border-2 ${
+              className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
                 isCompleted
-                  ? "bg-green-500 border-green-500 text-white"
+                  ? "bg-green-500 text-white border-green-500"
                   : isCurrent
-                    ? "bg-[#6366f1] border-[#6366f1] text-white"
-                    : "border-[#2c2c2c] text-[#666]"
+                  ? "bg-[#6366f1] text-white border-[#6366f1]"
+                  : "bg-transparent text-[#9ca3af] border-[#374151]"
               }`}
             >
-              {isCompleted ? (
-                <CheckCircle className="w-6 h-6" />
-              ) : (
-                <Icon className="w-6 h-6" />
-              )}
-            </div>
-            <div className="ml-3">
-              <div
-                className={`text-sm font-medium ${
-                  isCurrent
-                    ? "text-[#6366f1]"
-                    : isCompleted
-                      ? "text-green-500"
-                      : "text-[#666]"
-                }`}
-              >
-                {step.title}
-              </div>
+              <Icon className="w-5 h-5" />
             </div>
             {index < steps.length - 1 && (
-              <div
-                className={`w-16 h-0.5 mx-4 ${isCompleted ? "bg-green-500" : "bg-[#2c2c2c]"}`}
-              />
-            )}
+              <div className="w-10 h-0.5 bg-[#374151] mx-2" />)
+            }
           </div>
         );
       })}
     </div>
   );
 
-  const variants = {
-    enter: { x: direction * 300, opacity: 0 },
-    center: { x: 0, opacity: 1 },
-    exit: { x: direction * -300, opacity: 0 },
-  };
-
-  const stepComponents = {
-    1: BasicInfo,
-    2: ProfessionalInfo,
-    3: SampleMaterials,
-    4: Availability,
-  } as const;
-
-  const CurrentStepComponent =
-    stepComponents[currentStep as keyof typeof stepComponents] || BasicInfo;
-
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#f1f1f1]">
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-4xl mx-auto bg-[#121212] border-[#2c2c2c]">
-          <CardHeader className="text-center border-b border-[#2c2c2c]">
-            <CardTitle className="text-3xl font-bold text-[#6366f1] mb-2">
-              Trainer Registration
-            </CardTitle>
-            <p className="text-[#b0b0b0] text-lg">
-              Join our platform and start inspiring fitness journeys
-            </p>
-          </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-[#0b0e17] px-4 py-10">
+      <Card className="w-full max-w-5xl bg-[#0d1117] border border-[#1f2937] text-white">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-white text-center">
+            Trainer Application
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RenderStepIndicator />
 
-          <CardContent className="p-6">
-            <RenderStepIndicator />
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-              <AnimatePresence mode="wait">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <AnimatePresence mode="wait" initial={false}>
+              {currentStep === 1 && (
                 <motion.div
-                  key={`step-${currentStep}`}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3 }}
+                  key="step-1"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <CurrentStepComponent
-                    control={control}
-                    watch={watch}
-                    setValue={setValue}
-                    errors={errors}
-                  />
+                  <BasicInfo control={control} errors={errors} watch={watch} />
                 </motion.div>
-              </AnimatePresence>
+              )}
 
-              <div className="flex justify-between pt-6 border-t border-[#2c2c2c]">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                  className="bg-[#1a1a1a] border-[#2c2c2c] text-[#b0b0b0] hover:bg-[#2c2c2c] hover:text-[#f1f1f1] disabled:opacity-50"
+              {currentStep === 2 && (
+                <motion.div
+                  key="step-2"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  Previous
+                  <ProfessionalInfo control={control} errors={errors} watch={watch} setValue={setValue} />
+                </motion.div>
+              )}
+
+              {currentStep === 3 && (
+                <motion.div
+                  key="step-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <SampleMaterials control={control} errors={errors} watch={watch} setValue={setValue} />
+                </motion.div>
+              )}
+
+              {currentStep === 4 && (
+                <motion.div
+                  key="step-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Availability control={control} errors={errors} watch={watch} setValue={setValue} />
+                  <Alert className="mt-4 bg-[#0b1220] border-[#1f2a44]">
+                    <AlertDescription>
+                      Availability patterns are set after approval on the Set Availability page.
+                      Please choose your engagement type now; you can configure weekly availability later.
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="flex justify-between mt-6">
+              {currentStep > 1 ? (
+                <Button type="button" variant="outline" onClick={prevStep}>
+                  Back
                 </Button>
+              ) : (
+                <div />
+              )}
 
-                {currentStep < 4 ? (
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="bg-[#6366f1] hover:bg-[#818cf8] text-white"
-                  >
-                    Next Step
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    disabled={submissionStatus === "submitting"}
-                    className="bg-[#10b981] hover:bg-[#059669] text-white disabled:opacity-50"
-                  >
-                    {submissionStatus === "submitting" ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Submitting...
-                      </div>
-                    ) : (
-                      "Submit Application"
-                    )}
-                  </Button>
-                )}
-              </div>
-            </form>
+              {currentStep < 4 ? (
+                <Button type="button" onClick={nextStep}>
+                  Next
+                </Button>
+              ) : (
+                <Button type="submit" disabled={submissionStatus === "submitting"}>
+                  {submissionStatus === "submitting" ? "Submitting..." : "Submit"}
+                </Button>
+              )}
+            </div>
 
-            {submissionStatus === "success" && (
-              <Alert className="mt-4 bg-[#1a1a1a] border-[#6366f1]">
-                <AlertDescription className="text-[#f1f1f1]">
-                  Form submitted successfully! Thank you for your application.
-                </AlertDescription>
-              </Alert>
-            )}
             {submissionStatus === "error" && (
-              <Alert className="mt-4 bg-[#1a1a1a] border-[#ef4444]">
-                <AlertDescription className="text-[#ef4444]">
-                  {errorMessage}
-                </AlertDescription>
-              </Alert>
+              <p className="text-red-500 mt-4">{errorMessage}</p>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

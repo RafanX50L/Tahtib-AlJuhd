@@ -60,6 +60,9 @@ export const CLIENT_ROUTES = {
   CURRENT_TRAINER_MESSAGES: `${CLIENT_ROUTE}/current-trainer/messages`,
   AVAILABILITY: `${CLIENT_ROUTE}/availability`,
   NOTIFICATIONS: `${CLIENT_ROUTE}/notifications`,
+  COMMUNITY: `${CLIENT_ROUTE}/community`,
+  PROGRESS: `${CLIENT_ROUTE}/progress`,
+  BOOK_TRAINER: `${CLIENT_ROUTE}/book-trainer`,
 };
 
 const TRAINER_ROUTE = "/trainer";
@@ -73,5 +76,8 @@ export const TRAINER_ROUTES = {
   AVAILABILITY: `${TRAINER_ROUTE}/availability`,
   SALARY: `${TRAINER_ROUTE}/salary`,
   CLIENTS: `${TRAINER_ROUTE}/clients`,
-  CHAT: `${TRAINER_ROUTE}/chat`
+  CHAT: `${TRAINER_ROUTE}/chat`,
+  SCHEDULE: `${TRAINER_ROUTE}/schedule`,
+  BOOKINGS: `${TRAINER_ROUTE}/bookings`,
+  EARNINGS: `${TRAINER_ROUTE}/earnings`
 };

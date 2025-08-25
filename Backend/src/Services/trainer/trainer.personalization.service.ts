@@ -6,6 +6,7 @@ import { ITrainerInterviewRepository } from "@/core/interface/repositories/ITrai
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
+import { ITrainerScheduleService } from "@/core/interface/services/domain/ITrainerSchedule.service";
 import { ITrainerPersonalizationService } from "@/core/interface/services/trainer/ITrainer.Personalization.Service";
 import { TrainerDTO, TrainerProfileDTO } from "@/dtos/trainer/TrainerDTO";
 import { createHttpError } from "@/utils";
@@ -21,7 +22,8 @@ export class TrainerPersonalizationService
     private readonly _personalizationRepository: ITrainerPersonalizationRepository,
     private readonly _userFileRepository: IUserFileRepository,
     private readonly _userRepository: IUserRepository,
-    private readonly _trainerInterviewRepository: ITrainerInterviewRepository
+    private readonly _trainerInterviewRepository: ITrainerInterviewRepository,
+    private readonly _trainerScheduleService: ITrainerScheduleService
   ) {}
   /** Reserved for Workout plan specific methods */
   _placeholder?: never;
@@ -51,7 +53,7 @@ export class TrainerPersonalizationService
       // Save files to UserFile collection and collect their IDs
       let profilePhotoId = null;
       let resumeId = null;
-      const certificationProofIds = [];
+      const certificationProofIds = [] as Array<{ certIndex: number; proofFileId: any }>;
 
       // Save profile photo if exists
       if (profilePhoto) {
@@ -83,7 +85,7 @@ export class TrainerPersonalizationService
       let proofIndex = 0;
       for (const cert of certifications) {
         if (cert.hasProof) {
-          const proofFile = proofFiles[proofIndex];
+          const proofFile = (proofFiles as any)[proofIndex];
           const path = await uploadToS3(proofFile, "certification-proofs");
           const proofDoc = await this._userFileRepository.create({
             userId: new Types.ObjectId(userId), // Will be updated after creating personalization
@@ -133,10 +135,12 @@ export class TrainerPersonalizationService
           resumeFileId: resumeId,
         },
         availability: {
-          weeklySlots: JSON.parse(req.body.weeklySlots),
+          // Do NOT set weekly availability during registration; trainers will set this after approval
+          weeklyAvailability: {},
+          timezone: req.body.timeZone,
           engagementType: req.body.engagementType,
         },
-        status: "applied" as const, // or another default value as per your business logic
+        status: "applied" as const,
         ratings: [],
         sessions: [],
         chats: [],
@@ -169,6 +173,7 @@ export class TrainerPersonalizationService
         personalizationId: personalization.id,
       });
 
+      // Do NOT create the trainer schedule here; it will be set post-approval in Set Availability
       logger.info("Application Data Saved");
       return;
     } catch (error) {
@@ -228,7 +233,7 @@ export class TrainerPersonalizationService
       throw new Error("Personalization ID not found for user.");
     }
 
-    const updateFields = {};
+    const updateFields: Record<string, any> = {};
 
     if (data.phoneNumber) {
       updateFields['data.basicInfo.phoneNumber'] = data.phoneNumber;

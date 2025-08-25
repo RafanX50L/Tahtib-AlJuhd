@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '@/store/slices/authSlice';
-import { ChevronDown, User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { ChevronDown, User, Settings, HelpCircle, LogOut, CalendarDays } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,12 @@ const Header: React.FC<HeaderProps> = ({ text }) => {
     navigate('/auth?path=login');
   };
 
+  const goToAvailability = () => {
+    // If there's an approval flag, check it here before navigate
+    // e.g., if (user?.status !== 'approved') { toast.error('Awaiting approval'); return; }
+    navigate('/trainer/availability');
+  };
+
   return (
     <div className="flex justify-between items-center mb-8 bg-[#1e1e1e]/70 p-4 rounded-md shadow-[0_4px_6px_rgba(0,0,0,0.3)]">
       {/* Left side - Page title */}
@@ -41,6 +47,12 @@ const Header: React.FC<HeaderProps> = ({ text }) => {
 
       {/* Right side - Notifications and Profile */}
       <div className="flex items-center gap-4">
+        {/* Quick action: Set Availability */}
+        <Button variant="outline" className="hidden md:flex border-[#2c2c2c] text-[#b0b0b0] hover:bg-[#2c2c2c]" onClick={goToAvailability}>
+          <CalendarDays className="w-4 h-4 mr-2" />
+          Set Availability
+        </Button>
+
         {/* Notification Dropdown */}
         <TrainerNotificationDropdown />
 
@@ -87,12 +99,14 @@ const Header: React.FC<HeaderProps> = ({ text }) => {
             
             <DropdownMenuSeparator className="bg-[#2c2c2c]" />
             
-            <DropdownMenuItem 
-              className="text-[#b0b0b0] hover:text-[#ffffff] hover:bg-[#6366f1]/10 cursor-pointer" 
-              onClick={() => navigate('/trainer/profile')}
-            >
+            <DropdownMenuItem className="text-[#b0b0b0] hover:text-[#ffffff] hover:bg-[#6366f1]/10 cursor-pointer" onClick={() => navigate('/trainer/profile')}>
               <User className="w-4 h-4 mr-3" />
               <span>View Profile</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem className="text-[#b0b0b0] hover:text-[#ffffff] hover:bg-[#6366f1]/10 cursor-pointer" onClick={goToAvailability}>
+              <CalendarDays className="w-4 h-4 mr-3" />
+              <span>Set Availability</span>
             </DropdownMenuItem>
             
             <DropdownMenuItem className="text-[#b0b0b0] hover:text-[#ffffff] hover:bg-[#6366f1]/10 cursor-pointer">
