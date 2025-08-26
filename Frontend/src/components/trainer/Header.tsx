@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import TrainerNotificationDropdown from './TrainerNotificationDropDown';
+import NotificationDropdown, { trainerTheme } from '../shared/NotificationDropDown';
 
 interface HeaderProps {
   text: string;
@@ -42,8 +43,11 @@ const Header: React.FC<HeaderProps> = ({ text }) => {
       {/* Right side - Notifications and Profile */}
       <div className="flex items-center gap-4">
         {/* Notification Dropdown */}
-        <TrainerNotificationDropdown />
-
+        {/* <TrainerNotificationDropdown /> */}
+        <NotificationDropdown
+          theme={trainerTheme}
+          navPath="/trainer/notification"
+        />
         {/* Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

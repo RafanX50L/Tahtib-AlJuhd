@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+// CWorkouts.tsx
+import { useEffect, useState, useRef } from "react";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";
 import WorkoutCards from "@/components/client/Workouts/WorkoutCards";
 import LevelTabs from "@/components/client/Workouts/LevelTabs";
@@ -7,13 +8,13 @@ import CFooter from "@/components/client/Footer";
 import MainCard from "@/components/client/Workouts/MainCard";
 import ChatbotButton from "@/components/client/ChatbotButton";
 import { ClientService } from "@/services/implementation/clientServices";
-import Header from "@/components/client/Header";
+import Header, { SidebarRef } from "@/components/client/Header";
 
 // Define the response type for ClientService.getWorkouts
 interface WorkoutResponse {
   data: {
     workouts: Workout[];
-    notes?: string; // Notes are optional, as per previous context
+    notes?: string;
   };
 }
 
@@ -48,6 +49,11 @@ const WorkoutPlan = () => {
   const [error, setError] = useState<string | null>(null);
   const [weekStatuses, setWeekStatuses] = useState<WeekStatuses | null>(null);
   const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(null);
+  const sidebarRef = useRef<SidebarRef>(null);
+
+  const handleMenuToggle = () => {
+    sidebarRef.current?.toggleSidebar();
+  };
 
   // Fetch initial data on component mount
   useEffect(() => {
@@ -86,8 +92,8 @@ const WorkoutPlan = () => {
       setWorkouts(response.data.workouts);
       setMainData((prev) =>
         prev
-          ? { ...prev, notes: response.data.notes || prev.notes } // Update notes if prev exists
-          : null // Return null if prev is null, as we can't construct a full MainData
+          ? { ...prev, notes: response.data.notes || prev.notes }
+          : null
       );
       setCurrentWeekStatus(weekStatuses ? weekStatuses[`week${activeTab}`] : false);
     } catch (err) {
@@ -138,9 +144,9 @@ const WorkoutPlan = () => {
 
   return (
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
-      <Sidebar />
+      <Sidebar ref={sidebarRef} />
       <main
-        className={`lg:ml-[280px] p-8 min-h-screen transition-all duration-300 ${styles.container}`}
+        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all duration-300 ${styles.container}`}
       >
         {isLoading ? (
           <div
@@ -168,7 +174,11 @@ const WorkoutPlan = () => {
           </div>
         ) : (
           <>
-            <Header title="My Workouts" content="Track your progress in the 28-Day Challenge"/>
+            <Header 
+              title="My Workouts" 
+              content="Track your progress in the 28-Day Challenge"
+              onMenuToggle={handleMenuToggle}
+            />
             {mainData && <MainCard data={mainData} />}
             <LevelTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             {workouts && currentWeekStatus !== null ? (

@@ -1,30 +1,33 @@
+// CProfile.tsx
+import { useRef } from "react";
 import Sidebar from "../../components/client/Sidebar";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";
 import CFooter from "@/components/client/Footer";
-import { FaUser } from "react-icons/fa";
 import ProfilePage from "@/components/client/Profile/Profile";
-import Header from "@/components/client/Header";
+import Header, { SidebarRef } from "@/components/client/Header";
 
 const CProfile = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const sidebarRef = useRef<SidebarRef>(null);
+  
+  const handleMenuToggle = () => {
+    sidebarRef.current?.toggleSidebar();
+  };
 
-  useEffect(() => {
-    console.log("user in profile", user);
-  });
+
   return (
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
-      <Sidebar />
+      <Sidebar ref={sidebarRef} />
       <main
-        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all ${styles.container}`}
+        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all duration-300 ${styles.container}`}
       >
         <Header
           title="Profile Settings"
           content="Manage your personal information and preferences"
+          onMenuToggle={handleMenuToggle}
         />
-        <ProfilePage />
+        <div className="space-y-8">
+          <ProfilePage />
+        </div>
         <CFooter />
       </main>
     </div>

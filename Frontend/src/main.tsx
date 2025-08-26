@@ -9,10 +9,8 @@ createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     {/* <StrictMode> */}
     {/* <div className="overflow-hidden scrollbar-none"> */}
-    <div className="overflow-y-auto scrollbar-hide">
 
       <App/>
-    </div>
     {/* </StrictMode> */}
   </Provider>
 );

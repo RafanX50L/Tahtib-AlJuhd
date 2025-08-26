@@ -62,6 +62,10 @@ const TrainerNotificationsPage = () => {
   const [filterType, setFilterType] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [basicDetails, setBasicDetails] = useState<{
+    total: number;
+    read: number;
+  }>();
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastNotificationRef = useCallback(
@@ -78,7 +82,7 @@ const TrainerNotificationsPage = () => {
     [loadingMore, hasMore]
   );
 
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     if (user?._id && socket) {
@@ -132,8 +136,25 @@ const TrainerNotificationsPage = () => {
   useEffect(() => {
     if (user?._id) {
       fetchInitialNotifications();
+      fetchBasicDetails();
     }
   }, [user, searchTerm, filterType, sortBy]);
+
+  const fetchBasicDetails = async () => {
+    if (!user?._id) {
+      console.warn("No user ID, skipping fetchBasicDetails");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await NotificationServices.getBasicDetails();
+      setBasicDetails(response);
+    } catch (error) {
+      console.error("Failed to fetch Basic Details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchInitialNotifications = async () => {
     if (!user?._id) {
@@ -151,10 +172,10 @@ const TrainerNotificationsPage = () => {
         type: filterType === "all" ? undefined : filterType,
         sort: sortBy,
       });
-      setNotifications(response.data);
-      setFilteredNotifications(response.data);
+      setNotifications(response.data.notifications);
+      setFilteredNotifications(response.data.notifications);
       setPage(1);
-      setHasMore(response.data.length === ITEMS_PER_PAGE);
+      setHasMore(basicDetails?.total ? basicDetails.total > response.data.notifications.length : true);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
       toast.error("Failed to load notifications");
@@ -175,10 +196,10 @@ const TrainerNotificationsPage = () => {
         type: filterType === "all" ? undefined : filterType,
         sort: sortBy,
       });
-      setNotifications((prev) => [...prev, ...response.data]);
-      setFilteredNotifications((prev) => [...prev, ...response.data]);
+      setNotifications((prev) => [...prev, ...response.data.notifications]);
+      setFilteredNotifications((prev) => [...prev, ...response.data.notifications]);
       setPage((prev) => prev + 1);
-      setHasMore(response.data.length === ITEMS_PER_PAGE);
+      setHasMore(basicDetails?.total ? basicDetails.total > notifications.length + response.data.notifications.length : true);
     } catch (error) {
       console.error("Failed to load more notifications:", error);
       toast.error("Failed to load more notifications");
@@ -196,6 +217,7 @@ const TrainerNotificationsPage = () => {
       setFilteredNotifications((prev) =>
         prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
       );
+      fetchBasicDetails();
       toast.success("Notification marked as read");
     } catch (error) {
       toast.error("Failed to mark as read");
@@ -208,6 +230,7 @@ const TrainerNotificationsPage = () => {
       await NotificationServices.markAllAsRead(user._id);
       setNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })));
       setFilteredNotifications((prev) => prev.map((notif) => ({ ...notif, isRead: true })));
+      fetchBasicDetails();
       toast.success("All notifications marked as read");
     } catch (error) {
       toast.error("Failed to mark all as read");
@@ -220,6 +243,7 @@ const TrainerNotificationsPage = () => {
       setNotifications((prev) => prev.filter((notif) => notif.id !== id));
       setFilteredNotifications((prev) => prev.filter((notif) => notif.id !== id));
       setSelectedIds((prev) => prev.filter((selectedId) => selectedId !== id));
+      fetchBasicDetails();
       toast.success("Notification deleted");
     } catch (error) {
       toast.error("Failed to delete notification");
@@ -232,6 +256,7 @@ const TrainerNotificationsPage = () => {
       setNotifications((prev) => prev.filter((notif) => !selectedIds.includes(notif.id)));
       setFilteredNotifications((prev) => prev.filter((notif) => !selectedIds.includes(notif.id)));
       setSelectedIds([]);
+      fetchBasicDetails();
       toast.success(`${selectedIds.length} notifications deleted`);
     } catch (error) {
       toast.error("Failed to delete selected notifications");
@@ -248,27 +273,34 @@ const TrainerNotificationsPage = () => {
 
   const getNotificationIcon = (category: string) => {
     switch (category) {
+      case "trainer_message":
       case "new_message":
       case "message":
         return <MessageCircle className="w-5 h-5 text-[#6366f1]" />;
-      case "session_booked":
       case "session_reminder":
+      case "session_booked":
       case "schedule":
         return <Calendar className="w-5 h-5 text-[#10b981]" />;
+      case "workout_update":
       case "payment_received":
       case "payment":
         return <DollarSign className="w-5 h-5 text-[#f59e0b]" />;
+      case "diet_update":
       case "new_client":
       case "client":
         return <Users className="w-5 h-5 text-[#6366f1]" />;
+      case "achievement":
       case "review":
       case "rating":
         return <Star className="w-5 h-5 text-[#f59e0b]" />;
+      case "community_like":
+      case "community_comment":
       case "system":
       case "update":
         return <Settings className="w-5 h-5 text-[#b0b0b0]" />;
+      case "welcome":
       case "approval":
-        return <Check className="w-5 h-5 text-[#10b981]" />;
+        return <CheckCheck className="w-5 h-5 text-[#10b981]" />;
       default:
         return <AlertCircle className="w-5 h-5 text-[#ef4444]" />;
     }
@@ -292,17 +324,24 @@ const TrainerNotificationsPage = () => {
 
   const getTypeDisplayName = (category: string) => {
     const typeMap: { [key: string]: string } = {
+      trainer_message: "Trainer Messages",
       new_message: "Messages",
       message: "Messages",
-      session_booked: "Session Bookings",
       session_reminder: "Session Reminders",
+      session_booked: "Session Bookings",
       schedule: "Schedule Updates",
+      workout_update: "Workout Updates",
+      diet_update: "Diet Updates",
+      achievement: "Achievements",
+      community_like: "Community Likes",
+      community_comment: "Community Comments",
       payment_received: "Payments",
       payment: "Payments",
       new_client: "New Clients",
       client: "Client Updates",
       review: "Reviews",
       rating: "Ratings",
+      welcome: "Welcome",
       system: "System",
       update: "Updates",
       approval: "Approvals",
@@ -310,11 +349,19 @@ const TrainerNotificationsPage = () => {
     return typeMap[category] || category;
   };
 
-  const unreadCount = filteredNotifications.filter((n) => !n.isRead).length;
+  const unreadCount = basicDetails ? basicDetails.total - basicDetails.read : filteredNotifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="min-h-screen bg-[#121212] text-[#ffffff] p-4 lg:p-6">
-      {/* Header */}
+      <style jsx>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
           <Button
@@ -353,7 +400,6 @@ const TrainerNotificationsPage = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Card className="bg-[#1e1e1e] border-[#2c2c2c]">
             <CardContent className="p-4">
@@ -361,7 +407,7 @@ const TrainerNotificationsPage = () => {
                 <div>
                   <p className="text-[#b0b0b0] text-sm">Total Notifications</p>
                   <p className="text-2xl font-bold text-[#ffffff]">
-                    {notifications.length}
+                    {basicDetails?.total || 0}
                   </p>
                 </div>
                 <Bell className="w-8 h-8 text-[#6366f1]" />
@@ -389,7 +435,7 @@ const TrainerNotificationsPage = () => {
                 <div>
                   <p className="text-[#b0b0b0] text-sm">Read</p>
                   <p className="text-2xl font-bold text-[#10b981]">
-                    {notifications.length - unreadCount}
+                    {basicDetails?.read || 0}
                   </p>
                 </div>
                 <CheckCheck className="w-8 h-8 text-[#10b981]" />
@@ -398,11 +444,9 @@ const TrainerNotificationsPage = () => {
           </Card>
         </div>
 
-        {/* Filters and Actions */}
         <Card className="bg-[#1e1e1e] border-[#2c2c2c] mb-6">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4 items-center">
-              {/* Search */}
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#b0b0b0]" />
                 <Input
@@ -413,85 +457,73 @@ const TrainerNotificationsPage = () => {
                 />
               </div>
 
-              {/* Type Filter */}
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="w-48 bg-[#121212] border-[#2c2c2c] text-[#ffffff]">
                   <SelectValue placeholder="Filter by type" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1e1e1e] border-[#2c2c2c]">
-                  <SelectItem
-                    value="all"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="all" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     All Types
                   </SelectItem>
-                  <SelectItem
-                    value="unread"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="unread" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Unread Only
                   </SelectItem>
-                  <SelectItem
-                    value="read"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="read" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Read Only
                   </SelectItem>
-                  <SelectItem
-                    value="new_message"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="trainer_message" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Trainer Messages
+                  </SelectItem>
+                  <SelectItem value="new_message" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Messages
                   </SelectItem>
-                  <SelectItem
-                    value="session_booked"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="session_reminder" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Session Reminders
+                  </SelectItem>
+                  <SelectItem value="session_booked" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Session Bookings
                   </SelectItem>
-                  <SelectItem
-                    value="payment_received"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="workout_update" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Workout Updates
+                  </SelectItem>
+                  <SelectItem value="diet_update" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Diet Updates
+                  </SelectItem>
+                  <SelectItem value="achievement" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Achievements
+                  </SelectItem>
+                  <SelectItem value="community_like" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Community Likes
+                  </SelectItem>
+                  <SelectItem value="community_comment" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Community Comments
+                  </SelectItem>
+                  <SelectItem value="payment_received" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Payments
                   </SelectItem>
-                  <SelectItem
-                    value="review"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
-                    Reviews
+                  <SelectItem value="welcome" className="text-[#ffffff] hover:bg-[#2c2c2c]">
+                    Welcome
                   </SelectItem>
-                  <SelectItem
-                    value="approval"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="approval" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Approvals
                   </SelectItem>
                 </SelectContent>
               </Select>
 
-              {/* Sort */}
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-40 bg-[#121212] border-[#2c2c2c] text-[#ffffff]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1e1e1e] border-[#2c2c2c]">
-                  <SelectItem
-                    value="newest"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="newest" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Newest First
                   </SelectItem>
-                  <SelectItem
-                    value="oldest"
-                    className="text-[#ffffff] hover:bg-[#2c2c2c]"
-                  >
+                  <SelectItem value="oldest" className="text-[#ffffff] hover:bg-[#2c2c2c]">
                     Oldest First
                   </SelectItem>
                 </SelectContent>
               </Select>
 
-              {/* Bulk Actions */}
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
@@ -519,7 +551,6 @@ const TrainerNotificationsPage = () => {
         </Card>
       </div>
 
-      {/* Notifications List */}
       <Card className="bg-[#1e1e1e] border-[#2c2c2c]">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
@@ -543,7 +574,7 @@ const TrainerNotificationsPage = () => {
           </div>
         </CardHeader>
 
-        <CardContent className="p-0">
+        <CardContent className="p-0 no-scrollbar">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <RefreshCw className="w-8 h-8 text-[#6366f1] animate-spin" />
@@ -577,7 +608,6 @@ const TrainerNotificationsPage = () => {
                     selectedIds.includes(notification.id) ? "bg-[#2c2c2c]" : ""
                   }`}
                 >
-                  {/* Checkbox */}
                   <input
                     type="checkbox"
                     checked={selectedIds.includes(notification.id)}
@@ -593,10 +623,8 @@ const TrainerNotificationsPage = () => {
                     className="mt-1 w-4 h-4 text-[#6366f1] bg-[#121212] border-[#2c2c2c] rounded focus:ring-[#6366f1]"
                   />
 
-                  {/* Icon */}
                   <div className="mt-1">{getNotificationIcon(notification.category)}</div>
 
-                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -625,7 +653,6 @@ const TrainerNotificationsPage = () => {
                         </div>
                       </div>
 
-                      {/* Actions */}
                       <div className="flex gap-2">
                         {!notification.isRead && (
                           <Button
@@ -653,7 +680,6 @@ const TrainerNotificationsPage = () => {
                 </div>
               ))}
 
-              {/* Loading more indicator */}
               {loadingMore && (
                 <div className="flex items-center justify-center py-6">
                   <Loader2 className="w-6 h-6 text-[#6366f1] animate-spin" />
@@ -663,7 +689,6 @@ const TrainerNotificationsPage = () => {
                 </div>
               )}
 
-              {/* End of data indicator */}
               {!hasMore && notifications.length > 0 && (
                 <div className="flex items-center justify-center py-6 text-[#b0b0b0]">
                   <span className="text-sm">

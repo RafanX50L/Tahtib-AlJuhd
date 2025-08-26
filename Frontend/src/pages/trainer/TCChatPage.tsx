@@ -232,11 +232,13 @@ const ChatInterface: React.FC = () => {
         sender: user._id,
         text: message,
       });
+     
       socket.emit(chatEnum.sendNotification, {
-        senderId: user._id,
-        recipientId: selectedClient._id, // Use trainerId for client, clientId for trainer
-        message: `New message from ${user.name}`,
-        type: "new_message",
+        sender: user._id,
+        receiver: selectedClient._id,
+        role: "client",
+        text: `New message from ${user.name}`,
+        category: "new_message",
       });
       setMessage("");
     }

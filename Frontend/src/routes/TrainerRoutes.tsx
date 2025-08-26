@@ -7,9 +7,8 @@ import NotFoundPage from "@/pages/common/NotFond";
 import TrainerSetAvailability from "@/pages/trainer/TSetAvailabilityPage";
 import TSetPlanPage from "@/pages/trainer/TSetPlans";
 import TSetAvailabilityPage from "@/pages/trainer/TSetAvailabilityPage";
-import TClientPage from "@/pages/trainer/TClientPage";
 import TCChatPage from "@/pages/trainer/TCChatPage";
-import TrainerNotificationsPage from "@/components/trainer/Notification/TrainerNotification";
+import NotificationsPage, { trainerTheme } from "@/components/shared/Notification";
 
 const TrainerRotues: React.FC = () => {
   return (
@@ -23,7 +22,7 @@ const TrainerRotues: React.FC = () => {
       <Route path="/plans" element={<TSetPlanPage />} />
       <Route path="/availability" element={<TSetAvailabilityPage />} />
       <Route path="/messages" element={<TrainerSetAvailability />} />
-      <Route path="/notification" element={<TrainerNotificationsPage />} />
+      <Route path="/notification" element={<NotificationsPage theme={trainerTheme}backPath="/trainer/dashboard"/>} />
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

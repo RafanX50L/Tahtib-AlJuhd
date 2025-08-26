@@ -233,6 +233,7 @@ const NotificationsPage = () => {
           notif.id === id ? { ...notif, isRead: true } : notif
         )
       );
+      fetchBasicDetails();
       toast.success("Notification marked as read");
     } catch (error) {
       toast.error("Failed to mark as read");
@@ -249,6 +250,7 @@ const NotificationsPage = () => {
       setFilteredNotifications((prev) =>
         prev.map((notif) => ({ ...notif, isRead: true }))
       );
+      fetchBasicDetails();
       toast.success("All notifications marked as read");
     } catch (error) {
       toast.error("Failed to mark all as read");
@@ -263,6 +265,7 @@ const NotificationsPage = () => {
         prev.filter((notif) => notif.id !== id)
       );
       setSelectedIds((prev) => prev.filter((selectedId) => selectedId !== id));
+      fetchBasicDetails();
       toast.success("Notification deleted");
     } catch (error) {
       toast.error("Failed to delete notification");
