@@ -22,7 +22,7 @@ const weeklySlotSchema = z.object({
     errorMap: () => ({ message: 'Day is required' }),
   }),
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:MM)'),
-  endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:MM)'),+
+  endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format (HH:MM)'),
 });
 
 const trainerFormSchema = z.object({
@@ -94,14 +94,14 @@ const TrainerForm: React.FC = () => {
     },
   });
 
-  const stepComponents = {
+  const stepComponents: any = {
     1: BasicInfo,
     2: ProfessionalInfo,
     3: SampleMaterials,
     4: Availability,
   };
 
-  const CurrentStepComponent = stepComponents[currentStep];
+  const CurrentStepComponent = stepComponents[currentStep] ;
 
   const validateStep = async () => {
     const fields = stepFields[currentStep];
@@ -170,7 +170,7 @@ const TrainerForm: React.FC = () => {
       setSubmissionStatus('success');
       reset(); // Reset form on success
       setCurrentStep(1); // Return to first step
-    } catch (error) {
+    } catch (error:any) {
       setSubmissionStatus('error');
       setErrorMessage(error.message || 'An error occurred during submission');
     }

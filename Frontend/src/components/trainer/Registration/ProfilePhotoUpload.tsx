@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { TrainerFormData } from "../sample";
+import { TrainerFormData } from "./TraierForm";
 
 interface ProfilePhotoUploadProps {
   control: Control<TrainerFormData>;
