@@ -12,23 +12,10 @@ const sessionRepo = new SessionRepository();
 const availabilityService = new AvailabilityService(personalizationRepo, sessionRepo);
 const availabilityController = new AvailabilityController(availabilityService);
 
-router.post('/availability/',restrictTo('trainer'), availabilityController.setAvailability.bind(availabilityController));
-router.get('/availability/slots',restrictTo('trainer','client'), availabilityController.getFreeSlots.bind(availabilityController));
+// router.post('/availability/',restrictTo('trainer'), availabilityController.setAvailability.bind(availabilityController));
+router.get('/availability/slots',restrictTo('trainer','client'), availabilityController.getUnFreeSlots.bind(availabilityController));
 // New: set weekly day-level rules
-router.post('/availability/rules',restrictTo('trainer'), async (req, res, next) => {
-  try {
-    const { trainerId, rules } = req.body;
-    await availabilityService.setWeeklyRules(trainerId, rules);
-    res.json({ message: 'Weekly rules saved' });
-  } catch (err) { next(err); }
-});
-router.get('/availability/rules',restrictTo('trainer','client'), async (req, res, next) => {
-  try {
-    const { trainerId } = req.query as { trainerId?: string };
-    if (!trainerId) return res.status(400).json({ error: 'trainerId is required' });
-    const rules = await availabilityService.getWeeklyRules(trainerId);
-    res.json({ rules });
-  } catch (err) { next(err); }
-});
+router.post('/availability/rules',restrictTo('trainer'), availabilityController.setWeeklyRules.bind(availabilityController));
+router.get('/availability/rules',restrictTo('trainer','client'), availabilityController.getWeeklyRules.bind(availabilityController));
 
 export default router;

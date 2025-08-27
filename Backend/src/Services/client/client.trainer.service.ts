@@ -87,6 +87,7 @@ export class clientTrainerService implements IClientTrainerService{
         }
         const plan = contract.planId as unknown as IPlan;
         return {
+            id: contract.id.toString(),
             chatId: contract.chatId.toString(),
             sessionsRemaining: contract.sessionsRemaining,
             trainerId: contract.trainerId.toString(),

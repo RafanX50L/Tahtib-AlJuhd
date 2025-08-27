@@ -93,7 +93,6 @@ const VideoCallControls = ({
         variant="outline"
         size="icon"
         className="rounded-full h-12 w-12 bg-red-600 hover:bg-red-700 border-none"
-        // onClick={() => router.back()}
         onClick={()=>navigate(-1)}
       >
         <Phone className="h-5 w-5" />

@@ -133,7 +133,9 @@ export class TrainerPersonalizationService
           resumeFileId: resumeId,
         },
         availability: {
-          weeklySlots: JSON.parse(req.body.weeklySlots),
+          weeklyRules: {},
+          slotLength: null,
+          bufferMinutes: null,
           engagementType: req.body.engagementType,
         },
         status: "applied" as const, // or another default value as per your business logic

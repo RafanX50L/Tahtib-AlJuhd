@@ -37,7 +37,17 @@ import {
 import { toast } from "sonner";
 import { NotificationServices } from "@/services/implementation/NotificationServices";
 import { cn } from "@/lib/utils";
-import { INotificationView } from "../client/Notification/Notifications";
+
+export interface INotificationView {
+  id: string;            // unique identifier
+  sender: string;        // who sent it
+  receiver?: string;     // who receives it (optional for role-based)
+  role?: string;         // role of receiver (user, admin, trainer)
+  text: string;          // notification message
+  category: string;      // notification category/type
+  date: Date;            // ISO date string for createdAt
+  isRead: boolean;       // read/unread status
+}
 
 export interface Theme {
   background: string;

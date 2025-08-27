@@ -4,4 +4,6 @@ export interface IAvailabilityController {
   setAvailability(req: Request, res: Response, next: NextFunction): Promise<void>;
   getFreeSlots(req: Request, res: Response, next: NextFunction): Promise<void>;
   getUnFreeSlots (req: Request, res: Response, next: NextFunction): Promise<void>;
+  setWeeklyRules (req: Request, res: Response, next: NextFunction): Promise<void>;
+  getWeeklyRules (req: Request, res: Response, next: NextFunction);
 }

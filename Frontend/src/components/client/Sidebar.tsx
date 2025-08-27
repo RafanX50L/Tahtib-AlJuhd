@@ -83,7 +83,7 @@ const Sidebar = forwardRef<SidebarRef>((props, ref) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 w-[280px] h-full bg-gradient-to-b from-[#12151E] to-[#1E2235] border-r border-[#2A3042] p-6 overflow-y-auto transition-transform duration-300 z-20 lg:translate-x-0 ${
+        className={`fixed top-0 left-0 w-[280px] h-full bg-gradient-to-b  from-[#12151E] to-[#1E2235] border-r border-[#2A3042] p-6 overflow-y-auto transition-transform duration-300 z-20 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

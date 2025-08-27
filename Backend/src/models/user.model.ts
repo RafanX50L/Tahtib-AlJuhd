@@ -20,19 +20,21 @@ const userSchema = new Schema<IUser>(
       default: "client",
     },
     calendlyLink: { type: String, default: null },
-    personalizationId: { type: Schema.Types.ObjectId, ref: "Personalization", default: null },
+    personalizationId: {
+      type: Schema.Types.ObjectId,
+      ref: "Personalization",
+      default: null,
+    },
     isBlocked: { type: Boolean, default: false },
     tokenVersion: { type: Number, default: 0 },
-    // calendlyLink: { type: String, default: null },
   },
   { timestamps: true }
 );
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
-  const doc = this as unknown as IUser;
-  if (this.isModified("password") && (doc as any).password) {
-    (this as any).password = await hashPassword((doc as any).password);
+  if (this.isModified("password") && this.password) {
+    this.password = await hashPassword(this.password);
   }
   next();
 });

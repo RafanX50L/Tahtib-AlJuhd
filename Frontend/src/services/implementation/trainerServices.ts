@@ -155,7 +155,7 @@ export const TrainerService = {
   getWeeklyRules: async(trainerId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/rules`, { params: { trainerId } });
-      return response.data.rules;
+      return response.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || 'Failed to fetch weekly rules';

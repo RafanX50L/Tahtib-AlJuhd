@@ -30,7 +30,7 @@ export const fetchAvailability = createAsyncThunk(
 
 export const bookSlot = createAsyncThunk(
   'scheduling/bookSlot',
-  async (payload: { trainerId: string; clientId: string; date: string; time: string; duration?: number }) => {
+  async (payload: { trainerId: string; clientId: string; date: string; time: string; duration?: number , contractId: string}) => {
     return await SchedulingAPI.book(payload);
   }
 );

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Video, X, AlertCircle, Users } from "lucide-react";
+import { Calendar, Clock, User, Video, X, AlertCircle, Users, CheckCircle } from "lucide-react";
 import { format, differenceInMinutes } from "date-fns";
 import { toast } from "sonner";
 import { ClientService } from "@/services/implementation/clientServices";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Session {
   _id: string;
@@ -14,7 +15,7 @@ interface Session {
   clientId?: string | null;
   startTime: string;
   endTime: string;
-  status: "free" | "booked" | "cancelled";
+  status: "free" | "booked" | "cancelled" | "completed";
   meetingLink?: string;
   clientName?: string;
   type?: string;
@@ -43,6 +44,17 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
   const { user } = useSelector((state: RootState) => state.auth);
   const [slots, setSlots] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const navigate = useNavigate();
+
+  // Update current time every minute for real-time session status updates
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (contract?.trainerId) {
@@ -106,6 +118,13 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       toast.error("Your plan has expired. Please renew your plan.");
       return;
     }
+
+    // Check if trying to book a past slot
+    const slot = slots.find(s => s._id === slotId);
+    if (slot && new Date(slot.startTime) < new Date()) {
+      toast.error("Cannot book a session that has already started");
+      return;
+    }
     
     try {
       // call backend to enforce sessionsRemaining and plan validity
@@ -124,6 +143,14 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       toast.error("Please log in to cancel a booking");
       return;
     }
+
+    // Check if cancellation is allowed (30 minutes before start)
+    const slot = slots.find(s => s._id === slotId);
+    if (slot && !canCancelSession(slot.startTime, slot.endTime)) {
+      toast.error("Cannot cancel session within 30 minutes of start time or after it has ended");
+      return;
+    }
+
     try {
       await ClientService.cancelSlotBooking(slotId);
       await fetchSlots(selectedDate);
@@ -132,6 +159,54 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       console.error("Error cancelling booking:", error);
       toast.error(error.message || "Failed to cancel booking");
     }
+  };
+
+  // Check if session has ended (client-side logic for display purposes)
+  const isSessionEnded = (endTime: string) => {
+    const now = currentTime;
+    const slotEnd = new Date(endTime);
+    return now > slotEnd;
+  };
+
+  // Check if join button should be shown (5 minutes before start to 1 hour after start)
+  const canJoinSession = (startTime: string, endTime: string) => {
+    const now = currentTime;
+    const slotStart = new Date(startTime);
+    const slotEnd = new Date(endTime);
+    const timeDiff = slotStart.getTime() - now.getTime();
+    
+    // Can join from 5 minutes before start until session ends
+    return timeDiff <= 5 * 60 * 1000 && now <= slotEnd;
+  };
+
+  // Check if cancel button should be shown (hide 30 minutes before start)
+  const canCancelSession = (startTime: string, endTime: string) => {
+    const now = currentTime;
+    const slotStart = new Date(startTime);
+    const slotEnd = new Date(endTime);
+    const timeDiff = slotStart.getTime() - now.getTime();
+    
+    // Can't cancel if session has already ended
+    if (now > slotEnd) return false;
+    
+    // Can cancel if more than 30 minutes before start
+    return timeDiff > 30 * 60 * 1000;
+  };
+
+  // Check if session is ongoing
+  const isSessionOngoing = (startTime: string, endTime: string) => {
+    const now = currentTime;
+    const slotStart = new Date(startTime);
+    const slotEnd = new Date(endTime);
+    return now >= slotStart && now <= slotEnd;
+  };
+
+  // Get effective status (accounting for time-based completion)
+  const getEffectiveStatus = (slot: Session): Session["status"] => {
+    if (slot.status === "booked" && isSessionEnded(slot.endTime)) {
+      return "completed";
+    }
+    return slot.status;
   };
 
   const formatTime = (dateString: string) => {
@@ -157,6 +232,8 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
         return "border-blue-500";
       case "cancelled":
         return "border-red-500";
+      case "completed":
+        return "border-purple-500";
       default:
         return "border-gray-700";
     }
@@ -170,9 +247,134 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
         return <User className="w-4 h-4 text-blue-500" />;
       case "cancelled":
         return <X className="w-4 h-4 text-red-500" />;
+      case "completed":
+        return <CheckCircle className="w-4 h-4 text-purple-500" />;
       default:
         return null;
     }
+  };
+
+  // Render session action buttons based on time and status
+  const renderSessionActions = (slot: Session) => {
+    const effectiveStatus = getEffectiveStatus(slot);
+    const sessionEnded = isSessionEnded(slot.endTime);
+    const canJoin = canJoinSession(slot.startTime, slot.endTime);
+    const canCancel = canCancelSession(slot.startTime, slot.endTime);
+    const ongoing = isSessionOngoing(slot.startTime, slot.endTime);
+    const isMyBooking = slot.clientId === user?._id;
+
+    // If session is completed (ended)
+    if (effectiveStatus === "completed") {
+      return (
+        <div className="flex-1 text-center px-4 py-2 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-400 rounded-lg font-medium">
+          <CheckCircle className="w-4 h-4 inline mr-2" />
+          Completed
+        </div>
+      );
+    }
+
+    // If it's my booking and I can join
+    if (slot.status === "booked" && isMyBooking) {
+      const buttons = [];
+
+      // Show join button if session is about to start or ongoing
+      if (canJoin) {
+        buttons.push(
+          <Button
+            key="join"
+            size="sm"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm"
+            onClick={() => navigate(`/room/${slot.meetingLink}`)}
+          >
+            <Video className="w-4 h-4 mr-1" />
+            {ongoing ? "Join Now" : "Join"}
+          </Button>
+        );
+      }
+
+      // Show cancel button if allowed
+      if (canCancel) {
+        buttons.push(
+          <Button
+            key="cancel"
+            size="sm"
+            variant="outline"
+            className="flex-1 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-xs sm:text-sm"
+            onClick={() => handleCancelBooking(slot._id)}
+          >
+            Cancel
+          </Button>
+        );
+      }
+
+      // If no buttons available, show session status
+      if (buttons.length === 0 && !sessionEnded) {
+        const slotStart = new Date(slot.startTime);
+        const timeDiff = slotStart.getTime() - currentTime.getTime();
+        const minutesUntilStart = Math.floor(timeDiff / (60 * 1000));
+        
+        if (minutesUntilStart > 5 && minutesUntilStart <= 30) {
+          return (
+            <div className="text-xs sm:text-sm text-yellow-500 font-medium text-center">
+              Starting in {minutesUntilStart} minutes
+            </div>
+          );
+        }
+      }
+
+      return buttons.length > 0 ? (
+        <div className="flex gap-2">
+          {buttons}
+        </div>
+      ) : null;
+    }
+
+    // Free slot - show book button if user has sessions remaining and slot hasn't started
+    if (slot.status === "free" && contract?.sessionsRemaining! > 0) {
+      const slotStart = new Date(slot.startTime);
+      const isPastSlot = slotStart < new Date();
+      
+      return (
+        <Button
+          size="sm"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => handleBookSlot(slot._id)}
+          disabled={isPastSlot}
+        >
+          {isPastSlot ? "Past Session" : "Book"}
+        </Button>
+      );
+    }
+
+    // Booked by someone else
+    if (slot.status === "booked" && slot.clientId !== user?._id) {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1 border-gray-600 text-gray-400"
+          disabled
+        >
+          Booked
+        </Button>
+      );
+    }
+
+    // No sessions remaining
+    if (slot.status === "free" && contract?.sessionsRemaining! <= 0) {
+      return (
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1 border-gray-600 text-gray-400"
+          disabled
+        >
+          No Sessions Left
+        </Button>
+      );
+    }
+
+    return null;
   };
 
   const selectedDateSlots = slots.filter(
@@ -224,7 +426,8 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
           )}
         </div>
       )}
-      <style >{`
+      
+      <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -233,6 +436,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
           scrollbar-width: none;
         }
       `}</style>
+      
       <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 p-4 sm:p-6 border-b border-gray-700">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#6366f1]" />
@@ -280,91 +484,68 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
           </div>
         ) : (
           <div className="space-y-4">
-            {selectedDateSlots.map((slot) => (
-              <div
-                key={slot._id}
-                className={`p-3 sm:p-4 rounded-lg border-2 ${getStatusColor(slot.status)} ${
-                  isSlotStartingSoon(slot.startTime)
-                    ? "ring-2 ring-yellow-500 ring-opacity-50"
-                    : ""
-                }`}
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(slot.status)}
-                    <span className="font-medium capitalize text-sm sm:text-base">{slot.status}</span>
-                  </div>
-                  {isSlotStartingSoon(slot.startTime) && (
-                    <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
-                      Starting Soon
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                    <Clock className="w-4 h-4" />
-                    <span>{formatTime(slot.startTime)}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                    <span>
-                      {slot.type || "Training Session"} • {slot.duration}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                    <span>{slot.location || "TBD"}</span>
-                  </div>
-                  {slot.clientId && slot.clientName && (
-                    <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                      <User className="w-4 h-4" />
-                      <span>{slot.clientName}</span>
+            {selectedDateSlots.map((slot) => {
+              const effectiveStatus = getEffectiveStatus(slot);
+              const ongoing = isSessionOngoing(slot.startTime, slot.endTime);
+              
+              return (
+                <div
+                  key={slot._id}
+                  className={`p-3 sm:p-4 rounded-lg border-2 ${getStatusColor(effectiveStatus)} ${
+                    isSlotStartingSoon(slot.startTime) && effectiveStatus !== "completed"
+                      ? "ring-2 ring-yellow-500 ring-opacity-50"
+                      : ""
+                  } ${
+                    ongoing && effectiveStatus !== "completed"
+                      ? "ring-2 ring-green-500 ring-opacity-50"
+                      : ""
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(effectiveStatus)}
+                      <span className="font-medium capitalize text-sm sm:text-base">
+                        {effectiveStatus}
+                      </span>
                     </div>
-                  )}
+                    <div className="flex gap-2">
+                      {isSlotStartingSoon(slot.startTime) && effectiveStatus !== "completed" && (
+                        <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
+                          Starting Soon
+                        </span>
+                      )}
+                      {ongoing && effectiveStatus !== "completed" && (
+                        <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-pulse">
+                          Live Now
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                      <Clock className="w-4 h-4" />
+                      <span>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                      <span>
+                        {slot.type || "Training Session"} • {slot.duration}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                      <span>{slot.location || "TBD"}</span>
+                    </div>
+                    {slot.clientId && slot.clientName && (
+                      <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                        <User className="w-4 h-4" />
+                        <span>{slot.clientName}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {renderSessionActions(slot)}
                 </div>
-                <div className="flex gap-2">
-                  {slot.status === "booked" && slot.clientId === user?._id && (
-                    <>
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm"
-                        onClick={() =>
-                          window.open(`/room/${slot.meetingLink}`, "_blank")
-                        }
-                      >
-                        <Video className="w-4 h-4 mr-1" />
-                        Join
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-xs sm:text-sm"
-                        onClick={() => handleCancelBooking(slot._id)}
-                      >
-                        Cancel
-                      </Button>
-                    </>
-                  )}
-                  {slot.status === "free" && contract?.sessionsRemaining! > 0 && (
-                    <Button
-                      size="sm"
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm"
-                      onClick={() => handleBookSlot(slot._id)}
-                    >
-                      Book
-                    </Button>
-                  )}
-                  {slot.status === "booked" && slot.clientId !== user?._id && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1 border-gray-600 text-gray-400"
-                      disabled
-                    >
-                      Booked
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

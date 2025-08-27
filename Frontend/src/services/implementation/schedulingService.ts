@@ -5,7 +5,7 @@ export const SchedulingAPI = {
     const res = await api.get(`scheduling/trainers/${trainerId}/availability`, { params: { date: dateISO, tz } });
     return res.data as { date: string; slots: Array<{ time: string; duration: number; isBooked: boolean }> };
   },
-  book: async (payload: { trainerId: string; clientId: string; date: string; time: string; duration?: number; tz?: string }) => {
+  book: async (payload: { trainerId: string; clientId: string; date: string; time: string; duration?: number; tz?: string, contractId:string }) => {
     const res = await api.post('scheduling/bookings', payload);
     return res.data;
   },

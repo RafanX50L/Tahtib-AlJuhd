@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import api from "./api";
-import { INotificationView } from "@/components/trainer/Notification/TrainerNotification";
 import { toast } from "sonner";
+import { INotificationView } from "@/components/shared/Notification";
 
 export const NotificationServices = {
   getLastFiveNotifications: async (

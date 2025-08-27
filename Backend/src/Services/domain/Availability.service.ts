@@ -1,13 +1,10 @@
-import { HttpResponse } from '@/constants/response-message.constant';
-import { HttpStatus } from '@/constants/status.constant';
 import { ITrainerPersonalization } from '@/core/interface/model/IPersonalization.model';
 import { ISession } from '@/core/interface/model/ISession';
 import { IPersonalizationRepository } from '@/core/interface/repositories/IPersonalization.repository';
 import { ISessionRepository } from '@/core/interface/repositories/ISession.repository';
 import { IAvailabilityService } from '@/core/interface/services/domain/IAvailability.Service';
-import { createHttpError } from '@/utils';
 import logger from '@/utils/logger.utils';
-import { set, startOfDay, endOfDay } from 'date-fns';
+import { set } from 'date-fns';
 import { Types } from 'mongoose';
 
 interface Slot {
@@ -22,94 +19,105 @@ export class AvailabilityService implements IAvailabilityService {
     private readonly _sessionRepo: ISessionRepository
   ) {}
 
-  async setAvailability(trainerId: string, slots: ITrainerPersonalization['availability']['weeklySlots']): Promise<void> {
-    // Validate inputs
-    if (!trainerId) {
-      logger.error('Trainer ID is missing');
-      throw new Error('Trainer ID is required');
-    }
-    if (!Array.isArray(slots)) {
-      logger.error(`Invalid slots input for trainer ${trainerId}: ${JSON.stringify(slots)}`);
-      throw new Error('Slots must be an array');
-    }
-    const validSlots = slots.filter(slot => slot.date && slot.startTime && slot.endTime);
-    if (validSlots.length === 0 && slots.length > 0) {
-      logger.warn(`No valid slots provided for trainer ${trainerId}`);
-      throw new Error('All slots must have date, startTime, and endTime');
-    }
+  // async setAvailability(trainerId: string, slots: ITrainerPersonalization['availability']): Promise<void> {
+  //   // Validate inputs
+  //   if (!trainerId) {
+  //     logger.error('Trainer ID is missing');
+  //     throw new Error('Trainer ID is required');
+  //   }
+  //   if (!Array.isArray(slots)) {
+  //     logger.error(`Invalid slots input for trainer ${trainerId}: ${JSON.stringify(slots)}`);
+  //     throw new Error('Slots must be an array');
+  //   }
+  //   const validSlots = slots.filter(slot => slot.date && slot.startTime && slot.endTime);
+  //   if (validSlots.length === 0 && slots.length > 0) {
+  //     logger.warn(`No valid slots provided for trainer ${trainerId}`);
+  //     throw new Error('All slots must have date, startTime, and endTime');
+  //   }
 
-    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
-    if (!trainerPers) {
-      throw new Error('Trainer personalization not found');
-    }
+  //   const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
+  //   if (!trainerPers) {
+  //     throw new Error('Trainer personalization not found');
+  //   }
 
-    const trainerData = trainerPers.data as ITrainerPersonalization;
-    const currentWeeklySlots = trainerData.availability?.weeklySlots || [];
+  //   const trainerData = trainerPers.data as ITrainerPersonalization;
+  //   const currentWeeklySlots = trainerData.availability || [];
 
-    // Check new slots against existing sessions for the specific date
-    const newSlots = [];
-    for (const slot of validSlots) {
-      const slotDate = new Date(slot.date);
-      const [startHours, startMinutes] = slot.startTime.split(':').map(Number);
-      const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
-      const startTime = set(slotDate, { hours: startHours, minutes: startMinutes });
-      const endTime = set(slotDate, { hours: endHours, minutes: endMinutes });
+  //   // Check new slots against existing sessions for the specific date
+  //   const newSlots = [];
+  //   for (const slot of validSlots) {
+  //     const slotDate = new Date(slot.date);
+  //     const [startHours, startMinutes] = slot.startTime.split(':').map(Number);
+  //     const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
+  //     const startTime = set(slotDate, { hours: startHours, minutes: startMinutes });
+  //     const endTime = set(slotDate, { hours: endHours, minutes: endMinutes });
 
-      // Check for conflicts with existing sessions on the same date
-      const existingSessions = await this._sessionRepo.findFreeSlotsByTrainer(
-        trainerId,
-        startOfDay(slotDate),
-        endOfDay(slotDate)
-      );
-      const hasConflict = existingSessions.some(session => {
-        const sessionStart = session.startTime.getTime();
-        const sessionEnd = session.endTime.getTime();
-        const newStart = startTime.getTime();
-        const newEnd = endTime.getTime();
-        return newStart <= sessionEnd && newEnd >= sessionStart;
-      });
+  //     // Check for conflicts with existing sessions on the same date
+  //     const existingSessions = await this._sessionRepo.findFreeSlotsByTrainer(
+  //       trainerId,
+  //       startOfDay(slotDate),
+  //       endOfDay(slotDate)
+  //     );
+  //     const hasConflict = existingSessions.some(session => {
+  //       const sessionStart = session.startTime.getTime();
+  //       const sessionEnd = session.endTime.getTime();
+  //       const newStart = startTime.getTime();
+  //       const newEnd = endTime.getTime();
+  //       return newStart <= sessionEnd && newEnd >= sessionStart;
+  //     });
 
-      if (!hasConflict) {
-        newSlots.push(slot);
-      }
-    }
+  //     if (!hasConflict) {
+  //       newSlots.push(slot);
+  //     }
+  //   }
 
-    if (newSlots.length === 0 && validSlots.length > 0) {
-      logger.warn(`All provided slots conflict with existing sessions for trainer ${trainerId}`);
-      throw createHttpError(HttpStatus.CONFLICT, HttpResponse.SLOTS_CONFLICT);
-    }
+  //   if (newSlots.length === 0 && validSlots.length > 0) {
+  //     logger.warn(`All provided slots conflict with existing sessions for trainer ${trainerId}`);
+  //     throw createHttpError(HttpStatus.CONFLICT, HttpResponse.SLOTS_CONFLICT);
+  //   }
 
-    // Append non-conflicting slots to weeklySlots
-    const updatedWeeklySlots = [...currentWeeklySlots, ...newSlots];
+  //   // Append non-conflicting slots to weeklySlots
+  //   const updatedWeeklySlots = [...currentWeeklySlots, ...newSlots];
 
     
-    await this._personalizationRepo.updateTrainerData(trainerId, {
-      ...trainerData,
-      availability: { ...trainerData.availability, weeklySlots: updatedWeeklySlots },
-    });
+  //   await this._personalizationRepo.updateTrainerData(trainerId, {
+  //     ...trainerData,
+  //     availability: { ...trainerData.availability, weeklySlots: updatedWeeklySlots },
+  //   });
 
-    await this.generateSlots(trainerId, newSlots);
-  }
+  //   await this.generateSlots(trainerId, newSlots);
+  // }
 
   /**
    * Set weekly day-level rules like Mon-Fri 09:00-18:00, with optional slotLength and bufferMinutes
    * rules example:
    * { Monday: [{ startTime: '09:00', endTime: '18:00' }], Tuesday: [...], slotLength: 30, bufferMinutes: 0 }
    */
-  async setWeeklyRules(trainerId: string, rules: Record<string, unknown>): Promise<void> {
-    if (!trainerId) throw new Error('Trainer ID is required');
-    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
-    if (!trainerPers) throw new Error('Trainer personalization not found');
+  async setWeeklyRules(
+    trainerId: string,
+    rules: ITrainerPersonalization["availability"]
+  ): Promise<void> {
+    if (!trainerId) throw new Error("Trainer ID is required");
 
-    const trainerData = trainerPers.data as any;
-    const availability = trainerData.availability || {};
-    availability.weeklyRules = rules;
+    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
+    if (!trainerPers) throw new Error("Trainer personalization not found");
+
+    const trainerData = trainerPers.data as ITrainerPersonalization;
+
+    // Remove weeklySlots completely
+    const availability: ITrainerPersonalization["availability"] = {
+      weeklyRules: rules.weeklyRules,
+      slotLength: rules.slotLength || 30,    // in minutes, e.g., 30
+      bufferMinutes: rules.bufferMinutes|| 0,
+      engagementType: trainerData.availability?.engagementType || "contract",
+    };
 
     await this._personalizationRepo.updateTrainerData(trainerId, {
       ...trainerData,
       availability,
     });
   }
+
 
   async generateSlots(trainerId: string, slots: Slot[]): Promise<void> {
     const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
@@ -153,8 +161,8 @@ export class AvailabilityService implements IAvailabilityService {
   async getWeeklyRules(trainerId: string): Promise<Record<string, unknown> | null> {
     const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
     if (!trainerPers) return null;
-    const trainerData = trainerPers.data as any;
-    return trainerData?.availability?.weeklyRules || null;
+    const trainerData = trainerPers.data as ITrainerPersonalization;
+    return trainerData?.availability || null;
   }
 
   async getUnFreeSlots(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {

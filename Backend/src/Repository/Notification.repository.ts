@@ -2,6 +2,7 @@ import { BaseRepository } from "@/Repository/base.repository";
 import { INotification } from "@/core/interface/model/INotification.model";
 import { INotificationRepository } from "@/core/interface/repositories/INotification.repository";
 import { NotificationModel } from "@/models/Notification.model";
+import { FilterQuery, SortOrder } from "mongoose";
 
 export class NotificationRepository
   extends BaseRepository<INotification>
@@ -12,16 +13,16 @@ export class NotificationRepository
   }
 
   async findLastFiveByUser(userId: string): Promise<INotification[]> {
-    return this.model
-      .find({
-        $or: [
-          { recipientId: userId },
-          { recipientRole: { $in: ["client", "trainer", "admin"] } }, // Adjust based on user role
-        ],
-      })
-      .sort({ createdAt: -1 })
-      .limit(5);
-  }
+  return this.model
+    .find({
+      $or: [
+        { recipientId: userId }
+      ],
+    })
+    .sort({ createdAt: -1 }) // 🔥 Newest first
+    .limit(5);
+}
+
 
   async findByUser(
     userId: string,
@@ -31,7 +32,7 @@ export class NotificationRepository
     type?: string,
     sort?: string
   ): Promise<INotification[]> {
-    const query: any = {
+    const query:  FilterQuery<INotification> = {
       $or: [
         { recipientId: userId },
         { recipientRole: { $in: ["trainer", "client", "admin"] } },
@@ -53,7 +54,7 @@ export class NotificationRepository
       }
     }
 
-    const sortOption: any =
+    const sortOption: Record<string, SortOrder> =
       sort === "newest" ? { createdAt: -1 } : { createdAt: 1 };
 
     let queryBuilder = this.model.find(query).sort(sortOption);

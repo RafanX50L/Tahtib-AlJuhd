@@ -2,7 +2,7 @@ import { IPersonalization } from "@/core/interface/model/IPersonalization.model"
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { BaseRepository } from "./base.repository";
 import { PersonalizationModel } from "@/models/Personalization.model";
-import { PipelineStage, Types } from "mongoose";
+import { FilterQuery, PipelineStage, Types } from "mongoose";
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
@@ -337,7 +337,7 @@ export class TrainerPersonalizationRepository
   ) {
     const skip = (page - 1) * limit;
 
-    const matchStage: Record<string, any> = {
+    const matchStage: FilterQuery<IPersonalization> = {
       role: "trainer",
       "data.status": "approved"
     };

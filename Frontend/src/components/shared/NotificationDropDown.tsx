@@ -31,7 +31,7 @@ import {
 import { toast } from "sonner";
 import { NotificationServices } from "@/services/implementation/NotificationServices";
 import { cn } from "@/lib/utils";
-import { INotificationView } from "../trainer/Notification/TrainerNotification";
+import { INotificationView } from "./Notification";
 
 export interface Theme {
   background: string;
@@ -142,12 +142,8 @@ const NotificationDropdown = ({ theme, navPath }: NotificationDropdownProps) => 
       }
       try {
         console.log("Fetching notifications for user:", user._id);
-        const response = await NotificationServices.getNotifications({
-          userId: user._id,
-          page: 1,
-          limit: 10,
-        });
-        const fetchedNotifications = response.data.notifications.map((n: INotificationView) => ({
+        const response = await NotificationServices.getLastFiveNotifications(user._id);
+        const fetchedNotifications = response.data.map((n: INotificationView) => ({
           ...n,
           date: new Date(n.date),
         }));
@@ -389,7 +385,7 @@ const NotificationDropdown = ({ theme, navPath }: NotificationDropdownProps) => 
           )}
         </div>
 
-        <ScrollArea className="max-h-96">
+        <ScrollArea className="h-96">
           {notifications.length === 0 ? (
             <div className={cn(
               "flex flex-col items-center justify-center py-12 slide-in",

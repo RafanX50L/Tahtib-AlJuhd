@@ -1,13 +1,14 @@
+import { WeeklyRulesPayload } from '@/components/trainer/SetAvailability/SetAvailabilityPage';
 import api from './api';
 
 export type DayWindow = { startTime: string; endTime: string };
-export type WeeklyRulesPayload = {
+export type WeeklyRulesPayloads = {
   trainerId: string;
-  rules: Record<string, DayWindow[] | number> & { slotLength?: number; bufferMinutes?: number };
+  rules: WeeklyRulesPayload
 };
 
 export const AvailabilityAPI = {
-  setWeeklyRules: async (payload: WeeklyRulesPayload) => {
+  setWeeklyRules: async (payload: WeeklyRulesPayloads) => {
     const res = await api.post('/trainer/availability/rules', payload);
     return res.data as { message: string };
   },
