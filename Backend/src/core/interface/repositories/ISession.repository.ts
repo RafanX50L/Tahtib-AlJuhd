@@ -7,4 +7,5 @@ export interface ISessionRepository extends IBaseRepository<ISession>{
   // update(session: ISession): Promise<ISession>;
   findUnFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]>;
   findFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]>;
+  findUnFreeSlotsByClient(clinetId: string, fromDate: Date, toDate: Date): Promise<ISession[]>;
 };

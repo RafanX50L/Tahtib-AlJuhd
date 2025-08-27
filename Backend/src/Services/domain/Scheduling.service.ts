@@ -17,7 +17,7 @@ import { AvailabilityResponse, BookSlotInput, ISchedulingService } from "@/core/
 import { ISessionRepository } from "@/core/interface/repositories/ISession.repository";
 import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { ISession } from "@/core/interface/model/ISession";
-import { ITrainerPersonalization } from "@/core/interface/model/IPersonalization.model";
+import { IClientPersonalization, ITrainerPersonalization } from "@/core/interface/model/IPersonalization.model";
 import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
 
 
@@ -172,13 +172,23 @@ export class SchedulingService implements ISchedulingService {
     return await this._sessionRepo.findAll(query);
   }
 
-  async cancelBooking(bookingId: string) {
+  async cancelBooking(bookingId: string, clientId: string) {
+    const session = await this._sessionRepo.findById(
+      new Types.ObjectId(bookingId)
+    );
+    const contractId = ((await this._personalizationRepo.findByUserId(clientId)).data as IClientPersonalization).contracts;
+    if (!session) throw new Error("Booking not found");
+    session.status = "canceled";
+    session.clientId = null as null;
+    await this._contractRepo.incrementSessionsRemaining(contractId.toString());
+    return await this._sessionRepo.update(session.id, session);
+  }
+  async completeBooking(bookingId: string) {
     const session = await this._sessionRepo.findById(
       new Types.ObjectId(bookingId)
     );
     if (!session) throw new Error("Booking not found");
-    session.status = "canceled";
-    session.clientId = null as null;
+    session.status = "completed";
     return await this._sessionRepo.update(session.id, session);
   }
 }

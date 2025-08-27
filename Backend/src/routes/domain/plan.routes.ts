@@ -15,6 +15,8 @@ const planController = new PlanController(planService);
 router
   .route("/plan")
   .post(restrictTo('trainer'),planController.createPlan.bind(planController))
-  .get(restrictTo('trainer','client'),planController.getPlansByTrainer.bind(planController));
+  .get(restrictTo('trainer','client'),planController.getPlansByTrainer.bind(planController))
+  .put(restrictTo('trainer'),planController.updatePlan.bind(planController))
+  .patch(restrictTo('trainer'),planController.deactivatePlan.bind(planController));
 
 export default router;

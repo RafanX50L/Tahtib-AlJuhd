@@ -136,6 +136,34 @@ export const TrainerService = {
       throw new Error(errorMessage);
     }
   },
+  updatePlan: async (editingPlanId: string, formData: Partial<IPlan>) => {
+    try {
+      const response = await api.put(TRAINER_ROUTES.PLAN, { formData,editingPlanId});
+      console.log("Updated plan response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to update plan";
+      console.log("Error updating plan: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+  deactivatePlan: async (editingPlanId: string) => {
+    try {
+      const response = await api.patch(TRAINER_ROUTES.PLAN, { editingPlanId });
+      console.log("Deactivated plan response: ", response.data);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to deactivate plan";
+      console.log("Error deactivating plan: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 
   getSlots: async(trainerId:string, fromDate:string, toDate: string)=>{
     try {

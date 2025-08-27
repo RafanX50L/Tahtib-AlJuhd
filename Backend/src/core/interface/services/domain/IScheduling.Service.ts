@@ -20,5 +20,6 @@ export interface ISchedulingService {
     getAvailabilityForDate(trainerId: string, date?: string, tz?: string): Promise<AvailabilityResponse>;
     bookSlot(input: BookSlotInput): Promise<ISession>;
     listBookings(params: { trainerId?: string; clientId?: string; status?: string }): Promise<Array<ISession>>;
-    cancelBooking(bookingId: string): Promise<ISession>;
+    cancelBooking(bookingId: string, clientId: string): Promise<ISession>;
+    completeBooking(bookingId: string): Promise<ISession>;
 }

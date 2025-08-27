@@ -9,6 +9,7 @@ const PlanSchema = new Schema<IPlan>({
   sessionsPerWeek: Number,
   durationWeeks: Number,
   isActive: { type: Boolean, default: true },
+  isBooked: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export const PlanModel = model<IPlan>('Plan', PlanSchema);

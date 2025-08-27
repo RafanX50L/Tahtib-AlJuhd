@@ -25,6 +25,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { SchedulingAPI } from "@/services/implementation/schedulingService";
+import { chatEnum } from "@/lib/chat-enum";
+import { useSocket } from "@/hooks/socketio";
 
 interface Slot {
   _id: string;
@@ -60,6 +63,7 @@ const SetAvailabilityPage = () => {
   const [animatedCards, setAnimatedCards] = useState<string[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
+  const socket = useSocket();
 
   const [weeklyRules, setWeeklyRules] = useState<WeeklyRulesPayload>({
     weeklyRules: {
@@ -91,8 +95,7 @@ const SetAvailabilityPage = () => {
         if (!user?._id) return;
         // Fetch weekly rules from backend
         const rules = await TrainerService.getWeeklyRules(user._id);
-        if (rules)
-          setWeeklyRules(rules);
+        if (rules) setWeeklyRules(rules);
         console.log(rules);
       } catch (err) {
         // ignore quietly
@@ -147,7 +150,11 @@ const SetAvailabilityPage = () => {
   // Filter to show only booked sessions
   const getBookedSlots = () => {
     return slots
-      .filter((slot) => (slot.status === "booked" || slot.status === "completed") && slot.clientId)
+      .filter(
+        (slot) =>
+          (slot.status === "booked" || slot.status === "completed") &&
+          slot.clientId
+      )
       .sort(
         (a, b) =>
           new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
@@ -196,10 +203,10 @@ const SetAvailabilityPage = () => {
     const slotStart = new Date(startTime);
     const slotEnd = new Date(endTime);
     const timeDiff = slotStart.getTime() - now.getTime();
-    
+
     // Can't cancel if session has already ended
     if (now > slotEnd) return false;
-    
+
     // Can cancel if more than 30 minutes before start
     return timeDiff > 30 * 60 * 1000;
   };
@@ -228,7 +235,7 @@ const SetAvailabilityPage = () => {
     });
   };
 
-  const handleCancelBooking = async (slotId: string) => {
+  const handleCancelBooking = async (slotId: string,startTime:string, endTime:string, clientId: string) => {
     try {
       const element = document.getElementById(`slot-${slotId}`);
       if (element) {
@@ -238,19 +245,114 @@ const SetAvailabilityPage = () => {
         }, 150);
       }
 
-      setSlots(
-        slots.map((slot) =>
-          slot._id === slotId
-            ? {
-                ...slot,
-                status: "free" as const,
-                clientId: null,
-                clientName: undefined,
-              }
-            : slot
-        )
+      toast.custom(
+        (t) => (
+          <div className="bg-white rounded-xl shadow-2xl border border-gray-100 p-6 max-w-md mx-auto transform transition-all duration-300 ease-out">
+            {/* Header with icon */}
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-red-50 rounded-full flex items-center justify-center mr-3">
+                <svg
+                  className="w-5 h-5 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Cancel Booking
+                </h3>
+                <p className="text-sm text-gray-600">
+                  This action cannot be undone
+                </p>
+              </div>
+            </div>
+
+            {/* Message */}
+            <div className="mb-6">
+              <p className="text-gray-700 leading-relaxed">
+                Are you sure you want to cancel this session? The client will
+                lose their reservation and must book a new slot if they wish to
+                reschedule.
+              </p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => toast.dismiss(t)}
+                className="px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+              >
+                Keep Booking
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await SchedulingAPI.cancel(slotId, clientId);
+                    setSlots(
+                      slots.map((slot) =>
+                        slot._id === slotId
+                          ? {
+                              ...slot,
+                              status: "free" as const,
+                              clientId: null,
+                              clientName: undefined,
+                            }
+                          : slot
+                      )
+                    );
+                    const formattedStart = new Date(startTime).toLocaleString(
+                    "en-IN",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }
+                  );
+
+                  const formattedEnd = new Date(endTime).toLocaleString(
+                    "en-IN",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }
+                  );
+                    socket?.emit(chatEnum.sendNotification, {
+                      sender: user?._id,
+                      receiver: clientId,
+                      role: "trainer",
+                      text: `Session canceled by ${user?.name} from ${formattedStart} to ${formattedEnd}`,
+                      category: "session_canceled",
+                    });
+                    toast.success("Booking cancelled successfully");
+                  } catch (error: any) {
+                    console.error("Error cancelling booking:", error);
+                  } finally {
+                    toast.dismiss(t);
+                  }
+                }}
+                className="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 shadow-md hover:shadow-lg"
+              >
+                Yes, Cancel Booking
+              </button>
+            </div>
+          </div>
+        ),
+        {
+          duration: 10000,
+          position: "top-center",
+          style: {
+            background: "transparent",
+            boxShadow: "none",
+          },
+        }
       );
-      toast.success("Booking cancelled successfully");
     } catch (error: any) {
       toast.error("Failed to cancel booking");
     }
@@ -258,6 +360,7 @@ const SetAvailabilityPage = () => {
 
   const handleMarkAsComplete = async (slotId: string) => {
     try {
+      await SchedulingAPI.MarkAsComplete(slotId);
       setSlots(
         slots.map((slot) =>
           slot._id === slotId
@@ -437,7 +540,7 @@ const SetAvailabilityPage = () => {
           size="sm"
           variant="outline"
           className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
-          onClick={() => handleCancelBooking(slot._id)}
+          onClick={() => handleCancelBooking(slot._id,slot.startTime,slot.endTime, slot.clientId as string)}
         >
           Cancel
         </Button>
@@ -449,7 +552,7 @@ const SetAvailabilityPage = () => {
       const slotStart = new Date(slot.startTime);
       const timeDiff = slotStart.getTime() - currentTime.getTime();
       const minutesUntilStart = Math.floor(timeDiff / (60 * 1000));
-      
+
       if (minutesUntilStart > 5 && minutesUntilStart <= 30) {
         return (
           <div className="text-sm text-yellow-500 font-medium">
@@ -460,16 +563,16 @@ const SetAvailabilityPage = () => {
     }
 
     return buttons.length > 0 ? (
-      <div className="flex gap-3">
-        {buttons}
-      </div>
+      <div className="flex gap-3">{buttons}</div>
     ) : null;
   };
 
   const todayBookedSlots = getTodayBookedSlots();
   const selectedDateBookedSlots = getSelectedDateBookedSlots();
   const isToday = selectedDate.toDateString() === new Date().toDateString();
-  const totalBookedSlots = getBookedSlots().filter(s => s.status !== "completed").length;
+  const totalBookedSlots = getBookedSlots().filter(
+    (s) => s.status !== "completed"
+  ).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#141414] p-6">
@@ -496,7 +599,11 @@ const SetAvailabilityPage = () => {
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5" />
                     <span className="text-sm">
-                      {todayBookedSlots.filter(s => s.status !== "completed").length} Today
+                      {
+                        todayBookedSlots.filter((s) => s.status !== "completed")
+                          .length
+                      }{" "}
+                      Today
                     </span>
                   </div>
                 </div>
@@ -788,7 +895,11 @@ const SetAvailabilityPage = () => {
                 Today's Booked Sessions
               </h2>
               <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-xs px-3 py-1 rounded-full font-medium">
-                {todayBookedSlots.filter(s => s.status !== "completed").length} active sessions
+                {
+                  todayBookedSlots.filter((s) => s.status !== "completed")
+                    .length
+                }{" "}
+                active sessions
               </div>
             </div>
 
@@ -826,25 +937,31 @@ const SetAvailabilityPage = () => {
                         {slot.status === "completed" ? (
                           <>
                             <CheckCircle className="w-5 h-5 text-green-400" />
-                            <span className="text-green-400 font-medium">Completed</span>
+                            <span className="text-green-400 font-medium">
+                              Completed
+                            </span>
                           </>
                         ) : (
                           <>
                             <UserCheck className="w-5 h-5 text-blue-400" />
-                            <span className="text-blue-400 font-medium">Booked</span>
+                            <span className="text-blue-400 font-medium">
+                              Booked
+                            </span>
                           </>
                         )}
                       </div>
-                      {isSlotStartingSoon(slot.startTime) && slot.status !== "completed" && (
-                        <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs px-3 py-1 rounded-full font-bold animate-pulse">
-                          Starting Soon!
-                        </span>
-                      )}
-                      {isSessionOngoing(slot.startTime, slot.endTime) && slot.status !== "completed" && (
-                        <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
-                          Live Now!
-                        </span>
-                      )}
+                      {isSlotStartingSoon(slot.startTime) &&
+                        slot.status !== "completed" && (
+                          <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+                            Starting Soon!
+                          </span>
+                        )}
+                      {isSessionOngoing(slot.startTime, slot.endTime) &&
+                        slot.status !== "completed" && (
+                          <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+                            Live Now!
+                          </span>
+                        )}
                     </div>
 
                     <div className="space-y-3 mb-6">
@@ -884,7 +1001,11 @@ const SetAvailabilityPage = () => {
                 : `Booked Sessions - ${formatDate(selectedDate.toISOString())}`}
             </h2>
             <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-xs px-3 py-1 rounded-full font-medium">
-              {selectedDateBookedSlots.filter(s => s.status !== "completed").length} active sessions
+              {
+                selectedDateBookedSlots.filter((s) => s.status !== "completed")
+                  .length
+              }{" "}
+              active sessions
             </div>
           </div>
 
@@ -907,11 +1028,15 @@ const SetAvailabilityPage = () => {
                   key={slot._id}
                   id={`detail-slot-${slot._id}`}
                   className={`group flex items-center justify-between p-6 rounded-xl border bg-gradient-to-r from-[#2c2c2c] to-[#252525] border-[#3c3c3c] hover:border-[#6366f1] transition-all duration-500 hover:shadow-xl ${
-                    isToday && isSlotStartingSoon(slot.startTime) && slot.status !== "completed"
+                    isToday &&
+                    isSlotStartingSoon(slot.startTime) &&
+                    slot.status !== "completed"
                       ? "ring-2 ring-yellow-500/50"
                       : ""
                   } ${
-                    isToday && isSessionOngoing(slot.startTime, slot.endTime) && slot.status !== "completed"
+                    isToday &&
+                    isSessionOngoing(slot.startTime, slot.endTime) &&
+                    slot.status !== "completed"
                       ? "ring-2 ring-green-500/50"
                       : ""
                   }`}
@@ -920,11 +1045,13 @@ const SetAvailabilityPage = () => {
                   }}
                 >
                   <div className="flex items-center gap-6">
-                    <div className={`p-3 rounded-lg ${
-                      slot.status === "completed" 
-                        ? "bg-gradient-to-r from-green-500 to-emerald-600"
-                        : "bg-gradient-to-r from-blue-500 to-indigo-600"
-                    }`}>
+                    <div
+                      className={`p-3 rounded-lg ${
+                        slot.status === "completed"
+                          ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                          : "bg-gradient-to-r from-blue-500 to-indigo-600"
+                      }`}
+                    >
                       {slot.status === "completed" ? (
                         <CheckCircle className="w-6 h-6 text-white" />
                       ) : (
@@ -937,16 +1064,20 @@ const SetAvailabilityPage = () => {
                           {formatTime(slot.startTime)} -{" "}
                           {formatTime(slot.endTime)}
                         </span>
-                        {isToday && isSlotStartingSoon(slot.startTime) && slot.status !== "completed" && (
-                          <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs px-3 py-1 rounded-full font-bold animate-pulse">
-                            Starting Soon!
-                          </span>
-                        )}
-                        {isToday && isSessionOngoing(slot.startTime, slot.endTime) && slot.status !== "completed" && (
-                          <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
-                            Live Now!
-                          </span>
-                        )}
+                        {isToday &&
+                          isSlotStartingSoon(slot.startTime) &&
+                          slot.status !== "completed" && (
+                            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+                              Starting Soon!
+                            </span>
+                          )}
+                        {isToday &&
+                          isSessionOngoing(slot.startTime, slot.endTime) &&
+                          slot.status !== "completed" && (
+                            <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+                              Live Now!
+                            </span>
+                          )}
                       </div>
                       <div className="flex items-center gap-2 text-gray-400">
                         <User className="w-4 h-4" />
@@ -957,11 +1088,13 @@ const SetAvailabilityPage = () => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-                      slot.status === "completed"
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-blue-500/20 text-blue-400"
-                    }`}>
+                    <div
+                      className={`px-4 py-2 rounded-full text-sm font-medium ${
+                        slot.status === "completed"
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-blue-500/20 text-blue-400"
+                      }`}
+                    >
                       {slot.status === "completed" ? "Completed" : "Booked"}
                     </div>
                     {renderSessionActions(slot)}

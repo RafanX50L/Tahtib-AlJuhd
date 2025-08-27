@@ -2,7 +2,7 @@ import { ITrainerPersonalization } from "@/core/interface/model/IPersonalization
 import { IPlan } from "@/core/interface/model/IPlan";
 import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { IPlanRepository } from "@/core/interface/repositories/IPlanRepository";
-import { IPlanService } from "@/core/interface/services/domain/IPlan.Service";
+import { IPlanService, IPlanView } from "@/core/interface/services/domain/IPlan.Service";
 import { Types } from "mongoose";
 
 export class PlanService implements IPlanService{
@@ -17,6 +17,7 @@ export class PlanService implements IPlanService{
     if (!trainerPers) throw new Error('Trainer not found');
     const trainerData = trainerPers.data as ITrainerPersonalization;
     plan.price = (trainerData.basicInfo.weeklySalary + 100) * plan.durationWeeks! - 1;
+    plan.isBooked = false;
     const newPlan = await this._planRepo.create(plan);
     await this._personalizationRepo.updateTrainerData(plan.trainerId.toString(), {
       ...trainerData,
@@ -26,11 +27,51 @@ export class PlanService implements IPlanService{
     return newPlan;
   }
 
-  async getPlansByTrainer(trainerId: string): Promise<IPlan[]> {
-    return await this._planRepo.findByTrainerId(trainerId);
+  async getPlansByTrainer(trainerId: string): Promise<IPlanView[]> {
+    const result = await this._planRepo.findByTrainerId(trainerId) as IPlan[];
+    return result.map(plan => ({
+      id: plan._id.toString(),
+      trainer: plan.trainerId.toString(),
+      title: plan.title,
+      description: plan.description,
+      price: plan.price,
+      sessionsPerWeek: plan.sessionsPerWeek,
+      durationWeeks: plan.durationWeeks,
+      isActive: plan.isActive,
+      isBooked: plan.isBooked,
+      createdAt: plan.createdAt?.toISOString(),
+    }));
   }
 
   async getPlanById(id: string): Promise<IPlan | null> {
     return await this._planRepo.findById(new Types.ObjectId(id));
   }
+
+  async updatePlan(id:string, updates: Partial<IPlan>): Promise<IPlanView | null> {
+    const existingPlan = await this._planRepo.findById(new Types.ObjectId(id));
+    if (!existingPlan) throw new Error('Plan not found');
+
+    const updatedPlan = await this._planRepo.update(id, updates);
+    return {
+      id: updatedPlan._id.toString(),
+      trainer: updatedPlan.trainerId.toString(),
+      title: updatedPlan.title,
+      description: updatedPlan.description,
+      price: updatedPlan.price,
+      sessionsPerWeek: updatedPlan.sessionsPerWeek,
+      durationWeeks: updatedPlan.durationWeeks,
+      isActive: updatedPlan.isActive,
+      isBooked: updatedPlan.isBooked,
+      createdAt: updatedPlan.createdAt?.toISOString(),
+    };
+  }
+
+  async deactivatePlan(id:string): Promise<IPlan | null> {
+    const existingPlan = await this._planRepo.findById(new Types.ObjectId(id));
+    if (!existingPlan) throw new Error('Plan not found');
+
+    const updatedPlan = await this._planRepo.update(id, { isActive: !existingPlan.isActive });
+    return updatedPlan;
+  }
+
 }

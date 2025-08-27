@@ -30,4 +30,24 @@ export class PlanController implements IPlanController {
       next(err);
     }
   };
+  async updatePlan(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {editingPlanId,formData} = req.body;
+      const updatedPlan = await this._planService.updatePlan(editingPlanId,formData);
+      res.status(HttpStatus.OK).json(updatedPlan);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  async deactivatePlan(req: Request, res: Response, next: NextFunction) {
+    try {
+      const {editingPlanId} = req.body;
+      const updatedPlan = await this._planService.deactivatePlan(editingPlanId);
+      res.status(HttpStatus.OK).json(updatedPlan);
+    } catch (err) {
+      next(err);
+    }
+  };
+
 }

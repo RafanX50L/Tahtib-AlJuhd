@@ -13,8 +13,12 @@ export const SchedulingAPI = {
     const res = await api.get('/bookings', { params });
     return res.data;
   },
-  cancel: async (bookingId: string) => {
-    const res = await api.patch(`/bookings/${bookingId}/cancel`);
+  cancel: async (bookingId: string, clientId: string ) => {
+    const res = await api.patch(`scheduling/bookings/${bookingId}/cancel`,{clientId});
+    return res.data;
+  },
+  MarkAsComplete: async (bookingId: string) => {
+    const res = await api.patch(`scheduling/bookings/${bookingId}/complete`);
     return res.data;
   },
 };

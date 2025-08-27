@@ -8,24 +8,6 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
   constructor () {
     super(SessionModel);
   }
-  // async create(session: ISession): Promise<ISession> {
-  //   const newSession = new SessionModel(session);
-  //   return await newSession.save();
-  // }
-
-  // async findById(id: string): Promise<ISession | null> {
-  //   return await SessionModel.findById(id);
-  // }
-
-  // async update(session: ISession): Promise<ISession> {
-  //   const updatedSession = await SessionModel.findByIdAndUpdate(
-  //     session._id,
-  //     { $set: session },
-  //     { new: true }
-  //   );
-  //   if (!updatedSession) throw new Error('Session not found');
-  //   return updatedSession;
-  // }
 
   async findFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
     console.log('Finding free slots for trainer:', trainerId, 'from', fromDate, 'to', toDate);
@@ -41,7 +23,16 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
     console.log('Finding unfree slots for trainer:', trainerId, 'from', fromDate, 'to', toDate);
     const result = await this.model.find({
       trainerId: new Types.ObjectId(trainerId),
-      status: { $ne: 'free' },
+      status: { $nin: ['free', 'canceled'] },
+      startTime: { $gte: fromDate, $lte: toDate },
+    });
+    return result;
+  }
+  async findUnFreeSlotsByClient(clinetId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
+    console.log('Finding unfree slots for client:', clinetId, 'from', fromDate, 'to', toDate);
+    const result = await this.model.find({
+      clientId: new Types.ObjectId(clinetId),
+      status: { $nin: ['free', 'canceled'] },
       startTime: { $gte: fromDate, $lte: toDate },
     });
     return result;

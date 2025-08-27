@@ -7015,3 +7015,1003 @@
     at Generator.next (<anonymous>)
     at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:29:36 [[31merror[39m]: Error: Contract not found
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:137:19)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:38:47 [[31merror[39m]: Error: Contract not found
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:137:19)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:39:21 [[31merror[39m]: Error: Contract not found
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:137:19)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:40:15 [[31merror[39m]: Error: Contract not found
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:137:19)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:40:27 [[31merror[39m]: Error: Contract not found
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:137:19)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 22:56:05 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-27 23:10:16 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at SchedulingService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:179:82)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 23:11:52 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at SchedulingService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:179:82)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 23:12:20 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at SchedulingService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:181:82)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 23:12:59 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at SchedulingService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:182:82)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 23:14:12 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-27 23:32:48 [[31merror[39m]: CastError: Cast to string failed for value "[ 'free', 'canceled' ]" (type Array) at path "status" for model "Session"
+    at SchemaString.cast (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:606:11)
+    at SchemaString.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:692:17)
+    at SchemaString.handleSingle (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1602:15)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:684:20)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:367:39)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+2025-08-27 23:32:51 [[31merror[39m]: CastError: Cast to string failed for value "[ 'free', 'canceled' ]" (type Array) at path "status" for model "Session"
+    at SchemaString.cast (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:606:11)
+    at SchemaString.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:692:17)
+    at SchemaString.handleSingle (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1602:15)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:684:20)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:367:39)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+2025-08-27 23:32:56 [[31merror[39m]: CastError: Cast to string failed for value "[ 'free', 'canceled' ]" (type Array) at path "status" for model "Session"
+    at SchemaString.cast (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:606:11)
+    at SchemaString.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:692:17)
+    at SchemaString.handleSingle (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1602:15)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:684:20)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:367:39)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+2025-08-27 23:32:57 [[31merror[39m]: CastError: Cast to string failed for value "[ 'free', 'canceled' ]" (type Array) at path "status" for model "Session"
+    at SchemaString.cast (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:606:11)
+    at SchemaString.SchemaType.applySetters (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1255:12)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:692:17)
+    at SchemaString.handleSingle (C:\Users\USER\node_modules\mongoose\lib\schemaType.js:1602:15)
+    at SchemaString.castForQuery (C:\Users\USER\node_modules\mongoose\lib\schema\string.js:684:20)
+    at cast (C:\Users\USER\node_modules\mongoose\lib\cast.js:367:39)
+    at model.Query.Query.cast (C:\Users\USER\node_modules\mongoose\lib\query.js:4889:12)
+    at model.Query.Query._castConditions (C:\Users\USER\node_modules\mongoose\lib\query.js:2306:10)
+    at model.Query._find (C:\Users\USER\node_modules\mongoose\lib\query.js:2333:8)
+    at model.Query.exec (C:\Users\USER\node_modules\mongoose\lib\query.js:4438:80)
+2025-08-27 23:38:14 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-27 23:38:14 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-27 23:57:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-27 23:57:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-27 23:57:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-27 23:57:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 00:20:51 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 00:20:51 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 00:20:51 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 00:20:51 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 00:44:01 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 00:44:02 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:44:10 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:44:34 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:45:30 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:45:44 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:45:45 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:47:00 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:47:04 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:47:04 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 00:47:53 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at PlanRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:17:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:4:12)
+    at PlanRepository.findByTrainerId (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\Plan.repository.ts:26:16)
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:31:41)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:8:71
+2025-08-28 01:02:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:02:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:02:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:18:00 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:22:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:22:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:22:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:24:04 [[31merror[39m]: Error: Personalization not found
+    at ClientPersonalizationService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:161:33)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:38:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:07 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:68:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:07 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:07 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:07 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:07 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:07 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:08 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:09 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:10 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:11 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:12 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:13 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:13 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at clientTrainerService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:27:85)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.trainer.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:24 [[31merror[39m]: Error: Personalization not found
+    at ClientPersonalizationService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:161:33)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:38:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:32 [[31merror[39m]: Error: Personalization not found
+    at ClientPersonalizationService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:161:33)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:38:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:24:54 [[31merror[39m]: TypeError: Cannot read properties of null (reading 'data')
+    at ClientPersonalizationService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:108:45)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.personalization.service.ts:38:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:35:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:36:24 [[31merror[39m]: Error: Plan not found
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:52:30)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:36:37 [[31merror[39m]: Error: Plan not found
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:52:30)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:36:49 [[31merror[39m]: Error: Plan not found
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:52:30)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:39:10 [[31merror[39m]: Error: Plan not found
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:52:30)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:45:09 [[31merror[39m]: Error: Plan not found
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:52:30)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:49:32 [[31merror[39m]: Error: Plan not found
+    at PlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:52:30)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Plan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 01:57:52 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:57:52 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:57:52 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 01:57:52 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:13:13 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:73:26
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 02:13:13 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:73:26
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 02:14:39 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 02:14:55 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9

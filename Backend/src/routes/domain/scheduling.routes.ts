@@ -25,6 +25,7 @@ router.get('/bookings', verifyAnyToken(), restrictTo('client','trainer','admin')
 
 // PATCH /api/bookings/:bookingId/cancel
 router.patch('/bookings/:bookingId/cancel', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.cancelBooking.bind(schedulingController));
+router.patch('/bookings/:bookingId/complete', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.completeBooking.bind(schedulingController));
 
 export default router;
 

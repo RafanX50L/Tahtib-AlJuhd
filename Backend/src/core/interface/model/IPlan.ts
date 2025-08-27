@@ -8,6 +8,7 @@ export interface IPlan extends Document {
   sessionsPerWeek: number;
   durationWeeks: number;
   isActive: boolean;
+  isBooked: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

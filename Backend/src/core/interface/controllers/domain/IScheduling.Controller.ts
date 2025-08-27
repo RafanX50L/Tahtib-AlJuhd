@@ -5,4 +5,5 @@ export interface ISchedulingController {
     bookSlot (req: Request, res: Response, next: NextFunction): Promise<void>;
     listBookings (req: Request, res: Response, next: NextFunction): Promise<void>;
     cancelBooking (req: Request, res: Response, next: NextFunction): Promise<void>;
+    completeBooking (req: Request, res: Response, next: NextFunction): Promise<void>;
 }

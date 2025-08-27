@@ -1,6 +1,7 @@
 import { HttpStatus } from '@/constants/status.constant';
 import { IAvailabilityController } from '@/core/interface/controllers/domain/IAvailability.Controller';
 import { IAvailabilityService } from '@/core/interface/services/domain/IAvailability.Service';
+import { AddedRequest } from '@/middleware/verify.token.middleware';
 import { NextFunction, Request, Response } from 'express';
 
 export class AvailabilityController implements IAvailabilityController {
@@ -36,10 +37,18 @@ export class AvailabilityController implements IAvailabilityController {
       next(err);
     }
   };
-  async getUnFreeSlots (req: Request, res: Response, next: NextFunction) {
+  async getUnFreeSlots (req: AddedRequest, res: Response, next: NextFunction) {
     try {
       const { trainerId, fromDate, toDate } = req.query;
-      const slots = await this._availabilityService.getUnFreeSlots(trainerId as string, new Date(fromDate as string), new Date(toDate as string));
+      const role = req.user?.role;
+      let slots ;
+      if(role === "client"){
+        console.log("client");
+        slots = await this._availabilityService.getUnFreeSlotsByClient(req.user.id as string, new Date(fromDate as string), new Date(toDate as string));
+
+      }else if(role === "trainer"){
+        slots = await this._availabilityService.getUnFreeSlotsByTrainer(trainerId as string, new Date(fromDate as string), new Date(toDate as string));
+      }
       console.log("slots",slots);
       res.status(HttpStatus.OK).json(slots);
     } catch (err) {

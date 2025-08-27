@@ -2,12 +2,24 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Video, X, AlertCircle, Users, CheckCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  User,
+  Video,
+  X,
+  AlertCircle,
+  Users,
+  CheckCircle,
+} from "lucide-react";
 import { format, differenceInMinutes } from "date-fns";
 import { toast } from "sonner";
 import { ClientService } from "@/services/implementation/clientServices";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { SchedulingAPI } from "@/services/implementation/schedulingService";
+import { chatEnum } from "@/lib/chat-enum";
+import { useSocket } from "@/hooks/socketio";
 
 interface Session {
   _id: string;
@@ -46,6 +58,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
+  const socket = useSocket();
 
   // Update current time every minute for real-time session status updates
   useEffect(() => {
@@ -101,18 +114,18 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       toast.error("Please log in to book a slot");
       return;
     }
-    
+
     // Check plan validity
     if (!contract) {
       toast.error("No active plan found. Please purchase a plan first.");
       return;
     }
-    
+
     if (contract.sessionsRemaining <= 0) {
       toast.error("No sessions remaining in your plan");
       return;
     }
-    
+
     const planEndDate = new Date(contract.endDate);
     if (planEndDate < new Date()) {
       toast.error("Your plan has expired. Please renew your plan.");
@@ -120,12 +133,12 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
     }
 
     // Check if trying to book a past slot
-    const slot = slots.find(s => s._id === slotId);
+    const slot = slots.find((s) => s._id === slotId);
     if (slot && new Date(slot.startTime) < new Date()) {
       toast.error("Cannot book a session that has already started");
       return;
     }
-    
+
     try {
       // call backend to enforce sessionsRemaining and plan validity
       await ClientService.bookSlot(user!._id, slotId);
@@ -138,27 +151,131 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
     }
   };
 
-  const handleCancelBooking = async (slotId: string) => {
+  const handleCancelBooking = async (
+    slotId: string,
+    startTime: string,
+    endTime: string,
+    clinetId: string
+  ) => {
     if (!user?._id) {
       toast.error("Please log in to cancel a booking");
       return;
     }
 
-    // Check if cancellation is allowed (30 minutes before start)
-    const slot = slots.find(s => s._id === slotId);
+    const slot = slots.find((s) => s._id === slotId);
     if (slot && !canCancelSession(slot.startTime, slot.endTime)) {
-      toast.error("Cannot cancel session within 30 minutes of start time or after it has ended");
+      toast.error(
+        "Cannot cancel session within 30 minutes of start time or after it has ended"
+      );
       return;
     }
 
-    try {
-      await ClientService.cancelSlotBooking(slotId);
-      await fetchSlots(selectedDate);
-      toast.success("Booking cancelled successfully");
-    } catch (error: any) {
-      console.error("Error cancelling booking:", error);
-      toast.error(error.message || "Failed to cancel booking");
-    }
+    // ✅ Show confirmation toast
+    toast.custom(
+      (t) => (
+        <div className="bg-white rounded-xl shadow-2xl border border-gray-100 p-6 max-w-md mx-auto transform transition-all duration-300 ease-out">
+          {/* Header with icon */}
+          <div className="flex items-center mb-4">
+            <div className="flex-shrink-0 w-10 h-10 bg-red-50 rounded-full flex items-center justify-center mr-3">
+              <svg
+                className="w-5 h-5 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Cancel Booking
+              </h3>
+              <p className="text-sm text-gray-600">
+                This action cannot be undone
+              </p>
+            </div>
+          </div>
+
+          {/* Message */}
+          <div className="mb-6">
+            <p className="text-gray-700 leading-relaxed">
+              Are you sure you want to cancel this booking? You'll need to make
+              a new reservation if you change your mind.
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={() => toast.dismiss(t)}
+              className="px-4 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+            >
+              Keep Booking
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  await SchedulingAPI.cancel(slotId, clinetId);
+                  await fetchSlots(selectedDate);
+                  const formattedStart = new Date(startTime).toLocaleString(
+                    "en-IN",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }
+                  );
+
+                  const formattedEnd = new Date(endTime).toLocaleString(
+                    "en-IN",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }
+                  );
+                  socket?.emit(chatEnum.sendNotification, {
+                    sender: user?._id,
+                    receiver: contract?.trainerId,
+                    role: "trainer",
+                    text: `Session canceled by ${user?.name} from ${formattedStart} to ${formattedEnd}`,
+                    category: "session_canceled",
+                  });
+                  toast.success("Booking cancelled successfully", {
+                    icon: "✅",
+                    style: {
+                      background: "#10B981",
+                      color: "#fff",
+                      borderRadius: "12px",
+                      padding: "16px",
+                      fontWeight: "500",
+                    },
+                  });
+                } catch (error: any) {
+                  console.error("Error cancelling booking:", error);
+                } finally {
+                  toast.dismiss(t);
+                }
+              }}
+              className="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 shadow-md hover:shadow-lg"
+            >
+              Yes, Cancel Booking
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 10000,
+        position: "top-center",
+        style: {
+          background: "transparent",
+          boxShadow: "none",
+        },
+      }
+    );
   };
 
   // Check if session has ended (client-side logic for display purposes)
@@ -174,7 +291,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
     const slotStart = new Date(startTime);
     const slotEnd = new Date(endTime);
     const timeDiff = slotStart.getTime() - now.getTime();
-    
+
     // Can join from 5 minutes before start until session ends
     return timeDiff <= 5 * 60 * 1000 && now <= slotEnd;
   };
@@ -185,10 +302,10 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
     const slotStart = new Date(startTime);
     const slotEnd = new Date(endTime);
     const timeDiff = slotStart.getTime() - now.getTime();
-    
+
     // Can't cancel if session has already ended
     if (now > slotEnd) return false;
-    
+
     // Can cancel if more than 30 minutes before start
     return timeDiff > 30 * 60 * 1000;
   };
@@ -300,7 +417,14 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
             size="sm"
             variant="outline"
             className="flex-1 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-xs sm:text-sm"
-            onClick={() => handleCancelBooking(slot._id)}
+            onClick={() =>
+              handleCancelBooking(
+                slot._id,
+                slot.startTime,
+                slot.endTime,
+                slot.clientId as string
+              )
+            }
           >
             Cancel
           </Button>
@@ -312,7 +436,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
         const slotStart = new Date(slot.startTime);
         const timeDiff = slotStart.getTime() - currentTime.getTime();
         const minutesUntilStart = Math.floor(timeDiff / (60 * 1000));
-        
+
         if (minutesUntilStart > 5 && minutesUntilStart <= 30) {
           return (
             <div className="text-xs sm:text-sm text-yellow-500 font-medium text-center">
@@ -323,9 +447,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       }
 
       return buttons.length > 0 ? (
-        <div className="flex gap-2">
-          {buttons}
-        </div>
+        <div className="flex gap-2">{buttons}</div>
       ) : null;
     }
 
@@ -333,7 +455,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
     if (slot.status === "free" && contract?.sessionsRemaining! > 0) {
       const slotStart = new Date(slot.startTime);
       const isPastSlot = slotStart < new Date();
-      
+
       return (
         <Button
           size="sm"
@@ -384,10 +506,12 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
   const isToday = selectedDate.toDateString() === new Date().toDateString();
 
   return (
-    <div className={cn(
-      "w-full md:w-1/2 bg-gray-950 border-t md:border-t-0 md:border-l border-gray-700 flex flex-col",
-      "h-[calc(100vh-12rem)] sm:h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]"
-    )}>
+    <div
+      className={cn(
+        "w-full md:w-1/2 bg-gray-950 border-t md:border-t-0 md:border-l border-gray-700 flex flex-col",
+        "h-[calc(100vh-12rem)] sm:h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]"
+      )}
+    >
       {/* Plan Status Banner */}
       {contract && (
         <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-500/30 p-3">
@@ -395,7 +519,9 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
-                <span className="text-xs sm:text-sm font-medium text-blue-300">Plan: {contract.planName}</span>
+                <span className="text-xs sm:text-sm font-medium text-blue-300">
+                  Plan: {contract.planName}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Users className="h-3 w-3 sm:h-4 sm:w-4 text-green-400" />
@@ -411,22 +537,23 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
               </span>
             </div>
           </div>
-          
+
           {/* Warning if plan is expiring soon or no sessions left */}
-          {(contract.sessionsRemaining <= 2 || new Date(contract.endDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) && (
+          {(contract.sessionsRemaining <= 2 ||
+            new Date(contract.endDate) <
+              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) && (
             <div className="mt-2 flex items-center gap-2 text-amber-300">
               <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="text-xs sm:text-sm">
-                {contract.sessionsRemaining <= 2 
-                  ? `Only ${contract.sessionsRemaining} session${contract.sessionsRemaining === 1 ? '' : 's'} remaining!`
-                  : "Plan expires soon. Consider renewing!"
-                }
+                {contract.sessionsRemaining <= 2
+                  ? `Only ${contract.sessionsRemaining} session${contract.sessionsRemaining === 1 ? "" : "s"} remaining!`
+                  : "Plan expires soon. Consider renewing!"}
               </span>
             </div>
           )}
         </div>
       )}
-      
+
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -436,7 +563,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
           scrollbar-width: none;
         }
       `}</style>
-      
+
       <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 p-4 sm:p-6 border-b border-gray-700">
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#6366f1]" />
@@ -480,19 +607,22 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
         ) : selectedDateSlots.length === 0 ? (
           <div className="text-center py-8 text-gray-400">
             <Calendar className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 opacity-50" />
-            <p className="text-sm sm:text-base">No sessions scheduled for this date</p>
+            <p className="text-sm sm:text-base">
+              No sessions scheduled for this date
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
             {selectedDateSlots.map((slot) => {
               const effectiveStatus = getEffectiveStatus(slot);
               const ongoing = isSessionOngoing(slot.startTime, slot.endTime);
-              
+
               return (
                 <div
                   key={slot._id}
                   className={`p-3 sm:p-4 rounded-lg border-2 ${getStatusColor(effectiveStatus)} ${
-                    isSlotStartingSoon(slot.startTime) && effectiveStatus !== "completed"
+                    isSlotStartingSoon(slot.startTime) &&
+                    effectiveStatus !== "completed"
                       ? "ring-2 ring-yellow-500 ring-opacity-50"
                       : ""
                   } ${
@@ -509,11 +639,12 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      {isSlotStartingSoon(slot.startTime) && effectiveStatus !== "completed" && (
-                        <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
-                          Starting Soon
-                        </span>
-                      )}
+                      {isSlotStartingSoon(slot.startTime) &&
+                        effectiveStatus !== "completed" && (
+                          <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
+                            Starting Soon
+                          </span>
+                        )}
                       {ongoing && effectiveStatus !== "completed" && (
                         <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-pulse">
                           Live Now
@@ -524,7 +655,10 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
                       <Clock className="w-4 h-4" />
-                      <span>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
+                      <span>
+                        {formatTime(slot.startTime)} -{" "}
+                        {formatTime(slot.endTime)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
                       <span>
@@ -541,7 +675,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
                       </div>
                     )}
                   </div>
-                  
+
                   {renderSessionActions(slot)}
                 </div>
               );

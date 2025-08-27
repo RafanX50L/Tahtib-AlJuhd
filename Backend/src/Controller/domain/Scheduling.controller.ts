@@ -32,8 +32,17 @@ export class SchedulingController implements ISchedulingController {
     async cancelBooking (req: Request, res: Response, next: NextFunction) {
         try {
             const { bookingId } = req.params;
-            const canceled = await this._schedulingService.cancelBooking(bookingId);
+            const { clientId } = req.body;
+            const canceled = await this._schedulingService.cancelBooking(bookingId, clientId);
             res.json(canceled);
+        } catch (err) { next(err); }
+        
+    }
+    async completeBooking (req: Request, res: Response, next: NextFunction) {
+        try {
+            const { bookingId } = req.params;
+            await this._schedulingService.completeBooking(bookingId);
+            res.json('Session completed marked successfully');
         } catch (err) { next(err); }
         
     }

@@ -246,6 +246,7 @@ const NotificationDropdown = ({ theme, navPath }: NotificationDropdownProps) => 
       case "session_reminder":
       case "session_booked":
       case "schedule":
+      case "session_canceled":
         return <Calendar className={cn(iconClass, theme.success)} />;
       case "workout_update":
       case "payment_received":
