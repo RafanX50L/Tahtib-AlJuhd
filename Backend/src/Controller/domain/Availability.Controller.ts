@@ -23,7 +23,23 @@ export class AvailabilityController implements IAvailabilityController {
   async getFreeSlots (req: Request, res: Response, next: NextFunction) {
     try {
       const { trainerId, fromDate, toDate } = req.query;
-      const slots = await this._availabilityService.getFreeSlots(trainerId as string, new Date(fromDate as string), new Date(toDate as string));
+      const mode = (req.query.mode as string) || 'free';
+      const from = new Date(fromDate as string);
+      const to = new Date(toDate as string);
+      const slots = mode === 'all'
+        ? await (this._availabilityService as any).getAllSlots(trainerId as string, from, to)
+        : await this._availabilityService.getFreeSlots(trainerId as string, from, to);
+      console.log("slots",slots);
+      res.status(HttpStatus.OK).json(slots);
+    } catch (err) {
+      next(err);
+    }
+  };
+  async getUnFreeSlots (req: Request, res: Response, next: NextFunction) {
+    try {
+      const { trainerId, fromDate, toDate } = req.query;
+      const slots = await this._availabilityService.getUnFreeSlots(trainerId as string, new Date(fromDate as string), new Date(toDate as string));
+      console.log("slots",slots);
       res.status(HttpStatus.OK).json(slots);
     } catch (err) {
       next(err);

@@ -139,7 +139,7 @@ export const TrainerService = {
 
   getSlots: async(trainerId:string, fromDate:string, toDate: string)=>{
     try {
-      const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}`);
+      const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}&mode=all`);
       console.log("Fetched slots response: ", response.data);
       return { data: response.data };
     } catch (error: unknown) {
@@ -147,6 +147,19 @@ export const TrainerService = {
       const errorMessage =
         err.response?.data.error || "Failed to fetch slots";
       console.log("Error fetching slots: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getWeeklyRules: async(trainerId: string) => {
+    try {
+      const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/rules`, { params: { trainerId } });
+      return response.data.rules;
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch weekly rules';
+      console.log('Error fetching weekly rules: ', errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }

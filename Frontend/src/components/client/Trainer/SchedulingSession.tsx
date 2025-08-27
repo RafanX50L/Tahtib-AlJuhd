@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Video, X } from "lucide-react";
+import { Calendar, Clock, User, Video, X, AlertCircle, Users } from "lucide-react";
 import { format, differenceInMinutes } from "date-fns";
 import { toast } from "sonner";
 import { ClientService } from "@/services/implementation/clientServices";
@@ -25,6 +25,8 @@ interface Session {
 interface Contract {
   trainerId: string;
   sessionsRemaining: number;
+  planName: string;
+  endDate: string;
 }
 
 interface SchedulingSectionProps {
@@ -87,31 +89,33 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       toast.error("Please log in to book a slot");
       return;
     }
-    if (contract?.sessionsRemaining! <= 0) {
+    
+    // Check plan validity
+    if (!contract) {
+      toast.error("No active plan found. Please purchase a plan first.");
+      return;
+    }
+    
+    if (contract.sessionsRemaining <= 0) {
       toast.error("No sessions remaining in your plan");
       return;
     }
+    
+    const planEndDate = new Date(contract.endDate);
+    if (planEndDate < new Date()) {
+      toast.error("Your plan has expired. Please renew your plan.");
+      return;
+    }
+    
     try {
-      // await ClientService.bookSlot(slotId, user._id);
-      setSlots((prev) =>
-        prev.map((s) =>
-          s._id === slotId
-            ? {
-                ...s,
-                status: "booked",
-                clientId: user._id,
-                clientName: user.name || "Client",
-                meetingLink:
-                  s.meetingLink ||
-                  `room_${Math.random().toString().slice(2, 8)}`,
-              }
-            : s
-        )
-      );
+      // call backend to enforce sessionsRemaining and plan validity
+      await ClientService.bookSlot(user!._id, slotId);
+      await fetchSlots(selectedDate);
       toast.success("Slot booked successfully");
     } catch (error: any) {
       console.error("Error booking slot:", error);
       toast.error(error.message || "Failed to book slot");
+      await fetchSlots(selectedDate);
     }
   };
 
@@ -121,19 +125,8 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       return;
     }
     try {
-      // await ClientService.cancelSlotBooking(slotId);
-      setSlots((prev) =>
-        prev.map((s) =>
-          s._id === slotId
-            ? {
-                ...s,
-                status: "free",
-                clientId: undefined,
-                clientName: undefined,
-              }
-            : s
-        )
-      );
+      await ClientService.cancelSlotBooking(slotId);
+      await fetchSlots(selectedDate);
       toast.success("Booking cancelled successfully");
     } catch (error: any) {
       console.error("Error cancelling booking:", error);
@@ -193,6 +186,44 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
       "w-full md:w-1/2 bg-gray-950 border-t md:border-t-0 md:border-l border-gray-700 flex flex-col",
       "h-[calc(100vh-12rem)] sm:h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]"
     )}>
+      {/* Plan Status Banner */}
+      {contract && (
+        <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-500/30 p-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
+                <span className="text-xs sm:text-sm font-medium text-blue-300">Plan: {contract.planName}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-green-400" />
+                <span className="text-xs sm:text-sm font-medium text-green-300">
+                  Sessions: {contract.sessionsRemaining}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
+              <span className="text-xs sm:text-sm text-yellow-300">
+                Expires: {format(new Date(contract.endDate), "MMM d, yyyy")}
+              </span>
+            </div>
+          </div>
+          
+          {/* Warning if plan is expiring soon or no sessions left */}
+          {(contract.sessionsRemaining <= 2 || new Date(contract.endDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)) && (
+            <div className="mt-2 flex items-center gap-2 text-amber-300">
+              <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">
+                {contract.sessionsRemaining <= 2 
+                  ? `Only ${contract.sessionsRemaining} session${contract.sessionsRemaining === 1 ? '' : 's'} remaining!`
+                  : "Plan expires soon. Consider renewing!"
+                }
+              </span>
+            </div>
+          )}
+        </div>
+      )}
       <style >{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -319,6 +350,16 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
                       onClick={() => handleBookSlot(slot._id)}
                     >
                       Book
+                    </Button>
+                  )}
+                  {slot.status === "booked" && slot.clientId !== user?._id && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 border-gray-600 text-gray-400"
+                      disabled
+                    >
+                      Booked
                     </Button>
                   )}
                 </div>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { TrainerService } from '@/services/implementation/trainerServices';
+import { AvailabilityAPI } from '@/services/implementation/availabilityService';
 import { 
   Calendar, 
   Clock, 
@@ -10,167 +13,126 @@ import {
   Trash2,
   UserCheck,
   AlertCircle,
-  Video
+  Video,
+  Settings,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  MapPin,
+  Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { RootState } from '@/store/store';
-import { TrainerService } from '@/services/implementation/trainerServices';
+
+
 
 interface Slot {
   _id: string;
   trainerId: string;
   clientId: string | null;
   clientName?: string;
-  startTime: string; // ISO string, e.g., "2025-08-13T03:30:00.000Z"
-  endTime: string; // ISO string, e.g., "2025-08-13T04:30:00.000Z"
+  startTime: string;
+  endTime: string;
   status: 'booked' | 'free' | 'cancelled';
   meetingLink: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface NewSlot {
-  date: string; // ISO date string, e.g., "2025-08-12"
-  startTime: string; // e.g., "09:00"
-  endTime: string; // e.g., "10:00"
+interface DayWindow {
+  startTime: string;
+  endTime: string;
 }
 
 const SetAvailabilityPage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [slots, setSlots] = useState<Slot[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [showAddSlot, setShowAddSlot] = useState(false);
-  const [newSlot, setNewSlot] = useState<NewSlot>({
-    date: new Date().toISOString().split('T')[0],
-    startTime: '',
-    endTime: ''
+  const [showWeeklyRules, setShowWeeklyRules] = useState(false);
+  const [animatedCards, setAnimatedCards] = useState<string[]>([]);
+  
+  const [weeklyRules, setWeeklyRules] = useState<Record<string, DayWindow[] | number>>({
+    Monday:    [{ startTime: '09:00', endTime: '18:00' }],
+    Tuesday:   [{ startTime: '09:00', endTime: '18:00' }],
+    Wednesday: [{ startTime: '09:00', endTime: '18:00' }],
+    Thursday:  [{ startTime: '09:00', endTime: '18:00' }],
+    Friday:    [{ startTime: '09:00', endTime: '18:00' }],
+    Saturday:  [],
+    Sunday:    [],
+    slotLength: 30,
+    bufferMinutes: 0,
   });
 
+  // Load real data: weekly rules and slots for selected date
   useEffect(() => {
-    if (!user?._id) {
-      toast.error('User not authenticated');
-      setIsLoading(false);
-      return;
-    }
-    fetchSlots();
-  }, [selectedDate, user]);
+    (async () => {
+      try {
+        if (!user?._id) return;
+        // Fetch weekly rules from backend
+        const rules = await TrainerService.getWeeklyRules(user._id);
+        if (rules) setWeeklyRules((prev) => ({ ...prev, ...rules }));
+      } catch (err) {
+        // ignore quietly
+      }
+    })();
+  }, [user?._id]);
 
-  const fetchSlots = async () => {
-    setIsLoading(true);
-    try {
-      const fromDate = new Date(selectedDate);
-      fromDate.setHours(0, 0, 0, 0);
-      const toDate = new Date(selectedDate);
-      toDate.setHours(23, 59, 59, 999);
-      const response = await TrainerService.getSlots(user?._id as string, fromDate.toISOString(), toDate.toISOString());
-      console.log('Fetched slots:', response.data); // Debug log
-      setSlots(response.data || []);
-      setIsLoading(false);
-    } catch (error: any) {
-      console.error('Error fetching slots:', error);
-      toast.error(error.response?.data?.error || 'Failed to fetch slots');
-      setIsLoading(false);
-    }
+  useEffect(() => {
+    (async () => {
+      try {
+        if (!user?._id || !selectedDate) return;
+        const fromDate = new Date(selectedDate);
+        fromDate.setHours(0,0,0,0);
+        const toDate = new Date(selectedDate);
+        toDate.setHours(23,59,59,999);
+        const res = await TrainerService.getSlots(user._id, fromDate.toISOString(), toDate.toISOString());
+        setSlots(res.data || []);
+      } catch (err) {
+        // ignore quietly
+      }
+    })();
+  }, [user?._id, selectedDate]);
+
+  // Save weekly rules helper (call from your Save button on the page)
+  const saveWeeklyRules = async () => {
+    if (!user?._id) return;
+    await AvailabilityAPI.setWeeklyRules({ trainerId: user._id, rules: weeklyRules });
   };
 
-  const getTodaySlots = () => {
+  useEffect(() => {
+    // Animate cards on load
+    const timer = setTimeout(() => {
+      setAnimatedCards(slots.map(slot => slot._id));
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [slots]);
+
+  // Filter to show only booked sessions
+  const getBookedSlots = () => {
+    return slots.filter(slot => slot.status === 'booked' && slot.clientId)
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  };
+
+  const getTodayBookedSlots = () => {
     const today = new Date().toDateString();
-    return slots.filter(slot => 
+    return getBookedSlots().filter(slot => 
       new Date(slot.startTime).toDateString() === today
     );
   };
 
-  const getSelectedDateSlots = () => {
+  const getSelectedDateBookedSlots = () => {
     const selectedDateString = selectedDate.toDateString();
-    return slots.filter(slot => 
+    return getBookedSlots().filter(slot => 
       new Date(slot.startTime).toDateString() === selectedDateString
-    ).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    );
   };
 
-  const getStatusIcon = (status: Slot['status']) => {
-    switch (status) {
-      case 'booked':
-        return <UserCheck className="w-4 h-4 text-green-400" />;
-      case 'free':
-        return <CheckCircle className="w-4 h-4 text-blue-400" />;
-      case 'cancelled':
-        return <XCircle className="w-4 h-4 text-red-400" />;
-      default:
-        return <AlertCircle className="w-4 h-4 text-gray-400" />;
-    }
-  };
-
-  const getStatusColor = (status: Slot['status']) => {
-    switch (status) {
-      case 'booked':
-        return 'border-green-500 bg-green-500/10';
-      case 'free':
-        return 'border-blue-500 bg-blue-500/10';
-      case 'cancelled':
-        return 'border-red-500 bg-red-500/10';
-      default:
-        return 'border-gray-500 bg-gray-500/10';
-    }
-  };
-
-  const handleDeleteSlot = async (slotId: string) => {
-    try {
-      await TrainerService.deleteSlot(slotId);
-      setSlots(slots.filter(slot => slot._id !== slotId));
-      toast.success('Slot deleted successfully');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to delete slot');
-    }
-  };
-
-  const handleCancelBooking = async (slotId: string) => {
-    try {
-      await TrainerService.cancelSlotBooking(slotId);
-      setSlots(slots.map(slot => 
-        slot._id === slotId 
-          ? { ...slot, status: 'free' as const, clientId: null, clientName: undefined }
-          : slot
-      ));
-      toast.success('Booking cancelled successfully');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to cancel booking');
-    }
-  };
-
-  const handleAddSlot = async () => {
-    if (!user?._id) {
-      toast.error('User not authenticated');
-      return;
-    }
-
-    try {
-      const startDateTime = new Date(`${newSlot.date}T${newSlot.startTime}`);
-      const endDateTime = new Date(`${newSlot.date}T${newSlot.endTime}`);
-      
-      if (endDateTime <= startDateTime) {
-        toast.error('End time must be after start time');
-        return;
-      }
-
-      const slot = {
-        date: newSlot.date,
-        startTime: newSlot.startTime,
-        endTime: newSlot.endTime
-      };
-      const payload = { trainerId: user._id, slots: [slot] };
-      console.log('Sending payload to TrainerService.addSlot:', payload); // Debug log
-      await TrainerService.addSlot([slot], user._id);
-
-      // Refresh slots after adding
-      await fetchSlots();
-      setNewSlot({ date: new Date().toISOString().split('T')[0], startTime: '', endTime: '' });
-      setShowAddSlot(false);
-      toast.success('Slot added successfully');
-    } catch (error: any) {
-      console.error('Error adding slot:', error);
-    }
+  const isSlotStartingSoon = (startTime: string) => {
+    const now = new Date();
+    const slotStart = new Date(startTime);
+    const timeDiff = slotStart.getTime() - now.getTime();
+    return timeDiff > 0 && timeDiff <= 30 * 60 * 1000; // 30 minutes
   };
 
   const formatTime = (dateString: string) => {
@@ -189,332 +151,471 @@ const SetAvailabilityPage = () => {
     });
   };
 
-  const isSlotStartingSoon = (startTime: string) => {
-    const now = new Date();
-    const slotStart = new Date(startTime);
-    const timeDiff = slotStart.getTime() - now.getTime();
-    return timeDiff > 0 && timeDiff <= 30 * 60 * 1000; // 30 minutes
+  const handleCancelBooking = async (slotId: string) => {
+    try {
+      // Add bounce animation
+      const element = document.getElementById(`slot-${slotId}`);
+      if (element) {
+        element.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          element.style.transform = 'scale(1)';
+        }, 150);
+      }
+      
+      setSlots(slots.map(slot => 
+        slot._id === slotId 
+          ? { ...slot, status: 'free' as const, clientId: null, clientName: undefined }
+          : slot
+      ));
+      toast.success('Booking cancelled successfully');
+    } catch (error: any) {
+      toast.error('Failed to cancel booking');
+    }
   };
 
-  const todaySlots = getTodaySlots();
-  const selectedDateSlots = getSelectedDateSlots();
+
+  const todayBookedSlots = getTodayBookedSlots();
+  const selectedDateBookedSlots = getSelectedDateBookedSlots();
   const isToday = selectedDate.toDateString() === new Date().toDateString();
+  const totalBookedSlots = getBookedSlots().length;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Session Management</h1>
-          <p className="text-gray-400 mt-1">Manage your training sessions and availability</p>
-        </div>
-        <Button 
-          onClick={() => {
-            setNewSlot({ ...newSlot, date: selectedDate.toISOString().split('T')[0] });
-            setShowAddSlot(true);
-          }}
-          className="bg-[#6366f1] hover:bg-[#818cf8] text-white"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Time Slot
-        </Button>
-      </div>
-
-      {/* Calendar Date Selector */}
-      <div className="bg-[#1e1e1e] rounded-lg border border-[#2c2c2c] p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-[#6366f1]" />
-          <h2 className="text-lg font-semibold text-white">Select Date</h2>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-          <input
-            type="date"
-            value={selectedDate.toISOString().split('T')[0]}
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
-            className="p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-md text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none"
-            min={new Date().toISOString().split('T')[0]}
-          />
-          <div className="text-sm text-gray-400">
-            {isToday ? (
-              <span className="text-green-400">Today's sessions</span>
-            ) : (
-              <span>
-                Sessions for {selectedDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Today's Sessions - Always Visible */}
-      {isToday && (
-        <div className="bg-[#1e1e1e] rounded-lg border border-[#2c2c2c] p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar className="w-5 h-5 text-[#6366f1]" />
-            <h2 className="text-lg font-semibold text-white">Today's Sessions</h2>
-            <span className="bg-[#6366f1] text-white text-xs px-2 py-1 rounded-full">
-              {todaySlots.length}
-            </span>
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#141414] p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Animated Header */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-2xl p-8 text-white shadow-2xl">
+          <div className="absolute inset-0 bg-black opacity-10"></div>
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+              <div className="space-y-2">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent animate-pulse">
+                  Session Management
+                </h1>
+                <p className="text-gray-200 text-lg">
+                  Manage your client sessions with ease
+                </p>
+                <div className="flex items-center gap-6 mt-4">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    <span className="text-sm">{totalBookedSlots} Active Sessions</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    <span className="text-sm">{todayBookedSlots.length} Today</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  onClick={() => setShowWeeklyRules(!showWeeklyRules)}
+                  variant="outline"
+                  className="border-white text-blue-700 hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Availability Rules
+                  {showWeeklyRules ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
+                </Button>
+                
+              </div>
+            </div>
           </div>
           
-          {isLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6366f1]"></div>
-            </div>
-          ) : todaySlots.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
-              <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No sessions scheduled for today</p>
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {todaySlots.map((slot) => (
-                <div
-                  key={slot._id}
-                  className={`p-4 rounded-lg border-2 ${getStatusColor(slot.status)} ${
-                    isSlotStartingSoon(slot.startTime) ? 'ring-2 ring-yellow-500 ring-opacity-50' : ''
-                  }`}
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(slot.status)}
-                      <span className="font-medium text-white capitalize">
-                        {slot.status}
-                      </span>
-                    </div>
-                    {isSlotStartingSoon(slot.startTime) && (
-                      <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
-                        Starting Soon
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Clock className="w-4 h-4" />
-                      <span>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
-                    </div>
-                    {slot.clientId && (
-                      <div className="flex items-center gap-2 text-gray-300">
-                        <User className="w-4 h-4" />
-                        <span>{slot.clientName || 'Client'}</span>
-                      </div>
-                    )}
-                  </div>
+          {/* Animated background elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full animate-bounce" style={{animationDuration: '3s'}}></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full animate-bounce" style={{animationDuration: '4s', animationDelay: '1s'}}></div>
+        </div>
 
-                  <div className="flex gap-2">
-                    {slot.status === 'booked' && (
-                      <>
-                        <Button
-                          size="sm"
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          onClick={() => window.open(`/room/${slot.meetingLink}`, '_blank')}
-                        >
-                          <Video className="w-4 h-4 mr-1" />
-                          Join
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                          onClick={() => handleCancelBooking(slot._id)}
-                        >
-                          Cancel
-                        </Button>
-                      </>
-                    )}
-                    {slot.status === 'free' && (
+        {/* Weekly Rules - Collapsible */}
+        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
+          showWeeklyRules ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+        }`}>
+          <div className="bg-[#1e1e1e] rounded-2xl border border-[#2c2c2c] p-6 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg">
+                <Settings className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-white">Weekly Availability Rules</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((day, index) => (
+                <div 
+                  key={day} 
+                  className="bg-[#141414] border border-[#2c2c2c] rounded-xl p-4 hover:border-[#6366f1] transition-all duration-300"
+                  style={{animationDelay: `${index * 0.1}s`}}
+                >
+                  <div className="text-sm font-medium text-gray-300 mb-3">{day}</div>
+                  {(weeklyRules[day] as DayWindow[] | undefined)?.map((w, idx) => (
+                    <div key={idx} className="flex gap-2 mb-2">
+                      <input 
+                        type="time" 
+                        value={w.startTime}
+                        onChange={(e) => {
+                          const arr = [...(weeklyRules[day] as DayWindow[] || [])];
+                          arr[idx] = { ...arr[idx], startTime: e.target.value };
+                          setWeeklyRules({ ...weeklyRules, [day]: arr });
+                        }}
+                        className="flex-1 p-2 bg-[#2c2c2c] border border-[#3c3c3c] rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-colors" 
+                      />
+                      <input 
+                        type="time" 
+                        value={w.endTime}
+                        onChange={(e) => {
+                          const arr = [...(weeklyRules[day] as DayWindow[] || [])];
+                          arr[idx] = { ...arr[idx], endTime: e.target.value };
+                          setWeeklyRules({ ...weeklyRules, [day]: arr });
+                        }}
+                        className="flex-1 p-2 bg-[#2c2c2c] border border-[#3c3c3c] rounded-lg text-white focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition-colors" 
+                      />
+                      <Button 
+                        size="sm"
+                        variant="outline" 
+                        className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                        onClick={() => {
+                          const arr = [...(weeklyRules[day] as DayWindow[] || [])];
+                          arr.splice(idx, 1);
+                          setWeeklyRules({ ...weeklyRules, [day]: arr });
+                        }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full border-[#3c3c3c] text-gray-400 hover:bg-[#2c2c2c] hover:text-white"
+                    onClick={() => {
+                      const arr = [...(weeklyRules[day] as DayWindow[] || [])];
+                      arr.push({ startTime: '09:00', endTime: '18:00' });
+                      setWeeklyRules({ ...weeklyRules, [day]: arr });
+                    }}
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Window
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-gray-300 text-sm font-medium">Slot Length (min)</span>
+                <input 
+                  type="number" 
+                  min={15} 
+                  step={15} 
+                  value={(weeklyRules.slotLength as number) || 30}
+                  onChange={(e) => setWeeklyRules({ ...weeklyRules, slotLength: Number(e.target.value) })}
+                  className="w-20 p-2 bg-[#2c2c2c] border border-[#3c3c3c] rounded-lg text-white focus:border-[#6366f1]" 
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-gray-300 text-sm font-medium">Buffer (min)</span>
+                <input 
+                  type="number" 
+                  min={0} 
+                  step={5} 
+                  value={(weeklyRules.bufferMinutes as number) || 0}
+                  onChange={(e) => setWeeklyRules({ ...weeklyRules, bufferMinutes: Number(e.target.value) })}
+                  className="w-20 p-2 bg-[#2c2c2c] border border-[#3c3c3c] rounded-lg text-white focus:border-[#6366f1]" 
+                />
+              </div>
+              <Button 
+                className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#5855eb] hover:to-[#7c3aed] text-white"
+              >
+                Save Rules
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Date Selector */}
+        <div className="bg-[#1e1e1e] rounded-2xl border border-[#2c2c2c] p-6 shadow-xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg">
+              <Calendar className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-semibold text-white">Select Date</h2>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <input
+              type="date"
+              value={selectedDate.toISOString().split('T')[0]}
+              onChange={(e) => setSelectedDate(new Date(e.target.value))}
+              className="p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-xl text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none focus:border-[#6366f1] transition-all duration-300"
+              min={new Date().toISOString().split('T')[0]}
+            />
+            <div className="text-sm text-gray-400 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {isToday ? (
+                <span className="text-green-400 font-medium">Today's booked sessions</span>
+              ) : (
+                <span>
+                  Booked sessions for {selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Today's Booked Sessions */}
+        {isToday && (
+          <div className="bg-[#1e1e1e] rounded-2xl border border-[#2c2c2c] p-6 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-white">Today's Booked Sessions</h2>
+              <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-xs px-3 py-1 rounded-full font-medium">
+                {todayBookedSlots.length} sessions
+              </div>
+            </div>
+            
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#6366f1]"></div>
+              </div>
+            ) : todayBookedSlots.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full flex items-center justify-center mx-auto mb-4 opacity-50">
+                  <Calendar className="w-10 h-10 text-white" />
+                </div>
+                <p className="text-gray-400 text-lg">No booked sessions for today</p>
+                <p className="text-gray-500 text-sm mt-2">Your schedule is clear!</p>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {todayBookedSlots.map((slot, index) => (
+                  <div
+                    key={slot._id}
+                    id={`slot-${slot._id}`}
+                    className={`group relative bg-gradient-to-br from-[#2c2c2c] to-[#1a1a1a] rounded-xl border border-[#3c3c3c] p-6 hover:border-[#6366f1] transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
+                      isSlotStartingSoon(slot.startTime) ? 'ring-2 ring-yellow-500/50 shadow-yellow-500/20' : ''
+                    } ${animatedCards.includes(slot._id) ? 'animate-fadeInUp' : 'opacity-0'}`}
+                    style={{animationDelay: `${index * 0.1}s`}}
+                  >
+                    {/* Status Badge */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-2">
+                        <UserCheck className="w-5 h-5 text-green-400" />
+                        <span className="text-green-400 font-medium">Booked</span>
+                      </div>
+                      {isSlotStartingSoon(slot.startTime) && (
+                        <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+                          Starting Soon!
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Session Details */}
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <Clock className="w-4 h-4 text-[#6366f1]" />
+                        <span className="font-medium">{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <User className="w-4 h-4 text-[#6366f1]" />
+                        <span>{slot.clientName}</span>
+                        <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3">
+                      <Button
+                        size="sm"
+                        className="flex-1 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        onClick={() => window.open(`/room/${slot.meetingLink}`, '_blank')}
+                      >
+                        <Video className="w-4 h-4 mr-2" />
+                        Join Session
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                        onClick={() => handleDeleteSlot(slot._id)}
+                        className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
+                        onClick={() => handleCancelBooking(slot._id)}
                       >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
+                        Cancel
                       </Button>
-                    )}
+                    </div>
+
+                    {/* Hover Effect */}
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#6366f1]/5 to-[#8b5cf6]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Selected Date Booked Sessions */}
+        <div className="bg-[#1e1e1e] rounded-2xl border border-[#2c2c2c] p-6 shadow-xl">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-lg">
+              <Clock className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-xl font-semibold text-white">
+              {isToday ? "Today's Sessions (Detailed)" : `Booked Sessions - ${formatDate(selectedDate.toISOString())}`}
+            </h2>
+            <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-xs px-3 py-1 rounded-full font-medium">
+              {selectedDateBookedSlots.length} sessions
+            </div>
+          </div>
+
+          {selectedDateBookedSlots.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full flex items-center justify-center mx-auto mb-4 opacity-50">
+                <Clock className="w-10 h-10 text-white" />
+              </div>
+              <p className="text-gray-400 text-lg">No booked sessions for this date</p>
+              <p className="text-gray-500 text-sm mt-2">Sessions will appear here when clients book</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {selectedDateBookedSlots.map((slot, index) => (
+                <div
+                  key={slot._id}
+                  id={`detail-slot-${slot._id}`}
+                  className={`group flex items-center justify-between p-6 rounded-xl border bg-gradient-to-r from-[#2c2c2c] to-[#252525] border-[#3c3c3c] hover:border-[#6366f1] transition-all duration-500 hover:shadow-xl ${
+                    isToday && isSlotStartingSoon(slot.startTime) ? 'ring-2 ring-yellow-500/50' : ''
+                  }`}
+                  style={{
+                    animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+                  }}
+                >
+                  <div className="flex items-center gap-6">
+                    <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg">
+                      <UserCheck className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-4 text-white mb-2">
+                        <span className="font-semibold text-lg">{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
+                        {isToday && isSlotStartingSoon(slot.startTime) && (
+                          <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs px-3 py-1 rounded-full font-bold animate-pulse">
+                            Starting Soon!
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <User className="w-4 h-4" />
+                        <span>Client: {slot.clientName}</span>
+                        <Star className="w-3 h-3 text-yellow-500 fill-current ml-2" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-sm font-medium">
+                      Booked
+                    </div>
+                    <div className="flex gap-2">
+                      {isToday && (
+<Button
+                          size="sm"
+                          className="bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white shadow-lg"
+                          onClick={() => window.open(`/room/${slot.meetingLink}`, '_blank')}
+                        >
+                          <Video className="w-4 h-4 mr-2" />
+                          Join Session
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400 transition-all duration-300"
+                        onClick={() => handleCancelBooking(slot._id)}
+                      >
+                        Cancel Booking
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Hover gradient overlay */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#6366f1]/5 to-[#8b5cf6]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
               ))}
             </div>
           )}
         </div>
-      )}
-
-      {/* Selected Date Sessions */}
-      <div className="bg-[#1e1e1e] rounded-lg border border-[#2c2c2c] p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Clock className="w-5 h-5 text-[#6366f1]" />
-          <h2 className="text-lg font-semibold text-white">
-            {isToday ? "Today's Sessions (Detail View)" : `Sessions for ${formatDate(selectedDate.toISOString())}`}
-          </h2>
-          <span className="bg-[#6366f1] text-white text-xs px-2 py-1 rounded-full">
-            {selectedDateSlots.length}
-          </span>
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6366f1]"></div>
-          </div>
-        ) : selectedDateSlots.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No sessions scheduled for this date</p>
-            <Button
-              className="mt-4 bg-[#6366f1] hover:bg-[#818cf8] text-white"
-              onClick={() => {
-                setNewSlot({
-                  ...newSlot,
-                  date: selectedDate.toISOString().split('T')[0]
-                });
-                setShowAddSlot(true);
-              }}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Session for This Date
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {selectedDateSlots.map((slot) => (
-              <div
-                key={slot._id}
-                className={`flex items-center justify-between p-4 rounded-lg border ${getStatusColor(slot.status)} ${
-                  isToday && isSlotStartingSoon(slot.startTime) ? 'ring-2 ring-yellow-500 ring-opacity-50' : ''
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  {getStatusIcon(slot.status)}
-                  <div>
-                    <div className="flex items-center gap-4 text-white">
-                      <span className="font-medium">{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
-                      {isToday && isSlotStartingSoon(slot.startTime) && (
-                        <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-medium">
-                          Starting Soon
-                        </span>
-                      )}
-                    </div>
-                    {slot.clientId && (
-                      <p className="text-sm text-gray-400 mt-1">
-                        Client: {slot.clientName || 'Unknown'}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <span className="capitalize text-sm px-3 py-1 rounded-full bg-gray-700 text-gray-300">
-                    {slot.status}
-                  </span>
-                  <div className="flex gap-1">
-                    {slot.status === 'booked' && (
-                      <>
-                        {isToday && (
-                          <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 text-white mr-2"
-                            onClick={() => window.open(`/room/${slot.meetingLink}`, '_blank')}
-                          >
-                            <Video className="w-4 h-4 mr-1" />
-                            Join
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                          onClick={() => handleCancelBooking(slot._id)}
-                        >
-                          Cancel Booking
-                        </Button>
-                      </>
-                    )}
-                    {slot.status === 'free' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                        onClick={() => handleDeleteSlot(slot._id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Add Slot Modal */}
-      {showAddSlot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1e1e1e] rounded-lg border border-[#2c2c2c] p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-white mb-4">Add New Time Slot</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Date</label>
-                <input
-                  type="date"
-                  value={newSlot.date}
-                  onChange={(e) => setNewSlot({ ...newSlot, date: e.target.value })}
-                  className="w-full p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-md text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none"
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Start Time</label>
-                <input
-                  type="time"
-                  value={newSlot.startTime}
-                  onChange={(e) => setNewSlot({ ...newSlot, startTime: e.target.value })}
-                  className="w-full p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-md text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">End Time</label>
-                <input
-                  type="time"
-                  value={newSlot.endTime}
-                  onChange={(e) => setNewSlot({ ...newSlot, endTime: e.target.value })}
-                  className="w-full p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-md text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="outline"
-                className="flex-1 border-[#3c3c3c] text-gray-300 hover:bg-[#2c2c2c]"
-                onClick={() => setShowAddSlot(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1 bg-[#6366f1] hover:bg-[#818cf8] text-white"
-                onClick={handleAddSlot}
-                disabled={!newSlot.date || !newSlot.startTime || !newSlot.endTime}
-              >
-                Add Slot
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Custom CSS for animations */}
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .animate-fadeInUp {
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .animate-scaleIn {
+          animation: scaleIn 0.3s ease-out;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+          scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: #6366f1;
+          border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #8b5cf6;
+        }
+      `}</style>
     </div>
   );
 };

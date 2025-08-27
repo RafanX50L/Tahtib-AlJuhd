@@ -7,4 +7,6 @@ export interface IClientTrainerController{
     getTrainerById(req: Request, res: Response, next: NextFunction): Promise<void>
     getCurrentTrainer(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
     getCurrentTrainerContract(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
+    bookSlot(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
+    cancelSession(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
 };

@@ -91,6 +91,26 @@ export class AvailabilityService implements IAvailabilityService {
     await this.generateSlots(trainerId, newSlots);
   }
 
+  /**
+   * Set weekly day-level rules like Mon-Fri 09:00-18:00, with optional slotLength and bufferMinutes
+   * rules example:
+   * { Monday: [{ startTime: '09:00', endTime: '18:00' }], Tuesday: [...], slotLength: 30, bufferMinutes: 0 }
+   */
+  async setWeeklyRules(trainerId: string, rules: Record<string, unknown>): Promise<void> {
+    if (!trainerId) throw new Error('Trainer ID is required');
+    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
+    if (!trainerPers) throw new Error('Trainer personalization not found');
+
+    const trainerData = trainerPers.data as any;
+    const availability = trainerData.availability || {};
+    availability.weeklyRules = rules;
+
+    await this._personalizationRepo.updateTrainerData(trainerId, {
+      ...trainerData,
+      availability,
+    });
+  }
+
   async generateSlots(trainerId: string, slots: Slot[]): Promise<void> {
     const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
     logger.debug(`Generating slots for trainer: ${trainerPers}`, trainerPers);
@@ -122,5 +142,22 @@ export class AvailabilityService implements IAvailabilityService {
 
   async getFreeSlots(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
     return await this._sessionRepo.findFreeSlotsByTrainer(trainerId, fromDate, toDate);
+  }
+
+  async getAllSlots(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
+    const free = await this._sessionRepo.findFreeSlotsByTrainer(trainerId, fromDate, toDate);
+    const booked = await this._sessionRepo.findUnFreeSlotsByTrainer(trainerId, fromDate, toDate);
+    return [...free, ...booked].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+  }
+
+  async getWeeklyRules(trainerId: string): Promise<Record<string, unknown> | null> {
+    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
+    if (!trainerPers) return null;
+    const trainerData = trainerPers.data as any;
+    return trainerData?.availability?.weeklyRules || null;
+  }
+
+  async getUnFreeSlots(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
+    return await this._sessionRepo.findUnFreeSlotsByTrainer(trainerId, fromDate, toDate);
   }
 }

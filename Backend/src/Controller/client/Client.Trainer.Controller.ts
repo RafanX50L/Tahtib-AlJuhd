@@ -54,4 +54,26 @@ export class ClientTrainerController implements IClientTrainerController{
             next(error);
         }
     }
+
+    async bookSlot(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.user?.id;
+            const { sessionId } = req.body;
+            const result = await this._clinetTrainerServ.bookSlot(userId, sessionId);
+            res.status(HttpStatus.OK).json({message:HttpResponse.DATA_FETCHING_SUCCESSFULL, result});
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async cancelSession(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.user?.id;
+            const { sessionId } = req.params;
+            const result = await this._clinetTrainerServ.cancelSession(userId, sessionId);
+            res.status(HttpStatus.OK).json({message:HttpResponse.DATA_FETCHING_SUCCESSFULL, result});
+        } catch (error) {
+            next(error);
+        }
+    }
 };

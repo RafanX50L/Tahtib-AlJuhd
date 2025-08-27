@@ -25,6 +25,8 @@ import userRoutes from '@/routes/user.routes';
 import trainerRouter from '@/routes/trainer.routes';
 import adminRouter from '@/routes/admin.routes';
 import notificationRoute from '@/routes/shared/notification.routes';
+import schedulingRouter from '@/routes/domain/scheduling.routes';
+import calendlyWebhookRouter from '@/routes/domain/webhooks.routes';
 
 const app = express();
 
@@ -49,6 +51,8 @@ app.use('/api/client/',userRoutes);
 app.use('/api/trainer', trainerRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/notifications',notificationRoute);
+app.use('/api/scheduling', schedulingRouter);
+app.use('/api', calendlyWebhookRouter);
 app.use(errorHandler);
 
 

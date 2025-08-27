@@ -22,12 +22,10 @@ const TrainerRoutes: React.FC = () => {
         <Route path="/job-application" element={<TrainerForm />} />
         <Route path="/pendingCase" element={<VerifyingTrainer />} />
         <Route path="/dashboard" element={<TDashboard />} />
-        <Route path="/clients" element={<TCChatPage />} />
-        <Route path="/chat/:id" element={<TCChatPage />} />
         <Route path="/profile" element={<TProfile />} />
         <Route path="/plans" element={<TSetPlanPage />} />
         <Route path="/availability" element={<TSetAvailabilityPage />} />
-        <Route path="/messages" element={<TrainerSetAvailability />} />
+        <Route path="/messages" element={<TCChatPage />} />
         <Route
           path="/notification"
           element={<NotificationsPage theme={trainerTheme} backPath="/trainer/dashboard" />}

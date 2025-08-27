@@ -5,10 +5,12 @@ import { IPlanRepository } from "@/core/interface/repositories/IPlanRepository";
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
 import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
+import { ISessionRepository } from "@/core/interface/repositories/ISession.repository";
 import { IClientTrainerService } from "@/core/interface/services/client/IClinet.Trainer.service";
 import { ClientTrainerDTO } from "@/dtos/client/TrainerDTO";
 import { generateSignedUrl } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";
+import { differenceInHours } from "date-fns";
 
 export class clientTrainerService implements IClientTrainerService{
     constructor(
@@ -17,6 +19,7 @@ export class clientTrainerService implements IClientTrainerService{
         private readonly _clinetRepo: IPersonalizationRepository,
         private readonly _planRepo: IPlanRepository,
         private readonly _contractRepo: ITrainerClientContractRepository,
+        private readonly _sessionRepo: ISessionRepository,
     ) {}
     placeholder?: null;
 
@@ -88,6 +91,63 @@ export class clientTrainerService implements IClientTrainerService{
             sessionsRemaining: contract.sessionsRemaining,
             trainerId: contract.trainerId.toString(),
             planName: plan.title || 'Custom Plan',
+            endDate: contract.endDate,
         };
+    }
+
+    async bookSlot(clientId: string, sessionId: string) {
+        const session = await this._sessionRepo.findById(new Types.ObjectId(sessionId));
+        if (!session || session.clientId || session.status !== 'free') {
+            throw new Error('Slot not available');
+        }
+
+        const contract = await this._contractRepo.findActiveByClientAndTrainer(clientId, session.trainerId.toString());
+        if (!contract || contract.sessionsRemaining <= 0) {
+            throw new Error('No remaining sessions in your plan');
+        }
+
+        if (contract.endDate < new Date()) {
+            throw new Error('Your plan has expired');
+        }
+
+        session.clientId = new Types.ObjectId(clientId);
+        session.planId = contract.planId;
+        session.status = 'booked';
+        session.meetingLink = `https://zoom.us/j/${Math.random().toString(36).substring(2, 15)}`;
+
+        const updatedSession = await this._sessionRepo.update(session.id, session);
+        await this._contractRepo.decrementSessionsRemaining(contract._id!.toString());
+
+        return updatedSession;
+    }
+
+    async cancelSession(clientId: string, sessionId: string) {
+        const session = await this._sessionRepo.findById(new Types.ObjectId(sessionId));
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        if (session.clientId?.toString() !== clientId) {
+            throw new Error('You can only cancel your own sessions');
+        }
+
+        const contract = await this._contractRepo.findById(session.planId);
+        if (!contract) {
+            throw new Error('Contract not found');
+        }
+
+        const hoursToStart = differenceInHours(session.startTime, new Date());
+        if (hoursToStart > 24) {
+            session.status = 'canceled';
+            session.clientId = undefined;
+            session.planId = undefined;
+            session.meetingLink = undefined;
+            await this._contractRepo.incrementSessionsRemaining(contract._id!.toString());
+        } else {
+            session.status = 'canceled';
+        }
+
+        const updatedSession = await this._sessionRepo.update(session.id, session);
+        return updatedSession;
     }
 };

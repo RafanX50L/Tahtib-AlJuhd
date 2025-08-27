@@ -87,17 +87,24 @@ const CurrentTrainerCard: React.FC<CurrentTrainerCardProps> = ({ trainer }) => {
         </div>
       </div>
 
-      {/* Action Button */}
-      <div className="w-full sm:w-auto mt-4 sm:mt-0">
+      {/* Action Buttons */}
+      <div className="w-full sm:w-auto mt-4 sm:mt-0 flex gap-2">
         <button
           onClick={() =>
             navigate(
               `/current-trainer?name=${encodeURIComponent(trainer.name)}&photo=${encodeURIComponent(trainer.photo)}`
             )
           }
-          className="w-full sm:w-auto px-6 py-3 bg-[#5D5FEF] text-white rounded-xl font-medium hover:bg-[#4C4EE5] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-[0_4px_20px_rgba(93,95,239,0.4)]"
+          className="px-6 py-3 bg-[#5D5FEF] text-white rounded-xl font-medium hover:bg-[#4C4EE5] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-[0_4px_20px_rgba(93,95,239,0.4)]"
         >
           View Profile
+        </button>
+        <button
+          aria-label={`Book a session with ${trainer.name}`}
+          onClick={() => navigate(`/booking/${trainer.id}`)}
+          className="px-6 py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-700 transition-colors"
+        >
+          Book a Session
         </button>
       </div>
     </div>

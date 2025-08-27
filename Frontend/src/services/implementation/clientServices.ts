@@ -388,6 +388,45 @@ export const ClientService = {
     }
   },
 
+  bookSlot: async (clientId: string, sessionId: string) => {
+    try {
+      const response = await api.post(`/client/book`, { sessionId });
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to book slot';
+      console.log('Error booking slot: ', errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  cancelSlotBooking: async (sessionId: string) => {
+    try {
+      const response = await api.post(`/client/cancel/${sessionId}`);
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to cancel booking';
+      console.log('Error cancel booking: ', errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getBookings: async (trainerId: string, status: 'upcoming' | 'past' = 'upcoming') => {
+    try {
+      const response = await api.get(`/bookings`, { params: { trainerId, status } });
+      return { data: response.data };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch bookings';
+      console.log('Error fetching bookings: ', errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
   // diet Plan Services
 
   getDietPlan: async()=>{

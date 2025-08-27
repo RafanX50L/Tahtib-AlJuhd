@@ -16,6 +16,7 @@ const CTProfilePage = lazy(() => import("@/pages/client/CTProfile"));
 const CDietPlanPage = lazy(() => import("@/pages/client/CDietPlan"));
 const CATrainerDetailsPage = lazy(() => import("@/pages/client/CATProfilePage"));
 const CCurrentTrainerPage = lazy(() => import("@/pages/client/CCTrainerPage"));
+const CBooking = lazy(() => import("@/pages/client/CBooking"));
 const NotificationsPage = lazy(() => import("@/components/shared/Notification"));
 
 import { clientTheme } from "@/components/shared/Notification";
@@ -39,6 +40,7 @@ const UserRoutes: React.FC = () => {
         <Route path="/diet" element={<CDietPlanPage />} />
         <Route path="/chat" element={<CChatBotPage />} />
         <Route path="/trainer-details/:trainerId" element={<CATrainerDetailsPage />} />
+        <Route path="/booking/:trainerId" element={<CBooking />} />
         <Route
           path="/notifications"
           element={<NotificationsPage theme={clientTheme} backPath="/dashboard" />}

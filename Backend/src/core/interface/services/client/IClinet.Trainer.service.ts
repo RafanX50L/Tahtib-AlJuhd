@@ -4,4 +4,6 @@ export interface IClientTrainerService{
     getTrainerById(id: string);
     getCurrentTrainer(userId: string);
     getCurrentTrainerContract(userId: string);
+    bookSlot(clientId: string, sessionId: string);
+    cancelSession(clientId: string, sessionId: string);
 }

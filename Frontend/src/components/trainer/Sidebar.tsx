@@ -27,10 +27,10 @@ const Sidebar = () => {
 
   const navItems = [
     { icon: FaTachometerAlt, text: 'Overview', path: '/trainer/dashboard' },
-    { icon: FaCalendarAlt, text: 'Schedule', path: '/trainer/schedule' },
-    { icon: FaUsers, text: 'Clients', path: '/trainer/clients' },
+    // { icon: FaCalendarAlt, text: 'Schedule', path: '/trainer/schedule' },
+    // { icon: FaUsers, text: 'Clients', path: '/trainer/clients' },
     { icon: FaComments, text: 'Messages', path: '/trainer/messages' },
-    { icon: FaStar, text: 'Reviews', path: '/trainer/reviews' },
+    // { icon: FaStar, text: 'Reviews', path: '/trainer/reviews' },
     { icon: FaClock  , text: 'Set Availability', path: '/trainer/availability' },
     { icon: FaBoxOpen , text: 'Set Plans', path: '/trainer/plans' },
     { icon: FaUser, text: 'Profile', path: '/trainer/profile' },
