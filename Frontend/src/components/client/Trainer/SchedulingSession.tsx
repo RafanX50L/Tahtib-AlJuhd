@@ -575,7 +575,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
             value={format(selectedDate, "yyyy-MM-dd")}
             onChange={(e) => setSelectedDate(new Date(e.target.value))}
             className="p-2 sm:p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-md text-white text-sm sm:text-base focus:ring-2 focus:ring-[#6366f1] focus:outline-none w-full sm:w-auto"
-            min={format(new Date(), "yyyy-MM-dd")}
+            // min={format(new Date(), "yyyy-MM-dd")}
           />
           <div className="text-xs sm:text-sm text-gray-400">
             {isToday ? (
@@ -584,6 +584,13 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
               <span>Sessions for {format(selectedDate, "MMMM d, yyyy")}</span>
             )}
           </div>
+          <button
+          aria-label={`Book a session with Trainer`}
+          onClick={() => navigate(`/booking/${contract?.trainerId}`)}
+          className="px-6 py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-700 transition-colors"
+        >
+          Book a Session
+        </button>
         </div>
       </div>
 

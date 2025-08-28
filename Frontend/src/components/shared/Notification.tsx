@@ -266,10 +266,11 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
         type: filterType === "all" ? undefined : filterType,
         sort: sortBy,
       });
+      console.log('response in here',response);
       setNotifications(response.data.notifications);
       setFilteredNotifications(response.data.notifications);
       setPage(1);
-      setHasMore(basicDetails?.total ? basicDetails.total > response.data.notifications.length : true);
+      setHasMore( response.data.notifications.length < response.data.total );
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
       toast.error("Failed to load notifications");
@@ -293,7 +294,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
       setNotifications((prev) => [...prev, ...response.data.notifications]);
       setFilteredNotifications((prev) => [...prev, ...response.data.notifications]);
       setPage((prev) => prev + 1);
-      setHasMore(basicDetails?.total ? basicDetails.total > notifications.length + response.data.notifications.length : true);
+      setHasMore( response.data.notifications.length + notifications.length < response.data.total );
     } catch (error) {
       console.error("Failed to load more notifications:", error);
       toast.error("Failed to load more notifications");

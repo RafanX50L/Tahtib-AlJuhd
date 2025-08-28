@@ -153,7 +153,7 @@ export default function CBooking() {
         category: "session_booked",
       });
     } else {
-      toast.error("Failed to book session. Please try again.");
+      console.error("Failed to book session. Please try again.");
     }
     setBookingLoading(false);
   };

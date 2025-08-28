@@ -53,21 +53,13 @@ export const NotificationServices = {
     search?: string;
     type?: string;
     sort?: string;
-  }): Promise<{ data: {notifications: INotificationView[]}}> => {
+  }): Promise<{ data: {notifications: INotificationView[], total: number}}> => {
     try {
       console.log("Fetching notifications for user:", userId, { page, limit, search, type, sort });
       const response = await api.get("/notifications", {
         params: { userId, page, limit, search, type, sort },
       });
-      console.log('response form noti',response);
-      return {
-        data: {
-          notifications: response.data.map((n: INotificationView) => ({
-            ...n,
-            date: new Date(n.date),
-          })),
-        },
-      };
+      return {data: response.data}
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || "Failed to Delete chat bot Session";

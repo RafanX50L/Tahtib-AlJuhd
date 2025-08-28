@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { TrainerService } from "@/services/implementation/trainerServices";
-import { AvailabilityAPI } from "@/services/implementation/availabilityService";
 import {
   Calendar,
   Clock,
@@ -29,7 +28,7 @@ import { SchedulingAPI } from "@/services/implementation/schedulingService";
 import { chatEnum } from "@/lib/chat-enum";
 import { useSocket } from "@/hooks/socketio";
 
-interface Slot {
+export interface Slot {
   _id: string;
   trainerId: string;
   clientId: string | null;
@@ -127,7 +126,7 @@ const SetAvailabilityPage = () => {
   const saveWeeklyRules = async () => {
     if (!user?._id) return;
     try {
-      await AvailabilityAPI.setWeeklyRules({
+      await TrainerService.setWeeklyRules({
         trainerId: user._id,
         rules: weeklyRules,
       });
@@ -861,7 +860,7 @@ const SetAvailabilityPage = () => {
               value={selectedDate.toISOString().split("T")[0]}
               onChange={(e) => setSelectedDate(new Date(e.target.value))}
               className="p-3 bg-[#2c2c2c] border border-[#3c3c3c] rounded-xl text-white focus:ring-2 focus:ring-[#6366f1] focus:outline-none focus:border-[#6366f1] transition-all duration-300"
-              min={new Date().toISOString().split("T")[0]}
+              // min={new Date().toISOString().split("T")[0]}
             />
             <div className="text-sm text-gray-400 flex items-center gap-2">
               <MapPin className="w-4 h-4" />

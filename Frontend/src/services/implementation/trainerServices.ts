@@ -3,8 +3,13 @@ import { TRAINER_ROUTES } from "../../utils/constant";
 import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import { IPlan } from "@/components/trainer/SetPlan/plan";
-import { Slot } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
-import TrainerRotues from "@/routes/TrainerRoutes";
+import { Slot, WeeklyRulesPayload } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
+
+export type DayWindow = { startTime: string; endTime: string };
+export type WeeklyRulesPayloads = {
+  trainerId: string;
+  rules: WeeklyRulesPayload
+};
 
 export const TrainerService = {
   getPendingApplicationDetails: async () => {
@@ -107,6 +112,7 @@ export const TrainerService = {
     }
   },
 
+  // plan services
   getPlans: async (trainerId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.PLAN}?trainerId=${trainerId}`);
@@ -165,6 +171,7 @@ export const TrainerService = {
     }
   },
 
+  // availability services
   getSlots: async(trainerId:string, fromDate:string, toDate: string)=>{
     try {
       const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}&mode=all`);
@@ -179,7 +186,10 @@ export const TrainerService = {
       throw new Error(errorMessage);
     }
   },
-
+  setWeeklyRules: async (payload: WeeklyRulesPayloads) => {
+    const res = await api.post(`${TRAINER_ROUTES.AVAILABILITY}/rules`, payload);
+    return res.data as { message: string };
+  },
   getWeeklyRules: async(trainerId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/rules`, { params: { trainerId } });
@@ -188,22 +198,6 @@ export const TrainerService = {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || 'Failed to fetch weekly rules';
       console.log('Error fetching weekly rules: ', errorMessage);
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-  },
-
-  addSlot: async (slots: Partial<Slot[]>, trainerId: string) => {
-    try {
-      console.log("Adding slots: ", slots, " for trainerId: ", trainerId);
-      const response = await api.post(TRAINER_ROUTES.AVAILABILITY, { slots, trainerId });
-      console.log("Added new slot response: ", response.data);
-      return { data: response.data };
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ error: string }>;
-      const errorMessage =
-        err.response?.data.error || "Failed to add new slot";
-      console.log("Error adding new slot: ", errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
