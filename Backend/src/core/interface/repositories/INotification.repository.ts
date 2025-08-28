@@ -10,7 +10,7 @@ export interface INotificationRepository
     search?: string,
     type?: string,
     sort?: string
-  ): Promise< INotification[] >;
+  ): Promise< { notifications: INotification[]; total: number } >;
   getBasicDetails(userId:string): Promise<{ total: number; read: number}>;
   markAsRead(notificationId: string): Promise<INotification | null>;
   findLastFiveByUser(userId: string): Promise<INotification[]>;

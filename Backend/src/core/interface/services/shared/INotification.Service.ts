@@ -24,7 +24,7 @@ export interface INotificationService {
     search?: string;
     type?: string;
     sort?: string;
-  }): Promise< INotificationView[] >;
+  }): Promise< { notifications: INotificationView[]; total: number } >;
   getBasicDetails(userId:string): Promise<{ total: number; read: number }>;
   markNotificationAsRead(notificationId: string): Promise<INotification | null>;
   markAllAsRead(userId: string): Promise<void>;

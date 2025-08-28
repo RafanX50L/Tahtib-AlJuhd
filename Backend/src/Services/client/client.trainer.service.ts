@@ -23,6 +23,35 @@ export class clientTrainerService implements IClientTrainerService{
     ) {}
     placeholder?: null;
 
+    async contractExpiration() {
+        const now = new Date();
+        const expiredContracts = await this._contractRepo.findExpiredContracts(now);
+
+        for (const contract of expiredContracts) {
+            const personalizationDoc = await this._clinetRepo.findOne({
+            userId: contract.clientId,
+            });
+            if (!personalizationDoc) continue;
+
+            const data = personalizationDoc.data as IClientPersonalization;
+
+            if (data.currentTrainerId?.toString() === contract.trainerId.toString()) {
+            data.previousTrainers.push({
+                trainerId: contract.trainerId,
+                startDate: contract.startDate,
+                endDate: contract.endDate,
+            });
+            data.currentTrainerId = null;
+            }
+
+            data.planStatus = "Inactive";
+            await personalizationDoc.save();
+
+            console.log(`⚡ Contract expired for client ${contract.clientId}`);
+        }
+        }
+
+
     async getAvailableTrainers(userId:string,page: number, limit: number, search: string, specialty: string) {
         const currentTrainerId = ((await this._clinetRepo.findOne({userId:userId})).data as IClientPersonalization).currentTrainerId?.toString() || "";
         const result = await this._trainerRepo.getAvailableTrainer(currentTrainerId,page, limit, search, specialty);

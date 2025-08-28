@@ -41,10 +41,11 @@ export class NotificationService implements INotificationService {
     search?: string;
     type?: string;
     sort?: string;
-  }): Promise< INotificationView[] > {
+  }): Promise< { notifications: INotificationView[]; total: number } > {
     const result = await this.notificationRepo.findByUser(userId, page, limit, search, type, sort);
 
-    return await NotificationDTO.mapToNotificationData(result);
+    const mapped = await NotificationDTO.mapToNotificationData(result.notifications);
+    return { notifications: mapped, total: result.total };
   }
 
   async getBasicDetails(userId:string): Promise<{ total: number; read: number }> {

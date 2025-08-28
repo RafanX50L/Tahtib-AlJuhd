@@ -19,6 +19,9 @@ import { IPersonalizationRepository } from "@/core/interface/repositories/IPerso
 import { ISession } from "@/core/interface/model/ISession";
 import { IClientPersonalization, ITrainerPersonalization } from "@/core/interface/model/IPersonalization.model";
 import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
+import { createHttpError } from "@/utils";
+import { HttpStatus } from "@/constants/status.constant";
+import { HttpResponse } from "@/constants/response-message.constant";
 
 
 
@@ -137,7 +140,7 @@ export class SchedulingService implements ISchedulingService {
     const taken = conflicts.find(
       (s) => !(end <= s.startTime || start >= s.endTime)
     );
-    if (taken) throw new Error("Slot not available");
+    if(taken) throw createHttpError(HttpStatus.CONFLICT, HttpResponse.SLOTS_CONFLICT);
 
     // Create a session marked as booked
     const created = await this._sessionRepo.create({

@@ -31,11 +31,10 @@ export class NotificationRepository
     search?: string,
     type?: string,
     sort?: string
-  ): Promise<INotification[]> {
-    const query:  FilterQuery<INotification> = {
+  ): Promise<{ notifications: INotification[]; total: number }> {
+    const query: FilterQuery<INotification> = {
       $or: [
         { recipientId: userId },
-        { recipientRole: { $in: ["trainer", "client", "admin"] } },
       ],
     };
 
@@ -59,11 +58,13 @@ export class NotificationRepository
 
     let queryBuilder = this.model.find(query).sort(sortOption);
 
+    const total = await this.model.countDocuments(query);
     if (page && limit) {
       queryBuilder = queryBuilder.skip((page - 1) * limit).limit(limit);
     }
     
-    return await queryBuilder;
+    const result =  await queryBuilder;
+    return { notifications: result, total: total};
 
   }
 
@@ -71,13 +72,11 @@ export class NotificationRepository
     const total = await this.model.countDocuments({
       $or: [
         { recipientId: userId },
-        { recipientRole: { $in: ["trainer", "client", "admin"] } },
       ],
     });
     const read = await this.model.countDocuments({
       $or: [
         { recipientId: userId },
-        { recipientRole: { $in: ["trainer", "client", "admin"] } },
       ],
       read: true,
     });

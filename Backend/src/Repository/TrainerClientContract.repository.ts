@@ -27,6 +27,12 @@ export class TrainerClientContractRepository extends BaseRepository<ITrainerClie
       .populate('planId')
       .exec();
   }
+  async findExpiredContracts(now: Date): Promise<ITrainerClientContract[]> {
+    return await TrainerClientContractModel.find({
+      endDate: { $lt: now },
+    }).populate("clientId trainerId");
+  }
+
   async findActiveContractsByTrainerId(trainerId: string): Promise<ITrainerClientContract[]> {
     return await TrainerClientContractModel.find({
       trainerId: new Types.ObjectId(trainerId),

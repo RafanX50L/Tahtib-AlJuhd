@@ -53,6 +53,7 @@ export class BookingService implements IBookingService {
 
     const newContract = await this._contractRepo.create(contract);
 
+    await this._planRepo.update(plan.id, { isBooked: true });
     await this._personalizationRepo.updateClientData(clientId, {
       ...clientData,
       currentTrainerId: new Types.ObjectId(trainerId),
