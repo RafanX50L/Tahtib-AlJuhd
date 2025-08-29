@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
   User,
-  Briefcase,
   Clock,
-  DollarSign,
   CheckCircle,
-  X,
   ShoppingCart,
   Star,
   MapPin,
@@ -15,19 +12,11 @@ import {
   Award,
   Target,
   ArrowLeft,
-  Phone,
   Mail,
   MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -35,7 +24,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
 import { FaRupeeSign } from "react-icons/fa";
 import { ClientService } from "@/services/implementation/clientServices";
 import { useSelector } from "react-redux";
@@ -130,7 +118,7 @@ const TrainerPage: React.FC = () => {
       const response = await ClientService.getTrainerById(trainerId!);
       setTrainer(response);
       setIsLoading(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching trainer:", error);
       // toast.error('Failed to fetch trainer details');
       console.error("Failed to fetch trainer details");
@@ -169,14 +157,13 @@ const TrainerPage: React.FC = () => {
           "Plan purchased successfully! Check your email for confirmation."
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error purchasing plan:", error);
       // toast.error('Failed to purchase plan');
       alert("Failed to purchase plan");
       setShowConfirmModal(false);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -196,6 +183,7 @@ const TrainerPage: React.FC = () => {
           <User className="w-16 h-16 mx-auto mb-4 opacity-50" />
           <h2 className="text-xl font-semibold mb-2">Trainer Not Found</h2>
           <p className="mb-6">
+            {/* eslint-disable-next-line */}
             The trainer you're looking for doesn't exist or is no longer
             available.
           </p>
@@ -527,6 +515,7 @@ const TrainerPage: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-gray-300 text-sm">
+                  {/* eslint-disable-next-line */}
                   You're about to book a training session with{" "}
                   <strong>{trainer.name}</strong>. Please confirm to proceed
                   with the payment.

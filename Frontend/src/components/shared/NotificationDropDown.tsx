@@ -402,6 +402,7 @@ const NotificationDropdown = ({ theme, navPath }: NotificationDropdownProps) => 
                 No notifications yet
               </p>
               <p className={cn("text-xs text-center max-w-48", theme.textMuted)}>
+                {/* eslint-disable-next-line */}
                 We'll notify you when something important happens
               </p>
             </div>

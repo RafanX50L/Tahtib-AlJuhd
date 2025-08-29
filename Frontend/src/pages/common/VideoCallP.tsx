@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-// import { useParams, useRouter } from "next/navigation";
+import { useState, useRef, useEffect, RefObject } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-// import type { storeType } from "@/lib/store";
 import { useMediaStream } from "@/hooks/use-media-stream";
 import { usePeerConnections } from "@/hooks/use-peer-connections";
 import ErrorNotification from "@/components/error-notification";
@@ -34,10 +32,10 @@ const VideoCall = () => {
     streamRef,
     isVideoOn,
     isMicOn,
-    isReconnecting,
+    // isReconnecting,
     toggleVideo,
     toggleMic,
-    handleMediaError,
+    // handleMediaError,
     updatePeersWithStream,
   } = useMediaStream();
 
@@ -47,10 +45,10 @@ const VideoCall = () => {
 
   const {
     peers,
-    participants,
+    // participants,
     messages,
     setVideoRef,
-    remoteVideosRef,
+    // remoteVideosRef,
     notifyVideoStateChange,
     notifyAudioStateChange,
     remoteVideoEnabled,
@@ -131,7 +129,7 @@ const VideoCall = () => {
             {/* Local video (picture-in-picture) - Fixed positioning */}
             <div className="top-4 right-4 z-10">
               <LocalVideo
-                localRef={localRef}
+                localRef={localRef as RefObject<HTMLVideoElement>}
                 isVideoOn={isVideoOn}
                 isConnected={!!peers}
               />

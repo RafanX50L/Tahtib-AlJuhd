@@ -30,7 +30,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-type FeedbackData = z.infer<typeof feedbackSchema>;
+export type FeedbackData = z.infer<typeof feedbackSchema>;
 
 // Define the ITrainerWithPersonalization interface based on the provided structure
 interface ITrainerWithPersonalization {
@@ -374,7 +374,6 @@ const PendingApplicationsTable: React.FC = () => {
   const limit = 5;
   const navigate = useNavigate();
 
-  type FeedbackData = z.infer<typeof feedbackSchema>;
 
   const [feedbackData, setFeedbackData] = useState<FeedbackData>({
     communicationSkills: 0,

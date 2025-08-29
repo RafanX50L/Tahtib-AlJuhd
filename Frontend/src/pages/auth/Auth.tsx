@@ -5,7 +5,6 @@ import {  useSearchParams } from 'react-router-dom';
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
-  console.log('entred to auth paage')
   const [path, setPath] = useState(searchParams.get('path'));
   useEffect(() => {
     setPath(searchParams.get('path'));

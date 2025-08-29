@@ -100,7 +100,7 @@ const VerifyingTrainer = () => {
       );
     }
 
-    const { interviewDetails, basicInfo } = trainerData;
+    const { interviewDetails } = trainerData;
 
     switch (status) {
       case "applied":

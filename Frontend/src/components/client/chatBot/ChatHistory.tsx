@@ -12,27 +12,6 @@ import { ClientService } from '@/services/implementation/clientServices';
 import { toast } from 'sonner';
 import DeleteSessionModal from './DeleteSessionModal';
 
-const dummySessions: ChatSession[] = [
-  {
-    _id: 'session1',
-    title: 'Weight Loss Journey',
-    lastInteraction: 'How do I lose weight quickly?',
-    createdAt: new Date().toISOString(),
-    messageCount: 6,
-  },
-];
-
-const dummyInteractionsMap: Record<string, Interaction[]> = {
-  session1: [
-    {
-      _id: 'u1',
-      question: 'How do I lose weight quickly?',
-      response: '',
-      createdAt: new Date(Date.now() - 300000).toISOString(),
-      isUser: true,
-    },
-  ],
-};
 
 const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -109,7 +88,6 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
           const remainingSessions = sessions.filter((s) => s._id !== deletionModal.sessionId);
           setSelectedSession(remainingSessions[0]?._id || null);
         }
-        delete dummyInteractionsMap[deletionModal.sessionId];
         toast.success("Chat session deleted successfully");
       } else {
         toast.error("Failed to delete chat session");

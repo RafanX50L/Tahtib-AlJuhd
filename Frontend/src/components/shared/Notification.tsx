@@ -315,7 +315,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
       fetchBasicDetails();
       toast.success("Notification marked as read");
     } catch (error) {
-      toast.error("Failed to mark as read");
+      toast.error(`Failed to mark as read : ${error} `);
     }
   };
 
@@ -328,7 +328,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
       fetchBasicDetails();
       toast.success("All notifications marked as read");
     } catch (error) {
-      toast.error("Failed to mark all as read");
+      toast.error(`Failed to mark all as read: ${error}`);
     }
   };
 
@@ -341,7 +341,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
       fetchBasicDetails();
       toast.success("Notification deleted");
     } catch (error) {
-      toast.error("Failed to delete notification");
+      toast.error(`Failed to delete notification: ${error}`);
     }
   };
 
@@ -354,7 +354,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
       fetchBasicDetails();
       toast.success(`${selectedIds.length} notifications deleted`);
     } catch (error) {
-      toast.error("Failed to delete selected notifications");
+      toast.error(`Failed to delete selected notifications: ${error}`);
     }
   };
 
@@ -1016,6 +1016,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
                       "opacity-50"
                     )}></div>
                     <span className="text-sm font-medium">
+                      {/* eslint-disable-next-line */}
                       You've reached the end of your notifications
                     </span>
                   </div>

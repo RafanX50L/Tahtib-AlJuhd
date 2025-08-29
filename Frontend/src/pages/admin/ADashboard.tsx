@@ -6,10 +6,9 @@ import TopTrainers from "../../components/admin/Dashboard/TopTrainers";
 import RevenueChart from "../../components/admin/Dashboard/RevenueChart";
 import RecentActivities from "../../components/admin/Dashboard/RecentActivities";
 import Notifications from "../../components/admin/Dashboard/Notifications";
-import { HelpCircle, Info, LucideIcon } from "lucide-react"; // Ensure this is the correct library for LucideIcon
+import { HelpCircle, Info } from "lucide-react"; // Ensure this is the correct library for LucideIcon
 
 const ADashboard = () => {
-  console.log('entered to admin dashboard')
   return (
     // <div>
     //   afdksfj

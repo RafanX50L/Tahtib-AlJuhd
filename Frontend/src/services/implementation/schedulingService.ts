@@ -1,4 +1,3 @@
-import { response } from 'express';
 import api from './api';
 import { AxiosError } from 'axios';
 import { toast } from 'sonner';
@@ -15,7 +14,7 @@ export const SchedulingAPI = {
       return res.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
-      console.log('error',err)
+      console.log('error',err);
       const errorMessage =
         err.response?.data.error ||
         err.response?.data.message ||

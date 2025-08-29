@@ -1,12 +1,11 @@
-import type { WorkoutReport } from "@/pages/client/CWorkoutSession";
+import { IWorkoutReportView } from "@/interfaces/client/IWorkout";
 import { ClientService } from "@/services/implementation/clientServices";
-import { response } from "express";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const WorkoutReport = () => {
-  const [workoutReport, setWorkoutReport] = useState<WorkoutReport | null>(
+  const [workoutReport, setWorkoutReport] = useState<IWorkoutReportView | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(false);

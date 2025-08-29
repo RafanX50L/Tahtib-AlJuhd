@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface MousePosition {
   x: number;
@@ -15,7 +15,10 @@ interface Ripple {
 }
 
 const NotFoundPage: React.FC = () => {
-  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<MousePosition>({
+    x: 0,
+    y: 0,
+  });
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const navigate = useNavigate();
 
@@ -23,12 +26,12 @@ const NotFoundPage: React.FC = () => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
         x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight
+        y: e.clientY / window.innerHeight,
       });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   const createRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,18 +40,18 @@ const NotFoundPage: React.FC = () => {
     const size = Math.max(rect.width, rect.height);
     const x = e.clientX - rect.left - size / 2;
     const y = e.clientY - rect.top - size / 2;
-    
+
     const newRipple: Ripple = {
       id: Date.now(),
       x,
       y,
-      size
+      size,
     };
-    
-    setRipples(prev => [...prev, newRipple]);
-    
+
+    setRipples((prev) => [...prev, newRipple]);
+
     setTimeout(() => {
-      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
+      setRipples((prev) => prev.filter((ripple) => ripple.id !== newRipple.id));
     }, 600);
   };
 
@@ -59,18 +62,23 @@ const NotFoundPage: React.FC = () => {
     style?: React.CSSProperties;
   }
 
-  const FloatingElement: React.FC<FloatingElementProps> = ({ children, index, className = "", style }) => {
+  const FloatingElement: React.FC<FloatingElementProps> = ({
+    children,
+    index,
+    className = "",
+    style,
+  }) => {
     const speed = (index + 1) * 0.02;
     const xPos = (mousePosition.x - 0.5) * 100 * speed;
     const yPos = (mousePosition.y - 0.5) * 100 * speed;
-    
+
     return (
-      <div 
+      <div
         className={`absolute opacity-50 text-4xl transition-transform duration-300 ease-out ${className}`}
         style={{
           transform: `translate(${xPos}px, ${yPos}px)`,
-          animation: 'float 6s ease-in-out infinite',
-          ...style
+          animation: "float 6s ease-in-out infinite",
+          ...style,
         }}
       >
         {children}
@@ -79,13 +87,25 @@ const NotFoundPage: React.FC = () => {
   };
 
   interface AnimatedButtonProps {
-    variant?: "default" | "link" | "destructive" | "outline" | "secondary" | "ghost" | null;
+    variant?:
+      | "default"
+      | "link"
+      | "destructive"
+      | "outline"
+      | "secondary"
+      | "ghost"
+      | null;
     children: React.ReactNode;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     className?: string;
   }
 
-  const AnimatedButton: React.FC<AnimatedButtonProps> = ({ variant, children, onClick, className = "" }) => {
+  const AnimatedButton: React.FC<AnimatedButtonProps> = ({
+    variant,
+    children,
+    onClick,
+    className = "",
+  }) => {
     return (
       <Button
         variant={variant}
@@ -96,7 +116,7 @@ const NotFoundPage: React.FC = () => {
         className={`relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${className}`}
       >
         {children}
-        {ripples.map(ripple => (
+        {ripples.map((ripple) => (
           <span
             key={ripple.id}
             className="absolute rounded-full bg-white/30 pointer-events-none"
@@ -105,7 +125,7 @@ const NotFoundPage: React.FC = () => {
               top: ripple.y,
               width: ripple.size,
               height: ripple.size,
-              animation: 'ripple 0.6s linear forwards'
+              animation: "ripple 0.6s linear forwards",
             }}
           />
         ))}
@@ -116,23 +136,47 @@ const NotFoundPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-600 to-purple-800 flex items-center justify-center overflow-hidden relative">
       {/* Floating Elements */}
-       <div className="absolute inset-0 pointer-events-none">
-        <FloatingElement index={0} className="top-1/5 left-1/12" style={{ animationDelay: '0s' }}>
+      <div className="absolute inset-0 pointer-events-none">
+        <FloatingElement
+          index={0}
+          className="top-1/5 left-1/12"
+          style={{ animationDelay: "0s" }}
+        >
           💪
         </FloatingElement>
-        <FloatingElement index={1} className="top-3/5 right-1/5" style={{ animationDelay: '2s' }}>
+        <FloatingElement
+          index={1}
+          className="top-3/5 right-1/5"
+          style={{ animationDelay: "2s" }}
+        >
           🏃‍♂️
         </FloatingElement>
-        <FloatingElement index={2} className="bottom-1/3 left-1/5" style={{ animationDelay: '4s' }}>
+        <FloatingElement
+          index={2}
+          className="bottom-1/3 left-1/5"
+          style={{ animationDelay: "4s" }}
+        >
           🏋️‍♀️
         </FloatingElement>
-        <FloatingElement index={3} className="top-1/4 right-1/4" style={{ animationDelay: '1s' }}>
+        <FloatingElement
+          index={3}
+          className="top-1/4 right-1/4"
+          style={{ animationDelay: "1s" }}
+        >
           🧘‍♀️
         </FloatingElement>
-        <FloatingElement index={4} className="bottom-1/5 left-1/3" style={{ animationDelay: '3s' }}>
+        <FloatingElement
+          index={4}
+          className="bottom-1/5 left-1/3"
+          style={{ animationDelay: "3s" }}
+        >
           🚴‍♂️
         </FloatingElement>
-        <FloatingElement index={5} className="top-2/5 right-1/6" style={{ animationDelay: '5s' }}>
+        <FloatingElement
+          index={5}
+          className="top-2/5 right-1/6"
+          style={{ animationDelay: "5s" }}
+        >
           🏊‍♀️
         </FloatingElement>
       </div>
@@ -163,21 +207,24 @@ const NotFoundPage: React.FC = () => {
 
         {/* Error Description */}
         <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed animate-fade-in-up-delayed max-w-lg mx-auto">
-          Looks like this page took a rest day! The page you're looking for might have been moved, deleted, or is taking a break from its workout routine.
+          {/* eslint-disable-next-line */}
+          Looks like this page took a rest day! The page you're looking for
+          might have been moved, deleted, or is taking a break from its workout
+          routine.
         </p>
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up-delayed-2">
           <AnimatedButton
             variant="secondary"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="bg-white text-indigo-600 hover:bg-white/10 hover:border-white hover:text-white font-semibold px-8 py-3 rounded-full min-w-[200px]"
           >
             Back to Home
           </AnimatedButton>
           <AnimatedButton
             variant="secondary"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate("/dashboard")}
             className="bg-white text-indigo-600 hover:bg-white/10 hover:border-white hover:text-white font-semibold px-8 py-3 rounded-full min-w-[200px]"
           >
             Back to Dashboard

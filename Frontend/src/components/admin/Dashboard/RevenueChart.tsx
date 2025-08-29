@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowUp, LucideIcon } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 const RevenueChart = () => {
   return (

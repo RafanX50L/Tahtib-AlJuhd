@@ -87,7 +87,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
         fromDate.toISOString(),
         toDate.toISOString()
       );
-      const mappedSlots: Session[] = response.data.map((slot: any) => ({
+      const mappedSlots: Session[] = response.data.map((slot: Session) => ({
         _id: slot._id,
         trainerId: slot.trainerId,
         clientId: slot.clientId,
@@ -109,47 +109,6 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
     }
   };
 
-  const handleBookSlot = async (slotId: string) => {
-    if (!user?._id) {
-      toast.error("Please log in to book a slot");
-      return;
-    }
-
-    // Check plan validity
-    if (!contract) {
-      toast.error("No active plan found. Please purchase a plan first.");
-      return;
-    }
-
-    if (contract.sessionsRemaining <= 0) {
-      toast.error("No sessions remaining in your plan");
-      return;
-    }
-
-    const planEndDate = new Date(contract.endDate);
-    if (planEndDate < new Date()) {
-      toast.error("Your plan has expired. Please renew your plan.");
-      return;
-    }
-
-    // Check if trying to book a past slot
-    const slot = slots.find((s) => s._id === slotId);
-    if (slot && new Date(slot.startTime) < new Date()) {
-      toast.error("Cannot book a session that has already started");
-      return;
-    }
-
-    try {
-      // call backend to enforce sessionsRemaining and plan validity
-      await ClientService.bookSlot(user!._id, slotId);
-      await fetchSlots(selectedDate);
-      toast.success("Slot booked successfully");
-    } catch (error: any) {
-      console.error("Error booking slot:", error);
-      toast.error(error.message || "Failed to book slot");
-      await fetchSlots(selectedDate);
-    }
-  };
 
   const handleCancelBooking = async (
     slotId: string,
@@ -204,6 +163,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
           {/* Message */}
           <div className="mb-6">
             <p className="text-gray-700 leading-relaxed">
+              {/* eslint-disable-next-line */}
               Are you sure you want to cancel this booking? You'll need to make
               a new reservation if you change your mind.
             </p>
@@ -221,7 +181,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
               onClick={async () => {
                 try {
                   await SchedulingAPI.cancel(slotId, clinetId);
-                  await fetchSlots(selectedDate);
+                  setSlots((prevSlots) => prevSlots.filter((s) => s._id !== slotId));
                   const formattedStart = new Date(startTime).toLocaleString(
                     "en-IN",
                     {
@@ -254,7 +214,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
                       fontWeight: "500",
                     },
                   });
-                } catch (error: any) {
+                } catch (error) {
                   console.error("Error cancelling booking:", error);
                 } finally {
                   toast.dismiss(t);
@@ -450,52 +410,6 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
         <div className="flex gap-2">{buttons}</div>
       ) : null;
     }
-
-    // Free slot - show book button if user has sessions remaining and slot hasn't started
-    if (slot.status === "free" && contract?.sessionsRemaining! > 0) {
-      const slotStart = new Date(slot.startTime);
-      const isPastSlot = slotStart < new Date();
-
-      return (
-        <Button
-          size="sm"
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={() => handleBookSlot(slot._id)}
-          disabled={isPastSlot}
-        >
-          {isPastSlot ? "Past Session" : "Book"}
-        </Button>
-      );
-    }
-
-    // Booked by someone else
-    if (slot.status === "booked" && slot.clientId !== user?._id) {
-      return (
-        <Button
-          size="sm"
-          variant="outline"
-          className="flex-1 border-gray-600 text-gray-400"
-          disabled
-        >
-          Booked
-        </Button>
-      );
-    }
-
-    // No sessions remaining
-    if (slot.status === "free" && contract?.sessionsRemaining! <= 0) {
-      return (
-        <Button
-          size="sm"
-          variant="outline"
-          className="flex-1 border-gray-600 text-gray-400"
-          disabled
-        >
-          No Sessions Left
-        </Button>
-      );
-    }
-
     return null;
   };
 
@@ -579,6 +493,7 @@ const SchedulingSection: React.FC<SchedulingSectionProps> = ({
           />
           <div className="text-xs sm:text-sm text-gray-400">
             {isToday ? (
+              /* eslint-disable-next-line */
               <span className="text-green-400">Today's sessions</span>
             ) : (
               <span>Sessions for {format(selectedDate, "MMMM d, yyyy")}</span>

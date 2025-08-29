@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 export const basicDetailsSchema = z.object({
-  nick_name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name must be less than 50 characters'),
+  nickName: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name must be less than 50 characters'),
   age: z.number().min(10, 'Age must be at least 10').max(100, 'Age must not exceed 100'),
   gender: z.enum(['Male', 'Female', 'Non-binary', 'Prefer not to say'], {
     required_error: 'Please select a gender',
@@ -23,6 +23,6 @@ export const fitnessGoalsSchema = z.object({
   fitnessGoal: z.enum(["muscle", "weight-loss", "strength", "endurance", "tone", "flexibility"]),
   fitnessLevel: z.enum(["beginner", "intermediate", "advanced", "athlete"]),
   activityLevel: z.enum(["sedentary", "lightly", "moderate", "very"]),
-})
+});
 
 export type FitnessGoalsForm = z.infer<typeof fitnessGoalsSchema>

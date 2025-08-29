@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { TrainerService } from "@/services/implementation/trainerServices";
@@ -8,10 +8,8 @@ import {
   Plus,
   User,
   CheckCircle,
-  XCircle,
   Trash2,
   UserCheck,
-  AlertCircle,
   Video,
   Settings,
   ChevronDown,
@@ -90,14 +88,16 @@ const SetAvailabilityPage = () => {
   // Load real data: weekly rules and slots for selected date
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       try {
         if (!user?._id) return;
         // Fetch weekly rules from backend
         const rules = await TrainerService.getWeeklyRules(user._id);
         if (rules) setWeeklyRules(rules);
         console.log(rules);
+        setIsLoading(false);
       } catch (err) {
-        // ignore quietly
+        console.log(err);
       }
     })();
   }, [user?._id]);
@@ -117,7 +117,7 @@ const SetAvailabilityPage = () => {
         );
         setSlots(res.data || []);
       } catch (err) {
-        // ignore quietly
+        console.log(err);
       }
     })();
   }, [user?._id, selectedDate]);
@@ -134,7 +134,7 @@ const SetAvailabilityPage = () => {
       setShowWeeklyRules(!showWeeklyRules);
       setIsEditingRules(false); // Exit edit mode after saving
     } catch (error) {
-      toast.error("Failed to save weekly rules");
+      toast.error(`Failed to save weekly rules : ${error} `);
     }
   };
 
@@ -330,7 +330,7 @@ const SetAvailabilityPage = () => {
                       category: "session_canceled",
                     });
                     toast.success("Booking cancelled successfully");
-                  } catch (error: any) {
+                  } catch (error) {
                     console.error("Error cancelling booking:", error);
                   } finally {
                     toast.dismiss(t);
@@ -352,8 +352,8 @@ const SetAvailabilityPage = () => {
           },
         }
       );
-    } catch (error: any) {
-      toast.error("Failed to cancel booking");
+    } catch (error) {
+      toast.error(`Failed to cancel booking : ${error}`);
     }
   };
 
@@ -371,8 +371,8 @@ const SetAvailabilityPage = () => {
         )
       );
       toast.success("Session marked as complete");
-    } catch (error: any) {
-      toast.error("Failed to mark session as complete");
+    } catch (error) {
+      toast.error(`Failed to mark session as complete : ${error}`);
     }
   };
 
@@ -866,6 +866,7 @@ const SetAvailabilityPage = () => {
               <MapPin className="w-4 h-4" />
               {isToday ? (
                 <span className="text-green-400 font-medium">
+                  {/* eslint-disable-next-line */}
                   Today's booked sessions
                 </span>
               ) : (
@@ -891,6 +892,7 @@ const SetAvailabilityPage = () => {
                 <Clock className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-xl font-semibold text-white">
+                {/* eslint-disable-next-line */}
                 Today's Booked Sessions
               </h2>
               <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white text-xs px-3 py-1 rounded-full font-medium">

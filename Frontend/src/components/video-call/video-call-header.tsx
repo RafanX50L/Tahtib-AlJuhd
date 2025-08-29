@@ -1,13 +1,13 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Settings, Video } from "lucide-react"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Settings, Video } from "lucide-react";
 
 interface VideoCallHeaderProps {
   callStatus: string
 }
 
 const VideoCallHeader = ({ callStatus }: VideoCallHeaderProps) => {
-  const isConnected = callStatus === "Connected"
+  const isConnected = callStatus === "Connected";
 
   return (
     <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-800 to-slate-800">
@@ -25,8 +25,7 @@ const VideoCallHeader = ({ callStatus }: VideoCallHeaderProps) => {
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VideoCallHeader
-
+export default VideoCallHeader;

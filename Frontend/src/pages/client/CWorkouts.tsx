@@ -9,25 +9,14 @@ import MainCard from "@/components/client/Workouts/MainCard";
 import ChatbotButton from "@/components/client/ChatbotButton";
 import { ClientService } from "@/services/implementation/clientServices";
 import Header, { SidebarRef } from "@/components/client/Header";
+import { IDayView } from "@/interfaces/client/IWorkout";
 
 // Define the response type for ClientService.getWorkouts
 interface WorkoutResponse {
   data: {
-    workouts: Workout[];
+    workouts: IDayView[];
     notes?: string;
   };
-}
-
-interface Exercise {
-  name: string;
-  duration: string;
-}
-
-interface Workout {
-  day: string;
-  status: "completed" | "today" | "locked";
-  exercises: Exercise[];
-  action: "view" | "start" | "locked";
 }
 
 export interface MainData {
@@ -44,11 +33,13 @@ interface WeekStatuses {
 const WorkoutPlan = () => {
   const [activeTab, setActiveTab] = useState<number>(1);
   const [mainData, setMainData] = useState<MainData | null>(null);
-  const [workouts, setWorkouts] = useState<Workout[] | null>(null);
+  const [workouts, setWorkouts] = useState<IDayView[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [weekStatuses, setWeekStatuses] = useState<WeekStatuses | null>(null);
-  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(null);
+  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(
+    null
+  );
   const sidebarRef = useRef<SidebarRef>(null);
 
   const handleMenuToggle = () => {
@@ -88,16 +79,19 @@ const WorkoutPlan = () => {
   const fetchWorkoutsForTab = async () => {
     try {
       setIsLoading(true);
-      const response: WorkoutResponse = await ClientService.getWorkouts(activeTab);
+      const response: WorkoutResponse =
+        await ClientService.getWorkouts(activeTab);
       setWorkouts(response.data.workouts);
       setMainData((prev) =>
-        prev
-          ? { ...prev, notes: response.data.notes || prev.notes }
-          : null
+        prev ? { ...prev, notes: response.data.notes || prev.notes } : null
       );
-      setCurrentWeekStatus(weekStatuses ? weekStatuses[`week${activeTab}`] : false);
+      setCurrentWeekStatus(
+        weekStatuses ? weekStatuses[`week${activeTab}`] : false
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch workouts.");
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch workouts."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -128,6 +122,7 @@ const WorkoutPlan = () => {
             </h3>
           </div>
           <p className="text-[#A0A7B8] text-sm mb-4">
+            {/* eslint-disable-next-line */}
             Please complete the previous week's workouts before accessing this
             one.
           </p>
@@ -174,8 +169,8 @@ const WorkoutPlan = () => {
           </div>
         ) : (
           <>
-            <Header 
-              title="My Workouts" 
+            <Header
+              title="My Workouts"
               content="Track your progress in the 28-Day Challenge"
               onMenuToggle={handleMenuToggle}
             />

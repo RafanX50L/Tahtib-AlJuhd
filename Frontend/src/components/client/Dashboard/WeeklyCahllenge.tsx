@@ -3,59 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ClientService } from "@/services/implementation/clientServices";
-import type { ObjectId } from "mongoose";
 import { useSelector } from "react-redux";
 import { Calendar, Clock, Users, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "@/store/store";
+import { IChallengesView, IWeeklyChallengesView } from "@/interfaces/client/IWeeklyChallenges";
 
-export interface IExercise extends Document {
-  name: string;
-  sets?: string;
-  reps?: string;
-  rest?: string;
-  duration?: string;
-  instructions: string;
-  animation_link?: string;
-}
-
-export interface IWorkoutReport {
-  totalExercises?: number;
-  totalSets?: number;
-  estimatedDuration?: string;
-  caloriesBurned?: number;
-  intensity?: string;
-  feedback?: string;
-}
-
-export interface IDay extends Document {
-  title: string;
-  exercises: IExercise[];
-  completed?: boolean;
-  report?: IWorkoutReport;
-}
-
-export interface IChallenges {
-  _id: string;
-  createdAt: string;
-  endDate: string;
-  enteredUsers: ObjectId[];
-  score: number;
-  startDate: string;
-  tasks: IDay[];
-  type: string;
-  updatedAt: string;
-}
-
-interface WeeklyChallenges {
-  beginner: IChallenges;
-  intermediate: IChallenges;
-  advanced: IChallenges;
-}
 
 const WeeklyChallenge = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [challenges, setChallenges] = useState<WeeklyChallenges | null>(null);
+  const [challenges, setChallenges] = useState<IWeeklyChallengesView | null>(null);
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id;
@@ -68,7 +25,7 @@ const WeeklyChallenge = () => {
       setIsLoading(true);
       try {
         const weeklyChallenges = await ClientService.getWeeklyChallenges();
-        setChallenges(weeklyChallenges as WeeklyChallenges);
+        setChallenges(weeklyChallenges as IWeeklyChallengesView);
       } catch (error) {
         toast.error(
           error instanceof Error
@@ -82,27 +39,6 @@ const WeeklyChallenge = () => {
 
     fetchChallenges();
   }, [user]);
-  // const { user } =   useSelector((state: RootState) => state.auth)
-  // const userId = user?._id;
-
-  // useEffect(() => {
-  //   console.log('user in weekly ',user);
-  //   const fetchChallenges = async () => {
-  //     try {
-  //       setIsLoading(true)
-  //       const weeklyChallenges = await ClientService.getWeeklyChallenges()
-  //       console.log("Fetched challenges:", weeklyChallenges)
-  //       setChallenges(weeklyChallenges as WeeklyChallenges)
-  //     } catch (error) {
-  //       console.log(error)
-  //       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred."
-  //       toast.error(errorMessage)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
-  //   fetchChallenges()
-  // }, [])
 
   const isJoinDay = (createdAt: string): boolean => {
     const today = new Date();
@@ -128,7 +64,7 @@ const WeeklyChallenge = () => {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const isUserJoined = (challenge: IChallenges): boolean => {
+  const isUserJoined = (challenge: IChallengesView): boolean => {
     if (!userId || !challenge.enteredUsers) return false;
     return challenge.enteredUsers.some(
       (enteredUserId) => enteredUserId.toString() === userId.toString()
@@ -136,7 +72,7 @@ const WeeklyChallenge = () => {
   };
 
   const handleChallengeAction = (
-    challenge: IChallenges,
+    challenge: IChallengesView,
     challengeType: string
   ) => {
     if (!userId) {
@@ -151,10 +87,10 @@ const WeeklyChallenge = () => {
 
     const userJoined = isUserJoined(challenge);
 
-    if (isJoinDay(challenge.createdAt) && !userJoined) {
-      navigate(`/challenge/${challenge._id}?type=${challengeType}`);
+    if (isJoinDay(challenge.created) && !userJoined) {
+      navigate(`/challenge/${challenge.id}?type=${challengeType}`);
     } else if (userJoined) {
-      navigate(`/challenge/${challenge._id}?type=${challengeType}`);
+      navigate(`/challenge/${challenge.id}?type=${challengeType}`);
     } else {
       toast.info(
         "Join period for this challenge has ended. Try again next week!"
@@ -162,16 +98,16 @@ const WeeklyChallenge = () => {
     }
   };
 
-  const getButtonText = (challenge: IChallenges): string => {
+  const getButtonText = (challenge: IChallengesView): string => {
     if (!userId) return "Login Required";
 
     const userJoined = isUserJoined(challenge);
 
     if (userJoined) {
       return "Continue";
-    } else if (isJoinDay(challenge.createdAt)) {
+    } else if (isJoinDay(challenge.created)) {
       return "Visit Challenge";
-    } else if (isJoinPeriodOver(challenge.createdAt)) {
+    } else if (isJoinPeriodOver(challenge.created)) {
       return "Next Week";
     } else {
       return "Coming Soon";
@@ -179,7 +115,7 @@ const WeeklyChallenge = () => {
   };
 
   const getButtonVariant = (
-    challenge: IChallenges
+    challenge: IChallengesView
   ): "default" | "outline" | "secondary" => {
     if (!userId) return "outline";
 
@@ -187,27 +123,27 @@ const WeeklyChallenge = () => {
 
     if (userJoined) {
       return "default";
-    } else if (isJoinDay(challenge.createdAt)) {
+    } else if (isJoinDay(challenge.created)) {
       return "default";
     } else {
       return "outline";
     }
   };
 
-  const isButtonDisabled = (challenge: IChallenges): boolean => {
+  const isButtonDisabled = (challenge: IChallengesView): boolean => {
     if (!userId) return true;
 
     const userJoined = isUserJoined(challenge);
-    return !userJoined && !isJoinDay(challenge.createdAt);
+    return !userJoined && !isJoinDay(challenge.created);
   };
 
-  const getChallengeProgress = (challenge: IChallenges): number => {
-    if (!userId || !isUserJoined(challenge) || !challenge.tasks) return 0;
-    const completedTasks = challenge.tasks.filter(
-      (task) => task.completed
-    ).length;
-    return (completedTasks / challenge.tasks.length) * 100;
-  };
+  // const getChallengeProgress = (challenge: IChallengesView): number => {
+  //   if (!userId || !isUserJoined(challenge) || !challenge.TaskLength) return 0;
+  //   // const completedTasks = challenge.tasks.filter(
+  //   //   (task) => task.completed
+  //   // ).length;
+  //   return (challenge.completedTask / challenge.TaskLength) * 100;
+  // };
 
   const getChallengeColor = (type: string): string => {
     switch (type.toLowerCase()) {
@@ -254,7 +190,7 @@ const WeeklyChallenge = () => {
     { ...challenges.beginner, type: "beginner" },
     { ...challenges.intermediate, type: "intermediate" },
     { ...challenges.advanced, type: "advanced" },
-  ].filter(Boolean) as IChallenges[];
+  ].filter(Boolean) as IChallengesView[];
 
   return (
     <Card className="bg-gradient-to-br from-[#1E2235] to-[rgba(30,34,53,0.7)] border-[#2A3042] mb-10 relative animate-[fadeIn_0.6s_ease-out_0.2s_forwards]">
@@ -272,13 +208,13 @@ const WeeklyChallenge = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         {challengeArray.map((challenge, index) => {
-          const progress = getChallengeProgress(challenge);
+          // const progress = getChallengeProgress(challenge);
           const userJoined = isUserJoined(challenge);
           const daysLeft = getDaysUntilNext(challenge.endDate);
 
           return (
             <div
-              key={challenge._id}
+              key={challenge.id}
               className={`flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-gradient-to-r from-[#2A3042] to-[rgba(42,48,66,0.5)] border border-[#3A4052] ${index < challengeArray.length - 1 ? "mb-4" : ""}`}
             >
               <div className="flex-grow space-y-3">
@@ -304,11 +240,11 @@ const WeeklyChallenge = () => {
                 <div className="flex items-center justify-between">
                   <div className="text-[#A0A7B8] text-sm">
                     {userJoined
-                      ? ` ${challenge.tasks?.length || 0} workouts`
-                      : `${challenge.tasks?.length || 0} workouts • ${challenge.enteredUsers?.length || 0} participants`}
+                      ? ` ${challenge.TaskLength || 0} workouts`
+                      : `${challenge.TaskLength || 0} workouts • ${challenge.enteredUsers?.length || 0} participants`}
                   </div>
 
-                  {isJoinPeriodOver(challenge.createdAt) && !userJoined && (
+                  {isJoinPeriodOver(challenge.created) && !userJoined && (
                     <div className="text-xs text-[#FF4757] flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       Join period ended
@@ -333,7 +269,7 @@ const WeeklyChallenge = () => {
                   {getButtonText(challenge)}
                 </Button>
 
-                {isJoinPeriodOver(challenge.createdAt) && !userJoined && (
+                {isJoinPeriodOver(challenge.created) && !userJoined && (
                   <p className="text-xs text-[#A0A7B8] mt-2 text-center">
                     Try again next week!
                   </p>

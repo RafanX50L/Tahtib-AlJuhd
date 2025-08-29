@@ -1,103 +1,99 @@
-
-
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { CheckCircle, Lock, Play, Eye, ChevronRight } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-
-interface Exercise {
-  name: string
-  sets?: number
-  reps?: number
-  duration?: string
-}
-
-export interface WorkoutData {
-  title: string
-  completed: boolean
-  exercises: Exercise[]
-}
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { CheckCircle, Lock, Play, Eye, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { IDayView, IExerciseView } from "@/interfaces/client/IWorkout";
 
 interface WorkoutCardProps {
-  workouts: Record<string, WorkoutData> | null
-  weekStatus: boolean | null
-  currentWeek: string
+  workouts: IDayView[] | null;
+  weekStatus: boolean | null;
+  currentWeek: string;
 }
 
-export default function WorkoutCards({ workouts, weekStatus, currentWeek }: WorkoutCardProps) {
+export default function WorkoutCards({
+  workouts,
+  weekStatus,
+  currentWeek,
+}: WorkoutCardProps) {
   const navigate = useNavigate();
-  const [isClient, setIsClient] = useState(false)
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+    console.log("workots", workouts);
+  }, []);
 
-  const handleActionClick = (day: string, action: string, workout: Exercise[]) => {
+  const handleActionClick = (
+    day: string,
+    action: string,
+    workout: IExerciseView[]
+  ) => {
     if (action === "view") {
-      navigate(`/workout-report?week=${currentWeek}&day=${day}`)
+      navigate(`/workout-report?week=${currentWeek}&day=${day}`);
     } else if (action !== "locked") {
       if (isClient) {
         localStorage.setItem(
           "Current_Workout_Exercises",
-          JSON.stringify({ exercises: workout, day, week: currentWeek }),
-        )
-        navigate("/workoutSession")
+          JSON.stringify({ exercises: workout, day, week: currentWeek })
+        );
+        navigate("/workoutSession");
       }
     }
-  }
+  };
 
   // Return early if workouts is null
   if (!workouts) {
     return (
       <div className="flex justify-center items-center p-8 rounded-lg bg-gradient-to-br from-[rgba(30,34,53,0.9)] to-[rgba(18,21,30,0.8)] border border-gray-700 text-white">
-        <p className="text-lg font-medium">Please complete the previous week first</p>
+        <p className="text-lg font-medium">
+          Please complete the previous week first
+        </p>
       </div>
-    )
+    );
   }
 
   // Transform workouts into an array and determine accessibility
-  const workoutDays = Object.entries(workouts)
-    .filter(([key]) => key.startsWith("day"))
-    .map(([key, value], index, array) => {
-      let action: "start" | "view" | "locked" = "locked"
-      let status: "locked" | "completed" | "pending" = "locked"
+  const workoutDays = workouts.map((day, index, array) => {
+    let action: "start" | "view" | "locked" = "locked";
+    let status: "locked" | "completed" | "pending" = "locked";
 
-      if (weekStatus) {
-        // First workout is accessible if week is active
-        if (index === 0) {
-          action = value.completed ? "view" : "start"
-          status = value.completed ? "completed" : "pending"
-        }
-        // Subsequent workouts are accessible only if previous is completed
-        else if (array[index - 1][1].completed) {
-          action = value.completed ? "view" : "start"
-          status = value.completed ? "completed" : "pending"
-        }
+    if (weekStatus) {
+      if (index === 0 || array[index - 1].completed) {
+        status = day.completed ? "completed" : "pending";
+        action = day.completed ? "view" : "start";
       }
+    }
 
-      return {
-        day: key,
-        title: value.title,
-        status,
-        exercises: value.exercises,
-        action,
-      }
-    })
+    return {
+      day: `day${index + 1}`,
+      title: day.title,
+      exercises: day.exercises,
+      completed: day.completed,
+      status,
+      action,
+    };
+  });
 
   // Find the index of the first pending workout for the "Start Next Workout" button
   const nextWorkoutIndex = workoutDays.findIndex(
-    (workout) => workout.status === "pending" && workout.action === "start",
-  )
+    (workout) => workout.status === "pending" && workout.action === "start"
+  );
 
   // Check if all workouts are completed
-  const allWorkoutsCompleted = workoutDays.every((workout) => workout.status === "completed")
+  const allWorkoutsCompleted = workoutDays.every(
+    (workout) => workout.status === "completed"
+  );
 
   const handleStartNextWorkout = () => {
     if (nextWorkoutIndex !== -1) {
-      const nextWorkout = workoutDays[nextWorkoutIndex]
-      handleActionClick(nextWorkout.day, nextWorkout.action, nextWorkout.exercises)
+      const nextWorkout = workoutDays[nextWorkoutIndex];
+      handleActionClick(
+        nextWorkout.day,
+        nextWorkout.action,
+        nextWorkout.exercises
+      );
     }
-  }
+  };
 
   return (
     <div className="space-y-8">
@@ -133,19 +129,30 @@ export default function WorkoutCards({ workouts, weekStatus, currentWeek }: Work
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 interface SingleWorkoutCardProps {
-  day: string
-  title: string
-  status: "locked" | "completed" | "pending"
-  exercises: Exercise[]
-  action: "start" | "view" | "locked"
-  onActionClick: (day: string, action: string, exercises: Exercise[]) => void
+  day: string;
+  title: string;
+  status: "locked" | "completed" | "pending";
+  exercises: IExerciseView[];
+  action: "start" | "view" | "locked";
+  onActionClick: (
+    day: string,
+    action: string,
+    exercises: IExerciseView[]
+  ) => void;
 }
 
-function WorkoutCard({ day, title, status, exercises, action, onActionClick }: SingleWorkoutCardProps) {
+function WorkoutCard({
+  day,
+  title,
+  status,
+  exercises,
+  action,
+  onActionClick,
+}: SingleWorkoutCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -188,7 +195,9 @@ function WorkoutCard({ day, title, status, exercises, action, onActionClick }: S
                 : "bg-orange-500/20 text-orange-400 border border-orange-500/30"
             }`}
           >
-            {status === "completed" ? <CheckCircle className="w-3 h-3" /> : null}
+            {status === "completed" ? (
+              <CheckCircle className="w-3 h-3" />
+            ) : null}
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </span>
         )}
@@ -213,7 +222,9 @@ function WorkoutCard({ day, title, status, exercises, action, onActionClick }: S
         </style>
 
         {exercises.length === 0 ? (
-          <div className="flex justify-center items-center h-24 text-gray-400 text-sm font-medium">Rest Day</div>
+          <div className="flex justify-center items-center h-24 text-gray-400 text-sm font-medium">
+            Rest Day
+          </div>
         ) : (
           <div className="flex flex-col space-y-2">
             {exercises.map((exercise, index) => (
@@ -221,7 +232,9 @@ function WorkoutCard({ day, title, status, exercises, action, onActionClick }: S
                 key={index}
                 className="flex justify-between items-center bg-gray-800/30 p-3 rounded-md border border-gray-600/50 hover:border-indigo-400/50 transition-all duration-200"
               >
-                <span className="text-sm font-medium text-gray-200 w-2/3 truncate">{exercise.name}</span>
+                <span className="text-sm font-medium text-gray-200 w-2/3 truncate">
+                  {exercise.name}
+                </span>
                 <div className="text-sm text-gray-400 w-1/3 text-right">
                   {exercise.sets && exercise.reps && (
                     <div className="flex justify-end items-center space-x-2">
@@ -233,7 +246,9 @@ function WorkoutCard({ day, title, status, exercises, action, onActionClick }: S
                   )}
                   {exercise.duration && (
                     <div className="flex justify-end items-center space-x-2 mt-1">
-                      <span className="text-indigo-400 font-semibold">{exercise.duration}</span>
+                      <span className="text-indigo-400 font-semibold">
+                        {exercise.duration}
+                      </span>
                       <span className="text-gray-500">Duration</span>
                     </div>
                   )}
@@ -256,7 +271,13 @@ function WorkoutCard({ day, title, status, exercises, action, onActionClick }: S
                 : "bg-transparent border border-gray-600 text-gray-500 cursor-not-allowed"
           }`}
           onClick={() => onActionClick(day, action, exercises)}
-          aria-label={action === "start" ? "Start Workout" : action === "view" ? "View Results" : "Locked"}
+          aria-label={
+            action === "start"
+              ? "Start Workout"
+              : action === "view"
+                ? "View Results"
+                : "Locked"
+          }
         >
           {action === "start" ? (
             <>
@@ -277,5 +298,5 @@ function WorkoutCard({ day, title, status, exercises, action, onActionClick }: S
         </button>
       </div>
     </motion.div>
-  )
+  );
 }

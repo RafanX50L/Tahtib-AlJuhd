@@ -11,10 +11,10 @@ import { refreshAccessToken } from "@/store/slices/authSlice";
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value: string) => void;
-  reject: (reason?: any) => void;
+  reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   console.log("Processing failed queue, error:", error, "token:", token);
   failedQueue.forEach((prom) => {
     if (error) {
@@ -138,7 +138,7 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
           );
           processQueue(null, accessToken);
           return api(originalRequest);
-        } catch (refreshError: any) {
+        } catch (refreshError:{message:string}) {
           console.error(
             `Token refresh failed on ${frontendUrl}:`,
             refreshError.message

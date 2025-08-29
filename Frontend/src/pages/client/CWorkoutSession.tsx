@@ -6,25 +6,10 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import searchYouTube from "@/utils/youtubeSearch";
-
-export interface WorkoutReport {
-  totalExercises: number;
-  totalSets: number;
-  estimatedDuration: string;
-  caloriesBurned: number;
-  intensity: string;
-  feedback: string;
-}
-
-interface Exercise {
-  name: string;
-  duration?: string;
-  reps?: string;
-  sets?: string;
-  rest?: string;
-  instructions?: string;
-  animation_link?: string;
-}
+import {
+  IExerciseView,
+  IWorkoutReportView,
+} from "@/interfaces/client/IWorkout";
 
 const WorkoutSession: React.FC = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -40,11 +25,11 @@ const WorkoutSession: React.FC = () => {
   const [femaleVoice, setFemaleVoice] = useState<SpeechSynthesisVoice | null>(
     null
   );
-  const [workout, setWorkout] = useState<Exercise[]>([]);
+  const [workout, setWorkout] = useState<IExerciseView[]>([]);
   const [currentWeek, setCurrentWeek] = useState<string | number>("");
   const [currentDay, setCurrentDay] = useState("");
   const [challengeId, setChallengId] = useState<string | null>(null);
-  const [workoutReport, setWorkoutReport] = useState<WorkoutReport | null>(
+  const [workoutReport, setWorkoutReport] = useState<IWorkoutReportView | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(true);
@@ -120,7 +105,11 @@ const WorkoutSession: React.FC = () => {
       const exercise = workout[currentExerciseIndex];
       if (exercise?.name) {
         const video = await searchYouTube(exercise.name);
-        console.log("fetching times donfdak", exercise.name, video?.id?.videoId);
+        console.log(
+          "fetching times donfdak",
+          exercise.name,
+          video?.id?.videoId
+        );
         if (video && video.id && video.id.videoId) {
           setVideoId(video.id.videoId);
         } else {
@@ -137,47 +126,47 @@ const WorkoutSession: React.FC = () => {
   }, [currentExerciseIndex, workout]); // Depend on currentExerciseIndex and workout
 
   // Handle empty workout case properly - including rest days
-  useEffect(() => {
-    const handleWorkoutFinished = async () => {
-      try {
-        setIsGeneratingReport(true);
-        console.log("Starting workout completion process...");
+  const handleWorkoutFinished = async () => {
+    try {
+      setIsGeneratingReport(true);
+      console.log("Starting workout completion process...");
 
-        let response;
-        if (challengeId) {
-          response = await ClientService.markChallengeDayComplete(
-            workout,
-            +currentDay,
-            challengeId as string
-          );
-        } else {
-          response = await ClientService.completeDailyWorkoutAndFetchReport(
-            workout,
-            currentDay,
-            currentWeek as string
-          );
-        }
+      let response;
+      if (challengeId) {
+        response = await ClientService.markChallengeDayComplete(
+          workout,
+          +currentDay,
+          challengeId as string
+        );
+      } else {
+        response = await ClientService.completeDailyWorkoutAndFetchReport(
+          workout,
+          currentDay,
+          currentWeek as string
+        );
+      }
 
-        console.log("Workout completion response:", response);
+      console.log("Workout completion response:", response);
 
-        if (response && response.data) {
-          setWorkoutReport(response.data);
-          console.log("Workout report set:", response.data);
-          setTimeout(() => {
-            setShowCompletionScreen(true);
-            setIsGeneratingReport(false);
-          }, 100);
-        } else {
-          console.error("No data in response:", response);
-          setIsGeneratingReport(false);
+      if (response && response.data) {
+        setWorkoutReport(response.data);
+        console.log("Workout report set:", response.data);
+        setTimeout(() => {
           setShowCompletionScreen(true);
-        }
-      } catch (error) {
-        console.error("Error updating workout completion:", error);
+          setIsGeneratingReport(false);
+        }, 100);
+      } else {
+        console.error("No data in response:", response);
         setIsGeneratingReport(false);
         setShowCompletionScreen(true);
       }
-    };
+    } catch (error) {
+      console.error("Error updating workout completion:", error);
+      setIsGeneratingReport(false);
+      setShowCompletionScreen(true);
+    }
+  };
+  useEffect(() => {
 
     if (!isLoading && workout.length === 0 && currentDay && currentWeek) {
       console.log("Rest day detected - completing day...");
@@ -186,85 +175,88 @@ const WorkoutSession: React.FC = () => {
   }, [isLoading, workout, currentDay, currentWeek]);
 
   // Parse exercise metrics
-  const parseExerciseMetrics = useCallback((exercise: Exercise | undefined) => {
-    if (!exercise) {
+  const parseExerciseMetrics = useCallback(
+    (exercise: IExerciseView | undefined) => {
+      if (!exercise) {
+        return {
+          type: "reps" as const,
+          value: 0,
+          sets: 1,
+          audio: "",
+          range: null,
+          rangeType: null,
+        };
+      }
+
+      if (exercise.duration) {
+        const duration = Number.parseInt(exercise.duration) || 0;
+        return {
+          type: "timed" as const,
+          value: duration,
+          audio: `Hold ${exercise.name || "exercise"} for ${duration} seconds`,
+          sets: 1,
+          range: null,
+          rangeType: null,
+        };
+      }
+
+      let reps = 0;
+      let range = null;
+      let rangeType = null;
+
+      if (exercise.reps && exercise.reps.includes("-")) {
+        const parts = exercise.reps.split("-");
+        const minValue = Number.parseInt(parts[0].trim());
+
+        if (exercise.reps.toLowerCase().includes("seconds")) {
+          const maxPart = parts[1].trim();
+          const maxValue = Number.parseInt(maxPart.split(" ")[0]);
+          if (!isNaN(minValue) && !isNaN(maxValue)) {
+            reps = minValue;
+            range = { min: minValue, max: maxValue };
+            rangeType = "time";
+          }
+        } else {
+          const maxValue = Number.parseInt(parts[1].trim());
+          if (!isNaN(minValue) && !isNaN(maxValue)) {
+            reps = minValue;
+            range = { min: minValue, max: maxValue };
+            rangeType = "reps";
+          }
+        }
+      } else if (
+        exercise.reps &&
+        exercise.reps.toLowerCase().includes("seconds")
+      ) {
+        const timeValue = Number.parseInt(exercise.reps.split(" ")[0] || "0");
+        return {
+          type: "timed" as const,
+          value: timeValue,
+          audio: `Hold ${exercise.name || "exercise"} for ${timeValue} seconds`,
+          sets: Number.parseInt(exercise.sets || "1"),
+          range: null,
+          rangeType: null,
+        };
+      } else {
+        reps = Number.parseInt(exercise.reps?.split(" ")[0] || "0");
+      }
+
+      const sets = Number.parseInt(exercise.sets || "1");
+
       return {
         type: "reps" as const,
-        value: 0,
-        sets: 1,
-        audio: "",
-        range: null,
-        rangeType: null,
+        value: reps,
+        sets,
+        audio:
+          range && rangeType === "reps"
+            ? `Choose how many ${exercise.name || "exercise"} reps to do`
+            : `Do ${reps} reps of ${exercise.name || "exercise"}`,
+        range,
+        rangeType,
       };
-    }
-
-    if (exercise.duration) {
-      const duration = Number.parseInt(exercise.duration) || 0;
-      return {
-        type: "timed" as const,
-        value: duration,
-        audio: `Hold ${exercise.name || "exercise"} for ${duration} seconds`,
-        sets: 1,
-        range: null,
-        rangeType: null,
-      };
-    }
-
-    let reps = 0;
-    let range = null;
-    let rangeType = null;
-
-    if (exercise.reps && exercise.reps.includes("-")) {
-      const parts = exercise.reps.split("-");
-      const minValue = Number.parseInt(parts[0].trim());
-
-      if (exercise.reps.toLowerCase().includes("seconds")) {
-        const maxPart = parts[1].trim();
-        const maxValue = Number.parseInt(maxPart.split(" ")[0]);
-        if (!isNaN(minValue) && !isNaN(maxValue)) {
-          reps = minValue;
-          range = { min: minValue, max: maxValue };
-          rangeType = "time";
-        }
-      } else {
-        const maxValue = Number.parseInt(parts[1].trim());
-        if (!isNaN(minValue) && !isNaN(maxValue)) {
-          reps = minValue;
-          range = { min: minValue, max: maxValue };
-          rangeType = "reps";
-        }
-      }
-    } else if (
-      exercise.reps &&
-      exercise.reps.toLowerCase().includes("seconds")
-    ) {
-      const timeValue = Number.parseInt(exercise.reps.split(" ")[0] || "0");
-      return {
-        type: "timed" as const,
-        value: timeValue,
-        audio: `Hold ${exercise.name || "exercise"} for ${timeValue} seconds`,
-        sets: Number.parseInt(exercise.sets || "1"),
-        range: null,
-        rangeType: null,
-      };
-    } else {
-      reps = Number.parseInt(exercise.reps?.split(" ")[0] || "0");
-    }
-
-    const sets = Number.parseInt(exercise.sets || "1");
-
-    return {
-      type: "reps" as const,
-      value: reps,
-      sets,
-      audio:
-        range && rangeType === "reps"
-          ? `Choose how many ${exercise.name || "exercise"} reps to do`
-          : `Do ${reps} reps of ${exercise.name || "exercise"}`,
-      range,
-      rangeType,
-    };
-  }, []);
+    },
+    []
+  );
 
   // Load exercise
   const loadExercise = useCallback(
@@ -434,8 +426,8 @@ const WorkoutSession: React.FC = () => {
   // Complete exercise
   const completeExercise = useCallback(() => {
     if (workout.length === 0) return;
-    const exercise = workout[currentExerciseIndex];
-    const metrics = parseExerciseMetrics(exercise);
+    // const exercise = workout[currentExerciseIndex];
+    // const metrics = parseExerciseMetrics(exercise);
     showStatusMessage(`Set ${currentSet} completed! Rest before next set.`);
     showRestScreenHandler();
   }, [
@@ -475,55 +467,6 @@ const WorkoutSession: React.FC = () => {
                 setCustomDuration(null); // Reset only when moving to next exercise
                 setSelectedReps(null); // Reset only when moving to next exercise
               } else {
-                const handleWorkoutFinished = async () => {
-                  try {
-                    setIsGeneratingReport(true);
-                    console.log("Starting workout completion process...");
-
-                    // const response =
-                    //   await ClientService.updateDayCompletionAndGetWorkoutReport(
-                    //     workout,
-                    //     currentDay,
-                    //     currentWeek
-                    //   );
-                    let response;
-                    if (challengeId) {
-                      response =
-                        await ClientService.markChallengeDayComplete(
-                          workout,
-                          +currentDay,
-                          challengeId as string
-                        );
-                    } else {
-                      response =
-                        await ClientService.completeDailyWorkoutAndFetchReport(
-                          workout,
-                          currentDay,
-                          currentWeek as string
-                        );
-                    }
-
-                    console.log("Workout completion response:", response);
-
-                    if (response && response.data) {
-                      setWorkoutReport(response.data);
-                      console.log("Workout report set:", response.data);
-                      setTimeout(() => {
-                        setShowCompletionScreen(true);
-                        setIsGeneratingReport(false);
-                      }, 100);
-                    } else {
-                      console.error("No data in response:", response);
-                      setIsGeneratingReport(false);
-                      setShowCompletionScreen(true);
-                    }
-                  } catch (error) {
-                    console.error("Error updating workout completion:", error);
-                    setIsGeneratingReport(false);
-                    setShowCompletionScreen(true);
-                  }
-                };
-
                 handleWorkoutFinished();
               }
               setShowRestScreen(false);
@@ -564,57 +507,6 @@ const WorkoutSession: React.FC = () => {
         setCustomDuration(null); // Reset only when moving to next exercise
         setSelectedReps(null); // Reset only when moving to next exercise
       } else {
-        const handleWorkoutFinished = async () => {
-          try {
-            setIsGeneratingReport(true);
-            console.log("Starting workout completion process...");
-
-            // const response =
-            //   await ClientService.updateDayCompletionAndGetWorkoutReport(
-            //     workout,
-            //     currentDay,
-            //     currentWeek as string
-            //   );
-
-            let response;
-            console.log("challenge Id:", challengeId);
-            if (challengeId) {
-              response =
-                await ClientService.markChallengeDayComplete(
-                  workout,
-                  +currentDay,
-                  challengeId as string
-                );
-            } else {
-              response =
-                await ClientService.completeDailyWorkoutAndFetchReport(
-                  workout,
-                  currentDay,
-                  currentWeek as string
-                );
-            }
-
-            console.log("Workout completion response:", response);
-
-            if (response && response.data) {
-              setWorkoutReport(response.data);
-              console.log("Workout report set:", response.data);
-              setTimeout(() => {
-                setShowCompletionScreen(true);
-                setIsGeneratingReport(false);
-              }, 100);
-            } else {
-              console.error("No data in response:", response);
-              setIsGeneratingReport(false);
-              setShowCompletionScreen(true);
-            }
-          } catch (error) {
-            console.error("Error updating workout completion:", error);
-            setIsGeneratingReport(false);
-            setShowCompletionScreen(true);
-          }
-        };
-
         handleWorkoutFinished();
       }
       setShowRestScreen(false);
@@ -704,26 +596,16 @@ const WorkoutSession: React.FC = () => {
       setShowRepSelectionModal(true);
     } else if (metrics.rangeType === "time") {
       setCustomDuration(null);
-      if(metrics.range){
-        setSliderValue([ metrics.range.min]);
+      if (metrics.range) {
+        setSliderValue([metrics.range.min]);
       }
       setShowDurationModal(true);
     }
   }, [currentExerciseIndex, workout, parseExerciseMetrics]);
 
-  const completeFullWorkout = async ()=>{
-
-                await ClientService.markChallengeDayComplete(
-                  workout,
-                  +currentDay,
-                  challengeId as string
-                );
-                // await ClientService.completeDailyWorkoutAndFetchReport(
-                //   workout,
-                //   currentDay,
-                //   currentWeek as string
-                // );
-  }
+  const completeFullWorkout = async () => {
+    handleWorkoutFinished();
+  };
   // No workout data
   if (isLoading) {
     return (
@@ -762,7 +644,9 @@ const WorkoutSession: React.FC = () => {
 
   return (
     <main className="bg-[#12151E] text-white min-h-screen font-sans">
-      <Button className="bg-[#12151D]" onClick={()=>completeFullWorkout()}>CompleteFull Excersise</Button>
+      <Button className="bg-[#12151D]" onClick={() => completeFullWorkout()}>
+        CompleteFull Excersise
+      </Button>
       <div className="max-w-3xl mx-auto p-8 flex flex-col animate-[fadeIn_0.6s_ease-out]">
         {/* Exercise Header */}
         <div className="text-center mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl shadow-lg relative">
@@ -812,13 +696,6 @@ const WorkoutSession: React.FC = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
-            ) : exercise?.animation_link &&
-              exercise.animation_link !== "No video available" ? (
-              <img
-                src={exercise.animation_link || "/placeholder.svg"}
-                alt={exercise.name}
-                className="w-full h-full object-cover"
-              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
                 No animation available

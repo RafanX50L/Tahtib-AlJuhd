@@ -1,13 +1,14 @@
  
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { X } from "lucide-react"
+import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { X } from "lucide-react";
+import { IUser } from "@/pages/admin/ATrainerManagment";
 
 interface Message {
   id: string
@@ -19,20 +20,20 @@ interface Message {
 interface VideoCallChatProps {
   messages: Message[]
   setIsChatOpen: (isOpen: boolean) => void
-  user: any
+  user: IUser
   sendMessage: (message: string) => void
 }
 
 const VideoCallChat = ({ messages, setIsChatOpen, user, sendMessage }: VideoCallChatProps) => {
-  const [newMessage, setNewMessage] = useState("")
+  const [newMessage, setNewMessage] = useState("");
 
   const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (newMessage.trim()) {
-      sendMessage(newMessage)
-      setNewMessage("")
+      sendMessage(newMessage);
+      setNewMessage("");
     }
-  }
+  };
 
   return (
     <div className="w-80 bg-slate-800 border-l border-slate-700 flex flex-col shadow-lg">
@@ -79,8 +80,6 @@ const VideoCallChat = ({ messages, setIsChatOpen, user, sendMessage }: VideoCall
         </Button>
       </form>
     </div>
-  )
-}
-
-export default VideoCallChat
-
+  );
+};
+export default VideoCallChat;

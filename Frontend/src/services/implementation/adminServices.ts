@@ -1,3 +1,4 @@
+import { FeedbackData } from "@/components/admin/TrainerManagment/PendingApplicationsTable";
 import api from "./api";
 import { ADMIN_ROUTES } from "@/utils/constant";
 import { AxiosError } from "axios";
@@ -144,7 +145,7 @@ export const AdminService = {
     }
   },
 
-  submitInterviewFeedback: async (id: string, feedback: any) => {
+  submitInterviewFeedback: async (id: string, feedback: FeedbackData) => {
     try {
       const response = await api.patch(ADMIN_ROUTES.SUBMIT_INTERVIEW_FEEDBACK, {
         id,

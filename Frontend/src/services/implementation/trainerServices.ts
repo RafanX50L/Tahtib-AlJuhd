@@ -3,7 +3,7 @@ import { TRAINER_ROUTES } from "../../utils/constant";
 import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import { IPlan } from "@/components/trainer/SetPlan/plan";
-import { Slot, WeeklyRulesPayload } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
+import { WeeklyRulesPayload } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
 
 export type DayWindow = { startTime: string; endTime: string };
 export type WeeklyRulesPayloads = {
@@ -71,7 +71,7 @@ export const TrainerService = {
     }
   },
 
-  updateTrainerProfilePicture: async (formData: any) => {
+  updateTrainerProfilePicture: async (formData:FormData) => {
     try {
       const response = await api.patch(
         TRAINER_ROUTES.UPDATE_TRAINER_PROFILE_PHOTO,
@@ -94,7 +94,7 @@ export const TrainerService = {
     }
   },
 
-  updateTrainerProfile: async(formDataToSend:any) => {
+  updateTrainerProfile: async(formDataToSend:FormData) => {
     try {
       const response = await api.patch(
         TRAINER_ROUTES.UPDATE_TRAINER_PROFILE,
@@ -225,8 +225,11 @@ export const TrainerService = {
       const response = await api.get(`${TRAINER_ROUTES.CLIENTS}?trainerId=${trainerId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching clients:', error);
-      throw new Error('Failed to fetch clients');
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch clients';
+      console.log('Error fetching clients: ', errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
   },
 
@@ -235,8 +238,11 @@ export const TrainerService = {
       const response = await api.get(`${TRAINER_ROUTES.CHAT}/${chatId}/messages`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching chat messages:', error);
-      throw new Error('Failed to fetch chat messages');
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch chat messages';
+      console.log('Error fetching chat messages: ', errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
 
   }

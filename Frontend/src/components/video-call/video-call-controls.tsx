@@ -5,15 +5,13 @@ import {
   Mic,
   MicOff,
   VideoOff,
-  ScreenShare,
-  MessageSquare,
   Phone,
   Camera,
 } from "lucide-react";
 // import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 interface NavigateOptions {
   replace?: boolean; // If true, replaces the current history entry instead of pushing a new one
-  state?: any; // Optional state to pass to the new route
+  state?: string; // Optional state to pass to the new route
   preventScrollReset?: boolean; // Prevents scrolling to the top of the page
   relative?: "route" | "path"; // Determines how relative paths are resolved
 }
@@ -36,10 +34,10 @@ interface VideoCallControlsProps {
 const VideoCallControls = ({
   isMicOn,
   isVideoOn,
-  isChatOpen,
+  // isChatOpen,
   handleAudioToggle,
   handleVideoToggle,
-  setIsChatOpen,
+  // setIsChatOpen,
   navigate,
 }: VideoCallControlsProps) => {
   return (

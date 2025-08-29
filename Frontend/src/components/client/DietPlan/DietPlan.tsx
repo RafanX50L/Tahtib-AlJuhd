@@ -9,14 +9,11 @@ import {
   FaMoon,
   FaCloudSun,
   FaLeaf,
-  FaCookie,
   FaAppleAlt,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import Loading from "../Loading";
-import { TrainerService } from "@/services/implementation/trainerServices";
 import { ClientService } from "@/services/implementation/clientServices";
-import Header from "../Header";
 
 interface Dish {
   name: string;
@@ -163,7 +160,7 @@ const DietPlanPage: React.FC = () => {
         {/* Meal Options */}
         <div className="space-y-3">
           {getDisplayedOptions(mealData.options, mealType).map(
-            (dish, index) => (
+            (dish) => (
               <div
                 key={dish._id}
                 onClick={() => handleDishClick(dish, mealType)}

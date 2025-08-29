@@ -7,7 +7,6 @@ const TrainerForm = lazy(() => import("@/pages/trainer/TSubmittingDetails"));
 const VerifyingTrainer = lazy(() => import("@/components/trainer/Dashboard/VerifyingTrainer"));
 const TProfile = lazy(() => import("@/pages/trainer/TProfile"));
 const NotFoundPage = lazy(() => import("@/pages/common/NotFond"));
-const TrainerSetAvailability = lazy(() => import("@/pages/trainer/TSetAvailabilityPage"));
 const TSetPlanPage = lazy(() => import("@/pages/trainer/TSetPlans"));
 const TSetAvailabilityPage = lazy(() => import("@/pages/trainer/TSetAvailabilityPage"));
 const TCChatPage = lazy(() => import("@/pages/trainer/TCChatPage"));

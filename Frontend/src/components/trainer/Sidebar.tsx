@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaBars, FaTachometerAlt, FaCalendarAlt, FaUsers, FaComments, FaStar, FaUser, FaSignOutAlt, FaBoxOpen, FaClock } from 'react-icons/fa';
+import { FaBars, FaTachometerAlt, FaComments, FaUser, FaSignOutAlt, FaBoxOpen, FaClock } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
 import { NavLink, useNavigate } from 'react-router-dom';
 import {

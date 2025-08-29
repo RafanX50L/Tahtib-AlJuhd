@@ -71,7 +71,7 @@ interface TProfileProps {
   trainerService?: typeof TrainerService;
 }
 
-const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) => {
+const TProfile: React.FC<TProfileProps> = () => {
   const [trainerData, setTrainerData] = useState<ITrainerWithPersonalization | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +79,7 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
   const refetchTrainerData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await trainerService.getProfileData();
+      const response = await TrainerService.getProfileData();
       if (isValidTrainerData(response)) {
         setTrainerData(response);
         setError(null);
@@ -92,7 +92,7 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
     } finally {
       setIsLoading(false);
     }
-  }, [trainerService]);
+  }, []);
 
   useEffect(() => {
     refetchTrainerData();

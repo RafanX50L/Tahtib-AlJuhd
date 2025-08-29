@@ -4,7 +4,7 @@ import { AppDispatch } from "@/store/store";
 import { setCredentials } from "@/store/slices/authSlice";
 import { AxiosInstance } from "axios";
 import { UserInterface } from "@/types/user";
-import { INotification } from "@/components/client/CNotificationDropDown";
+import { INotificationView } from "@/components/shared/Notification";
 
 interface TokenData {
   token: string;
@@ -29,7 +29,7 @@ export const secureTokenStorage = {
     }
   },
 
-  set: (user: UserInterface, notifications: INotification[], token: string, version: number, dispatch: AppDispatch) => {
+  set: (user: UserInterface, notifications: INotificationView[], token: string, version: number, dispatch: AppDispatch) => {
     try {
       dispatch(setCredentials({ user,notifications, accessToken: token, tokenVersion: version }));
       console.log('Token stored successfully, version:', version);
@@ -56,9 +56,6 @@ const api: AxiosInstance = axios.create({
   }
 });
 
-console.log("API instance created:", api.defaults.baseURL);
-(api as any).__instanceId = "main-api-instance";
-
-
+api .__instanceId = "main-api-instance";
 
 export default api;

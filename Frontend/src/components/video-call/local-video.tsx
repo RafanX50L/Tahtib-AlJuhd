@@ -1,8 +1,6 @@
- 
-
-import { Card } from "@/components/ui/card"
-import { UserIcon } from "lucide-react"
-import { useEffect, type RefObject } from "react"
+import { Card } from "@/components/ui/card";
+import { UserIcon } from "lucide-react";
+import { useEffect, type RefObject } from "react";
 
 interface LocalVideoProps {
   localRef: RefObject<HTMLVideoElement> | null
@@ -16,13 +14,13 @@ const LocalVideo = ({ localRef, isVideoOn, isConnected }: LocalVideoProps) => {
     if (localRef?.current) {
       if (isVideoOn) {
         // Ensure video is visible when enabled
-        localRef.current.style.display = "block"
+        localRef.current.style.display = "block";
       } else {
         // Hide video element when disabled
-        localRef.current.style.display = "none"
+        localRef.current.style.display = "none";
       }
     }
-  }, [isVideoOn, localRef])
+  }, [isVideoOn, localRef]);
 
   return (
     <div className="absolute bottom-5 right-5">
@@ -53,8 +51,7 @@ const LocalVideo = ({ localRef, isVideoOn, isConnected }: LocalVideoProps) => {
         </div>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default LocalVideo
-
+export default LocalVideo;

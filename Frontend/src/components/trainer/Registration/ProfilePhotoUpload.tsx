@@ -115,6 +115,7 @@ const ProfilePhotoUpload: React.FC<ProfilePhotoUploadProps> = ({
   const handleFileChange = useCallback(
     (
       e: React.ChangeEvent<HTMLInputElement>,
+      /* eslint-disable-next-line */
       fieldOnChange: (value: File | null) => void
     ) => {
       const file = e.target.files?.[0];

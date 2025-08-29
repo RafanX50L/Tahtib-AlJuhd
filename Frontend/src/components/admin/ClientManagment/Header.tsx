@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bell, Settings } from "lucide-react";
-import logo from "../../../assets/images/logo.png"; 
 
 interface HeaderButton {
   icon: string;

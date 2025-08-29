@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import TrainerNotificationDropdown from './TrainerNotificationDropDown';
 import NotificationDropdown, { trainerTheme } from '../shared/NotificationDropDown';
 
 interface HeaderProps {

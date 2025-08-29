@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Eye, PlayCircle, PauseCircle, X } from "lucide-react";
 import { toast } from "sonner";
-import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
 import { AdminService } from "@/services/implementation/adminServices";
 export interface TrainerCardDTO {
   _id: string;
@@ -93,18 +92,18 @@ const ApprovedTrainersTable = () => {
       : "text-green-400 bg-green-200/20";
   };
 
-  const getExpertiseStyle = (level?: string) => {
-    switch (level) {
-      case "advanced":
-        return "text-blue-400 bg-blue-200/20";
-      case "intermediate":
-        return "text-purple-400 bg-purple-200/20";
-      case "beginner":
-        return "text-orange-400 bg-orange-200/20";
-      default:
-        return "text-gray-400 bg-gray-200/20";
-    }
-  };
+  // const getExpertiseStyle = (level?: string) => {
+  //   switch (level) {
+  //     case "advanced":
+  //       return "text-blue-400 bg-blue-200/20";
+  //     case "intermediate":
+  //       return "text-purple-400 bg-purple-200/20";
+  //     case "beginner":
+  //       return "text-orange-400 bg-orange-200/20";
+  //     default:
+  //       return "text-gray-400 bg-gray-200/20";
+  //   }
+  // };
 
   return (
     <div className="mb-8">

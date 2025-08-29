@@ -17,77 +17,11 @@ import {
   Zap,
   Trophy,
 } from "lucide-react";
-import type { ObjectId } from "mongoose";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { RootState } from "@/store/store";
+import { IUserWeeklyChallengeView } from "@/interfaces/client/IWeeklyChallenges";
+import { IChallengesViews } from "@/interfaces/client/IWorkout";
 
-interface IExercise {
-  name: string;
-  sets?: string;
-  reps?: string;
-  rest?: string;
-  duration?: string;
-  instructions: string;
-  animation_link?: string;
-}
-
-interface IWorkoutReport {
-  totalExercises?: number;
-  totalSets?: number;
-  estimatedDuration?: string;
-  caloriesBurned?: number;
-  intensity?: string;
-  feedback?: string;
-}
-
-interface IDay {
-  title: string;
-  exercises: IExercise[];
-  completed?: boolean;
-  report?: IWorkoutReport;
-}
-
-interface IChallenges {
-  _id: string;
-  createdAt: string;
-  endDate: string;
-  enteredUsers: ObjectId[];
-  score: number;
-  startDate: string;
-  tasks: IDay[];
-  type: string;
-  updatedAt: string;
-}
-
-interface IUserDayReport {
-  dayIndex: number;
-  completed: boolean;
-  completedAt: Date;
-  report: {
-    caloriesBurned: string;
-    feedback: string;
-    intensity: string;
-    estimatedDuration: string;
-    totalExercises: string;
-    totalSets: string;
-  };
-}
-
-interface IUserWeeklyChallenge {
-  user: string;
-  challenge: string;
-  type: string;
-  startDate: string;
-  progress: IUserDayReport[];
-  score: number;
-}
-
-interface RootState {
-  auth: {
-    user: {
-      _id: string;
-    };
-  };
-}
 
 const ChallengeDetail = () => {
   const params = useParams();
@@ -96,8 +30,8 @@ const ChallengeDetail = () => {
   const challengeId = params.id as string;
   const challengeType = searchParams.get("type") || "beginner";
 
-  const [challenge, setChallenge] = useState<IChallenges | null>(null);
-  const [userWeeklyChallenge, setUserWeeklyChallenge] = useState<IUserWeeklyChallenge | null>(null);
+  const [challenge, setChallenge] = useState<IChallengesViews | null>(null);
+  const [userWeeklyChallenge, setUserWeeklyChallenge] = useState<IUserWeeklyChallengeView | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
@@ -110,8 +44,8 @@ const ChallengeDetail = () => {
         setIsLoading(true);
         const response = await ClientService.getChallengeById(challengeId);
         const challengeData = response.data as {
-          challenge: IChallenges;
-          userProgress: IUserWeeklyChallenge;
+          challenge: IChallengesViews;
+          userProgress: IUserWeeklyChallengeView;
         };
 
         if (
@@ -141,14 +75,14 @@ const ChallengeDetail = () => {
     }
   }, [challengeId, userId]);
 
-  const isUserJoined = (challengeData: IChallenges = challenge!): boolean => {
+  const isUserJoined = (challengeData: IChallengesViews = challenge!): boolean => {
     if (!userId || !challengeData || !challengeData.enteredUsers) return false;
     return challengeData.enteredUsers.some(
-      (enteredUserId: ObjectId) => enteredUserId.toString() === userId.toString()
+      (enteredUserId) => enteredUserId.toString() === userId.toString()
     );
   };
 
-  const updateCurrentDayIndex = (challengeData: IChallenges, userProgress: IUserWeeklyChallenge | null) => {
+  const updateCurrentDayIndex = (challengeData: IChallengesViews, userProgress: IUserWeeklyChallengeView | null) => {
     const challengeStartDate = new Date(challengeData.startDate);
     const today = new Date();
     challengeStartDate.setHours(0, 0, 0, 0);
@@ -189,17 +123,17 @@ const ChallengeDetail = () => {
       await ClientService.joinChallenge(challengeId);
       const response = await ClientService.getChallengeById(challengeId);
       const challengeData = response.data as {
-        challenge: IChallenges;
-        userProgress: IUserWeeklyChallenge;
+        challenge: IChallengesViews;
+        userProgress: IUserWeeklyChallengeView;
       };
 
-      console.log(challengeData)
+      console.log(challengeData);
       setChallenge(challengeData.challenge);
       setUserWeeklyChallenge(challengeData.userProgress);
       updateCurrentDayIndex(challengeData.challenge, challengeData.userProgress);
       toast.success("Successfully joined the challenge!");
     } catch (error) {
-      toast.error("Failed to join challenge. Please try again.");
+      toast.error(`Failed to join challenge. Please try again : ${error}`);
     } finally {
       setIsJoining(false);
     }
@@ -240,7 +174,7 @@ const ChallengeDetail = () => {
         JSON.stringify({
           exercises: challenge?.tasks[dayIndex].exercises,
           day: dayIndex,
-          challengeId: challenge?._id,
+          challengeId: challenge?.id,
         })
       );
       navigate("/workoutSession");

@@ -1,7 +1,7 @@
 import { RootState } from "@/store/store";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AlignJustify, ChevronDown, Grip, GripHorizontal, LayoutDashboard, Menu, PanelLeft, Sidebar } from "lucide-react";
+import {  ChevronDown, Sidebar } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

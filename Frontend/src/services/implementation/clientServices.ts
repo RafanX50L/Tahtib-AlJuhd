@@ -4,6 +4,8 @@ import { CLIENT_ROUTES } from "../../utils/constant";
 import { toast } from "sonner";
 import { Types } from "mongoose";
 import { Interaction } from "@/components/client/chatBot/types";
+import {  IExerciseView } from "@/interfaces/client/IWorkout";
+import { ClientProfile } from "@/components/client/Profile/Profile";
 
 export interface IClientUserData{
   nickName: string;
@@ -24,7 +26,7 @@ export interface IClientUserData{
   healthIssues?: string[];
   medicalCondition?: string;
   dietAllergies?: string[];
-  dietMealsPerDay: ('3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals')[];
+  dietMealsPerDay: '3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals';
   dietPreferences?: string;
   workoutsCompletedIn28Days: number;
 }
@@ -97,7 +99,7 @@ export const ClientService = {
   },
 
   completeDailyWorkoutAndFetchReport: async (
-    workout: any,
+    workout: IExerciseView[],
     currentDay: string,
     currentWeek: string
   ) => {
@@ -189,7 +191,7 @@ export const ClientService = {
   },
 
   markChallengeDayComplete: async (
-    exercises: any,
+    exercises: IExerciseView[],
     day: number,
     challengeId: string
   ) => {
@@ -232,7 +234,7 @@ export const ClientService = {
     }
   },
 
-  updateClientProfilePicture: async (formData: any) => {
+  updateClientProfilePicture: async (formData: FormData) => {
     try {
       const response = await api.patch(
         CLIENT_ROUTES.UPDATE_CLIENT_PROFILE_PHOTO,
@@ -255,7 +257,7 @@ export const ClientService = {
     }
   },
 
-  updateClientProfile: async (formData: any) => {
+  updateClientProfile: async (formData: ClientProfile) => {
     try {
       const response = await api.patch(CLIENT_ROUTES.UPDATE_CLIENT_PROFILE,formData);
       console.log("response of profile", response.data);
@@ -277,9 +279,9 @@ export const ClientService = {
     trainersPerPage: number,
     search: string,
     specialty: string
-  ): Promise<any[]> => {
+  ) => {
     try {
-      const response = await api.get<{ trainerData: { currentPage: number; total: number; totalPages: number; trainers: any[] } }>(
+      const response = await api.get(
         `${CLIENT_ROUTES.GET_AVAILABLE_TRAINERS}?specialty=${encodeURIComponent(specialty)}&page=${pageNum}&limit=${trainersPerPage}&search=${encodeURIComponent(search)}`
       );
 
@@ -323,9 +325,13 @@ export const ClientService = {
       const response = await api.post(`${CLIENT_ROUTES.PURCHASE_PLAN}`, payload);
       console.log('Purchase plan response:', response.data); // Debug log
       return response.data;
-    } catch (error: any) {
-      console.error('Error in purchasePlan:', error);
-      throw new Error(error.response?.data?.error || 'Failed to purchase plan');
+    } catch (error) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage =
+        err.response?.data.error || "Failed to purchase plan";
+      console.log("Failed to purchase plan: ", errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
   },
 
@@ -383,19 +389,6 @@ export const ClientService = {
       const errorMessage =
         err.response?.data.error || "Failed to fetch slots";
       console.log("Error fetching slots: ", errorMessage);
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-  },
-
-  bookSlot: async (clientId: string, sessionId: string) => {
-    try {
-      const response = await api.post(`/client/book`, { sessionId });
-      return { data: response.data };
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ error: string }>;
-      const errorMessage = err.response?.data.error || 'Failed to book slot';
-      console.log('Error booking slot: ', errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -477,7 +470,7 @@ export const ClientService = {
     try {
       console.log('');
       const response = await api.get(CLIENT_ROUTES.CHAT_BOT_SESSIONS);
-      toast.success(response.data.message)
+      toast.success(response.data.message);
       return response.data.sessions;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;

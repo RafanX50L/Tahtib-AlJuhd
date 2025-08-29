@@ -51,7 +51,7 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    dispatch(logout())
+    dispatch(logout());
     setDialogOpen(false);
     navigate('/auth?path=login');
     toast.success('Successfully logged out'); 

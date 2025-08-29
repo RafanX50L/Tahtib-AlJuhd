@@ -4,10 +4,6 @@ import { HelpCircle, Info } from "lucide-react";
 import TrainerStatsCard from "@/components/admin/TrainerManagment/TrainerStatsCard";
 import ApprovedTrainersTable from "@/components/admin/TrainerManagment/ApprovedTrainers";
 import PendingApplicationsTable from "@/components/admin/TrainerManagment/PendingApplicationsTable";
-import { useEffect, useState } from "react";
-import { AdminService } from "@/services/implementation/adminServices";
-import { toast } from "sonner";
-import { response } from "express";
 import { Types } from "mongoose";
 
 export interface IUser {
@@ -120,62 +116,62 @@ export interface ITrainerWithPersonalization {
 }
 
 const ATrainerManagment = () => {
-  const [trainerData, setTrainerData] = useState<ITrainerWithPersonalization[]>(
-    []
-  );
-  const [approvedTrainers, setApprovedTrainers] = useState<
-    ITrainerWithPersonalization[]
-  >([]);
-  const [pendingTrainers, setPendingTrainers] = useState<
-    ITrainerWithPersonalization[]
-  >([]);
-  const [refetch, setRefetch] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [trainerData, setTrainerData] = useState<ITrainerWithPersonalization[]>(
+  //   []
+  // );
+  // const [approvedTrainers, setApprovedTrainers] = useState<
+  //   ITrainerWithPersonalization[]
+  // >([]);
+  // const [pendingTrainers, setPendingTrainers] = useState<
+  //   ITrainerWithPersonalization[]
+  // >([]);
+  // const [refetch, setRefetch] = useState(false);
+  // const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchTrainerData = async () => {
-      try {
-        const response = await AdminService.getAllTrainers();
-        console.log("Trainer data fetched:", response.data);
-        const trainers = response.data as ITrainerWithPersonalization[];
-        setTrainerData(trainers);
+  // useEffect(() => {
+  //   const fetchTrainerData = async () => {
+  //     try {
+  //       // const response = await AdminService.getAllTrainers();
+  //       // console.log("Trainer data fetched:", response.data);
+  //       // const trainers = response.data as ITrainerWithPersonalization[];
+  //       // setTrainerData(trainers);
 
-        // Separate approved and pending trainers
-        const approved = trainers.filter(
-          (trainer) => trainer.status === "approved"
-        );
-        const pending = trainers.filter(
-          (trainer) => trainer.status === "applied"
-        );
+  //       // Separate approved and pending trainers
+  //       // const approved = trainers.filter(
+  //       //   (trainer) => trainer.status === "approved"
+  //       // );
+  //       // const pending = trainers.filter(
+  //       //   (trainer) => trainer.status === "applied"
+  //       // );
 
-        setApprovedTrainers(approved);
-        setPendingTrainers(pending);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 300);
-      } catch (error) {
-        console.error("Error fetching trainer data:", error);
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred.";
-        toast.error(errorMessage);
-        setIsLoading(false);
-      }
-    };
-    fetchTrainerData();
-  }, [refetch]);
+  //       // setApprovedTrainers(approved);
+  //       // setPendingTrainers(pending);
+  //       setTimeout(() => {
+  //         setIsLoading(false);
+  //       }, 300);
+  //     } catch (error) {
+  //       console.error("Error fetching trainer data:", error);
+  //       const errorMessage =
+  //         error instanceof Error
+  //           ? error.message
+  //           : "An unexpected error occurred.";
+  //       toast.error(errorMessage);
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchTrainerData();
+  // }, [refetch]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-white">Loading Trainer Managment page...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+  //       <div className="flex flex-col items-center">
+  //         <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+  //         <p className="mt-4 text-white">Loading Trainer Managment page...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex h-screen overflow-hidden bg-black text-white">

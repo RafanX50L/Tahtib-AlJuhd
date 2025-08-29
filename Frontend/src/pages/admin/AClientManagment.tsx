@@ -19,6 +19,7 @@ const AClientManagment = () => {
   useEffect(() => {
     console.log("Fetching clients with searchTerm:", JSON.stringify(searchTerm)); // Debug log with JSON.stringify to catch special characters
     const fetchClientData = async () => {
+      setIsLoading(true);
       try {
         // Sanitize searchTerm to prevent invalid values
         const sanitizedSearchTerm = searchTerm.trim() === "%7D" || searchTerm.trim() === "}" ? "" : searchTerm.trim();
@@ -31,6 +32,7 @@ const AClientManagment = () => {
         if (Array.isArray(response.data?.data)) {
           setClientData(response.data.data);
           setTotalItems(response.data.totalCount || 0);
+          setIsLoading(false);
         } else {
           console.error("Unexpected response format:", response.data);
           toast.error("Failed to load client data: Invalid response format");
@@ -45,6 +47,17 @@ const AClientManagment = () => {
     };
     fetchClientData();
   }, [statusFilter, searchTerm, currentPage]);
+
+   if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-white">Loading Trainer Managment page...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-black text-white">

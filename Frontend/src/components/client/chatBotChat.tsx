@@ -14,7 +14,6 @@ import {
   Send,
   Paperclip,
   Mic,
-  MoreVertical,
   Bot,
   User,
   Settings

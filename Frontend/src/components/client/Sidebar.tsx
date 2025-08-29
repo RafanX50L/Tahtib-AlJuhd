@@ -1,6 +1,5 @@
-import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import {  useState, forwardRef, useImperativeHandle } from "react";
 import {
-  FaBolt,
   FaHome,
   FaDumbbell,
   FaChartLine,

@@ -48,7 +48,7 @@ export const ProtectedRoute: React.FC<{ allowedRoles: string }> = ({ allowedRole
   ) {
     let redirectPath = lastLocation || '/dashboard';
     if(lastLocation === '/personalization'){
-      redirectPath = '/dashboard'
+      redirectPath = '/dashboard';
     }
     console.log(`Personalization complete, redirecting to ${redirectPath}`);
     return <Navigate to={redirectPath} state={{ from: location }} replace />;

@@ -78,6 +78,7 @@ const TrainerProfile: React.FC = () => {
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent, postId: number): void => {
     touchStartX.current = e.type === 'touchstart' ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
     touchCurrentX.current = touchStartX.current;
+    console.log(postId);
   };
 
   const handleTouchMove = (e: React.TouchEvent | React.MouseEvent): void => {

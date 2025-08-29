@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import io from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
@@ -15,7 +14,7 @@ interface Message {
   text: string;
   type: "sent" | "received";
   time: string;
-  date: string;
+  date?: string;
   sender?: string;
 }
 
@@ -91,7 +90,7 @@ const CTChatSection: React.FC<ChatSectionProps> = ({ trainerName, trainerPhoto, 
         time: `Today, ${time}`,
         sender: user._id,
       };
-      setMessages((prev:any) => [...prev, newMessage]);
+      setMessages((prev:Message[]) => [...prev, newMessage]);
       socket.emit(chatEnum.sendMessage, {
         chatId: contract.chatId,
         sender: user._id,

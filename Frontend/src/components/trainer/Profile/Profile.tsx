@@ -45,7 +45,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainerData, setTrainer
         ...(formData.location !== trainerData.basicInfo.location && { location: formData.location }),
       };
 
-      await TrainerService.updateTrainerProfile(updateData);
+      await TrainerService.updateTrainerProfile(updateData as FormData);
       setTrainerData(prev => prev ? ({
         ...prev,
         name: formData.name,
@@ -58,7 +58,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainerData, setTrainer
       setIsEditing(false);
       setMessage("Profile updated successfully!");
     } catch (error) {
-      setMessage("Failed to update profile.");
+      setMessage(`Failed to update profile : ${error}`);
     }
   };
 
@@ -83,7 +83,7 @@ const TrainerProfile: React.FC<TrainerProfileProps> = ({ trainerData, setTrainer
         (document.querySelector('input[type="file"]') as HTMLInputElement).value = "";
       }
     } catch (error) {
-      setMessage("Failed to upload image.");
+      setMessage(`Failed to upload image : ${error}`);
     } finally {
       setLoading(false);
     }

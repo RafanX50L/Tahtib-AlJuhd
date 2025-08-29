@@ -1,14 +1,13 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/services/implementation/api";
 import { UserInterface } from "@/types/user";
-import { INotification } from "@/components/client/CNotificationDropDown";
+import { INotificationView } from "@/components/shared/Notification";
 
-console.log("Auth slice importing API instance:", (api as any).__instanceId);
 
 export interface AuthState {
   isAuthenticated: boolean;
   user: UserInterface | null;
-  notifications:INotification[] |[];
+  notifications:INotificationView[] |[];
   status: "idle" | "loading" | "succeeded" | "failed";
   lastLocation: string | null;
 };
@@ -57,7 +56,7 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: UserInterface; notifications: INotification[]; accessToken: string; tokenVersion: number }>
+      action: PayloadAction<{ user: UserInterface; notifications: INotificationView[]; accessToken: string; tokenVersion: number }>
     ) => {
       console.log("Setting credentials:", action.payload);
       state.user = action.payload.user;
@@ -81,7 +80,7 @@ const authSlice = createSlice({
     },
     setUserPersonalization: (state, action: PayloadAction<{ _id: string }>) => {
       if (state.user) {
-        (state.user as any).personalization = action.payload._id;
+        (state.user).personalizationId = action.payload._id;
       }
     },
     setLastLocation: (state, action: PayloadAction<string>) => {

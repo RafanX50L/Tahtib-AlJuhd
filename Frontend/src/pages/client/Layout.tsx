@@ -7,8 +7,7 @@ const LayoutPage = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    console.log('enterd to layout')
-  }, []); // Empty dependency array to run only once on mount
+  }, []);
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const navLinks = [

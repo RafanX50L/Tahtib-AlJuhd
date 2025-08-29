@@ -299,7 +299,7 @@ const TrainerProfileEdit: React.FC<TrainerProfileEditProps> = ({
   const handleInputChange = (
     section: keyof ITrainerWithPersonalization,
     field: string,
-    value: any
+    value: string
   ) => {
     setFormData((prev) => ({
       ...prev,

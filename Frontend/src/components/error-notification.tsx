@@ -1,5 +1,5 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface ErrorNotificationProps {
   errorMessage: string
@@ -14,8 +14,7 @@ const ErrorNotification = ({ errorMessage }: ErrorNotificationProps) => {
         <AlertDescription>{errorMessage}</AlertDescription>
       </Alert>
     </div>
-  )
-}
+  );
+};
 
-export default ErrorNotification
-
+export default ErrorNotification;

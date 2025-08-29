@@ -20,44 +20,6 @@ export interface Trainer {
   price: number;
 }
 
-// Sample Current Trainer
-const sampleCurrentTrainer: Trainer = {
-  id: "trainer_001",
-  name: "Alex Johnson",
-  speciality: ["Strength", "Cardio", "HIIT"],
-  photo: "https://example.com/images/trainers/alex_johnson.jpg",
-  experience: "8",
-  price: 150,
-};
-
-// Sample Previous Trainers
-// const samplePreviousTrainers: Trainer[] = [
-//   {
-//     id: "trainer_002",
-//     name: "Sarah Miller",
-//     speciality: ["Yoga", "Pilates", "Meditation"],
-//     photo: "https://example.com/images/trainers/sarah_miller.jpg",
-//     experience: "5",
-//     price: 120,
-//   },
-//   {
-//     id: "trainer_003",
-//     name: "Michael Chen",
-//     speciality: ["Weightlifting", "Bodybuilding"],
-//     photo: "https://example.com/images/trainers/michael_chen.jpg",
-//     experience: "10",
-//     price: 130,
-//   },
-//   {
-//     id: "trainer_004",
-//     name: "Emily Davis",
-//     speciality: ["Zumba", "Cardio"],
-//     photo: "https://example.com/images/trainers/emily_davis.jpg",
-//     experience: "3",
-//     price: 100,
-//   },
-// ];
-
 /**
  * Trainers page with search, filter, and infinite-scroll pagination.
  * Optimized for backend response: { message, availableTrainers, currentPage, totalPages, total }
@@ -101,10 +63,11 @@ const TrainersMain: React.FC = () => {
       const response = await ClientService.getCurrentTrainerPartialData();
       console.log('current trainer',response);
       setCurrentTrainer(response);
-    }
+    };
     fetchCurrentTrainer();
     // Set sample data for testing purposes
     setPreviousTrainers([]);
+    console.log(previousTrainers);
     return () => {
       isMountedRef.current = false;
     };
@@ -319,7 +282,7 @@ const TrainersMain: React.FC = () => {
         </section>
 
         {/* Previous Trainers Section */}
-        {/* {previousTrainers.length > 0 && (
+        {previousTrainers.length > 0 && (
           <section className="mb-8 animate-[fadeIn_0.6s_ease-out_0.2s_forwards]">
             <div className="bg-gradient-to-br from-[#1E2235] to-[#252A40] border border-[#2A3042] rounded-2xl p-6 shadow-xl backdrop-blur-sm">
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-3">
@@ -342,7 +305,7 @@ const TrainersMain: React.FC = () => {
               </div>
             </div>
           </section>
-        )} */}
+        )}
 
         {/* Search & Filter Section */}
         <section className="mb-8 animate-[fadeIn_0.6s_ease-out_0.15s_forwards]">

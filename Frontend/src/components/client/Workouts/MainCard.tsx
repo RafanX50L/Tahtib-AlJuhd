@@ -1,5 +1,4 @@
 import { MainData } from "@/pages/client/CWorkouts";
-import { useEffect } from "react";
 
 interface MainCardProps{
   data:MainData

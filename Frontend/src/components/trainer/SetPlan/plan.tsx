@@ -5,7 +5,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   PlusCircle,
   DollarSign,
@@ -16,7 +15,6 @@ import {
   Users,
   Target,
   Edit3,
-  Trash2,
   X,
   Eye,
   EyeOff,
@@ -34,9 +32,18 @@ import { z } from "zod";
 
 export const PlanSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long").trim(),
-  description: z.string().min(10, "Description must be at least 10 characters long").trim(),
-  sessionsPerWeek: z.number().min(1, "Sessions per week must be between 1 and 14").max(14, "Sessions per week must be between 1 and 14"),
-  durationWeeks: z.number().min(1, "Duration must be between 1 and 52 weeks").max(52, "Duration must be between 1 and 52 weeks"),
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters long")
+    .trim(),
+  sessionsPerWeek: z
+    .number()
+    .min(1, "Sessions per week must be between 1 and 14")
+    .max(14, "Sessions per week must be between 1 and 14"),
+  durationWeeks: z
+    .number()
+    .min(1, "Duration must be between 1 and 52 weeks")
+    .max(52, "Duration must be between 1 and 52 weeks"),
   price: z.number().optional(),
   trainer: z.string().optional(),
   isActive: z.boolean().optional(),
@@ -100,13 +107,12 @@ const SetPlansPage = () => {
     if (user) {
       const fetchPlans = async () => {
         try {
-          // const response = await mockTrainerService.getPlans(user._id);
           const response = await TrainerService.getPlans(user._id);
           const res = await TrainerService.getSalary();
           setSalary(res.data);
           setPlans(response.data);
         } catch (err) {
-          setError("Failed to load plans");
+          setError(`Failed to load plans : ${err}`);
         }
       };
       fetchPlans();
@@ -124,6 +130,7 @@ const SetPlansPage = () => {
     if (!validation.success) {
       setError(validation.error);
       setIsSubmitting(false);
+      setValidationErrors(validationErrors);
       return;
     }
 
@@ -135,31 +142,42 @@ const SetPlansPage = () => {
       };
 
       if (editingPlan) {
-        // Update existing plan
+        await TrainerService.updatePlan(editingPlan.id!, planData);
 
-        const updatedPlan = await TrainerService.updatePlan(
-          editingPlan.id!,
-          planData
-        );
-        console.log(updatedPlan);
-        setPlans(
-          plans.map((p) => (p.id === editingPlan.id ? updatedPlan.data : p))
-        );
+        const updatedPlan: IPlan = {
+          ...editingPlan,
+          ...planData,
+          trainer: planData.trainer || "", // ensure it’s a string
+          updatedAt: new Date().toISOString(),
+        };
+
+        setPlans(plans.map((p) => (p.id === editingPlan.id ? updatedPlan : p)));
         setSuccess("Plan updated successfully!");
       } else {
-        // Create new plan
-        const newPlan = await TrainerService.AddnewPlan(form, user!._id);
-        setPlans([...plans, newPlan.data]);
+        await TrainerService.AddnewPlan(form, user!._id);
+
+        const newPlan: IPlan = {
+          id: Math.random().toString(36).substr(2, 9), // temporary ID
+          title: planData.title!,
+          description: planData.description!,
+          price: planData.price,
+          sessionsPerWeek: planData.sessionsPerWeek!,
+          durationWeeks: planData.durationWeeks!,
+          isActive: planData.isActive!,
+          isBooked: planData.isBooked!,
+          trainer: planData.trainer || "", // required
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        setPlans([...plans, newPlan]);
         setSuccess("Plan created successfully!");
       }
 
       resetForm();
       setTimeout(() => setSuccess(""), 5000);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.error ||
-          `Error ${editingPlan ? "updating" : "creating"} plan`
-      );
+    } catch (err) {
+      setError(`${err}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -193,7 +211,7 @@ const SetPlansPage = () => {
       setSuccess("Plan deactivated successfully!");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError("Failed to deactivate plan");
+      setError(`Failed to deactivate plan : ${err}`);
       setTimeout(() => setError(""), 3000);
     }
   };

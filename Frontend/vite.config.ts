@@ -1,9 +1,9 @@
-import path from "path"
-import tailwindcss from "@tailwindcss/vite"
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-import { VitePWA } from 'vite-plugin-pwa';
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+// import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,7 +26,7 @@ export default defineConfig({
     port: 5173,        // you can keep 5173
     strictPort: true,  // prevents automatic port switching
   },
-})
+});
 
 
 // VitePWA({

@@ -1,7 +1,8 @@
-import React from 'react';
 import { X, CheckCircle, Clock, Users, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { ITrainerByIdView } from '@/interfaces/client/IClientTrainer';
+import { ICurrentTrainerContractView } from '@/interfaces/shared/contract';
 
 interface BookingConfirmationModalProps {
   isOpen: boolean;
@@ -9,8 +10,8 @@ interface BookingConfirmationModalProps {
   onConfirm: () => void;
   selectedSlot: { time: string; duration: number } | null;
   dateISO: string;
-  trainerData: any;
-  contract: any;
+  trainerData: ITrainerByIdView;
+  contract: ICurrentTrainerContractView;
   isContractExpired: boolean;
   loading?: boolean;
 }

@@ -21,15 +21,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { TrainerService } from "@/services/implementation/trainerServices";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { format, parse } from "date-fns";
 import { useSocket } from "@/hooks/socketio";
 import { RootState } from "@/store/store";
 import { chatEnum } from "@/lib/chat-enum";
 import { Search, Send } from "lucide-react";
+import { format, parse } from "date-fns";
 
 interface Message {
   _id?: string;
@@ -76,7 +75,7 @@ const updateClientLastMessage = (
   chatId: string,
   message: Message
 ): Client[] => {
-  return clients.map(c =>
+  return clients.map((c) =>
     c.chatId === chatId
       ? { ...c, lastMessage: message.text, lastMessageTime: message.time }
       : c
@@ -108,7 +107,7 @@ const ChatInterface: React.FC = () => {
     if (socket && user?._id) {
       socket.on("connect", () => {
         console.log("Socket connected");
-        clients.forEach(client => {
+        clients.forEach((client) => {
           socket.emit("joinChat", client.chatId);
         });
       });
@@ -120,16 +119,21 @@ const ChatInterface: React.FC = () => {
         if (msg.sender === user._id) return;
 
         // Find client associated with the message
-        const client = clients.find(c => c._id === msg.sender);
+        const client = clients.find((c) => c._id === msg.sender);
 
         if (client) {
-          setChatData(prev => ({
+          setChatData((prev) => ({
             ...prev,
-            [client.chatId]: [...(prev[client.chatId] || []), { ...msg, type: "received" }],
+            [client.chatId]: [
+              ...(prev[client.chatId] || []),
+              { ...msg, type: "received" },
+            ],
           }));
 
           // Update last message and time
-          setClients(prev => updateClientLastMessage(prev, client.chatId, msg));
+          setClients((prev) =>
+            updateClientLastMessage(prev, client.chatId, msg)
+          );
         }
       });
 
@@ -150,10 +154,14 @@ const ChatInterface: React.FC = () => {
   const fetchClients = async () => {
     setIsLoadingClients(true);
     try {
-      const response = await TrainerService.getClients(user?._id!);
+      if (!user?._id) {
+        console.error("User ID is missing");
+        return;
+      }
+      const response = await TrainerService.getClients(user._id!);
       setClients(response.data || []);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch clients");
+    } catch (error) {
+      console.log(error);
     } finally {
       setIsLoadingClients(false);
     }
@@ -164,7 +172,7 @@ const ChatInterface: React.FC = () => {
       return;
     }
 
-    setLoadingChats(prev => new Set(prev).add(client.chatId));
+    setLoadingChats((prev) => new Set(prev).add(client.chatId));
 
     try {
       const response = await TrainerService.getChatMessages(client.chatId);
@@ -173,7 +181,7 @@ const ChatInterface: React.FC = () => {
         type: msg.sender === user?._id ? "sent" : "received",
       }));
 
-      setChatData(prev => ({
+      setChatData((prev) => ({
         ...prev,
         [client.chatId]: messages,
       }));
@@ -182,7 +190,7 @@ const ChatInterface: React.FC = () => {
       if (messages.length > 0) {
         const latestMessage = messages[messages.length - 1];
         const currentLastMessageTime = parseLastMessageTime(
-          clients.find(c => c.chatId === client.chatId)?.lastMessageTime
+          clients.find((c) => c.chatId === client.chatId)?.lastMessageTime
         );
         const newMessageTime = parseLastMessageTime(latestMessage.time);
 
@@ -190,13 +198,15 @@ const ChatInterface: React.FC = () => {
           !currentLastMessageTime ||
           (newMessageTime && newMessageTime > currentLastMessageTime)
         ) {
-          setClients(prev => updateClientLastMessage(prev, client.chatId, latestMessage));
+          setClients((prev) =>
+            updateClientLastMessage(prev, client.chatId, latestMessage)
+          );
         }
       }
-    } catch (error: any) {
-      toast.error("Failed to fetch chat messages");
+    } catch (error) {
+      console.log(error);
     } finally {
-      setLoadingChats(prev => {
+      setLoadingChats((prev) => {
         const newSet = new Set(prev);
         newSet.delete(client.chatId);
         return newSet;
@@ -220,19 +230,24 @@ const ChatInterface: React.FC = () => {
         chatId: selectedClient.chatId,
       };
 
-      setChatData(prev => ({
+      setChatData((prev) => ({
         ...prev,
-        [selectedClient.chatId]: [...(prev[selectedClient.chatId] || []), newMessage],
+        [selectedClient.chatId]: [
+          ...(prev[selectedClient.chatId] || []),
+          newMessage,
+        ],
       }));
 
-      setClients(prev => updateClientLastMessage(prev, selectedClient.chatId, newMessage));
+      setClients((prev) =>
+        updateClientLastMessage(prev, selectedClient.chatId, newMessage)
+      );
 
       socket.emit(chatEnum.sendMessage, {
         chatId: selectedClient.chatId,
         sender: user._id,
         text: message,
       });
-     
+
       socket.emit(chatEnum.sendNotification, {
         sender: user._id,
         receiver: selectedClient._id,
@@ -246,7 +261,9 @@ const ChatInterface: React.FC = () => {
 
   // Filter and sort clients by most recent message
   const filteredClients = clients
-    .filter(client => client.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((client) =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     .sort((a, b) => {
       const timeA = parseLastMessageTime(a.lastMessageTime);
       const timeB = parseLastMessageTime(b.lastMessageTime);
@@ -257,7 +274,9 @@ const ChatInterface: React.FC = () => {
       return timeB.getTime() - timeA.getTime(); // Sort by most recent
     });
 
-  const currentMessages = selectedClient ? chatData[selectedClient.chatId] || [] : [];
+  const currentMessages = selectedClient
+    ? chatData[selectedClient.chatId] || []
+    : [];
 
   return (
     <div className="flex h-[80vh] bg-[#1e1e1e] rounded-lg border border-gray-700 overflow-hidden">
@@ -333,13 +352,19 @@ const ChatInterface: React.FC = () => {
             {/* Chat Header */}
             <div className="p-4 border-b border-gray-700 flex items-center gap-4 bg-gray-800">
               <Avatar className="w-10 h-10 border-2 border-[#6366f1]">
-                <AvatarImage src={selectedClient.photo} alt={selectedClient.name} />
+                <AvatarImage
+                  src={selectedClient.photo}
+                  alt={selectedClient.name}
+                />
                 <AvatarFallback>{selectedClient.name[0] || "U"}</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold text-white">{selectedClient.name}</h3>
+                <h3 className="font-semibold text-white">
+                  {selectedClient.name}
+                </h3>
                 <p className="text-sm text-gray-400">
-                  {selectedClient.planName} • {selectedClient.sessionsRemaining} sessions remaining
+                  {selectedClient.planName} • {selectedClient.sessionsRemaining}{" "}
+                  sessions remaining
                 </p>
               </div>
             </div>
@@ -408,7 +433,9 @@ const ChatInterface: React.FC = () => {
               <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center">
                 <Search className="w-12 h-12" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Select a client to chat</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Select a client to chat
+              </h3>
               <p>Choose a client from the list to start messaging</p>
             </div>
           </div>

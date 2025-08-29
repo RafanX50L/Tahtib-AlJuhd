@@ -6,9 +6,7 @@ import {
   FaSave,
   FaTimes,
   FaUser,
-  FaEnvelope,
   FaPhone,
-  FaCalendar,
   FaMapMarkerAlt,
 } from "react-icons/fa";
 
@@ -22,23 +20,22 @@ export interface ClientProfile {
 }
 
 interface ProfilePictureProps {
-  user: {
-    profileImage?: string;
-    [key: string]: any; // Adjust to match your actual user shape
-  };
+  user: ClientProfile;
   onPictureUpdate: (file: File) => void;
 }
 
-
-const ProfilePicture:React.FC<ProfilePictureProps> = ({ user, onPictureUpdate }) => {
+const ProfilePicture: React.FC<ProfilePictureProps> = ({
+  user,
+  onPictureUpdate,
+}) => {
   console.log("user", user);
-  const [profilePicFile, setProfilePicFile] = useState(null);
-  const [tempProfilePic, setTempProfilePic] = useState(null);
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [tempProfilePic, setTempProfilePic] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e:any) => {
-    const file = e.target.files[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (
       file &&
       ["image/jpeg", "image/png", "image/webp"].includes(file.type) &&
@@ -69,12 +66,13 @@ const ProfilePicture:React.FC<ProfilePictureProps> = ({ user, onPictureUpdate })
         setMessage("Profile picture updated successfully!");
         setProfilePicFile(null);
         setTempProfilePic(null);
-        document.querySelector('input[type="file"]').value = "";
+        document.querySelector<HTMLInputElement>('input[type="file"]')?.value =
+          "";
       } else {
         setMessage("Failed to upload image.");
       }
     } catch (error) {
-      setMessage("Something went wrong uploading the image.");
+      setMessage(`Something went wrong uploading the image. : ${error}`);
     } finally {
       setLoading(false);
     }
@@ -157,10 +155,10 @@ interface ProfileInfoFieldProps {
   type?: string;
   isEditing: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  formData: Record<string, any>; // or a more specific type if available
+  formData: ClientProfile; // or a more specific type if available
 }
 
-const ProfileInfoField:React.FC<ProfileInfoFieldProps> = ({
+const ProfileInfoField: React.FC<ProfileInfoFieldProps> = ({
   icon: Icon,
   label,
   value,
@@ -246,7 +244,7 @@ const ProfilePage = () => {
         setIsEditing(false);
       }
     } catch (error) {
-      setMessage("Error updating profile.");
+      setMessage(`Error updating profile : ${error} `);
     } finally {
       setLoading(false);
     }
@@ -332,7 +330,7 @@ const ProfilePage = () => {
               onChange={handleChange}
               formData={formData}
             />
-           
+
             <ProfileInfoField
               icon={FaPhone}
               label="Phone Number"
@@ -343,7 +341,7 @@ const ProfilePage = () => {
               onChange={handleChange}
               formData={formData}
             />
-            
+
             <ProfileInfoField
               icon={FaMapMarkerAlt}
               label="Address"

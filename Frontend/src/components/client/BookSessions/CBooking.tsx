@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import {
   fetchAvailability,
   bookSlot,
@@ -11,7 +11,6 @@ import {
 } from "@/store/slices/schedulingSlice";
 import { format, addDays, isSameDay, startOfDay } from "date-fns";
 import { ClientService } from "@/services/implementation/clientServices";
-import { Button } from "@/components/ui/button";
 import {
   Calendar,
   Clock,
@@ -29,22 +28,25 @@ import { InlineWidget } from "react-calendly";
 import { useSocket } from "@/hooks/socketio";
 import { chatEnum } from "@/lib/chat-enum";
 import BookingConfirmationModal from "./BookingConformationModal";
+import { ICurrentTrainerContractView } from "@/interfaces/shared/contract";
+import { ITrainerByIdView } from "@/interfaces/client/IClientTrainer";
 
 export default function CBooking() {
   const socket = useSocket();
-  const dispatch = useDispatch<any>();
+  const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
-  const { trainerId, dateISO, slots, loading, bookingStatus, calendlyLink } =
-    useSelector((s: RootState) => s.scheduling);
+  const { trainerId, dateISO, slots, loading, calendlyLink } = useSelector(
+    (s: RootState) => s.scheduling
+  );
   const authUser = useSelector((s: RootState) => s.auth.user);
-  const [contract, setContract] = useState<any>(null);
+  const [contract, setContract] = useState<ICurrentTrainerContractView>();
   const { user } = useSelector((s: RootState) => s.auth);
   const [contractLoading, setContractLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{
     time: string;
     duration: number;
   } | null>(null);
-  const [trainerData, setTrainerData] = useState<any>(null);
+  const [trainerData, setTrainerData] = useState<ITrainerByIdView>();
   const [modalOpen, setModalOpen] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -62,10 +64,10 @@ export default function CBooking() {
 
   // Convert 24-hour time (HH:mm) to 12-hour time with AM/PM
   const formatTime12Hour = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
+    const [hours, minutes] = time.split(":").map(Number);
+    const period = hours >= 12 ? "PM" : "AM";
     const hours12 = hours % 12 || 12; // Convert 0 to 12 for midnight
-    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+    return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
 
   useEffect(() => {
@@ -85,7 +87,10 @@ export default function CBooking() {
         setTrainerData(data);
         const link = data?.calendlyLink || data?.trainer?.calendlyLink;
         if (link) dispatch(setCalendlyLink(link));
-      } catch (_) {}
+      } catch (err: unknown) {
+        const error = err as { message: string };
+        toast.error(error.message);
+      }
     })();
   }, [trainerId, dispatch]);
 
@@ -135,20 +140,24 @@ export default function CBooking() {
         contractId: contract.id,
       })
     );
-    if ((res as any).meta?.requestStatus === "fulfilled") {
+    if (res.meta?.requestStatus === "fulfilled") {
       dispatch(fetchAvailability({ trainerId, dateISO }));
       setModalOpen(false);
-      setContract((prev: any) => ({
-        ...prev,
-        sessionsRemaining: prev.sessionsRemaining - 1,
-      }));
+      setContract((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          sessionsRemaining: prev.sessionsRemaining - 1,
+        };
+      });
+
       toast.success(
         "🎉 Session booked successfully! You'll receive a confirmation email soon."
       );
       socket?.emit(chatEnum.sendNotification, {
         sender: user?._id,
         receiver: trainerId,
-        role: 'trainer',
+        role: "trainer",
         text: `New Session Bookings by ${user?.name}`,
         category: "session_booked",
       });
@@ -175,13 +184,13 @@ export default function CBooking() {
   const getPlanStatusColor = () => {
     if (isContractExpired)
       return "from-[#FF4757]/20 to-[#FF6B7A]/20 border-[#FF4757]/30";
-    if (contract?.sessionsRemaining <= 2)
+    if (contract && contract?.sessionsRemaining <= 2)
       return "from-[#FF9F43]/20 to-[#FFBB33]/20 border-[#FF9F43]/30";
     return "from-[#5D5FEF]/20 to-[#FF4757]/20 border-[#5D5FEF]/30";
   };
 
   const getPlanStatusIcon = () => {
-    if (isContractExpired || contract?.sessionsRemaining <= 2)
+    if (isContractExpired || (contract && contract?.sessionsRemaining <= 2))
       return AlertCircle;
     return Users;
   };
@@ -334,13 +343,11 @@ export default function CBooking() {
                 <InlineWidget
                   url={calendlyLink}
                   styles={{ height: "700px" }}
-                  pageSettings={
-                    {
-                      backgroundColor: "1E2235",
-                      primaryColor: "5D5FEF",
-                      textColor: "FFFFFF",
-                    } as any
-                  }
+                  pageSettings={{
+                    backgroundColor: "1E2235",
+                    primaryColor: "5D5FEF",
+                    textColor: "FFFFFF",
+                  }}
                 />
               </div>
             )}
@@ -542,9 +549,9 @@ export default function CBooking() {
           }
           selectedSlot={selectedSlot}
           dateISO={dateISO}
-          trainerData={trainerData}
-          contract={contract}
-          isContractExpired={isContractExpired}
+          trainerData={trainerData as ITrainerByIdView}
+          contract={contract as ICurrentTrainerContractView}
+          isContractExpired={isContractExpired as boolean}
           loading={bookingLoading}
         />
       </div>
