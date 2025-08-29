@@ -66,7 +66,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
         setMessage("Profile picture updated successfully!");
         setProfilePicFile(null);
         setTempProfilePic(null);
-        document.querySelector('input[type="file"]').value = null ;
+        document.querySelector('input[type="file"]').value = null;
       } else {
         setMessage("Failed to upload image.");
       }
@@ -145,6 +145,9 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
 };
 import { ChangeEvent } from "react";
 import { IconType } from "react-icons"; // assuming you're using react-icons
+import { clientProfileSchema } from "./ClientProfileValidationSchema";
+import { IClient } from "@/components/admin/ClientManagment/ClientTable";
+import z, { ZodError } from "zod";
 
 interface ProfileInfoFieldProps {
   icon: IconType;
@@ -154,7 +157,8 @@ interface ProfileInfoFieldProps {
   type?: string;
   isEditing: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  formData: ClientProfile; // or a more specific type if available
+  formData: ClientProfile;
+  error?: string; // 👈 new
 }
 
 const ProfileInfoField: React.FC<ProfileInfoFieldProps> = ({
@@ -166,6 +170,7 @@ const ProfileInfoField: React.FC<ProfileInfoFieldProps> = ({
   isEditing,
   onChange,
   formData,
+  error,
 }) => (
   <div className="bg-[#1A1F2E] border border-[#2A3042] rounded-xl p-4 hover:border-[#5D5FEF]/30 transition-all">
     <div className="flex items-center gap-3 mb-2">
@@ -175,14 +180,21 @@ const ProfileInfoField: React.FC<ProfileInfoFieldProps> = ({
       <span className="text-[#A0A7B8] text-sm font-medium">{label}</span>
     </div>
     {isEditing ? (
-      <input
-        type={type}
-        name={name}
-        value={formData[name] || ""}
-        onChange={onChange}
-        className="w-full bg-[#12151E] border border-[#2A3042] rounded-lg px-4 py-3 text-white placeholder-[#A0A7B8] focus:border-[#5D5FEF] focus:outline-none transition-all"
-        placeholder={`Enter ${label.toLowerCase()}`}
-      />
+      <>
+        <input
+          type={type}
+          name={name}
+          value={formData[name] || ""}
+          onChange={onChange}
+          className={`w-full bg-[#12151E] border rounded-lg px-4 py-3 text-white placeholder-[#A0A7B8] focus:outline-none transition-all ${
+            error
+              ? "border-red-500 focus:border-red-500"
+              : "border-[#2A3042] focus:border-[#5D5FEF]"
+          }`}
+          placeholder={`Enter ${label.toLowerCase()}`}
+        />
+        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
+      </>
     ) : (
       <p className="text-white font-medium text-lg">
         {value || "Not provided"}
@@ -197,7 +209,11 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true); // Start with loading true
-  const [error, setError] = useState<string | null>(null); // Track fetch errors
+  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{
+    //eslint-disable-line
+    [key in keyof ClientProfile]?: string;
+  }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -234,16 +250,32 @@ const ProfilePage = () => {
     if (!formData) return;
     setLoading(true);
     try {
+      const validated = clientProfileSchema.parse(formData);
       //   await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = await ClientService.updateClientProfile(formData);
+      const response = await ClientService.updateClientProfile(
+        validated as ClientProfile
+      );
       // Simulate API call
       if (response.success) {
         setUser({ ...formData });
         setMessage("Profile updated successfully!");
         setIsEditing(false);
       }
-    } catch (error) {
-      setMessage(`Error updating profile : ${error} `);
+    } catch (error: any) {//eslint-disable-line
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string[]> = {};
+
+        error.errors.forEach((issue) => {
+          const field = issue.path[0]; // e.g. "name", "address"
+          if (!fieldErrors[field]) {
+            fieldErrors[field] = [];
+          }
+          fieldErrors[field].push(issue.message);
+        });
+         setErrors(fieldErrors);
+      } else {
+        setMessage(`Something went wrong while updating profile: ${error}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -324,10 +356,11 @@ const ProfilePage = () => {
               icon={FaUser}
               label="Full Name"
               value={user.name}
-              name="name" // Changed to match ClientProfile interface
+              name="name"
               isEditing={isEditing}
               onChange={handleChange}
               formData={formData}
+              error={errors.name}
             />
 
             <ProfileInfoField
@@ -339,6 +372,7 @@ const ProfilePage = () => {
               isEditing={isEditing}
               onChange={handleChange}
               formData={formData}
+              error={errors.phoneNumber}
             />
 
             <ProfileInfoField
@@ -349,6 +383,7 @@ const ProfilePage = () => {
               isEditing={isEditing}
               onChange={handleChange}
               formData={formData}
+              error={errors.address}
             />
           </div>
 

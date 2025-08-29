@@ -29,27 +29,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 import { z } from "zod";
+import { PlanSchema } from "./planSchema";
 
-export const PlanSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters long").trim(),
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters long")
-    .trim(),
-  sessionsPerWeek: z
-    .number()
-    .min(1, "Sessions per week must be between 1 and 14")
-    .max(14, "Sessions per week must be between 1 and 14"),
-  durationWeeks: z
-    .number()
-    .min(1, "Duration must be between 1 and 52 weeks")
-    .max(52, "Duration must be between 1 and 52 weeks"),
-  price: z.number().optional(),
-  trainer: z.string().optional(),
-  isActive: z.boolean().optional(),
-  isBooked: z.boolean().optional(),
-  id: z.string().optional(),
-});
+
 
 export const validatePlan = (data: Partial<IPlan>) => {
   try {

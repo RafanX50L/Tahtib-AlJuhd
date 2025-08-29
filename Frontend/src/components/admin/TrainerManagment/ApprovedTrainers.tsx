@@ -29,6 +29,21 @@ export interface TrainerCardDTO {
     proofFile?: string;
   }[];
 }
+export function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+
+    return debouncedValue;
+  }
 const ApprovedTrainersTable = () => {
   const [trainers, setTrainers] = useState<TrainerCardDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,21 +107,7 @@ const ApprovedTrainersTable = () => {
       ? "text-red-400 bg-red-200/20"
       : "text-green-400 bg-green-200/20";
   };
-  function useDebounce<T>(value: T, delay: number): T {
-    const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-    useEffect(() => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value);
-      }, delay);
-
-      return () => {
-        clearTimeout(handler);
-      };
-    }, [value, delay]);
-
-    return debouncedValue;
-  }
+   
 
   // const getExpertiseStyle = (level?: string) => {
   //   switch (level) {
