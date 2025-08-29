@@ -1,6 +1,6 @@
 import { generateSignedUrl } from "@/utils/s3Storage.utils";
 
-interface TrainerData{
+export interface TrainerData{
     id: string;
     name: string;
     speciality: string[];

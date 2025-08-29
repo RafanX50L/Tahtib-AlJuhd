@@ -1,10 +1,10 @@
 import { HttpResponse } from "@/constants/response-message.constant";
 import { HttpStatus } from "@/constants/status.constant";
-import { IAdminClinetController } from "@/core/interface/controllers/admin/IAdmin.Clinet.Controller";
+import { IAdminClientController } from "@/core/interface/controllers/admin/IAdmin.Clinet.Controller";
 import { IAdminClientService } from "@/core/interface/services/admin/IAdmin.Clinet.Service";
 import { Request, Response, NextFunction } from "express";
 
-export class AdminClinetController implements IAdminClinetController{
+export class AdminClinetController implements IAdminClientController{
     constructor(
         private readonly _adminClinetService: IAdminClientService
     ) {}

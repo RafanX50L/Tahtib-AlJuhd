@@ -12,9 +12,9 @@ export interface IPlanView {
   createdAt?: string;
 }
 export interface IPlanService {
-    createPlan(plan: IPlan): Promise<IPlan>;
+    createPlan(plan: IPlan): Promise<void>;
     getPlansByTrainer(trainerId: string): Promise<IPlanView[]>;
-    getPlanById(id: string): Promise<IPlan | null>;
-    updatePlan(id: string, updates: Partial<IPlan>): Promise<IPlanView | null>;
-    deactivatePlan(id: string): Promise<IPlan | null>;
+    getPlanById(id: string): Promise<IPlanView | null>;
+    updatePlan(id: string, updates: Partial<IPlanView>): Promise<void>;
+    deactivatePlan(id: string): Promise<void>;
 }

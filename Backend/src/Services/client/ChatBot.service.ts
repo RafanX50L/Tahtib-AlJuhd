@@ -5,6 +5,7 @@ import { IChatBotSession } from '@/core/interface/model/IChatBotSession.model';
 import { IChatBotnteraction } from '@/core/interface/model/IChatBotInteraction.model';
 import { IChatBotService } from '@/core/interface/services/client/Iclient.ChatBot.service';
 import generateChatBotResponse from '@/utils/ChatBot.gemini';
+import { ChatBotDTO, IChatBotInteractionView, IChatBotSessionView } from '@/dtos/client/ChatBotDTO';
 // If you have a separate plain interface, import it here,import { IChatBotnteraction } from '@/core/interface/model/IChatBotInteraction.model';
 
 export class ChatBotService implements IChatBotService {
@@ -14,11 +15,12 @@ export class ChatBotService implements IChatBotService {
     private readonly _chatBotInteractionRepo: IChatBotInteractionRepository,
   ) {}
 
-  async getSessions(clientId: string): Promise<IChatBotSession[]> {
-    return this._chatBotSessionRepo.findByClientId(clientId);
+  async getSessions(clientId: string): Promise<IChatBotSessionView[]> {
+    const result = await this._chatBotSessionRepo.findByClientId(clientId);
+    return await ChatBotDTO.mapToChatSessionData(result);
   }
 
-  async createSession(clientId: string, title?: string): Promise<IChatBotSession> {
+  async createSession(clientId: string, title?: string): Promise<IChatBotSessionView> {
     // const sessionId = uuidv4();
     const createdAt = new Date();
     const session: IChatBotSession = {
@@ -29,19 +31,27 @@ export class ChatBotService implements IChatBotService {
       createdAt,
       messageCount: 0,
     } as IChatBotSession;
-    return this._chatBotSessionRepo.create(session);
+    const result = await this._chatBotSessionRepo.create(session);
+    return {
+      id: result._id.toString(),
+      lastInteraction: result.lastInteraction,
+      createdAt: result.createdAt.toISOString(),
+      title: result.title || undefined,
+      messageCount: result.messageCount,
+    };
   }
-
 
   async deleteSession(sessionId: string): Promise<void> {
     await this._chatBotSessionRepo.delete(sessionId);
+    return;
   }
 
-  async getInteractions(sessionId: string): Promise<IChatBotnteraction[]> {
-    return this._chatBotInteractionRepo.findBySessionId(sessionId);
+  async getInteractions(sessionId: string): Promise<IChatBotInteractionView[]> {
+    const result = await this._chatBotInteractionRepo.findBySessionId(sessionId);
+    return await ChatBotDTO.mapToChatBotInteractionData(result);
   }
 
-  async sendMessage(sessionId: string, message: string): Promise<IChatBotnteraction[]> {
+  async sendMessage(sessionId: string, message: string): Promise<IChatBotInteractionView[]> {
     const now = new Date();
 
     const userInteraction: IChatBotnteraction = {
@@ -50,8 +60,10 @@ export class ChatBotService implements IChatBotService {
       isUser: true,
       createdAt: now,
     } as IChatBotnteraction;
+
     const history = await this._chatBotInteractionRepo.findBySessionId(sessionId);
-    const botResponse = await generateChatBotResponse(history,message);
+    const botResponse = await generateChatBotResponse(history, message);
+
     const botInteraction: IChatBotnteraction = {
       sessionId,
       content: botResponse,
@@ -67,7 +79,7 @@ export class ChatBotService implements IChatBotService {
       messageCount: await this.getMessageCount(sessionId) + 2,
     });
 
-    return [userInteraction, botInteraction];
+    return ChatBotDTO.mapToChatBotInteractionData([userInteraction, botInteraction]);
   }
 
   private async getMessageCount(sessionId: string): Promise<number> {

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node src/server.ts",
     "dev": "ts-node-dev --respawn -r tsconfig-paths/register src/server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -33,7 +34,8 @@
     "socket.io": "^4.8.1",
     "tsconfig-paths": "^4.2.0",
     "uuid": "^11.1.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",

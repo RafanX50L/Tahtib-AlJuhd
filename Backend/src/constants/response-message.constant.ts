@@ -84,5 +84,8 @@ export const HttpResponse = {
     CHAT_BOT_SESSION_DELETION_SUCCESSFULL: "Chat bot session deleted successfully",
 
     // availability
-    SLOTS_CONFLICT : "Slots conflict with existing sessions"
+    SLOTS_CONFLICT : "Slots conflict with existing sessions",
+    SLOT_BOOKING_SUCCESSFULL: "Slot booking successfull",
+    SLOT_CANCELLING_SUCCESSFULL: "Slot canceling successfull",
+
 };

@@ -50,4 +50,7 @@ export const env = {
   get TRAINER_DASHBOARD_URL() {
     return process.env.TRAINER_DASHBOARD_URL;
   },
+  get ERROR_LOG_RETENTION_PERIOD(){
+    return process.env.ERROR_LOG_RETENTION_PERIOD;
+  }
 };

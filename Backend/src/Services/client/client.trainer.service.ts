@@ -6,11 +6,12 @@ import { ITrainerPersonalizationRepository } from "@/core/interface/repositories
 import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
 import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
 import { ISessionRepository } from "@/core/interface/repositories/ISession.repository";
-import { IClientTrainerService } from "@/core/interface/services/client/IClinet.Trainer.service";
+import {  IClientTrainerService, ITrainerByIdResult } from "@/core/interface/services/client/IClinet.Trainer.service";
 import { ClientTrainerDTO } from "@/dtos/client/TrainerDTO";
 import { generateSignedUrl } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";
 import { differenceInHours } from "date-fns";
+import { HttpResponse } from "@/constants/response-message.constant";
 
 export class clientTrainerService implements IClientTrainerService{
     constructor(
@@ -65,7 +66,7 @@ export class clientTrainerService implements IClientTrainerService{
             total: result.total
         };
     }
-    async getTrainerById(id: string) {
+    async getTrainerById(id: string):Promise<ITrainerByIdResult> {
         console.log(id);
         const user = (await this._userRepo.findById(new Types.ObjectId(id))) ;
         const trainer = await this._trainerRepo.getTrainerProfileData(user.personalizationId.toString());
@@ -82,7 +83,7 @@ export class clientTrainerService implements IClientTrainerService{
             location: data.basicInfo.location,
             price: data.basicInfo.weeklySalary,
             plans: plans.map(plan => ({
-                _id: plan._id,
+                _id: plan._id.toString(),
                 name: plan.title, // e.g., "4 Sessions/Month"
                 price: plan.price, // e.g., 500
                 sessionsPerWeek: plan.sessionsPerWeek, // e.g., 4
@@ -145,10 +146,10 @@ export class clientTrainerService implements IClientTrainerService{
         session.status = 'booked';
         session.meetingLink = `https://zoom.us/j/${Math.random().toString(36).substring(2, 15)}`;
 
-        const updatedSession = await this._sessionRepo.update(session.id, session);
+        await this._sessionRepo.update(session.id, session);
         await this._contractRepo.decrementSessionsRemaining(contract._id!.toString());
 
-        return updatedSession;
+        return HttpResponse.SLOT_BOOKING_SUCCESSFULL;
     }
 
     async cancelSession(clientId: string, sessionId: string) {
@@ -177,7 +178,7 @@ export class clientTrainerService implements IClientTrainerService{
             session.status = 'canceled';
         }
 
-        const updatedSession = await this._sessionRepo.update(session.id, session);
-        return updatedSession;
+        await this._sessionRepo.update(session.id, session);
+        return HttpResponse.SLOT_CANCELLING_SUCCESSFULL;
     }
 };

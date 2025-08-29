@@ -6,7 +6,7 @@ import { ITrainerInterviewRepository } from "@/core/interface/repositories/ITrai
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
-import { ITrainerPersonalizationService } from "@/core/interface/services/trainer/ITrainer.Personalization.Service";
+import { IPendingApplicationReturnType, ITrainerPersonalizationService } from "@/core/interface/services/trainer/ITrainer.Personalization.Service";
 import { TrainerDTO, TrainerProfileDTO } from "@/dtos/trainer/TrainerDTO";
 import { createHttpError } from "@/utils";
 import logger from "@/utils/logger.utils";
@@ -179,7 +179,7 @@ export class TrainerPersonalizationService
     }
   }
 
-  async getPendingApplicationDetails(uesrId: string) {
+  async getPendingApplicationDetails(uesrId: string):Promise<IPendingApplicationReturnType> {
     logger.info("entered for data serviece");
     const { basicInfo, interviewDetailsId } = (
       await this._personalizationRepository.findOne({ userId: uesrId })
@@ -191,8 +191,8 @@ export class TrainerPersonalizationService
       basicInfo,
       interviewDetails: interview
         ? {
-            adminId: interview.adminId,
-            trainerId: interview.trainerId,
+            adminId: interview.adminId.toString(),
+            trainerId: interview.trainerId.toString(),
             startTime: interview.startTime,
             endTime: interview.endTime,
             date: interview.date,

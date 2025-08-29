@@ -8430,3 +8430,465 @@
     at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
     at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
     at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 14:49:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 14:49:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 14:49:10 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 14:49:27 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:04:38 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:04:55 [[31merror[39m]: Error: Slots conflict with existing sessions
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at SchedulingService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:143:36)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\domain\Scheduling.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:06:12 [[31merror[39m]: Error: User is blocked
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:318:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:06:12 [[31merror[39m]: Error: Refresh token not found
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthController.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:198:30)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:4:12)
+    at AuthController.refreshToken (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:172:16)
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\USER\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\USER\node_modules\express\lib\router\route.js:119:3)
+2025-08-28 15:06:17 [[31merror[39m]: Error: User is Blocked
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:76:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+2025-08-28 15:06:30 [[31merror[39m]: Error: User is Blocked
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:76:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+2025-08-28 15:11:01 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:11:01 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:33:56 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:33:56 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:33:56 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:33:56 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:33:57 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 15:34:00 [[31merror[39m]: Error: Token not provided
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:30:24
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 15:34:00 [[31merror[39m]: Error: Token not provided
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:30:24
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 15:34:00 [[31merror[39m]: Error: Refresh token not found
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthController.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:198:30)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:4:12)
+    at AuthController.refreshToken (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\auth\auth.controller.ts:172:16)
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\USER\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\USER\node_modules\express\lib\router\route.js:119:3)
+2025-08-28 16:07:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 16:07:40 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 16:52:30 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 16:52:30 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 16:52:57 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at ClientWeeklyChallengeService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:57:7)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:4:12)
+    at ClientWeeklyChallengeService.getWeeklyChallengeById (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:46:16)
+    at ClientWeeklyChallengeController.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\client\client.weeklyChallenge.controller.ts:28:72)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\client\client.weeklyChallenge.controller.ts:8:71
+2025-08-28 16:53:33 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at ClientWeeklyChallengeService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:57:7)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:4:12)
+    at ClientWeeklyChallengeService.getWeeklyChallengeById (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:46:16)
+    at ClientWeeklyChallengeController.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\client\client.weeklyChallenge.controller.ts:28:72)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Controller\client\client.weeklyChallenge.controller.ts:8:71
+2025-08-28 17:14:16 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 17:36:57 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 17:36:57 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 17:36:57 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 18:09:35 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at UserWeeklyChallengeRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:28:20)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:4:12)
+    at UserWeeklyChallengeRepository.markChallengeDayComplete (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:21:16)
+    at ClientWeeklyChallengeService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:136:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:8:71
+2025-08-28 18:16:48 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at UserWeeklyChallengeRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:28:20)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:4:12)
+    at UserWeeklyChallengeRepository.markChallengeDayComplete (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:21:16)
+    at ClientWeeklyChallengeService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:136:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:8:71
+2025-08-28 18:17:18 [[31merror[39m]: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+    at new ObjectId (C:\Users\USER\node_modules\bson\src\objectid.ts:120:15)
+    at UserWeeklyChallengeRepository.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:28:20)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:4:12)
+    at UserWeeklyChallengeRepository.markChallengeDayComplete (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Repository\UserWeeklyChallenge.repository.ts:21:16)
+    at ClientWeeklyChallengeService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:136:47)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.weeklyChallenge.service.ts:8:71
+2025-08-28 18:26:05 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 18:45:37 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 18:45:37 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 18:45:37 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 19:01:05 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 19:01:05 [[31merror[39m]: TypeError: Cannot read properties of undefined (reading 'day1')
+    at Function.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:7:11)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:4:12)
+    at Function.mapToWorkoutData (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:15:16)
+    at ClientWorkoutPlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:35:41)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 19:07:52 [[31merror[39m]: TypeError: Cannot read properties of undefined (reading 'day1')
+    at Function.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:7:11)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:4:12)
+    at Function.mapToWorkoutData (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:15:16)
+    at ClientWorkoutPlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:35:41)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 19:12:07 [[31merror[39m]: TypeError: Cannot read properties of undefined (reading 'day1')
+    at Function.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:7:11)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:4:12)
+    at Function.mapToWorkoutData (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:15:16)
+    at ClientWorkoutPlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:35:41)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 19:14:17 [[31merror[39m]: TypeError: Cannot read properties of undefined (reading 'day1')
+    at Function.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:7:11)
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:4:12)
+    at Function.mapToWorkoutData (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\dtos\client\WorkoutsDTO.ts:15:16)
+    at ClientWorkoutPlanService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:35:41)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\client\client.workoutPlan.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-28 19:17:42 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 19:35:51 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\USER\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\USER\node_modules\express\lib\router\route.js:119:3)
+2025-08-28 20:20:16 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 20:20:16 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-28 20:44:46 [[31merror[39m]: Error: Token expired
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:39:26
+    at Generator.next (<anonymous>)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:8:71
+    at new Promise (<anonymous>)
+    at __awaiter (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:4:12)
+    at C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\middleware\verify.token.middleware.ts:26:73
+    at Layer.handle [as handle_request] (C:\Users\USER\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\USER\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\USER\node_modules\express\lib\router\index.js:286:9
+2025-08-29 11:34:24 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-08-29 11:54:14 [[31merror[39m]: Error: Invalid token version
+    at createHttpError (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\utils\http-error.util.ts:12:12)
+    at AuthService.<anonymous> (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:322:28)
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\USER\OneDrive\Documents\brocamb\Project 2\Tahtib Al Juhd\Backend\src\Services\auth\auth.service.ts:5:58)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)

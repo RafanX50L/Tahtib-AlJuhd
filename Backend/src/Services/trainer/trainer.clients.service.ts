@@ -5,7 +5,7 @@ import IUser from "@/core/interface/model/IUser.model";
 import { IChatRepository } from "@/core/interface/repositories/IChat.repository";
 import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
-import { ITrainerClientService } from "@/core/interface/services/trainer/ITrainer.Clients.Service";
+import { IGetClentInterface, ITrainerClientService } from "@/core/interface/services/trainer/ITrainer.Clients.Service";
 import { generateSignedUrl } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";
 
@@ -18,7 +18,7 @@ export class TrainerClientService implements ITrainerClientService {
     private readonly _userfileRepo: IUserFileRepository
   ) {}
 
-  async getClients(trainerId: string) {
+  async getClients(trainerId: string): Promise<IGetClentInterface[]> {
     const contracts = await this._contractRepo.findActiveContractsByTrainerId(trainerId);
     console.log(contracts);
     return Promise.all(contracts.map(async (contract) => {
@@ -50,15 +50,12 @@ export class TrainerClientService implements ITrainerClientService {
         } else if (isYesterday) {
           lastMessageTime = `Yesterday, ${time}`;
         } else {
-          const date = messageDate.toLocaleDateString();
-          lastMessageTime = `${date}, ${time}`;
+          lastMessageTime = `${messageDate.toLocaleDateString()}, ${time}`;
         }
-      } else {
-        lastMessageTime = undefined;
       }
 
       return {
-        _id: contract.clientId.id,
+        _id: contract.clientId.id.toString(),
         name: client?.name,
         photo: photoUrl,
         planName: plan?.title || 'Custom Plan',
@@ -72,33 +69,7 @@ export class TrainerClientService implements ITrainerClientService {
     }));
   }
 
-//   async getChatMessages(chatId: string) {
-//     const chat = await this._chatRepo.findChatById(chatId);
-//     if (!chat) {
-//       throw new Error('Chat not found');
-//     }
-//     return chat.messages.map((msg) => ({
-//       text: msg.content,
-//       type: 'received', // Type set in frontend based on senderId
-//       time: `Today, ${msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-//       senderId: msg.senderId.toString(),
-//     }));
-//   }
-
-//   async sendMessage(chatId: string, senderId: string, content: string) {
-//     const chat = await this._chatRepo.addMessage(chatId, senderId, content);
-//     if (!chat) {
-//       throw new Error('Chat not found');
-//     }
-//     const newMessage = chat.messages[chat.messages.length - 1];
-//     return {
-//       text: newMessage.content,
-//       type: 'sent',
-//       time: `Today, ${newMessage.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-//       senderId: newMessage.senderId.toString(),
-//     };
-//   }
-async sendMessage(chatId: string, senderId: string, content: string) {
+  async sendMessage(chatId: string, senderId: string, content: string) {
     const chat = await this._chatRepo.addMessage(chatId, senderId, content);
     if (!chat) {
       throw new Error('Chat not found');

@@ -11,7 +11,6 @@ import { IWorkoutPlanRepository } from "@/core/interface/repositories/IWorkoutPl
 import {  ClientProfileData, IClientPersonalizationService } from "@/core/interface/services/client/IClient.Personalization.Service";
 import { generateFitnessPlan } from "@/utils/gemini1.utils";
 import mongoose, { Types } from "mongoose";
-import { Diet, Workout } from "@/constants/SampleData";
 import { IWorkoutPlan } from "@/core/interface/model/IWorkoutPlan.model";
 import { IDietPlan } from "@/core/interface/model/IDietPlan.model";
 import { IUserFile } from "@/core/interface/model/IUserFile.model";

@@ -17,7 +17,7 @@ import {env} from './config/env.config';
 import {errorHandler} from './middleware/error.middleware';
 
 // cron jobs
-import './utils/createWeeklyChallenge-Corn .utils';
+import '@/utils/createWeeklyChallenge.cron';
 
 //routes
 import authRoutes from '@/routes/auth.routes';

@@ -1,15 +1,7 @@
-// import { createLogger, format, transports } from "winston";
-
-// const { combine, colorize, timestamp, json } = format;
-
-// const logger = createLogger({
-//   level: "debug",
-//   format: combine(colorize(), timestamp(), json()),
-//   transports: [new transports.Console()],
-// });
-
-// export default logger;
+import { env } from '@/config/env.config';
 import { createLogger, format, transports } from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
+
 const { combine, timestamp, printf, colorize, errors } = format;
 
 const logFormat = printf(({ level, message, timestamp, stack }) => {
@@ -26,7 +18,13 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new DailyRotateFile({
+      filename: 'logs/error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      level: 'error',
+      maxFiles: env.ERROR_LOG_RETENTION_PERIOD,
+      zippedArchive: false,
+    }),
   ],
 });
 

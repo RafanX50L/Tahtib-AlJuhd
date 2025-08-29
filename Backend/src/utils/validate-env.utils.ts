@@ -77,4 +77,9 @@ export const validateEnv = () => {
       "AWS_SECRET_ACCESS_KEY is not defined in the environment variables"
     );
   }
+  if (!env.ERROR_LOG_RETENTION_PERIOD) {
+    throw new Error(
+      "ERROR_LOG_RETENTION_PERIOD is not defined in the environment variables"
+    );
+  }
 };
