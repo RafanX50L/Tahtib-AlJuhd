@@ -1,8 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
-import { Search, Plus, MessageSquare } from "lucide-react";
+import {  Plus, MessageSquare } from "lucide-react";
 import SessionItem from "./SessionItem";
 import { IChatBotSessionView } from "@/interfaces/client/IChatBot";
 
@@ -20,7 +19,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   sessions,
   selectedSession,
   searchTerm,
-  onSearchChange,
+  // onSearchChange,
   onNewChat,
   onSelectSession,
   onDeleteSession,
@@ -48,7 +47,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <Plus className="w-3 h-3" />
           </Button>
         </div>
-        <div className="relative">
+        {/* <div className="relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 w-3 h-3" />
           <Input
             type="text"
@@ -57,7 +56,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-7 bg-slate-800 border-slate-700 text-white text-xs h-7 sm:h-8"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Sessions */}

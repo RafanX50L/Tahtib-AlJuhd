@@ -160,6 +160,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
     total: number;
     read: number;
   }>();
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastNotificationRef = useCallback(
@@ -228,11 +229,24 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
   }, [socket, user]);
 
   useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearchTerm(searchTerm);
+  }, 500); // adjust delay as needed
+
+  return () => {
+    clearTimeout(handler);
+  };
+}, [searchTerm]);
+  useEffect(() => {
     if (user?._id) {
       fetchInitialNotifications();
+    }
+  }, [user, debouncedSearchTerm, filterType, sortBy]);
+  useEffect(() => {
+    if (user?._id) {
       fetchBasicDetails();
     }
-  }, [user, searchTerm, filterType, sortBy]);
+  }, []);
 
   const fetchBasicDetails = async () => {
     if (!user?._id) {
@@ -262,7 +276,7 @@ const NotificationsPage = ({ theme, backPath }: NotificationsPageProps) => {
         userId: user._id,
         page: 1,
         limit: ITEMS_PER_PAGE,
-        search: searchTerm,
+        search: debouncedSearchTerm,
         type: filterType === "all" ? undefined : filterType,
         sort: sortBy,
       });

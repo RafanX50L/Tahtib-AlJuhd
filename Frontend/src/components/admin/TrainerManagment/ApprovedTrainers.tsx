@@ -41,13 +41,14 @@ const ApprovedTrainersTable = () => {
     willBlock: false,
   });
   const [totalItems, setTotalItems] = useState(0);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
 
   const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
-        const response = await AdminService.getApprovedTrainers(currentPage,itemsPerPage,searchTerm,);
+        const response = await AdminService.getApprovedTrainers(currentPage,itemsPerPage,debouncedSearchTerm,);
         console.log("approved trainers", response);
         setTrainers(response.data.data ? response.data.data : []);
         setTotalItems(response.total || 0);
@@ -58,7 +59,7 @@ const ApprovedTrainersTable = () => {
     };
 
     fetchTrainers();
-  }, [currentPage, searchTerm]);
+  }, [currentPage, debouncedSearchTerm]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -91,6 +92,21 @@ const ApprovedTrainersTable = () => {
       ? "text-red-400 bg-red-200/20"
       : "text-green-400 bg-green-200/20";
   };
+  function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+
+    return debouncedValue;
+  }
 
   // const getExpertiseStyle = (level?: string) => {
   //   switch (level) {

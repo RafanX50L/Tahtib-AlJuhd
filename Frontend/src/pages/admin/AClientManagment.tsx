@@ -14,15 +14,21 @@ const AClientManagment = () => {
   const [statusFilter, setStatusFilter] = useState<"active" | "blocked" | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [debouncedValue, setDebouncedValue] = useState<string>(searchTerm);
   const itemsPerPage = 5;
-
   useEffect(() => {
-    console.log("Fetching clients with searchTerm:", JSON.stringify(searchTerm)); // Debug log with JSON.stringify to catch special characters
+    const timer = setTimeout(() => {
+      setDebouncedValue(searchTerm);
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
+  useEffect(() => {
     const fetchClientData = async () => {
-      setIsLoading(true);
       try {
         // Sanitize searchTerm to prevent invalid values
-        const sanitizedSearchTerm = searchTerm.trim() === "%7D" || searchTerm.trim() === "}" ? "" : searchTerm.trim();
+        const sanitizedSearchTerm = debouncedValue.trim() === "%7D" || debouncedValue.trim() === "}" ? "" : debouncedValue.trim();
         const response = await AdminService.getAllClients(
           statusFilter,
           sanitizedSearchTerm,
@@ -32,7 +38,6 @@ const AClientManagment = () => {
         if (Array.isArray(response.data?.data)) {
           setClientData(response.data.data);
           setTotalItems(response.data.totalCount || 0);
-          setIsLoading(false);
         } else {
           console.error("Unexpected response format:", response.data);
           toast.error("Failed to load client data: Invalid response format");
@@ -46,7 +51,7 @@ const AClientManagment = () => {
       }
     };
     fetchClientData();
-  }, [statusFilter, searchTerm, currentPage]);
+  }, [statusFilter, debouncedValue, currentPage]);
 
    if (isLoading) {
     return (

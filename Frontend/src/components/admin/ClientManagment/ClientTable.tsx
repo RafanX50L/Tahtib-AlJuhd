@@ -24,25 +24,6 @@ import { AdminService } from "@/services/implementation/adminServices";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 
-// export interface IClientPersonalizationData {
-//   trainer: string;
-//   planStatus: "Active" | "Inactive";
-//   sessionStatus: "Purchased" | "Not Purchased";
-//   userData: {
-//     profilePicture: string;
-//   };
-// }
-
-// export interface IPersonalization {
-//   _id: Types.ObjectId;
-//   userId: Types.ObjectId;
-//   role: "client" | "trainer" | "admin";
-//   data: IClientPersonalizationData;
-//   createdAt: Date;
-//   updatedAt: Date;
-//   __v: number;
-// }
-
 export interface IClient {
   _id: string;
   name: string;

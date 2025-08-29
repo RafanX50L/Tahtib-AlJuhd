@@ -92,7 +92,7 @@ const ChatInterface: React.FC = () => {
   const [message, setMessage] = useState("");
   const [chatData, setChatData] = useState<ChatData>({});
   const [loadingChats, setLoadingChats] = useState<Set<string>>(new Set());
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [isLoadingClients, setIsLoadingClients] = useState(true);
 
   const chatMessagesRef = useRef<HTMLDivElement>(null);
@@ -262,7 +262,7 @@ const ChatInterface: React.FC = () => {
   // Filter and sort clients by most recent message
   const filteredClients = clients
     .filter((client) =>
-      client.name.toLowerCase().includes(searchTerm.toLowerCase())
+      client.name.toLowerCase().includes("".toLowerCase())
     )
     .sort((a, b) => {
       const timeA = parseLastMessageTime(a.lastMessageTime);
@@ -285,13 +285,14 @@ const ChatInterface: React.FC = () => {
         {/* Search Header */}
         <div className="p-4 border-b border-gray-700">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
               placeholder="Search clients..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            /> */}
+            Clients
           </div>
         </div>
 

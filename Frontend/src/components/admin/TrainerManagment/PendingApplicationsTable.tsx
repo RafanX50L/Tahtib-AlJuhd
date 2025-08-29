@@ -17,7 +17,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -32,7 +31,6 @@ import { z } from "zod";
 
 export type FeedbackData = z.infer<typeof feedbackSchema>;
 
-// Define the ITrainerWithPersonalization interface based on the provided structure
 interface ITrainerWithPersonalization {
   id: string;
   name: string;
@@ -55,13 +53,13 @@ interface ITrainerWithPersonalization {
   };
   profilePhoto: string | null;
   resumeFile: string | null;
-  status?: string; // Optional, as it's not in the provided data
+  status?: string; 
   interviewDetails?: {
     startTime?: string;
     endTime?: string;
     roomId?: string;
     result?: FeedbackData;
-  }; // Optional, as it's not in the provided data
+  }; 
 }
 
 const feedbackSchema = z.object({
@@ -80,6 +78,8 @@ interface TrainerTableProps {
     application: ITrainerWithPersonalization,
     action: string
   ) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
 const ratingLabels: Record<number, string> = {
@@ -93,207 +93,200 @@ const ratingLabels: Record<number, string> = {
 const TrainerTable: React.FC<TrainerTableProps> = ({
   applications,
   handleAction,
+  searchTerm,
+  setSearchTerm,
 }) => {
   return (
     <Card className="bg-gray-800 rounded-lg overflow-hidden border-none">
+      <div className="p-4">
+        <input
+          type="text"
+          placeholder="Search trainers..."
+          className="px-4 py-2 bg-gray-700 text-white rounded-md w-full mb-4"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+        />
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-900 hover:bg-gray-900">
+              <TableHead className="text-gray-400">Trainer</TableHead>
+              <TableHead className="text-gray-400">Specialization</TableHead>
+              <TableHead className="text-gray-400">Experience</TableHead>
+              <TableHead className="text-gray-400">Applied On</TableHead>
+              <TableHead className="text-gray-400">Status</TableHead>
+              <TableHead className="text-gray-400 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {applications.map((application) => {
+              const status = application.status?.toLowerCase() || "applied"; 
+              const profilePhoto = application.profilePhoto;
 
-      <Table className="border-none">
-        <TableHeader>
-          <TableRow className="bg-gray-900 hover:bg-gray-900 border-none">
-            <TableHead className="text-gray-400">Trainer</TableHead>
-            <TableHead className="text-gray-400">Specialization</TableHead>
-            <TableHead className="text-gray-400">Experience</TableHead>
-            <TableHead className="text-gray-400">Applied On</TableHead>
-            <TableHead className="text-gray-400">Status</TableHead>
-            <TableHead className="text-gray-400 text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {applications.map((application) => {
-            const status = application.status?.toLowerCase() || "applied"; // Default to "applied" if status is missing
-            const profilePhoto = application.profilePhoto;
+              let statusClass = "bg-purple-200 text-purple-800";
+              let statusText = "Not Scheduled";
 
-            let statusClass = "bg-purple-200 text-purple-800";
-            let statusText = "Not Scheduled";
+              if (status === "interviewed" || status === "interview completed") {
+                statusClass = "bg-yellow-200 text-yellow-800";
+                statusText = "Interview Completed";
+              } else if (
+                status === "interview_scheduled" ||
+                status === "interview scheduled"
+              ) {
+                statusClass = "bg-green-200 text-green-800";
+                statusText = "Interview Scheduled";
+              }
 
-            if (status === "interviewed" || status === "interview completed") {
-              statusClass = "bg-yellow-200 text-yellow-800";
-              statusText = "Interview Completed";
-            } else if (
-              status === "interview_scheduled" ||
-              status === "interview scheduled"
-            ) {
-              statusClass = "bg-green-200 text-green-800";
-              statusText = "Interview Scheduled";
-            }
-
-            return (
-              <TableRow
-                key={application.id}
-                className="bg-gray-800 hover:bg-gray-700"
-              >
-                <TableCell>
-                  <div className="flex items-center">
-                    <div className="relative">
-                      {profilePhoto ? (
-                        <img
-                          className="h-10 w-10 rounded-full"
-                          src={profilePhoto}
-                          alt={application.name}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = "none";
-                            const avatarDiv =
-                              target.previousElementSibling as HTMLDivElement;
-                            avatarDiv.classList.remove("opacity-0");
-                          }}
-                        />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium uppercase">
-                          {application.name?.charAt(0) || "N/A"}
+              return (
+                <TableRow
+                  key={application.id}
+                  className="bg-gray-800 hover:bg-gray-700"
+                >
+                  <TableCell>
+                    <div className="flex items-center">
+                      <div className="relative">
+                        {profilePhoto ? (
+                          <img
+                            className="h-10 w-10 rounded-full"
+                            src={profilePhoto}
+                            alt={application.name}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = "none";
+                              const avatarDiv =
+                                target.previousElementSibling as HTMLDivElement;
+                              avatarDiv.classList.remove("opacity-0");
+                            }}
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium uppercase">
+                            {application.name?.charAt(0) || "N/A"}
+                          </div>
+                        )}
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-white">
+                          {application.name || "N/A"}
                         </div>
-                      )}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-white">
-                        {application.name || "N/A"}
-                      </div>
-                      <div className="text-sm text-gray-400">
-                        {application.email || "N/A"}
+                        <div className="text-sm text-gray-400">
+                          {application.email || "N/A"}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell className="text-white">
-                  {application.specializations?.join(", ") || "N/A"}
-                </TableCell>
-                <TableCell className="text-white">
-                  {application.yearsOfExperience || "N/A"} years
-                </TableCell>
-                <TableCell className="text-gray-400">
-                  {application.dateOfBirth
-                    ? new Date(application.dateOfBirth).toLocaleDateString()
-                    : "N/A"}
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`}
-                  >
-                    {statusText}
-                    {application.status === "interview_scheduled" &&
-                      application.interviewDetails?.startTime && (
-                        <span className="text-blue-600">
-                          {new Date(
-                            application.interviewDetails.startTime
-                          ).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          })}
-                        </span>
-                      )}
-                  </span>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end items-center space-x-2">
-                    <Button
-                      variant="ghost"
-                      className="text-indigo-400 hover:text-indigo-300"
-                      onClick={() => handleAction(application, "View Details")}
+                  </TableCell>
+                  <TableCell className="text-gray-400">
+                    {application.specializations?.join(", ") || "N/A"}
+                  </TableCell>
+                  <TableCell className="text-gray-400">
+                    {application.yearsOfExperience || "N/A"} years
+                  </TableCell>
+                  <TableCell className="text-gray-400">
+                    {application.dateOfBirth
+                      ? new Date(application.dateOfBirth).toLocaleDateString()
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`}
                     >
-                      View
-                    </Button>
-                    {status === "interviewed" ? (
-                      <>
+                      {statusText}
+                      {application.status === "interview_scheduled" &&
+                        application.interviewDetails?.startTime && (
+                          <span className="text-blue-600">
+                            {new Date(
+                              application.interviewDetails.startTime
+                            ).toLocaleTimeString("en-US", {
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })}
+                          </span>
+                        )}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        className="text-indigo-400 hover:text-indigo-300"
+                        onClick={() => handleAction(application, "View Details")}
+                      >
+                        View
+                      </Button>
+                      {status === "interviewed" ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            className="text-indigo-400 hover:text-indigo-300"
+                            onClick={() => handleAction(application, "Approve")}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleAction(application, "Reject")}
+                          >
+                            Reject
+                          </Button>
+                        </>
+                      ) : status === "interview_scheduled" &&
+                        application.interviewDetails?.endTime &&
+                        new Date(application.interviewDetails.endTime).getTime() <=
+                          Date.now() ? (
                         <Button
                           variant="ghost"
                           className="text-indigo-400 hover:text-indigo-300"
-                          onClick={() => handleAction(application, "Approve")}
+                          onClick={() => handleAction(application, "Feedback")}
                         >
-                          Approve
+                          Feedback
                         </Button>
+                      ) : status === "applied" ? (
                         <Button
                           variant="ghost"
-                          className="text-red-400 hover:text-red-300"
-                          onClick={() => handleAction(application, "Reject")}
+                          className="text-indigo-400 hover:text-indigo-300"
+                          onClick={() =>
+                            handleAction(application, "Schedule Review")
+                          }
                         >
-                          Reject
+                          Schedule
                         </Button>
-                      </>
-                    ) : status === "interview_scheduled" &&
-                      application.interviewDetails?.endTime &&
-                      new Date(application.interviewDetails.endTime).getTime() <=
-                        Date.now() ? (
-                      <Button
-                        variant="ghost"
-                        className="text-indigo-400 hover:text-indigo-300"
-                        onClick={() => handleAction(application, "Feedback")}
-                      >
-                        Feedback
-                      </Button>
-                    ) : status === "applied" ? (
-                      <Button
-                        variant="ghost"
-                        className="text-indigo-400 hover:text-indigo-300"
-                        onClick={() =>
-                          handleAction(application, "Schedule Review")
-                        }
-                      >
-                        Schedule
-                      </Button>
-                    ) : status === "interview_scheduled" ? (
-                      <>
-                        {application.interviewDetails?.startTime &&
-                        new Date(
-                          application.interviewDetails.startTime
-                        ).getTime() <= Date.now() ? (
-                          <Button
-                            variant="ghost"
-                            className="text-indigo-400 hover:text-indigo-300"
-                            onClick={() =>
-                              handleAction(application, "Join Room")
-                            }
-                          >
-                            Meet Link
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="ghost"
-                            disabled
-                            className="text-indigo-400 hover:text-indigo-300"
-                          >
-                            Meet Link
-                          </Button>
-                        )}
-                      </>
-                    ) : null}
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                      ) : status === "interview_scheduled" ? (
+                        <>
+                          {application.interviewDetails?.startTime &&
+                          new Date(
+                            application.interviewDetails.startTime
+                          ).getTime() <= Date.now() ? (
+                            <Button
+                              variant="ghost"
+                              className="text-indigo-400 hover:text-indigo-300"
+                              onClick={() =>
+                                handleAction(application, "Join Room")
+                              }
+                            >
+                              Meet Link
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              disabled
+                              className="text-indigo-400 hover:text-indigo-300"
+                            >
+                              Meet Link
+                            </Button>
+                          )}
+                        </>
+                      ) : null}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
     </Card>
-  );
-};
-
-interface SearchBarProps {
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-}
-
-const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm }) => {
-  return (
-    <div className="mb-4">
-      <Input
-        type="text"
-        placeholder="Search trainers by name..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="bg-gray-700 text-white border-gray-600"
-      />
-    </div>
   );
 };
 
@@ -352,6 +345,22 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 const PendingApplicationsTable: React.FC = () => {
   const [applications, setApplications] = useState<
     ITrainerWithPersonalization[]
@@ -374,6 +383,7 @@ const PendingApplicationsTable: React.FC = () => {
   const limit = 5;
   const navigate = useNavigate();
 
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); 
 
   const [feedbackData, setFeedbackData] = useState<FeedbackData>({
     communicationSkills: 0,
@@ -391,7 +401,7 @@ const PendingApplicationsTable: React.FC = () => {
         const trainers = await AdminService.getPendingTrainers(
           currentPage,
           limit,
-          searchTerm
+          debouncedSearchTerm
         );
         const trainerData = trainers.data?.data?.trainers || [];
         const totalCount = trainers.data?.data?.totalCount || 0;
@@ -403,7 +413,7 @@ const PendingApplicationsTable: React.FC = () => {
       }
     };
     fetchData();
-  }, [currentPage, searchTerm]);
+  }, [currentPage, debouncedSearchTerm]);
 
   const handleScheduleInterview = async (id: string) => {
     if (!scheduleDate || !scheduleTime) {
@@ -552,8 +562,6 @@ const PendingApplicationsTable: React.FC = () => {
           Pending Trainer Applications
         </h2>
       </div>
-
-      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       {/* Details Modal */}
       <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
@@ -1037,6 +1045,8 @@ const PendingApplicationsTable: React.FC = () => {
       <TrainerTable
         applications={paginatedApplications}
         handleAction={handleAction}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
       <Pagination
         currentPage={currentPage}
