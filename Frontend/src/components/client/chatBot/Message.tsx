@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Bot, User } from 'lucide-react';
-import { Interaction } from './types';
 import ReactMarkdown from 'react-markdown';
+import { IChatBotInteractionView } from '@/interfaces/client/IChatBot';
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);
@@ -14,7 +14,7 @@ const formatTime = (dateString: string) => {
 };
 
 interface MessageProps {
-  interaction: Interaction;
+  interaction: IChatBotInteractionView;
 }
 
 const Message: React.FC<MessageProps> = ({ interaction }) => {

@@ -1,4 +1,4 @@
-export const chatEnum = {
+export const chatEnum = Object.freeze({
   error: "error",
   joinRoom : "join-room",
   joinChat: "joinChat",
@@ -13,4 +13,6 @@ export const chatEnum = {
   signal : "signal",
   userConnected : "userConnected",
   joinmeet : "join-meet",
-};
+}as const);
+
+export type ChatEvent = keyof typeof chatEnum;

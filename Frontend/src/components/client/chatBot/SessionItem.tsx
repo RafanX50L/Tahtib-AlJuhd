@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Trash2 } from 'lucide-react';
-import { ChatSession } from './types';
+import { IChatBotSessionView } from '@/interfaces/client/IChatBot';
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);
@@ -16,7 +16,7 @@ const formatTime = (dateString: string) => {
 };
 
 interface SessionItemProps {
-  session: ChatSession;
+  session: IChatBotSessionView;
   isSelected: boolean;
   onSelect: (id: string) => void;
   onDelete: (id: string, e: React.MouseEvent) => void;
@@ -35,7 +35,7 @@ const SessionItem: React.FC<SessionItemProps> = ({
           ? 'bg-violet-600/20 border-violet-500/50'
           : 'bg-slate-800/50 border-slate-700 hover:bg-slate-800'
       }`}
-      onClick={() => onSelect(session._id)}
+      onClick={() => onSelect(session.id)}
     >
       <CardContent className="p-1.5 sm:p-2 flex items-center justify-between">
         <div className="flex-1 min-w-0">
@@ -61,7 +61,7 @@ const SessionItem: React.FC<SessionItemProps> = ({
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            onDelete(session._id, e);
+            onDelete(session.id, e);
           }}
           size="icon"
           variant="ghost"

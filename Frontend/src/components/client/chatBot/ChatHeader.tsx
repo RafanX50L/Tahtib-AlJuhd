@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Bot, Plus, Settings, MessageSquare } from 'lucide-react';
-import { ChatSession } from './types';
+import { IChatBotSessionView } from '@/interfaces/client/IChatBot';
 
 interface ChatHeaderProps {
-  session: ChatSession | undefined;
+  session: IChatBotSessionView | undefined;
   onNewChat: () => void;
   setIsSidebarOpen: (open: boolean) => void;
 }

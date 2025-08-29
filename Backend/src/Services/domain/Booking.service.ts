@@ -19,7 +19,7 @@ export class BookingService implements IBookingService {
     private readonly _personalizationRepo: IPersonalizationRepository
   ) {}
 
-  async purchasePlan(clientId: string, trainerId: string, planId: string): Promise<ITrainerClientContract> {
+  async purchasePlan(clientId: string, trainerId: string, planId: string): Promise<string> {
     const plan = await this._planRepo.findById(new Types.ObjectId(planId));
     if (!plan) throw new Error('Plan not found');
 
@@ -70,7 +70,8 @@ export class BookingService implements IBookingService {
       contracts: [...(trainerData.contracts || []), newContract.id!],
     });
 
-    return newContract;
+    return 'new contract';
+    // in the updated version we will asing payment url this returning string is just for now
   }
 
 }

@@ -7,16 +7,16 @@ import TypingIndicator from './TypingIndicator';
 import MessageInput from './MessageInput';
 import SuggestedQuestions from './SuggestedQuestions';
 import WelcomeScreen from './WelcomeScreen';
-import { ChatSession, Interaction } from './types';
 import { ClientService } from '@/services/implementation/clientServices';
 import { toast } from 'sonner';
 import DeleteSessionModal from './DeleteSessionModal';
+import { IChatBotSessionView, IChatBotInteractionView } from '@/interfaces/client/IChatBot';
 
 
 const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
-  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [sessions, setSessions] = useState<IChatBotSessionView[]>([]);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
-  const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [interactions, setInteractions] = useState<IChatBotInteractionView[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -83,10 +83,10 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
       const response = await ClientService.DeleteBotChat(deletionModal.sessionId);
       if (response) {
         // Update frontend state directly
-        setSessions((prev) => prev.filter((s) => s._id !== deletionModal.sessionId));
+        setSessions((prev) => prev.filter((s) => s.id !== deletionModal.sessionId));
         if (selectedSession === deletionModal.sessionId) {
-          const remainingSessions = sessions.filter((s) => s._id !== deletionModal.sessionId);
-          setSelectedSession(remainingSessions[0]?._id || null);
+          const remainingSessions = sessions.filter((s) => s.id !== deletionModal.sessionId);
+          setSelectedSession(remainingSessions[0]?.id || null);
         }
         toast.success("Chat session deleted successfully");
       } else {
@@ -103,18 +103,18 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
   const handleSendMessage = async () => {
     if (!message.trim() || !selectedSession) return;
 
-    const userMessage: Interaction = {
+    const userMessage: IChatBotInteractionView = {
       sessionId: selectedSession,
       content: message,
       isUser: true,
       createdAt: new Date().toISOString(),
-    }as Interaction;
+    }as IChatBotInteractionView;
 
     try {
       setInteractions((prev) => [...prev, userMessage]);
       setSessions((prev) =>
         prev.map((session) =>
-          session._id === selectedSession
+          session.id === selectedSession
             ? { ...session, lastInteraction: message, messageCount: session.messageCount + 1 }
             : session
         )
@@ -124,17 +124,17 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
       setIsTyping(true);
 
       const response = await ClientService.HandleSendMessageToChatBot(selectedSession, userMessage);
-      const botResponse: Interaction = {
+      const botResponse: IChatBotInteractionView = {
         sessionId: selectedSession,
         content: response[1].content,
         isUser: false,
         createdAt: new Date().toISOString(),
-      } as Interaction;
+      } as IChatBotInteractionView;
 
       setInteractions((prev) => [...prev, botResponse]);
       setSessions((prev) =>
         prev.map((session) =>
-          session._id === selectedSession
+          session.id === selectedSession
             ? { ...session, messageCount: session.messageCount + 1 }
             : session
         )
@@ -154,7 +154,7 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
     }
   };
 
-  const selectedSessionData = sessions.find((s) => s._id === selectedSession);
+  const selectedSessionData = sessions.find((s) => s.id === selectedSession);
 
   return (
     <div className="bg-slate-950 text-white h-screen flex overflow-hidden">
@@ -211,7 +211,7 @@ const ChatHistory: React.FC<{ clientId: string }> = ({ clientId }) => {
               <ScrollArea className="h-full p-4 sm:p-6 bg-slate-950">
                 <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto pb-6">
                   {interactions.map((interaction) => (
-                    <Message key={interaction._id} interaction={interaction} />
+                    <Message key={interaction.id} interaction={interaction} />
                   ))}
                   {isTyping && <TypingIndicator />}
                   <div ref={messagesEndRef} />

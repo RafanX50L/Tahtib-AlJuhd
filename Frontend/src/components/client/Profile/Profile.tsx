@@ -66,8 +66,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
         setMessage("Profile picture updated successfully!");
         setProfilePicFile(null);
         setTempProfilePic(null);
-        document.querySelector<HTMLInputElement>('input[type="file"]')?.value =
-          "";
+        document.querySelector('input[type="file"]').value = null ;
       } else {
         setMessage("Failed to upload image.");
       }

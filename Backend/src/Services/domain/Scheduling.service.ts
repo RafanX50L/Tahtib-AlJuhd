@@ -154,7 +154,7 @@ export class SchedulingService implements ISchedulingService {
     await this._contractRepo.decrementSessionsRemaining(input.contractId);
     console.log("created", created);
 
-    return created;
+    return ;
   }
 
   async listBookings({
@@ -181,10 +181,11 @@ export class SchedulingService implements ISchedulingService {
     );
     const contractId = ((await this._personalizationRepo.findByUserId(clientId)).data as IClientPersonalization).contracts;
     if (!session) throw new Error("Booking not found");
-    session.status = "canceled";
+    session.status = "cancelled";
     session.clientId = null as null;
     await this._contractRepo.incrementSessionsRemaining(contractId.toString());
-    return await this._sessionRepo.update(session.id, session);
+    await this._sessionRepo.update(session.id, session);
+    return;
   }
   async completeBooking(bookingId: string) {
     const session = await this._sessionRepo.findById(
@@ -192,6 +193,7 @@ export class SchedulingService implements ISchedulingService {
     );
     if (!session) throw new Error("Booking not found");
     session.status = "completed";
-    return await this._sessionRepo.update(session.id, session);
+    await this._sessionRepo.update(session.id, session);
+    return;
   }
 }

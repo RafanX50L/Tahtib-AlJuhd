@@ -52,5 +52,11 @@ export const env = {
   },
   get ERROR_LOG_RETENTION_PERIOD(){
     return process.env.ERROR_LOG_RETENTION_PERIOD;
+  },
+  get START_INTERVAL(){
+    return process.env.START_INTERVAL;
+  },
+  get END_INTERVAL(){
+    return process.env.END_INTERVAL;
   }
 };

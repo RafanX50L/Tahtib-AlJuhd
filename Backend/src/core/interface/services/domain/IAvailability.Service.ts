@@ -1,11 +1,32 @@
-// import { ITrainerPersonalization } from "../../model/IPersonalization.model";
-import { ISession } from "../../model/ISession";
+interface WeeklyRuleView{
+    engagementType: 'full-time' | 'part-time' | 'contract' | 'freelance';
+    weeklyRules: {
+      [key: string]: {
+        startTime: string; 
+        endTime: string;
+      }[];
+    };
+    slotLength: number;
+    bufferMinutes: number;  
+}
+export interface ISessionView {
+  id: string;
+  trainerId: string;
+  clientId: string | null;
+  startTime: string;
+  endTime: string;
+  status: "booked" | "free" | "cancelled" | "completed";
+  meetingLink: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
 
 export interface IAvailabilityService {
-    // setAvailability(trainerId: string, slots: ITrainerPersonalization['availability']['weeklySlots']): Promise<void>;
     setWeeklyRules(trainerId: string, rules: Record<string, unknown>): Promise<void>;
-    getFreeSlots(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]>;
-    getWeeklyRules(trainerId: string): Promise<Record<string, unknown> | null | void>;
-    getUnFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]>;
-    getUnFreeSlotsByClient(clinetId: string, fromDate: Date, toDate: Date): Promise<ISession[]>
+    getFreeSlots(trainerId: string, fromDate: Date, toDate: Date): Promise<ISessionView[]>;
+    getWeeklyRules(trainerId: string): Promise<WeeklyRuleView | null | void>;
+    getUnFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISessionView[]>;
+    getUnFreeSlotsByClient(clinetId: string, fromDate: Date, toDate: Date): Promise<ISessionView[]>
 }

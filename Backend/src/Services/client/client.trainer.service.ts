@@ -169,13 +169,13 @@ export class clientTrainerService implements IClientTrainerService{
 
         const hoursToStart = differenceInHours(session.startTime, new Date());
         if (hoursToStart > 24) {
-            session.status = 'canceled';
+            session.status = 'cancelled';
             session.clientId = undefined;
             session.planId = undefined;
             session.meetingLink = undefined;
             await this._contractRepo.incrementSessionsRemaining(contract._id!.toString());
         } else {
-            session.status = 'canceled';
+            session.status = 'cancelled';
         }
 
         await this._sessionRepo.update(session.id, session);

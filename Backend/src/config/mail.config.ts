@@ -10,6 +10,6 @@ export const transporter = nodemailer.createTransport({
         pass : env.PASSKEY
     },
     tls : {
-        rejectUnauthorized : false, // this is for self-signed certificates, Donot use in production
+        rejectUnauthorized : false,
     }
 });

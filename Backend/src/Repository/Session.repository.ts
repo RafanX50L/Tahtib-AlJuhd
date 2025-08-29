@@ -23,7 +23,7 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
     console.log('Finding unfree slots for trainer:', trainerId, 'from', fromDate, 'to', toDate);
     const result = await this.model.find({
       trainerId: new Types.ObjectId(trainerId),
-      status: { $nin: ['free', 'canceled'] },
+      status: { $nin: ['free', 'cancelled'] },
       startTime: { $gte: fromDate, $lte: toDate },
     });
     return result;
@@ -32,7 +32,7 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
     console.log('Finding unfree slots for client:', clinetId, 'from', fromDate, 'to', toDate);
     const result = await this.model.find({
       clientId: new Types.ObjectId(clinetId),
-      status: { $nin: ['free', 'canceled'] },
+      status: { $nin: ['free', 'cancelled'] },
       startTime: { $gte: fromDate, $lte: toDate },
     });
     return result;

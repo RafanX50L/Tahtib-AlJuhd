@@ -20,8 +20,6 @@ router.get('/trainers/:trainerId/availability', verifyAnyToken(), restrictTo('cl
 // POST /api/bookings 
 router.post('/bookings', verifyAnyToken(), restrictTo('client'), schedulingController.bookSlot.bind(schedulingController));
 
-// GET /api/bookings?trainerId=ID&status=upcoming 
-router.get('/bookings', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.listBookings.bind(schedulingController));
 
 // PATCH /api/bookings/:bookingId/cancel
 router.patch('/bookings/:bookingId/cancel', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.cancelBooking.bind(schedulingController));

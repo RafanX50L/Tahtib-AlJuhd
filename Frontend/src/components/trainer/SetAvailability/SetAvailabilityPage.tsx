@@ -27,7 +27,7 @@ import { chatEnum } from "@/lib/chat-enum";
 import { useSocket } from "@/hooks/socketio";
 
 export interface Slot {
-  _id: string;
+  id: string;
   trainerId: string;
   clientId: string | null;
   clientName?: string;
@@ -141,7 +141,7 @@ const SetAvailabilityPage = () => {
   useEffect(() => {
     // Animate cards on load
     const timer = setTimeout(() => {
-      setAnimatedCards(slots.map((slot) => slot._id));
+      setAnimatedCards(slots.map((slot) => slot.id));
     }, 100);
     return () => clearTimeout(timer);
   }, [slots]);
@@ -297,7 +297,7 @@ const SetAvailabilityPage = () => {
                     await SchedulingAPI.cancel(slotId, clientId);
                     setSlots(
                       slots.map((slot) =>
-                        slot._id === slotId
+                        slot.id === slotId
                           ? {
                               ...slot,
                               status: "free" as const,
@@ -362,7 +362,7 @@ const SetAvailabilityPage = () => {
       await SchedulingAPI.MarkAsComplete(slotId);
       setSlots(
         slots.map((slot) =>
-          slot._id === slotId
+          slot.id === slotId
             ? {
                 ...slot,
                 status: "completed" as const,
@@ -498,7 +498,7 @@ const SetAvailabilityPage = () => {
           key="complete"
           size="sm"
           className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-          onClick={() => handleMarkAsComplete(slot._id)}
+          onClick={() => handleMarkAsComplete(slot.id)}
         >
           <CheckCircle className="w-4 h-4 mr-2" />
           Mark as Complete
@@ -539,7 +539,7 @@ const SetAvailabilityPage = () => {
           size="sm"
           variant="outline"
           className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400"
-          onClick={() => handleCancelBooking(slot._id,slot.startTime,slot.endTime, slot.clientId as string)}
+          onClick={() => handleCancelBooking(slot.id,slot.startTime,slot.endTime, slot.clientId as string)}
         >
           Cancel
         </Button>
@@ -924,13 +924,13 @@ const SetAvailabilityPage = () => {
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {todayBookedSlots.map((slot, index) => (
                   <div
-                    key={slot._id}
-                    id={`slot-${slot._id}`}
+                    key={slot.id}
+                    id={`slot-${slot.id}`}
                     className={`group relative bg-gradient-to-br from-[#2c2c2c] to-[#1a1a1a] rounded-xl border border-[#3c3c3c] p-6 hover:border-[#6366f1] transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
                       isSlotStartingSoon(slot.startTime)
                         ? "ring-2 ring-yellow-500/50 shadow-yellow-500/20"
                         : ""
-                    } ${animatedCards.includes(slot._id) ? "animate-fadeInUp" : "opacity-0"}`}
+                    } ${animatedCards.includes(slot.id) ? "animate-fadeInUp" : "opacity-0"}`}
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="flex justify-between items-start mb-4">
@@ -1026,8 +1026,8 @@ const SetAvailabilityPage = () => {
             <div className="space-y-4">
               {selectedDateBookedSlots.map((slot, index) => (
                 <div
-                  key={slot._id}
-                  id={`detail-slot-${slot._id}`}
+                  key={slot.id}
+                  id={`detail-slot-${slot.id}`}
                   className={`group flex items-center justify-between p-6 rounded-xl border bg-gradient-to-r from-[#2c2c2c] to-[#252525] border-[#3c3c3c] hover:border-[#6366f1] transition-all duration-500 hover:shadow-xl ${
                     isToday &&
                     isSlotStartingSoon(slot.startTime) &&

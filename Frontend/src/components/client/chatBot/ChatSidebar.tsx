@@ -4,10 +4,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, MessageSquare } from "lucide-react";
 import SessionItem from "./SessionItem";
-import { ChatSession } from "./types";
+import { IChatBotSessionView } from "@/interfaces/client/IChatBot";
 
 interface ChatSidebarProps {
-  sessions: ChatSession[];
+  sessions: IChatBotSessionView[];
   selectedSession: string | null;
   searchTerm: string;
   onSearchChange: (term: string) => void;
@@ -65,9 +65,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         <div className="space-y-0.5 px-1 sm:px-2">
           {filteredSessions.map((session) => (
             <SessionItem
-              key={session._id}
+              key={session.id}
               session={session}
-              isSelected={selectedSession === session._id}
+              isSelected={selectedSession === session.id}
               onSelect={onSelectSession}
               onDelete={onDeleteSession}
             />

@@ -6,7 +6,7 @@ export interface ISession extends Document{
   planId: Types.ObjectId;
   startTime: Date;
   endTime: Date;
-  status: "free" | 'booked' | 'completed' | 'canceled';
+  status: "free" | 'booked' | 'completed' | 'cancelled';
   meetingLink: string;
   createdAt?: Date;
   updatedAt?: Date;

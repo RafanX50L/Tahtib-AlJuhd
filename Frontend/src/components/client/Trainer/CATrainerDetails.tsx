@@ -28,6 +28,7 @@ import { FaRupeeSign } from "react-icons/fa";
 import { ClientService } from "@/services/implementation/clientServices";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { RootState } from "@/store/store";
 
 // Mock interfaces (replace with your actual types)
 interface Plan {
@@ -57,16 +58,6 @@ interface Trainer {
   plans: Plan[];
 }
 
-// Mock RootState type
-interface RootState {
-  auth: {
-    user: {
-      _id: string;
-      name: string;
-      email: string;
-    } | null;
-  };
-}
 
 const StarRating: React.FC<{ rating: number; total?: number }> = ({
   rating,
