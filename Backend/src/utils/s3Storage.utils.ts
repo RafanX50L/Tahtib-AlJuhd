@@ -20,43 +20,33 @@ const s3Client = new S3Client({
 type FolderCategory = 'profile-photos' | 'certification-proofs' | 'resume';
 async function uploadToS3(file: Express.Multer.File, folder: FolderCategory): Promise<string> {
   const fileExtension = file.originalname.split('.').pop();
-  const fileName = `${folder}/${uuidv4()}.${fileExtension}`;
+  const fileKey  = `${folder}/${uuidv4()}.${fileExtension}`;
 
   const params = {
     Bucket: env.S3_BUCKET_NAME!,
-    Key: fileName,
+    Key: fileKey ,
     Body: file.buffer,
     ContentType: file.mimetype,
-    ACL: "public-read" as const,
   };
 
   await s3Client.send(new PutObjectCommand(params));
 
   // Public S3 URL
-  return `https://${env.S3_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com/${fileName}`;
+  // return `https://${env.S3_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com/${fileName}`;
+  return fileKey;
 };
 
 /**
  * Generates a new signed URL for an existing S3 URL
  */
-async function generateSignedUrl(oldUrl: string): Promise<string> {
-  const url = new URL(oldUrl);
-  const fileName = decodeURIComponent(url.pathname.replace(/^\/+/, '')); // remove leading slashes
-
-  const getParams = {
+async function generateSignedUrl(fileKey: string): Promise<string> {
+  const command = new GetObjectCommand({
     Bucket: env.S3_BUCKET_NAME!,
-    Key: fileName,
-  };
+    Key: fileKey,
+  });
 
-  const signedUrl = await getSignedUrl(
-    s3Client,
-    new GetObjectCommand(getParams),
-    {
-      expiresIn: 15 * 60 * 60, // 15 minutes
-    }
-  );
-
-  return signedUrl;
+  return getSignedUrl(s3Client, command, { expiresIn: 60 * 15 }); // 15 minutes
 }
+
 
 export { uploadToS3, generateSignedUrl };

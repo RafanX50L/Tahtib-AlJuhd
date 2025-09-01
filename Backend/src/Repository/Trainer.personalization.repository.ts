@@ -299,7 +299,7 @@ export class TrainerPersonalizationRepository
           "data.basicInfo.weeklySalary":salary,
         },
       },
-      { new: true }
+      // { new: true }
     ).lean<IPersonalization>();
 
     if (!updated) {
