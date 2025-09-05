@@ -20,6 +20,10 @@ const CBookingPage = lazy(() => import("@/pages/client/CBooking"));
 const NotificationsPage = lazy(() => import("@/components/shared/Notification"));
 
 import { clientTheme } from "@/components/shared/Notification";
+import CommunityApp from "@/pages/community/CommunityApp";
+import CreatePost from "@/components/community/CreatePost";
+import Search from "@/components/community/Search";
+import UserProfile from "@/pages/common/UserProfile";
 
 const UserRoutes: React.FC = () => {
   console.log("Entered UserRoutes");
@@ -41,6 +45,10 @@ const UserRoutes: React.FC = () => {
         <Route path="/chat" element={<CChatBotPage />} />
         <Route path="/trainer-details/:trainerId" element={<CATrainerDetailsPage />} />
         <Route path="/booking/:trainerId" element={<CBookingPage />} />
+        <Route path="/community" element={<CommunityApp />} />
+        <Route path="/community/create" element={<CreatePost />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/profile/:userId" element={<UserProfile />} />
         <Route
           path="/notifications"
           element={<NotificationsPage theme={clientTheme} backPath="/dashboard" />}

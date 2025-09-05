@@ -28,6 +28,7 @@ import notificationRoute from '@/routes/shared/notification.routes';
 import schedulingRouter from '@/routes/domain/scheduling.routes';
 import paymentRouter from '@/routes/shared/payment.routes';
 import webhookRouter from '@/routes/domain/webhook.routes'
+import communityRouter from '@/routes/shared/community.routes'
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/notifications',notificationRoute);
 app.use('/api/scheduling', schedulingRouter);
 app.use('/api/payment',paymentRouter);
+app.use('/api/community', communityRouter);
 app.use(errorHandler);
 
 

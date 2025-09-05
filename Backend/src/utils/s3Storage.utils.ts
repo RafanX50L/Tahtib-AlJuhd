@@ -17,7 +17,7 @@ const s3Client = new S3Client({
 /**
  * Uploads a file to S3 and returns its public URL
  */
-type FolderCategory = 'profile-photos' | 'certification-proofs' | 'resume';
+type FolderCategory = 'profile-photos' | 'certification-proofs' | 'resume' | 'community-posts';
 async function uploadToS3(file: Express.Multer.File, folder: FolderCategory): Promise<string> {
   const fileExtension = file.originalname.split('.').pop();
   const fileKey  = `${folder}/${uuidv4()}.${fileExtension}`;
