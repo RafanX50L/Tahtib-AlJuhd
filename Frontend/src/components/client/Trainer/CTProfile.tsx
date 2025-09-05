@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Star, MapPin, Clock, DollarSign, Users, Calendar, Heart, MessageCircle, Share2, ThumbsUp, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import Checkout from '@/components/trainer/payments/Checkouts';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 interface TrainerData {
   name: string;
@@ -46,6 +49,9 @@ const TrainerProfile: React.FC = () => {
   const [showCommentInput, setShowCommentInput] = useState<{ [key: number]: boolean }>({});
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const stripePromise = loadStripe('pk_test_YourStripePublishableKey');
+
   const touchStartX = useRef<number | null>(null);
   const touchCurrentX = useRef<number | null>(null);
 
@@ -133,15 +139,16 @@ const TrainerProfile: React.FC = () => {
     setSelectedPlan(null);
   };
 
-  const handleConfirmBooking = (): void => {
-    if (selectedPlan) {
-      alert(`Booking confirmed for plan: ${selectedPlan}`);
-      setShowModal(false);
-      setSelectedPlan(null);
-    } else {
-      alert('Please select a plan before confirming.');
-    }
-  };
+  // const handleConfirmBooking = (): void => {
+  //   if (selectedPlan) {
+  //     alert(`Booking confirmed for plan: ${selectedPlan}`);
+      
+  //     setShowModal(false);
+  //     setSelectedPlan(null);
+  //   } else {
+  //     alert('Please select a plan before confirming.');
+  //   }
+  // };
 
   const calculateExpiryDate = (duration: string): string => {
     const currentDate = new Date('2025-07-01');
@@ -274,6 +281,28 @@ const TrainerProfile: React.FC = () => {
           </div>
         </div>
 
+        {showCheckout && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-full max-w-md">
+              <button
+                onClick={() => setShowCheckout(false)}
+                className="text-red-500 mb-4"
+              >
+                Close
+              </button>
+              <Elements stripe={stripePromise}>
+
+              <Checkout
+                planId={selectedPlan!}
+                userId="user_123"
+                amount={5000}
+                currency="usd"
+              />
+              </Elements>
+            </div>
+          </div>
+        )}
+
         {/* Book Now Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -316,12 +345,34 @@ const TrainerProfile: React.FC = () => {
                 >
                   Close
                 </button>
+                {/* <button
+                  onClick={() => {
+                    console.log('this works');
+                    if (!selectedPlan) {
+                      alert('Please select a plan before confirming.');
+                      return;
+                    }
+                    setShowCheckout(true); // show the checkout form
+                  }}
+                  className="px-4 sm:px-6 py-2 bg-[#5D5FEF] text-white rounded-lg text-sm sm:text-base hover:bg-[#4C4EE5]"
+                >
+                  Confirm Booking
+                </button> */}
                 <button
-                  onClick={handleConfirmBooking}
+                  onClick={() => {
+                    console.log('this works');
+                    if (!selectedPlan) {
+                      alert('Please select a plan before confirming.');
+                      return;
+                    }
+                    setShowModal(false);      // close the plan modal
+                    setShowCheckout(true);    // open the checkout modal
+                  }}
                   className="px-4 sm:px-6 py-2 bg-[#5D5FEF] text-white rounded-lg text-sm sm:text-base hover:bg-[#4C4EE5]"
                 >
                   Confirm Booking
                 </button>
+
               </div>
             </div>
           </div>

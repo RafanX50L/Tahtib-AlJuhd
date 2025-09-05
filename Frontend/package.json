@@ -30,6 +30,8 @@
     "@radix-ui/react-tabs": "^1.1.9",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.7.0",
+    "@stripe/react-stripe-js": "^3.9.2",
+    "@stripe/stripe-js": "^7.9.0",
     "@tailwindcss/vite": "^4.1.4",
     "@types/js-cookie": "^3.0.6",
     "@types/react-easy-crop": "^1.16.0",

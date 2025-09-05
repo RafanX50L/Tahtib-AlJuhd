@@ -66,43 +66,36 @@ export const AdminService = {
     }
   },
 
-  getApprovedTrainers: async (page: number, limit: number, search: string) => {
-    try {
-      console.log("jkdsakfjsadklfjsadkfj");
-      const response = await api.get(
-        ADMIN_ROUTES.GET_APPROVED_TRAINERS(page, limit, search)
-      );
-      console.log("response from pending tariners", response.data);
-      return response.data;
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ error: string }>;
-      const errorMessage =
-        err.response?.data.error ||
-        "Failed to fetch trainers. Please try again.";
-      console.log("Error fetching trainers:", errorMessage);
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-  },
+ getApprovedTrainers: async (page: number, limit: number, search: string) => {
+  try {
+    const response = await api.get(
+      `${ADMIN_ROUTES.GET_APPROVED_TRAINERS}?page=${page}&limit=${limit}&search=${search}`
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as AxiosError<{ error: string }>;
+    const errorMessage =
+      err.response?.data.error || "Failed to fetch trainers. Please try again.";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+},
 
-  getPendingTrainers: async (page: number, limit: number, search: string) => {
-    try {
-      console.log("jkdsakfjsadklfjsadkfj");
-      const response = await api.get(
-        `${ADMIN_ROUTES.GET_PENDING_TRAINERS}/${page}/limit/${limit}/search/${search}`
-      );
-      console.log("response from pending tariners", response.data);
-      return { data: response.data, error: null };
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ error: string }>;
-      const errorMessage =
-        err.response?.data.error ||
-        "Failed to fetch trainers. Please try again.";
-      console.log("Error fetching trainers:", errorMessage);
-      toast.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-  },
+getPendingTrainers: async (page: number, limit: number, search: string) => {
+  try {
+    const response = await api.get(
+      `${ADMIN_ROUTES.GET_PENDING_TRAINERS}?page=${page}&limit=${limit}&search=${search}`
+    );
+    return { data: response.data, error: null };
+  } catch (error: unknown) {
+    const err = error as AxiosError<{ error: string }>;
+    const errorMessage =
+      err.response?.data.error || "Failed to fetch trainers. Please try again.";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+},
+
 
   updateTrainerStatus: async (id: string, status: string) => {
     try {

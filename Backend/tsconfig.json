@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2022",
     "module": "CommonJS",
-    "outDir": "./dist", // Specify your output directory
-    "baseUrl": ".", // Set the base URL to root for resolving modules
+    "moduleResolution": "Node",
+    "outDir": "./dist",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"] // Use path alias to point to the src folder
+      "@/*": ["src/*"]
     },
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*"]
 }

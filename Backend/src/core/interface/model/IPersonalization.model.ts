@@ -23,7 +23,7 @@ export interface IClientUserData{
   healthIssues?: string[];
   medicalCondition?: string;
   dietAllergies?: string[];
-  dietMealsPerDay: ('3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals')[];
+  dietMealsPerDay: '3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals';
   dietPreferences?: string;
   workoutsCompletedIn28Days: number;
 }

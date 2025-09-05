@@ -291,7 +291,7 @@ export class TrainerPersonalizationRepository
     ).lean<IPersonalization>();
   }
   async approveTrainer(trainerId: string, salary: number) {
-    const updated = await PersonalizationModel.updateOne(
+    const updated = await PersonalizationModel.findOneAndUpdate(
       { userId: trainerId },
       {
         $set: {
@@ -299,7 +299,7 @@ export class TrainerPersonalizationRepository
           "data.basicInfo.weeklySalary":salary,
         },
       },
-      // { new: true }
+      { new: true }
     ).lean<IPersonalization>();
 
     if (!updated) {

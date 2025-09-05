@@ -40,13 +40,13 @@ async function generateFitnessPlan(
 
 function getMealCategories(mealsPerDay: string): string[] {
   switch (mealsPerDay) {
-    case "3":
+    case "3 meals":
       return ["breakfast", "lunch", "dinner"];
-    case "4":
+    case "3 meals + 1 snack":
       return ["breakfast", "lunch", "dinner", "snack1"];
-    case "5":
+    case "3 meals + 2 snacks":
       return ["breakfast", "lunch", "dinner", "snack1", "snack2"];
-    case "6":
+    case "6 meals":
       return [
         "breakfast",
         "mid_morning_snack",
@@ -79,7 +79,7 @@ function formatPrompt(
 //       : "";
 
   // Dynamically generate meal plan structure based on getMealCategories
-  const mealCategories = getMealCategories(userData.dietMealsPerDay.join(""));
+  const mealCategories = getMealCategories(userData.dietMealsPerDay);
   const mealPlanStructure: Record<string, IMealType> = {};
   for (const category of mealCategories) {
     mealPlanStructure[category] = {

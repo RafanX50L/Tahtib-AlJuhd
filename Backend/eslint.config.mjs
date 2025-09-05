@@ -1,37 +1,22 @@
-// import js from "@eslint/js";
-// import globals from "globals";
-// import tseslint from "typescript-eslint";
-// import { defineConfig } from "eslint/config";
-
-
-// export default defineConfig([
-//   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"] },
-//   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
-//   { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], languageOptions: { globals: globals.browser } },
-//   tseslint.configs.recommended,
-// ]);
-
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
+    files: ['**/*.{js,mjs,ts}'],
     plugins: { js },
-    extends: ["js/recommended"],
-    rules: {
-      "no-console": "off",
-      "semi": ["error", "always"],
-      "camelcase": ["warn", { "properties": "always" }]
-    }
-  },
-  {
-    files: ["**/*.{js,mjs,cjs,ts}"],
     languageOptions: {
-      globals: globals.browser
+      sourceType: 'module', // Set to ESM
+      globals: globals.node // Use Node.js globals for backend
+    },
+    extends: ['plugin:js/recommended'],
+    rules: {
+      'no-console': 'off',
+      'semi': ['error', 'always'],
+      'camelcase': ['warn', { properties: 'always' }]
     }
   },
-  tseslint.configs.recommended
+  ...tseslint.configs.recommended
 ]);

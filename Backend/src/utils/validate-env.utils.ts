@@ -92,4 +92,15 @@ export const validateEnv = () => {
       "END_INTERVAL is not defined in the environment variables"
     );
   }
+  if (!env.STRIPE_SECRET_KEY) {
+    throw new Error(
+      "STRIPE_SECRET_KEY is not defined in the environment variables"
+    );
+  }
+  if (!env.WEBHOOK_SECRET) {
+    throw new Error(
+      "WEBHOOK_SECRET is not defined in the environment variables"
+    );
+  }
+
 };

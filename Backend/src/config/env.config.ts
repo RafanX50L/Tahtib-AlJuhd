@@ -58,5 +58,11 @@ export const env = {
   },
   get END_INTERVAL(){
     return process.env.END_INTERVAL;
+  },
+  get STRIPE_SECRET_KEY(){
+    return process.env.STRIPE_SECRET_KEY;
+  },
+  get WEBHOOK_SECRET(){
+    return process.env.WEBHOOK_SECRET;
   }
 };

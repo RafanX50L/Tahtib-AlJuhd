@@ -20,9 +20,7 @@ const ADMIN_ROUTE = "/admin";
 export const ADMIN_ROUTES = {
   GET_ALL_CLIENTS: `${ADMIN_ROUTE}/clients`,
   GET_PENDING_TRAINERS: `${ADMIN_ROUTE}/trainers/pending`,
-  // GET_APPROVED_TRAINERS: `${ADMIN_ROUTE}/approved-trainers`,
-  GET_APPROVED_TRAINERS: (page:number,limit:number,search:string)=>
-    `${ADMIN_ROUTE}/trainers/approved/${page}/limit/${limit}/search/${search}`,
+  GET_APPROVED_TRAINERS: `${ADMIN_ROUTE}/trainers/approved/`,
   BLOCK_OR_UNBLOCK: `${ADMIN_ROUTE}/block-or-unblock`,
   GET_ALL_TRAINERS: `${ADMIN_ROUTE}/trainers`,
   UPDATE_CLIENT_STATUS: `${ADMIN_ROUTE}/clients/updateStatus`,

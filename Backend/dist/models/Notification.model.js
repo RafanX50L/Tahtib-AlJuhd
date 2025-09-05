@@ -1,0 +1,12 @@
+import mongoose, { Schema } from "mongoose";
+const NotificationSchema = new Schema({
+    senderId: { type: String, required: true },
+    recipientId: { type: String },
+    recipientRole: { type: String },
+    message: { type: String, required: true },
+    type: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    read: { type: Boolean, default: false },
+});
+export const NotificationModel = mongoose.model("Notification", NotificationSchema);
+//# sourceMappingURL=Notification.model.js.map

@@ -18,14 +18,9 @@ export class UserRepository
   }
 
   async createUser(user: Partial<IUser>): Promise<IUser> {
-    try {
       console.log("Creating user:", user);
       const createdUser = await this.model.create(user);
       return createdUser;
-    } catch (error) {
-      console.error("Error creating user:", error);
-      throw new Error("Error creating user");
-    }
   }
 
   async blockOrUnblockUser(
@@ -77,28 +72,17 @@ export class UserRepository
   }
 
   async findByEmail(email: string): Promise<IUser | null> {
-    try {
-      return await this.model.findOne({ email });
-    } catch (error) {
-      console.error("Error finding user by email:", error);
-      throw new Error("Error finding user by email");
-    }
+    return await this.model.findOne({ email });
   }
 
   async findByIdWithPersonalization(id: string): Promise<IUser | null> {
-    try {
-      return await this.model.findById(id).populate("personalization");
-    } catch (error) {
-      console.error("Error finding user by ID with personalization:", error);
-      throw new Error("Error finding user by ID with personalization");
-    }
+    return await this.model.findById(id).populate("personalization");
   }
 
   async updatePassword(
     email: string,
     hashedPassword: string
   ): Promise<IUser | null> {
-    try {
       return await this.model
         .findOneAndUpdate(
           { email },
@@ -106,10 +90,6 @@ export class UserRepository
           { new: true }
         )
         .populate("personalization");
-    } catch (error) {
-      console.error("Error updating password:", error);
-      throw new Error("Error updating password");
-    }
   }
 
   async updatePersonalizationsId(userId:string,personalizationId:string):Promise<IUser>{

@@ -10,24 +10,39 @@ export class AdminTrainerController implements IAdminTrainerController {
         private readonly _adminTrainerService: IAdminTrainerSerice
     ){}
     async getApprovedTrainers(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const {page,limit,search} = req.params;
-            const data = await this._adminTrainerService.getApprovedTrainers(Number(page),Number(limit),search);
-            console.log('data',data);
-            res.status(HttpStatus.OK).json({message:HttpResponse.DATA_FETCHING_SUCCESSFULL,data:data});
-        } catch (error) {
-            next(error);
-        }
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = (req.query.search as string) || "";
+
+    const data = await this._adminTrainerService.getApprovedTrainers(page, limit, search);
+
+    res.status(HttpStatus.OK).json({
+      message: HttpResponse.DATA_FETCHING_SUCCESSFULL,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
     }
+
     async getPendingTrainers(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const {page,limit,search} = req.params;
-            const data = await this._adminTrainerService.getPendingTrainers(Number(page),Number(limit),search);
-            res.status(HttpStatus.OK).json({message:HttpResponse.DATA_FETCHING_SUCCESSFULL,data:data});
-        } catch (error) {
-            next(error);
-        }
+    try {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const search = (req.query.search as string) || "";
+
+        const data = await this._adminTrainerService.getPendingTrainers(page, limit, search);
+
+        res.status(HttpStatus.OK).json({
+        message: HttpResponse.DATA_FETCHING_SUCCESSFULL,
+        data,
+        });
+    } catch (error) {
+        next(error);
     }
+    }
+
     async scheduleInterview(req:AddedRequest, res:Response, next:NextFunction):Promise<void>{
         try {
             const adminId = req.user.id;

@@ -13,8 +13,20 @@ const trainerINterviewRepository = new TrainerInterviewRepository();
 const adminTrainerService = new AdminTrainerSerice(trainerPersonalizationRepository,trainerINterviewRepository,userRepository);
 const adminTrainerController = new AdminTrainerController(adminTrainerService);
 
-adminTrainerRoutes.get('/trainers/approved/:page/limit/:limit/search/:search?',adminTrainerController.getApprovedTrainers.bind(adminTrainerController));
-adminTrainerRoutes.get('/trainers/pending/:page/limit/:limit/search/:search?',adminTrainerController.getPendingTrainers.bind(adminTrainerController));
+// adminTrainerRoutes.get('/trainers/approved/:page/limit/:limit/search/:search?',adminTrainerController.getApprovedTrainers.bind(adminTrainerController));
+// adminTrainerRoutes.get('/trainers/pending/:page/limit/:limit/search/:search?',adminTrainerController.getPendingTrainers.bind(adminTrainerController));
+// GET /trainers/approved?page=1&limit=10&search=john
+adminTrainerRoutes.get(
+  "/trainers/approved",
+  adminTrainerController.getApprovedTrainers.bind(adminTrainerController)
+);
+
+// GET /trainers/pending?page=1&limit=10&search=john
+adminTrainerRoutes.get(
+  "/trainers/pending",
+  adminTrainerController.getPendingTrainers.bind(adminTrainerController)
+);
+
 adminTrainerRoutes.post('/trainers/interview/schedule/id/:trainerId/date/:date/time/:time',adminTrainerController.scheduleInterview.bind(adminTrainerController));
 adminTrainerRoutes.patch('/trainers/submit-interview-feedback',adminTrainerController.submitInterviewFeedback.bind(adminTrainerController));
 adminTrainerRoutes.patch('/trainers/approve',adminTrainerController.approveTrainer.bind(adminTrainerController));

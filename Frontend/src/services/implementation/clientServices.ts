@@ -312,17 +312,42 @@ export const ClientService = {
     }
   },
 
-  purchasePlan: async (clientId: string, trainerId: string, planId: string) => {
-    if (!clientId || !trainerId || !planId) {
-      console.error('Missing required fields:', { clientId, trainerId, planId });
-      throw new Error('Client ID, Trainer ID, and Plan ID are required');
-    }
+  // purchasePlan: async (clientId: string, trainerId: string, planId: string) => {
+  //   if (!clientId || !trainerId || !planId) {
+  //     console.error('Missing required fields:', { clientId, trainerId, planId });
+  //     throw new Error('Client ID, Trainer ID, and Plan ID are required');
+  //   }
 
-    const payload = { clientId, trainerId, planId };
-    console.log('ClientService.purchasePlan payload:', payload); // Debug log
+  //   const payload = { clientId, trainerId, planId };
+  //   console.log('ClientService.purchasePlan payload:', payload); // Debug log
 
+  //   try {
+  //     const response = await api.post(`${CLIENT_ROUTES.PURCHASE_PLAN}`, payload);
+  //     console.log('Purchase plan response:', response.data); // Debug log
+  //     return response.data;
+  //   } catch (error) {
+  //     const err = error as AxiosError<{ error: string }>;
+  //     const errorMessage =
+  //       err.response?.data.error || "Failed to purchase plan";
+  //     console.log("Failed to purchase plan: ", errorMessage);
+  //     toast.error(errorMessage);
+  //     throw new Error(errorMessage);
+  //   }
+  // },
+
+  purchasePlan: async(userId: string, trainerId: string, planId: string) => {
+    const response = await api.post(
+      `/payment/create-payment-link`,
+      { userId, trainerId, planId },
+      { withCredentials: true }
+    );
+    return response.data; // Returns { paymentUrl: string }
+  },
+
+  createPymentIntent: async(amount:number, currency:string, planId:string, userId:string)=>{
     try {
-      const response = await api.post(`${CLIENT_ROUTES.PURCHASE_PLAN}`, payload);
+       const payload = { amount, currency, planId, userId };
+      const response = await api.post('/payment/create-payment-intent', payload);
       console.log('Purchase plan response:', response.data); // Debug log
       return response.data;
     } catch (error) {
