@@ -1,23 +1,33 @@
 import { useEffect, useState } from "react";
-import { mockServices } from "./CommunityApp";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, Image, Play, UserCheck, UserPlus, Video } from "lucide-react";
+import { FileText, Image, Play, UserCheck, UserPlus, Video, ArrowLeft } from "lucide-react";
+import { PostDTO, ProfileDTO } from "@/types/community";
+import { CommunityService } from "@/services/community.service";
+import CommentModal from "@/components/community/CommentModal";
+
+interface UserProfileProps {
+  userId: string;
+  onBack?: () => void;
+}
 
 // User Profile Component
-const UserProfile = ({ userId = "1" }) => {
-  const [posts, setPosts] = useState([]);
-  const [profile, setProfile] = useState(null);
+const UserProfile: React.FC<UserProfileProps> = ({ userId, onBack }) => {
+  const [posts, setPosts] = useState<PostDTO[] | []>([]);
+  const [profile, setProfile] = useState<ProfileDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState<PostDTO | null>(null);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+  const [showCommentModal, setShowCommentModal] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
       setIsLoading(true);
       const [postsData, profileData] = await Promise.all([
-        mockServices.fetchUserPosts(userId),
-        mockServices.fetchUserProfile(userId)
+        (await CommunityService.fetchUserPosts(userId)).data,
+        (await CommunityService.fetchUserProfile(userId)).data
       ]);
       setPosts(postsData.posts || []);
       setProfile(profileData);
@@ -30,20 +40,26 @@ const UserProfile = ({ userId = "1" }) => {
     if (!profile) return;
     
     if (profile.isFollowing) {
-      await mockServices.unfollow(profile.user._id);
+      await CommunityService.unfollow(profile.user.id);
       setProfile({ 
         ...profile, 
         isFollowing: false, 
         followers: Math.max(0, profile.followers - 1) 
       });
     } else {
-      await mockServices.follow(profile.user._id);
+      await CommunityService.follow(profile.user.id);
       setProfile({ 
         ...profile, 
         isFollowing: true, 
         followers: profile.followers + 1 
       });
     }
+  };
+
+  const handlePostClick = (post: PostDTO, mediaIndex: number = 0) => {
+    setSelectedPost(post);
+    setSelectedMediaIndex(mediaIndex);
+    setShowCommentModal(true);
   };
 
   if (isLoading) {
@@ -63,6 +79,20 @@ const UserProfile = ({ userId = "1" }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
+      {/* Back Button */}
+      {onBack && (
+        <div className="mb-4">
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="gap-2 text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Feed
+          </Button>
+        </div>
+      )}
+
       {/* Profile Header */}
       {profile && (
         <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 overflow-hidden">
@@ -70,7 +100,7 @@ const UserProfile = ({ userId = "1" }) => {
           <CardContent className="p-6 -mt-16 relative">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6">
               <Avatar className="h-32 w-32 ring-4 ring-white shadow-xl">
-                <AvatarImage src={profile.user.profilePhotoUrl} alt={profile.user.name} />
+                <AvatarImage src={profile.user.profilePhotoUrl as string} alt={profile.user.name} />
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-3xl font-bold">
                   {profile.user.name.charAt(0)}
                 </AvatarFallback>
@@ -144,8 +174,9 @@ const UserProfile = ({ userId = "1" }) => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {posts.map((post) => (
                 <div 
-                  key={post._id} 
+                  key={post.id} 
                   className="aspect-square overflow-hidden rounded-xl bg-gray-100 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                  onClick={() => handlePostClick(post, 0)}
                 >
                   {post.media?.[0]?.type === "image" ? (
                     <div className="relative h-full">
@@ -179,6 +210,28 @@ const UserProfile = ({ userId = "1" }) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Comment Modal */}
+      <CommentModal
+        post={selectedPost}
+        posts={posts}
+        isOpen={showCommentModal}
+        onClose={() => setShowCommentModal(false)}
+        onLikeToggle={(postId) => {
+          setPosts(prev => prev.map(p => 
+            p.id === postId 
+              ? { ...p, isLiked: !p.isLiked, stats: { ...p.stats, likes: p.isLiked ? p.stats.likes - 1 : p.stats.likes + 1 }}
+              : p
+          ));
+        }}
+        onNavigateToPost={(postId) => {
+          const post = posts.find(p => p.id === postId);
+          if (post) {
+            setSelectedPost(post);
+          }
+        }}
+        initialMediaIndex={selectedMediaIndex}
+      />
     </div>
   );
 };

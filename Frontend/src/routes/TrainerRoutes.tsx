@@ -11,12 +11,12 @@ const TSetPlanPage = lazy(() => import("@/pages/trainer/TSetPlans"));
 const TSetAvailabilityPage = lazy(() => import("@/pages/trainer/TSetAvailabilityPage"));
 const TCChatPage = lazy(() => import("@/pages/trainer/TCChatPage"));
 const NotificationsPage = lazy(() => import("@/components/shared/Notification"));
-const CommunityApp = lazy(() => import("@/pages/common/niceONe"));
-const CreatePost = lazy(() => import("@/pages/common/CreatePost"));
-const UserSearch = lazy(() => import("@/pages/common/UserSearch"));
-const UserProfile = lazy(() => import("@/pages/common/UserProfile"));
+
 
 import { trainerTheme } from "@/components/shared/Notification";
+import CommunityApp from "@/pages/common/community/CommunityApp";
+import CreatePost from "@/pages/common/community/createPost";
+import UserSearch from "@/pages/common/community/UserSearch";
 
 const TrainerRoutes: React.FC = () => {
   return (
@@ -36,7 +36,7 @@ const TrainerRoutes: React.FC = () => {
         <Route path="/community" element={<CommunityApp />} />
         <Route path="/community/create" element={<CreatePost />} />
         <Route path="/search" element={<UserSearch />} />
-        <Route path="/profile/:userId" element={<UserProfile />} />
+        {/* <Route path="/profile/:userId" element={<UserProfile />} /> */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>

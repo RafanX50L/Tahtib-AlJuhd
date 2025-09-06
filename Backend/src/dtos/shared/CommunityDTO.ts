@@ -17,6 +17,7 @@ export type PostDTO = {
     comments: number;
     shares: number;
   };
+  isLiked?: boolean;
   createdAt: string;
 };
 
@@ -24,6 +25,7 @@ export type CommentDTO = {
   id: string;
   postId: string;
   authorId: string;
+  author: UserSummaryDTO;
   content: string;
   parentCommentId?: string | null;
   createdAt: string;
@@ -44,7 +46,7 @@ export type ProfileDTO = {
 };
 
 export class CommunityDTOMapper {
-  static toPostDTO(doc: any, signedMedia: MediaDTO[], author?: UserSummaryDTO): PostDTO {
+  static  toPostDTO(doc: any, signedMedia: MediaDTO[], author?: UserSummaryDTO, isLiked?: boolean): PostDTO {
     return {
       id: (doc._id as Types.ObjectId).toString(),
       authorId: (doc.authorId as Types.ObjectId).toString(),
@@ -56,15 +58,17 @@ export class CommunityDTOMapper {
         comments: Number(doc.commentsCount || 0),
         shares: Number(doc.sharesCount || 0),
       },
+      isLiked,
       createdAt: new Date(doc.createdAt).toISOString(),
     };
   }
 
-  static toCommentDTO(doc: any): CommentDTO {
+  static toCommentDTO(doc: any, author?: UserSummaryDTO): CommentDTO {
     return {
       id: (doc._id as Types.ObjectId).toString(),
       postId: (doc.postId as Types.ObjectId).toString(),
       authorId: (doc.authorId as Types.ObjectId).toString(),
+      author: author,
       content: doc.content,
       parentCommentId: doc.parentCommentId ? (doc.parentCommentId as Types.ObjectId).toString() : null,
       createdAt: new Date(doc.createdAt).toISOString(),

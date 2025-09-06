@@ -47,7 +47,8 @@ export class CommunityController {
     try {
       const { q } = req.query as { q?: string };
       if (!q || q.trim().length < 2) return res.json({ users: [] });
-      const users = await this.service.searchUsers(q.trim());
+      const currentUserId = req.user?.id;
+      const users = await this.service.searchUsers(q.trim(), currentUserId);
       res.json({ users });
     } catch (err) {
       next(err);
