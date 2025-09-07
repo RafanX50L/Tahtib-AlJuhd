@@ -1,32 +1,24 @@
 import { Types } from "mongoose";
-import { PostRepository } from "@/Repository/Post.repository";
-import { CommentRepository } from "@/Repository/Comment.repository";
-import { LikeRepository } from "@/Repository/Like.repository";
-import { FollowRepository } from "@/Repository/Follow.repository";
 import { uploadToS3, generateSignedUrl } from "@/utils/s3Storage.utils";
-import { UserRepository } from "@/Repository/user.Repository";
-import { UserFileModel } from "@/models/UserFile.model";
-import { FollowModel } from "@/models/Follow.model";
-import { CommunityDTOMapper, MediaDTO } from "@/dtos/shared/CommunityDTO";
+import { CommunityDTOMapper, MediaDTO, SearchUserDTO } from "@/dtos/shared/CommunityDTO";
 import IUser from "@/core/interface/model/IUser.model";
-import { PostModel } from "@/models/Post.model";
+import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
+import { ICommentRepository } from "@/core/interface/repositories/IComment.repository";
+import { IPostRepository } from "@/core/interface/repositories/IPost.repository";
+import { IFollowRepository } from "@/core/interface/repositories/IFollow.repository";
+import { ILikeRepository } from "@/core/interface/repositories/ILike.repository";
+import { ICommunityService } from "@/core/interface/services/shared/ICommunity.service";
+import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
+import { IPost } from "@/models/Post.model";
 
-export type SearchUserDTO = {
-  _id: string;
-  name: string;
-  role: "client" | "trainer" | "admin";
-  profilePhotoUrl?: string | null;
-  followersCount: number;
-  postsCount: number;
-  isFollowing: boolean;
-};
-export class CommunityService {
+export class CommunityService implements ICommunityService {
   constructor(
-    private readonly postRepo: PostRepository,
-    private readonly commentRepo: CommentRepository,
-    private readonly likeRepo: LikeRepository,
-    private readonly followRepo: FollowRepository,
-    private readonly userRepo: UserRepository = new (require("@/Repository/user.Repository").UserRepository)()
+    private readonly postRepo: IPostRepository,
+    private readonly commentRepo: ICommentRepository,
+    private readonly likeRepo: ILikeRepository,
+    private readonly followRepo: IFollowRepository,
+    private readonly userRepo: IUserRepository,
+    private readonly userFile: IUserFileRepository
   ) {}
 
   async createPost(
@@ -55,28 +47,26 @@ export class CommunityService {
     return await this.mapPostWithSignedMedia(post, authorId);
   }
 
-  // ... existing code ...
-  async searchUsers(query: string, currentUserId?: string): Promise<SearchUserDTO[]> {
+  async searchUsers(query: string, currentUserId?: string, cursor?: string): Promise<SearchUserDTO[]> {
     const regex = new RegExp(query, "i");
-    // Include _id field which is needed for frontend
-    const users = await (this.userRepo as any).model
-      .find({ name: regex }, { _id: 1, name: 1, role: 1 })
-      .limit(10);
+    const filter: Record<string, unknown> = { name: regex };
+    
+    if (cursor) {
+      filter._id = { $lt: new Types.ObjectId(cursor) };
+    }
+    const users = await this.userRepo.searchForUsers(filter);
     return Promise.all(users.map((user) => this.mapUserToSearchUserDTO(user, currentUserId)));
   }
 
   async mapUserToSearchUserDTO(user: IUser, currentUserId?: string): Promise<SearchUserDTO> {
-    const profilePhoto = await UserFileModel.findOne({
-      userId: user._id,
-      purpose: "profilePhoto",
-    }).sort({ createdAt: -1 });
+    const profilePhoto = await this.userFile.findLatestProfilePicture(user._id.toString());
     const profilePhotoUrl = profilePhoto?.filePath
       ? await generateSignedUrl(profilePhoto.filePath)
       : null;
     
     let isFollowing = false;
     if (currentUserId && currentUserId !== user._id.toString()) {
-      const followRelation = await FollowModel.findOne({ 
+      const followRelation = await this.followRepo.findOne({ 
         followerId: new Types.ObjectId(currentUserId), 
         followingId: user._id 
       });
@@ -88,8 +78,8 @@ export class CommunityService {
       name: user.name,
       role: user.role,
       profilePhotoUrl: profilePhotoUrl,
-      followersCount: await FollowModel.countDocuments({ followingId: user._id }),
-      postsCount: await PostModel.countDocuments({ authorId: user._id }),
+      followersCount: await this.followRepo.countFollowers(user._id.toString()),
+      postsCount: await this.postRepo.countPosts(user._id.toString()),
       isFollowing: isFollowing,
     };
   }
@@ -112,7 +102,7 @@ export class CommunityService {
     const posts = await this.postRepo.findAll({
       authorId: new Types.ObjectId(profileUserId),
       ...(cursor ? { createdAt: { $lt: new Date(cursor) } } : {}),
-    } as any);
+    });
     const sorted = posts
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, 20);
@@ -132,18 +122,12 @@ export class CommunityService {
       parentCommentId: parentCommentId
         ? new Types.ObjectId(parentCommentId)
         : undefined,
-    } as any);
-    await this.postRepo.update(postId, { $inc: { commentsCount: 1 } } as any);
-    const author = await (this.userRepo as any).model.findById(userId, {
-      name: 1,
-      role: 1,
     });
+    await this.postRepo.update(postId, { $inc: { commentsCount: 1 } });
+    const author = await this.userRepo.findById(new Types.ObjectId(userId));
     let profilePhotoUrl: string | null = null;
     if (author) {
-      const profilePhoto = await UserFileModel.findOne({
-        userId: author._id,
-        purpose: "profilePhoto",
-      }).sort({ createdAt: -1 });
+      const profilePhoto = await this.userFile.findLatestProfilePicture(author._id.toString());
       profilePhotoUrl = profilePhoto?.filePath
         ? await generateSignedUrl(profilePhoto.filePath)
         : null;
@@ -154,21 +138,18 @@ export class CommunityService {
     return CommunityDTOMapper.toCommentDTO(comment, authorSummary);
   }
 
-  // ... existing code ...
-  async listComments(postId: string) {
-    const comments = await this.commentRepo.findByPost(postId, 100);
+  async listComments(postId: string, cursor?: string) {
+    const comments = await this.commentRepo.findByPost(
+      postId, 
+      20, 
+      cursor ? new Date(cursor) : undefined
+    );
     return Promise.all(
       comments.map(async (c) => {
-        const author = await (this.userRepo as any).model.findById(c.authorId, {
-          name: 1,
-          role: 1,
-        });
+        const author = await this.userRepo.findById(c.authorId) as IUser;
         let profilePhotoUrl: string | null = null;
         if (author) {
-          const profilePhoto = await UserFileModel.findOne({
-            userId: author._id,
-            purpose: "profilePhoto",
-          }).sort({ createdAt: -1 });
+          const profilePhoto = await this.userFile.findLatestProfilePicture(author._id.toString());
           profilePhotoUrl = profilePhoto?.filePath
             ? await generateSignedUrl(profilePhoto.filePath)
             : null;
@@ -184,17 +165,17 @@ export class CommunityService {
   }
 
   async toggleLike(userId: string, postId: string) {
-    const existing = await this.likeRepo.findOne({ userId, postId } as any);
+    const existing = await this.likeRepo.findOne({ userId, postId });
     if (existing) {
-      await this.likeRepo.deleteOne({ _id: existing._id } as any);
-      await this.postRepo.update(postId, { $inc: { likesCount: -1 } } as any);
+      await this.likeRepo.deleteOne({ _id: existing._id });
+      await this.postRepo.update(postId, { $inc: { likesCount: -1 } });
       return { liked: false };
     }
     await this.likeRepo.create({
       userId: new Types.ObjectId(userId),
       postId: new Types.ObjectId(postId),
-    } as any);
-    await this.postRepo.update(postId, { $inc: { likesCount: 1 } } as any);
+    });
+    await this.postRepo.update(postId, { $inc: { likesCount: 1 } });
     return { liked: true };
   }
 
@@ -203,12 +184,12 @@ export class CommunityService {
     const existing = await this.followRepo.findOne({
       followerId: userId,
       followingId: targetUserId,
-    } as any);
+    });
     if (existing) return { following: true };
     await this.followRepo.create({
       followerId: new Types.ObjectId(userId),
       followingId: new Types.ObjectId(targetUserId),
-    } as any);
+    });
     return { following: true };
   }
 
@@ -216,29 +197,23 @@ export class CommunityService {
     await this.followRepo.deleteOne({
       followerId: new Types.ObjectId(userId),
       followingId: new Types.ObjectId(targetUserId),
-    } as any);
+    });
     return { following: false };
   }
 
-  private async mapPostWithSignedMedia(post: any, userId?: string) {
+  private async mapPostWithSignedMedia(post: IPost, userId?: string) {
     const media: MediaDTO[] = await Promise.all(
-      (post.media || []).map(async (m: any) => ({
+      (post.media || []).map(async (m: IPost['media'][0]) => ({
         url: await generateSignedUrl(m.key),
         type: m.type,
         mimeType: m.mimeType,
       }))
     );
-    // attach author summary if available
-    const author = await (this.userRepo as any).model.findById(post.authorId, {
-      name: 1,
-      role: 1,
-    });
+    const author = await this.userRepo.findById(post.authorId);
+    console.log(author._id)
     let profilePhotoUrl: string | null = null;
     if (author) {
-      const profilePhoto = await UserFileModel.findOne({
-        userId: author._id,
-        purpose: "profilePhoto",
-      }).sort({ createdAt: -1 });
+      const profilePhoto = await this.userFile.findLatestProfilePicture(author._id.toString());
       profilePhotoUrl = profilePhoto?.filePath
         ? await generateSignedUrl(profilePhoto.filePath)
         : null;
@@ -256,16 +231,10 @@ export class CommunityService {
   }
 
   async getUserProfile(profileUserId: string, viewerUserId?: string) {
-    const user = await (this.userRepo as any).model.findById(profileUserId, {
-      name: 1,
-      role: 1,
-    });
+    const user = await this.userRepo.findById(new Types.ObjectId(profileUserId));
     if (!user) return null;
 
-    const profilePhoto = await UserFileModel.findOne({
-      userId: profileUserId,
-      purpose: "profilePhoto",
-    }).sort({ createdAt: -1 });
+    const profilePhoto = await this.userFile.findLatestProfilePicture(profileUserId);
     const photoUrl = profilePhoto?.filePath
       ? await generateSignedUrl(profilePhoto.filePath)
       : null;
@@ -273,13 +242,13 @@ export class CommunityService {
     console.log("files", profilePhoto);
     console.log("file url", photoUrl);
     const [followers, following] = await Promise.all([
-      FollowModel.countDocuments({ followingId: profileUserId }),
-      FollowModel.countDocuments({ followerId: profileUserId }),
+      await this.followRepo.countFollowers(profileUserId),
+      await this.followRepo.countFollowing(profileUserId),
     ]);
 
     let isFollowing = false;
     if (viewerUserId) {
-      isFollowing = !!(await FollowModel.findOne({
+      isFollowing = !!(await this.followRepo.findOne({
         followerId: viewerUserId,
         followingId: profileUserId,
       }));

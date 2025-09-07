@@ -38,4 +38,5 @@ export interface IUserRepository extends IBaseRepository<IUser> {
     personalizationId: string
   ): Promise<IUser>;
   getAllClientFilter(page:number,limit:number,statusFilter:string,searchTerm:string):Promise<IGetAllClientFilterResponse>;
+  searchForUsers(filter: Record<string, unknown>):Promise<IUser[]>;
 }

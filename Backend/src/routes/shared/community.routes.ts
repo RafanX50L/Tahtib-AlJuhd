@@ -1,12 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
 import { verifyAnyToken } from "@/middleware/verify.token.middleware";
-import { CommunityService } from "@/Services/common/Community.service";
+import { CommunityService } from "@/Services/shared/Community.service";
 import { CommunityController } from "@/Controller/shared/community.controller";
 import { PostRepository } from "@/Repository/Post.repository";
 import { CommentRepository } from "@/Repository/Comment.repository";
 import { LikeRepository } from "@/Repository/Like.repository";
 import { FollowRepository } from "@/Repository/Follow.repository";
+import { UserRepository } from "@/Repository/user.Repository";
+import { UserFileRepository } from "@/Repository/UserFile.repository";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 10 } });
@@ -15,7 +17,9 @@ const service = new CommunityService(
   new PostRepository(),
   new CommentRepository(),
   new LikeRepository(),
-  new FollowRepository()
+  new FollowRepository(),
+  new UserRepository(),
+  new UserFileRepository(),
 );
 const controller = new CommunityController(service);
 

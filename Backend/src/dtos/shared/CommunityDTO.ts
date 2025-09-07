@@ -1,3 +1,6 @@
+import IUser from "@/core/interface/model/IUser.model";
+import { IComment } from "@/models/Comment.model";
+import { IPost } from "@/models/Post.model";
 import { Types } from "mongoose";
 
 export type MediaDTO = {
@@ -45,8 +48,18 @@ export type ProfileDTO = {
   isFollowing: boolean;
 };
 
+export type SearchUserDTO = {
+  _id: string;
+  name: string;
+  role: "client" | "trainer" | "admin";
+  profilePhotoUrl?: string | null;
+  followersCount: number;
+  postsCount: number;
+  isFollowing: boolean;
+};
+
 export class CommunityDTOMapper {
-  static  toPostDTO(doc: any, signedMedia: MediaDTO[], author?: UserSummaryDTO, isLiked?: boolean): PostDTO {
+  static  toPostDTO(doc: IPost, signedMedia: MediaDTO[], author?: UserSummaryDTO, isLiked?: boolean): PostDTO {
     return {
       id: (doc._id as Types.ObjectId).toString(),
       authorId: (doc.authorId as Types.ObjectId).toString(),
@@ -63,7 +76,7 @@ export class CommunityDTOMapper {
     };
   }
 
-  static toCommentDTO(doc: any, author?: UserSummaryDTO): CommentDTO {
+  static toCommentDTO(doc: IComment, author?: UserSummaryDTO): CommentDTO {
     return {
       id: (doc._id as Types.ObjectId).toString(),
       postId: (doc.postId as Types.ObjectId).toString(),
@@ -75,7 +88,7 @@ export class CommunityDTOMapper {
     };
   }
 
-  static toUserSummaryDTO(doc: any, profilePhotoUrl?: string | null): UserSummaryDTO {
+  static toUserSummaryDTO(doc: IUser, profilePhotoUrl?: string | null): UserSummaryDTO {
     return {
       id: (doc._id as Types.ObjectId).toString(),
       name: doc.name,
@@ -84,7 +97,7 @@ export class CommunityDTOMapper {
     };
   }
 
-  static toProfileDTO(userDoc: any, followers: number, following: number, isFollowing: boolean, profilePhotoUrl?: string | null): ProfileDTO {
+  static toProfileDTO(userDoc: IUser, followers: number, following: number, isFollowing: boolean, profilePhotoUrl?: string | null): ProfileDTO {
     return {
       user: this.toUserSummaryDTO(userDoc, profilePhotoUrl ?? undefined),
       followers,

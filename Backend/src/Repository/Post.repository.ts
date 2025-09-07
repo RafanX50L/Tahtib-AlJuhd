@@ -1,8 +1,9 @@
 import { Model, Types } from "mongoose";
 import { BaseRepository } from "./base.repository";
 import { IPost, PostModel } from "@/models/Post.model";
+import { IPostRepository } from "@/core/interface/repositories/IPost.repository";
 
-export class PostRepository extends BaseRepository<IPost> {
+export class PostRepository extends BaseRepository<IPost> implements IPostRepository {
   constructor(model: Model<IPost> = PostModel) {
     super(model);
   }
@@ -18,6 +19,10 @@ export class PostRepository extends BaseRepository<IPost> {
       .find(filter)
       .sort({ createdAt: -1 })
       .limit(limit);
+  }
+
+  async countPosts(userId:string){
+    return await this.model.countDocuments({ authorId: userId });
   }
 }
 

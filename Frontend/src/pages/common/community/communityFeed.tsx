@@ -5,6 +5,7 @@ import CommentModal from "@/components/community/CommentModal";
 import { AvatarCstm, ButtonCstm, CardCstm } from "./CommunityApp";
 import { Button } from "@/components/ui/button";
 import { CommunityService } from "@/services/community.service";
+import { useVideoManager } from "@/hooks/useVideoManager";
 
 
 
@@ -18,6 +19,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post, onUserClick, onLike, onComment }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const { videoRef, handlePlay, handlePause } = useVideoManager();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -32,6 +34,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, onUserClick, onLike, onCommen
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
   };
+
+  // Pause video when switching between media
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+  }, [currentMediaIndex]);
 
   const media = post.media[currentMediaIndex];
 
@@ -101,10 +110,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, onUserClick, onLike, onCommen
               ) : (
                 <div className="relative">
                   <video 
+                    ref={videoRef}
                     src={media.url} 
                     controls 
                     className="w-full rounded-lg"
                     poster="/api/placeholder/600/400"
+                    onPlay={handlePlay}
+                    onPause={handlePause}
                   />
                   <div className="absolute top-3 right-3 bg-black/30 backdrop-blur-sm rounded-full p-2">
                     <Play className="h-4 w-4 text-white" />

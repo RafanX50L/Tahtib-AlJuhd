@@ -33,6 +33,8 @@ const UserSearch: React.FC<UserSearchProps> = ({ onUserClick }) => {
       } else {
         setUsers(res.users || []);
       }
+      
+      // Use backend pagination metadata
       setHasMore(res.hasMore);
       setCursor(res.nextCursor);
     } catch (error) {
