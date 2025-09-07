@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Heart, Image, MessageCircle, MoreHorizontal, Play, Plus, Search, Users, Calendar, Share, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Image, MessageCircle, MoreHorizontal, Play, Plus, Search, Users, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { PostDTO } from "@/types/community";
 import CommentModal from "@/components/community/CommentModal";
 import { AvatarCstm, ButtonCstm, CardCstm } from "./CommunityApp";
@@ -74,9 +74,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, onUserClick, onLike, onCommen
               </div>
             </div>
           </div>
-          <ButtonCstm variant="ghost" size="sm" className="h-10 w-10 p-0">
-            <MoreHorizontal className="h-5 w-5" />
-          </ButtonCstm>
         </div>
       </div>
       
@@ -114,7 +111,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onUserClick, onLike, onCommen
                     src={media.url} 
                     controls 
                     className="w-full rounded-lg"
-                    poster="/api/placeholder/600/400"
+                    preload="metadata"
                     onPlay={handlePlay}
                     onPause={handlePause}
                   />
@@ -189,18 +186,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onUserClick, onLike, onCommen
               <MessageCircle className="h-5 w-5" />
               <span className="font-medium">{post.stats.comments}</span>
             </ButtonCstm>
-            <ButtonCstm 
-              variant="ghost" 
-              size="sm" 
-              className="gap-2 hover:bg-green-50 hover:text-green-600 transition-all duration-200"
-            >
-              <Share className="h-5 w-5" />
-              <span className="font-medium">{post.stats.shares}</span>
-            </ButtonCstm>
           </div>
-          <ButtonCstm variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 hover:bg-gray-50">
-            <Bookmark className="h-5 w-5" />
-          </ButtonCstm>
         </div>
       </div>
     </CardCstm>
