@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Heart, Image, MessageCircle, MoreHorizontal, Play, Plus, Search, Users, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Image, MessageCircle, Play, Plus, Search, Users, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { PostDTO } from "@/types/community";
 import CommentModal from "@/components/community/CommentModal";
 import { AvatarCstm, ButtonCstm, CardCstm } from "./CommunityApp";

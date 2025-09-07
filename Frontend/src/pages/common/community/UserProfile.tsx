@@ -194,7 +194,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onBack }) => {
                       <video 
                         src={post.media[0].url} 
                         className="h-full w-full object-cover"
-                        poster="/api/placeholder/300/300"
+                        preload="metadata"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                         <Play className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
