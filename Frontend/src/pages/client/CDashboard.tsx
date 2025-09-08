@@ -4,6 +4,7 @@ import StatsGrid from "../../components/client/Dashboard/StatsGrid";
 import WeeklyChallenge from "../../components/client/Dashboard/WeeklyCahllenge";
 import WorkoutLevels from "../../components/client/Dashboard/WorkoutLevels";
 import Leaderboard from "../../components/client/Dashboard/LeaderBoard";
+import ProgressSummary from "@/components/client/Dashboard/ProgressSummary";
 import ChatbotButton from "../../components/client/ChatbotButton";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";
 import CFooter from "@/components/client/Footer";
@@ -30,6 +31,7 @@ const CDashboard = () => {
           onMenuToggle={handleMenuToggle}
         />
         <div className="space-y-8">
+          <ProgressSummary />
           <StatsGrid />
           <WeeklyChallenge />
           <WorkoutLevels />

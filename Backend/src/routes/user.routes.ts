@@ -14,6 +14,7 @@ import chatRouter from "./shared/chat.routes";
 import notificationRouter from "./shared/notification.routes";
 import { verifyToken } from "@/middleware/verify.token.middleware";
 import schedulingRouter from "./domain/scheduling.routes";
+import progressRouter from "./client/client.progress.routes";
 
 const routerRoot = Router();
 
@@ -32,5 +33,6 @@ routerRoot.use(availabilityRouter);
 routerRoot.use('/current-trainer',chatRouter);
 routerRoot.use('/notifications', notificationRouter);
 routerRoot.use('/scheduling', schedulingRouter);
+routerRoot.use(progressRouter);
 
 export default routerRoot;

@@ -5,6 +5,7 @@ import userFileRouter from "./shared/userFile.routes";
 import planRouter from "./domain/plan.routes";
 import availabilityRouter from "./domain/availability.routes";
 import clientsRouter from "./trainer/trainer.clients.routes";
+import trainerProgressRouter from "./trainer/trainer.progress.routes";
 import { verifyToken } from "@/middleware/verify.token.middleware";
 
 const routerRoot = Router();
@@ -16,5 +17,6 @@ routerRoot.use(userFileRouter);
 routerRoot.use(planRouter);
 routerRoot.use(availabilityRouter);
 routerRoot.use(clientsRouter);
+routerRoot.use(trainerProgressRouter);
 
 export default routerRoot;

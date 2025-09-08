@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
+import { ProgressService } from '@/services/progress.service';
 
 // Global video manager to ensure only one video plays at a time
 class VideoManager {
@@ -36,6 +37,10 @@ class VideoManager {
 export const useVideoManager = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoManager = VideoManager.getInstance();
+  const lastSentRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
+  const avgRateRef = useRef<number>(1);
+  const videoIdRef = useRef<string | null>(null);
 
   const handlePlay = useCallback(() => {
     if (videoRef.current) {
@@ -61,13 +66,49 @@ export const useVideoManager = () => {
       if (videoRef.current === videoManager.getCurrentVideo()) {
         videoManager.pauseCurrentVideo();
       }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [videoManager]);
+
+  const startTracking = useCallback((videoId: string) => {
+    videoIdRef.current = videoId;
+    lastSentRef.current = 0;
+    const tick = () => {
+      const el = videoRef.current;
+      if (!el || !videoIdRef.current) return;
+      const duration = el.duration || 0;
+      if (duration > 0) {
+        const percent = Math.min(100, Math.round((el.currentTime / duration) * 100));
+        avgRateRef.current = (avgRateRef.current + (el.playbackRate || 1)) / 2;
+        const now = Date.now();
+        if (percent !== lastSentRef.current && now - (window as any).__lastVideoSendAt__ > 1000) {
+          (window as any).__lastVideoSendAt__ = now;
+          lastSentRef.current = percent;
+          ProgressService.upsertVideo({
+            videoId: videoIdRef.current,
+            watchPercent: percent,
+            avgPlaybackRate: avgRateRef.current,
+          }).catch(() => {});
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  const stopTracking = useCallback(() => {
+    videoIdRef.current = null;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+  }, []);
 
   return {
     videoRef,
     handlePlay,
     handlePause,
-    pauseVideo
+    pauseVideo,
+    startTracking,
+    stopTracking
   };
 };
