@@ -35,7 +35,7 @@ export class ChatBotDTO {
    */
   static async mapToChatBotInteractionData(raw: IChatBotnteraction[]): Promise<IChatBotInteractionView[]> {
     return raw.map((interaction) => ({
-      id: interaction._id.toString(),
+      id: interaction._id,
       content: interaction.content,
       createdAt: interaction.createdAt.toISOString(),
       isUser: interaction.isUser,

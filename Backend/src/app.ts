@@ -56,8 +56,8 @@ app.use('/api/client/',userRoutes);
 app.use('/api/trainer', trainerRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/notifications',notificationRoute);
-app.use('/api/scheduling', schedulingRouter);
 app.use('/api/payment',paymentRouter);
+app.use('/api/scheduling', schedulingRouter);
 app.use('/api/community', communityRouter);
 app.use(errorHandler);
 

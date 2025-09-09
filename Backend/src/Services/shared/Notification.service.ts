@@ -21,9 +21,7 @@ export class NotificationService implements INotificationService {
   }
 
   async getLastFiveNotification(userId: string): Promise<INotificationView[]> {
-    console.log("notification user", userId);
     const result = await this.notificationRepo.findLastFiveByUser(userId);
-    console.log("notification result", result);
     return await NotificationDTO.mapToNotificationData(result);
   }
 

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../utils/http-error.util";
 import { HttpStatus } from "../constants/status.constant";
 import { HttpResponse } from "../constants/response-message.constant";
@@ -8,6 +8,7 @@ export const errorHandler = (
     err: HttpError | Error,
     _req: Request,
     res: Response,
+    next: NextFunction,
 ) => {
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message:string = HttpResponse.SERVER_ERROR;
@@ -18,6 +19,9 @@ export const errorHandler = (
         message = err.message;
     }else{
         logger.error("unhandled error:", err);
+    }
+    if (res.headersSent) {
+        return next(err);
     }
     res.status(statusCode).json({error: message});
 };

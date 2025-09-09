@@ -645,6 +645,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { RootState } from "@/store/store";
 import { loadStripe } from "@stripe/stripe-js";
 import api from "@/services/implementation/api";
+import { usePaymentSession } from "@/hooks/usePaymentSession";
 
 // Interfaces based on Plan.model.ts
 interface Plan {
@@ -705,6 +706,16 @@ const TrainerPage: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
 
+  // Payment session management
+  const { 
+    hasActiveSession, 
+    currentSession, 
+    createSession, 
+    updateSessionStatus, 
+    clearSession, 
+    error: paymentError 
+  } = usePaymentSession();
+
   useEffect(() => {
     if (!trainerId) {
       console.log("Invalid trainer ID");
@@ -712,6 +723,28 @@ const TrainerPage: React.FC = () => {
     }
     fetchTrainer();
   }, [trainerId]);
+
+  // Handle payment session cleanup and completion detection
+  useEffect(() => {
+    // Check if user is returning from a successful payment
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment_status');
+    
+    if (paymentStatus === 'success' && currentSession) {
+      updateSessionStatus('completed');
+      // Clear URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (paymentStatus === 'cancelled' && currentSession) {
+      updateSessionStatus('cancelled');
+      // Clear URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Clean up expired sessions on component mount
+    if (currentSession && currentSession.status === 'expired') {
+      clearSession();
+    }
+  }, [currentSession, updateSessionStatus, clearSession]);
 
   const fetchTrainer = async () => {
     setIsLoading(true);
@@ -728,6 +761,13 @@ const TrainerPage: React.FC = () => {
   };
 
   const handlePurchasePlan = async () => {
+    // Check if there's already an active payment session
+    if (hasActiveSession) {
+      alert('A payment session is already active. Please complete or cancel the existing payment before starting a new one.');
+      setShowConfirmModal(false);
+      return;
+    }
+
     const stripe = await loadStripe(
       "pk_test_51S2XHlC780Va8Gps39D50PquwdG2BXw1hcGhG6D9CNcRFCqxUVYTQiuPuEQzlsGeWVFEs3HIs0bIWSFviWjQrjSg007Xa5KILP"
     );
@@ -744,20 +784,44 @@ const TrainerPage: React.FC = () => {
     }
 
     try {
-      const { data } = await api.post("/payment/create-checkout-session");
+      // Create payment session before proceeding
+      const sessionData = {
+        sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: user._id,
+        trainerId: trainerId,
+        planId: selectedPlan,
+        amount: 200000, // Amount in paise (₹2000.00)
+        currency: 'inr'
+      };
+
+      createSession(sessionData);
+
+      const  data = await ClientService.purchasePlan(
+        user._id,
+        trainerId!,
+        selectedPlan
+      );
+      // const { data } = await api.post("/payment/create-checkout-session", {
+      //   userId: user._id,
+      //   trainerId: trainerId,
+      //   planId: selectedPlan
+      // });
       console.log("response", data);
 
       const result = await stripe?.redirectToCheckout({ sessionId: data.id });
       if (result?.error) {
         console.log(result.error);
+        // Update session status to cancelled on error
+        updateSessionStatus('cancelled');
       }
 
       setShowConfirmModal(false);
       setSelectedPlan(null);
     } catch (error) {
       console.error("Error purchasing plan:", error);
-      alert("Failed to purchase plan");
       setShowConfirmModal(false);
+      // Update session status to cancelled on error
+      updateSessionStatus('cancelled');
     }
   };
 
@@ -805,6 +869,44 @@ const TrainerPage: React.FC = () => {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Trainers
         </Button>
+
+        {/* Payment Status Banner */}
+        {hasActiveSession && (
+          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-3">
+              <Clock className="w-5 h-5 text-yellow-400" />
+              <div>
+                <p className="text-yellow-200 font-medium">Payment Session Active</p>
+                <p className="text-yellow-300/80 text-sm">
+                  You have an active payment session. Please complete or cancel it before starting a new payment.
+                </p>
+              </div>
+              {/* <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto border-yellow-500/30 text-yellow-200 hover:bg-yellow-500/10"
+                onClick={clearSession}
+              >
+                Cancel Session
+              </Button> */}
+            </div>
+          </div>
+        )}
+
+        {/* Payment Error Banner */}
+        {paymentError && (
+          <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
+                <span className="text-white text-xs">!</span>
+              </div>
+              <div>
+                <p className="text-red-200 font-medium">Payment Error</p>
+                <p className="text-red-300/80 text-sm">{paymentError}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Hero Section */}
         <div className="bg-gradient-to-br from-[#1E2235] via-[#252A40] to-[rgba(30,34,53,0.8)] border border-[#2A3042] rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
