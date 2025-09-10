@@ -1,5 +1,6 @@
 import { IChatBotnteraction } from "@/core/interface/model/IChatBotInteraction.model";
 import { IChatBotSession } from "@/core/interface/model/IChatBotSession.model";
+import { ObjectId } from "mongoose";
 export interface IChatBotInteractionView {
   id?: string;
   content?: string;
@@ -35,7 +36,7 @@ export class ChatBotDTO {
    */
   static async mapToChatBotInteractionData(raw: IChatBotnteraction[]): Promise<IChatBotInteractionView[]> {
     return raw.map((interaction) => ({
-      id: interaction._id,
+      id: interaction._id as string,
       content: interaction.content,
       createdAt: interaction.createdAt.toISOString(),
       isUser: interaction.isUser,

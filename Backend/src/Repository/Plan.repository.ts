@@ -14,7 +14,7 @@ export class PlanRepository extends BaseRepository<IPlan> implements IPlanReposi
   }
 
   async findByTrainerId(trainerId: string): Promise<IPlan[]> {
-    return await this.model.find({ trainerId: new Types.ObjectId(trainerId) });
+    return await this.model.find({ trainerId: new Types.ObjectId(trainerId), isActive: true });
   }
 
   // async findById(id: string): Promise<IPlan | null> {

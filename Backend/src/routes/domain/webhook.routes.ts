@@ -8,6 +8,7 @@ import { PlanRepository } from "@/Repository/Plan.repository";
 import { PersonalizationRepository } from "@/Repository/personalization.repository";
 import { BookingService } from "@/Services/domain/Booking.service";
 import { BookingController } from "@/Controller/domain/Booking.controller";
+import { PaymentCollectionRepository } from "@/Repository/PaymentCollection.repository";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-08-27.basil",
@@ -22,7 +23,8 @@ const bookingController = new BookingController(
     new SessionRepository(),
     new ChatRepository(),
     new PlanRepository(),
-    new PersonalizationRepository()
+    new PersonalizationRepository(),
+    new PaymentCollectionRepository()
   )
 );
 

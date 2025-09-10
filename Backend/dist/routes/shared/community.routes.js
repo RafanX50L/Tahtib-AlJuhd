@@ -1,0 +1,33 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
+const verify_token_middleware_1 = require("../../middleware/verify.token.middleware");
+const Community_service_1 = require("../../Services/shared/Community.service");
+const community_controller_1 = require("../../Controller/shared/community.controller");
+const Post_repository_1 = require("../../Repository/Post.repository");
+const Comment_repository_1 = require("../../Repository/Comment.repository");
+const Like_repository_1 = require("../../Repository/Like.repository");
+const Follow_repository_1 = require("../../Repository/Follow.repository");
+const user_Repository_1 = require("../../Repository/user.Repository");
+const UserFile_repository_1 = require("../../Repository/UserFile.repository");
+const router = (0, express_1.Router)();
+const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 10 } });
+const service = new Community_service_1.CommunityService(new Post_repository_1.PostRepository(), new Comment_repository_1.CommentRepository(), new Like_repository_1.LikeRepository(), new Follow_repository_1.FollowRepository(), new user_Repository_1.UserRepository(), new UserFile_repository_1.UserFileRepository());
+const controller = new community_controller_1.CommunityController(service);
+router.get("/feed", (0, verify_token_middleware_1.verifyAnyToken)(), controller.getFeed.bind(controller));
+router.get("/search", (0, verify_token_middleware_1.verifyAnyToken)(), controller.searchUsers.bind(controller));
+router.get("/user/:userId/posts", (0, verify_token_middleware_1.verifyAnyToken)(), controller.getUserPosts.bind(controller));
+router.get("/user/:userId/profile", (0, verify_token_middleware_1.verifyAnyToken)(), controller.getUserProfile.bind(controller));
+router.post("/posts", (0, verify_token_middleware_1.verifyAnyToken)(), upload.array("media", 10), controller.createPost.bind(controller));
+router.get("/posts/:postId/comments", (0, verify_token_middleware_1.verifyAnyToken)(), controller.listComments.bind(controller));
+router.get("/posts/:postId", (0, verify_token_middleware_1.verifyAnyToken)(), controller.getPost.bind(controller));
+router.post("/posts/:postId/comments", (0, verify_token_middleware_1.verifyAnyToken)(), controller.addComment.bind(controller));
+router.post("/posts/:postId/like", (0, verify_token_middleware_1.verifyAnyToken)(), controller.toggleLike.bind(controller));
+router.post("/follow/:targetUserId", (0, verify_token_middleware_1.verifyAnyToken)(), controller.follow.bind(controller));
+router.delete("/follow/:targetUserId", (0, verify_token_middleware_1.verifyAnyToken)(), controller.unfollow.bind(controller));
+exports.default = router;
+//# sourceMappingURL=community.routes.js.map

@@ -50,7 +50,7 @@ export class BookingController implements IBookingController {
         sig!,
         webhookSecret
       );
-      await this._bookingService.handlePaymentSucess(event);
+      await this._bookingService.handlePaymentSuccess(event);
       //  console.error(`⚠️ Webhook error: ${err.message}`);
       res.sendStatus(HttpStatus.OK);
     } catch (error) {

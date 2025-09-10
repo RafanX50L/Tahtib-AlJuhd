@@ -16,7 +16,7 @@ const contractRepo = new TrainerClientContractRepository();
 const sessionRepo = new SessionRepository();
 const clinetTrainerServ = new clientTrainerService(trainerRepo,userRepo,clinetRepo,planRepo,contractRepo,sessionRepo);
 
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("⏰ Running contract expiration check...");
   await clinetTrainerServ.contractExpiration();
 });

@@ -12,6 +12,8 @@ import { generateSignedUrl } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";
 import { differenceInHours } from "date-fns";
 import { HttpResponse } from "@/constants/response-message.constant";
+import { createHttpError } from "@/utils";
+import { HttpStatus } from "@/constants/status.constant";
 
 export class clientTrainerService implements IClientTrainerService{
     constructor(
@@ -54,8 +56,13 @@ export class clientTrainerService implements IClientTrainerService{
 
 
     async getAvailableTrainers(userId:string,page: number, limit: number, search: string, specialty: string) {
-        const currentTrainerId = ((await this._clinetRepo.findOne({userId:userId})).data as IClientPersonalization).currentTrainerId?.toString() || "";
+        let currentTrainerId = ((await this._clinetRepo.findOne({userId:userId})).data as IClientPersonalization).currentTrainerId?.toString() || "";
+        const contract = await this.getCurrentTrainerContract(userId);
+        if (!contract || contract.endDate < new Date()) {
+            currentTrainerId = null;
+        }
         const result = await this._trainerRepo.getAvailableTrainer(currentTrainerId,page, limit, search, specialty);
+        console.log('available trainers:', result); 
         const mappedResult = await Promise.all(
         result.trainers.map((data) => ClientTrainerDTO.mapToTrainerData(data))
         );
@@ -96,6 +103,11 @@ export class clientTrainerService implements IClientTrainerService{
 
     async getCurrentTrainer(userId: string) {
         const currentTrainerId = ((await this._clinetRepo.findOne({userId:userId})).data as IClientPersonalization).currentTrainerId;
+        const contract = await this.getCurrentTrainerContract(userId);
+        if (!contract || contract.endDate < new Date()) {
+            // throw createHttpError(HttpStatus.,'Current trainer contract has expired');
+            return null;
+        }
         if (!currentTrainerId) throw new Error('No current trainer found for this user');
         const trainer = (await this._userRepo.findById(currentTrainerId));
         const result = await this._trainerRepo.getTrainerProfileData(trainer.personalizationId.toString());
@@ -113,7 +125,8 @@ export class clientTrainerService implements IClientTrainerService{
     async getCurrentTrainerContract(clientId: string) {
         const contract = await this._contractRepo.findActiveContractByClientId(clientId);
         if (!contract) {
-        throw new Error('No active contract found');
+        // throw new Error('No active contract found');
+        return null;
         }
         const plan = contract.planId as unknown as IPlan;
         return {

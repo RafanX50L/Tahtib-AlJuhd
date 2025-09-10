@@ -29,6 +29,7 @@ import schedulingRouter from '@/routes/domain/scheduling.routes';
 import paymentRouter from '@/routes/shared/payment.routes';
 import webhookRouter from '@/routes/domain/webhook.routes'
 import communityRouter from '@/routes/shared/community.routes'
+import dashboardRouter from '@/routes/client/dashboard.routes'
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/client/',userRoutes);
+app.use('/api/client/dashboard', dashboardRouter);
 app.use('/api/trainer', trainerRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/notifications',notificationRoute);

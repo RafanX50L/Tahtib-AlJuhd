@@ -44,7 +44,7 @@ const TrainersMain: React.FC = () => {
   const isMountedRef = useRef(true);
   const observerRef = useRef<HTMLDivElement | null>(null);
   const lastFetchedPageRef = useRef(0); // Track last fetched page
-  const limit = 1; // Adjusted page size for better UX
+  const limit = 5; // Adjusted page size for better UX
 
   const navigate = useNavigate();
 
