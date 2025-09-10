@@ -21,8 +21,8 @@ const CProgress = () => {
         className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all duration-300 ${styles.container}`}
       >
         <Header
-          title="Profile Settings"
-          content="Manage your personal information and preferences"
+          title="Health Progress Tracker"
+          content="Monitor your fitness journey with detailed insights"
           onMenuToggle={handleMenuToggle}
         />
         <div className="space-y-8">

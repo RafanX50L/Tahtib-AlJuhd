@@ -61,6 +61,7 @@ export const HttpResponse = {
     FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE: "Failed to fetch user weekly challenge",
     FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE: "Failed to update user weekly challenge",
 
+    DATA_CREATION_SUCCESSFULL: "Data creation successfull",
 
     INTERVIEW_FEEDBACK_UPDATED_SUCCESSFULL:'Interview feedback updated successfull',
     FAILED_TO_UPDATE_INTERVIEW_FEEDBACK: "Failed to update interview feedback",

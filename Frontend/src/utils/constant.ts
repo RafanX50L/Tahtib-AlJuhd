@@ -58,6 +58,11 @@ export const CLIENT_ROUTES = {
   CURRENT_TRAINER_MESSAGES: `${CLIENT_ROUTE}/current-trainer/messages`,
   AVAILABILITY: `${CLIENT_ROUTE}/availability`,
   NOTIFICATIONS: `${CLIENT_ROUTE}/notifications`,
+  // Progress
+  PROGRESS: `${CLIENT_ROUTE}/progress`,
+  PROGRESS_CURRENT: `${CLIENT_ROUTE}/progress/current`,
+  PROGRESS_GRAPH: `${CLIENT_ROUTE}/progress/graph`,
+  PROGRESS_PREVIEW: `${CLIENT_ROUTE}/progress/preview`,
 };
 
 const TRAINER_ROUTE = "/trainer";

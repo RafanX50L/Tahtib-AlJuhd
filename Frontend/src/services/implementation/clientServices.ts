@@ -1,9 +1,10 @@
-import { AxiosError } from "axios";
+// Local AxiosError shape to avoid version/type mismatches
+type AxiosError<T = unknown> = { response?: { data: T } };
 import api from "./api";
 import { CLIENT_ROUTES } from "../../utils/constant";
 import { toast } from "sonner";
 import { Types } from "mongoose";
-import { Interaction } from "@/components/client/chatBot/types";
+type Interaction = { role: string; content: string };
 import { IExerciseView } from "@/interfaces/client/IWorkout";
 import { ClientProfile } from "@/components/client/Profile/Profile";
 
@@ -69,6 +70,55 @@ export const ClientService = {
         err.response?.data.error || "Failed to generate fitness plan";
       console.log("Error creating fitness Plan: ", errorMessage);
       throw new Error(errorMessage);
+    }
+  },
+
+  // Progress services
+  getProgressCurrent: async () => {
+    try {
+      const response = await api.get(CLIENT_ROUTES.PROGRESS_CURRENT);
+      return (response.data?.current ?? null) as { date: string; weight: number; height: number; bmi: string; bmiCategory: string } | null;
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error?: string }>;
+      const message = err.response?.data?.error ?? 'Failed to fetch current progress';
+      console.log('Error fetching current progress: ', message);
+      throw new Error(message);
+    }
+  },
+
+  getProgressGraph: async (start: string, end: string) => {
+    try {
+      const response = await api.get(`${CLIENT_ROUTES.PROGRESS_GRAPH}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
+      return (response.data?.points ?? []) as { date: string; weight: number; bmi: number }[];
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error?: string }>;
+      const message = err.response?.data?.error ?? 'Failed to fetch progress graph';
+      console.log('Error fetching progress graph: ', message);
+      throw new Error(message);
+    }
+  },
+
+  addProgressEntry: async (payload: { date: string; weight: number; height: number }) => {
+    try {
+      const response = await api.post(CLIENT_ROUTES.PROGRESS, payload);
+      return response.data;
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error?: string }>;
+      const message = err.response?.data?.error ?? 'Failed to add progress entry';
+      console.log('Error adding progress entry: ', message);
+      throw new Error(message);
+    }
+  },
+
+  previewProgressEntry: async (payload: { date: string; weight: number; height: number }) => {
+    try {
+      const response = await api.post(CLIENT_ROUTES.PROGRESS_PREVIEW, payload);
+      return response.data.preview as { date: string; weight: number; height: number; bmi: string; bmiCategory: string };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error?: string }>;
+      const message = err.response?.data?.error ?? 'Failed to preview progress entry';
+      console.log('Error previewing progress entry: ', message);
+      throw new Error(message);
     }
   },
 
