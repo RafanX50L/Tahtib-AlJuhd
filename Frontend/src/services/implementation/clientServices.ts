@@ -335,25 +335,9 @@ export const ClientService = {
     }
   },
 
-  // createPymentIntent: async(amount:number, currency:string, planId:string, userId:string)=>{
-  //   try {
-  //      const payload = { amount, currency, planId, userId };
-  //     const response = await api.post('/payment/create-payment-intent', payload);
-  //     console.log('Purchase plan response:', response.data); // Debug log
-  //     return response.data;
-  //   } catch (error) {
-  //     const err = error as AxiosError<{ error: string }>;
-  //     const errorMessage =
-  //       err.response?.data.error || "Failed to purchase plan";
-  //     console.log("Failed to purchase plan: ", errorMessage);
-  //     toast.error(errorMessage);
-  //     throw new Error(errorMessage);
-  //   }
-  // },
   purchasePlan: async (userId: string, trainerId: string, planId: string) => {
     try {
-// Frontend
-const response = await api.post("/payment/create-checkout-session", { userId, trainerId, planId });
+      const response = await api.post("/payment/create-checkout-session", { userId, trainerId, planId });
       return response.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;

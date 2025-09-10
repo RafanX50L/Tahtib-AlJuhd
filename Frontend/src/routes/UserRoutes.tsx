@@ -23,6 +23,9 @@ import { clientTheme } from "@/components/shared/Notification";
 
 // import UserProfile from "@/pages/common/community/UserProfile";
 import CommunityApp from "@/pages/common/community/CommunityApp";
+import ProgressPage from "@/pages/client/CProgressPage";
+
+
 
 const UserRoutes: React.FC = () => {
   console.log("Entered UserRoutes");
@@ -45,6 +48,7 @@ const UserRoutes: React.FC = () => {
         <Route path="/trainer-details/:trainerId" element={<CATrainerDetailsPage />} />
         <Route path="/booking/:trainerId" element={<CBookingPage />} />
         <Route path="/community" element={<CommunityApp />} />
+        <Route path="/progress" element={<ProgressPage/>} />
         {/* <Route path="/community/create" element={<CreatePost />} /> */}
         {/* <Route path="/search" element={<Search />} /> */}
         {/* <Route path="/profile/:userId" element={<UserProfile />} /> */}
