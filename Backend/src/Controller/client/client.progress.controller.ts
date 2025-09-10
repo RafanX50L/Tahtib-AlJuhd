@@ -13,7 +13,7 @@ export class ClientProgressController implements IClientProgressController {
       const userId = req.user.id;
       const { date, weight, height } = req.body as { date: string; weight: number; height: number };
       await this.progressService.addEntry(userId, new Date(date), Number(weight), Number(height));
-      res.status(HttpStatus.CREATED).json({ message: HttpResponse.DATA_CREATION_SUCCESSFULL });
+      res.status(HttpStatus.CREATED).json({ message: HttpResponse.CREATED_SUCCESSFULLY });
     } catch (error) {
       next(error);
     }
@@ -23,7 +23,7 @@ export class ClientProgressController implements IClientProgressController {
     try {
       const userId = req.user.id;
       const current = await this.progressService.getCurrentStatus(userId);
-      res.status(HttpStatus.OK).json({ message: HttpResponse.DATA_FETCHING_SUCCESSFULL, current });
+      res.status(HttpStatus.OK).json({ message: HttpResponse.FETCHED_SUCCESSFULLY, current });
     } catch (error) {
       next(error);
     }
@@ -34,7 +34,7 @@ export class ClientProgressController implements IClientProgressController {
       const userId = req.user.id;
       const { start, end } = req.query as { start: string; end: string };
       const points = await this.progressService.getGraphData(userId, new Date(start), new Date(end));
-      res.status(HttpStatus.OK).json({ message: HttpResponse.DATA_FETCHING_SUCCESSFULL, points });
+      res.status(HttpStatus.OK).json({ message: HttpResponse.FETCHED_SUCCESSFULLY, points });
     } catch (error) {
       next(error);
     }

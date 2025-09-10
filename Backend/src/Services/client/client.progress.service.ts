@@ -1,11 +1,11 @@
 import { IClientProgressService, ICurrentStatusView, IGraphPointView } from '@/core/interface/services/client/IClient.Progress.Service';
 import { IProgressEntry } from '@/core/interface/model/IProgress.model';
+import { ProgressRepository } from '@/Repository/Progress.repository';
 import { createHttpError } from '@/utils';
 import { HttpStatus } from '@/constants/status.constant';
-import { IProgressRepository } from '@/core/interface/repositories/IProgress.repository';
 
 export class ClientProgressService implements IClientProgressService {
-  constructor(private readonly progressRepository: IProgressRepository) {}
+  constructor(private readonly progressRepository: ProgressRepository = new ProgressRepository()) {}
 
   calculateBmi(weightKg: number, heightCm: number): { bmi: number; bmiCategory: string } {
     const heightMeters = heightCm / 100;
