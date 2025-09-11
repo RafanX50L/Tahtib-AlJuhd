@@ -49,13 +49,13 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
     workout: IExerciseView[]
   ) {
     const defaultReport = {
-      caloriesBurned: 500, // Example value
-      duration: 60, // Example value in minutes
+      caloriesBurned: 0, // Example value
+      duration: 0, // Example value in minutes
       feedback: "Great job! Keep it up!", // Example feedback
       intensity: "low",
-      estimatedDuration: "60 minutes",
-      totalExercises: 5,
-      totalSets: 15,
+      estimatedDuration: "0 minutes",
+      totalExercises: 0,
+      totalSets: 0,
     };
     // 1. Generate report
     const report =
@@ -76,6 +76,7 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
 
     // 3. Generate next week if it’s day7
     if (day === "day7") {
+      console.log("Generating next week plan...");
       const workoutPlan = (await this._workoutPlanRepository.findById(
         workoutId
       )) as IWorkoutPlan;
@@ -90,7 +91,7 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
       await this._workoutPlanRepository.insertNextWeek(
         workoutId,
         `week${currentWeek + 1}`,
-        nextWeekPlan
+        nextWeekPlan[`week${currentWeek + 1}`]
       );
       await this._workoutPlanRepository.markWeekAsCompleted(
         workoutId,

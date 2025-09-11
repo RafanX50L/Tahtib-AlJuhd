@@ -28,7 +28,7 @@ export class UserProgressDTO {
     raw: IUserWeeklyChallenge
   ): Promise<IUserWeeklyChallengeView> {
     return {
-      user: raw.user.toString(),
+      user: raw.user? raw.user.toString() : null,
       challenge: raw.challenge.toString(),
       type: raw.type,
       startDate: raw.startDate.toDateString(),

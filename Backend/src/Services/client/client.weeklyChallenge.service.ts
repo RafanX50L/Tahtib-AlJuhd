@@ -61,6 +61,13 @@ export class ClientWeeklyChallengeService
       user: new Types.ObjectId(userId),
       challenge: new Types.ObjectId(id),
     })) as IUserWeeklyChallenge | null;
+    console.log("User Progress:", userProgress);
+    if(!userProgress){
+      const challengeData = await ClientWeeklyChallengeDTO.mapTooOneWeeklyChallengeData(challenge);
+  
+      return { challenge:challengeData };
+    }
+
 
     const challengeData = await ClientWeeklyChallengeDTO.mapTooOneWeeklyChallengeData(challenge);
     const userProgressDTO = await UserProgressDTO.mapToUserProgress(userProgress);

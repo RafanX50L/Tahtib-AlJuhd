@@ -104,18 +104,21 @@ const WorkoutSession: React.FC = () => {
     const fetchVideo = async () => {
       const exercise = workout[currentExerciseIndex];
       if (exercise?.name) {
+        console.log("Searching YouTube for:", exercise.name); 
         const video = await searchYouTube(exercise.name);
         console.log(
           "fetching times donfdak",
           exercise.name,
           video?.id?.videoId
         );
+        console.log("nice",video);
         if (video && video.id && video.id.videoId) {
           setVideoId(video.id.videoId);
         } else {
           setVideoId(null); // Reset if no video is found
         }
       } else {
+        console.log('someting happened');
         setVideoId(null);
       }
     };

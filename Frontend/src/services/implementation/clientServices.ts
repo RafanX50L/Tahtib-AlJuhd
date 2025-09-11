@@ -184,7 +184,8 @@ export const ClientService = {
     try {
       const response = await api.patch(
         `${CLIENT_ROUTES.COMPLETE_DAILY_WORKOUT}`,
-        { workout, day: currentDay, week: currentWeek }
+        { workout, day: currentDay, week: currentWeek },
+        { timeout: 60000 }
       );
       console.log("Updated workout response: ", response.data);
       return { data: response.data.data };

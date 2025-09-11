@@ -12,7 +12,7 @@ export interface IClientWeeklyChallengeService {
     userId: string
   ): Promise<{
     challenge: IChallengesViews | null;
-    userProgress: IUserWeeklyChallengeView | null;
+    userProgress?: IUserWeeklyChallengeView | null;
   }>;
 
   joinWeeklyChallenge(userId: string, challengeId: string): Promise<boolean>;
