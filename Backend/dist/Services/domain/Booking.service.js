@@ -27,69 +27,6 @@ class BookingService {
         this._personalizationRepo = _personalizationRepo;
         this._paymentRepo = _paymentRepo;
     }
-    // async purchasePlan(
-    //   clientId: string,
-    //   trainerId: string,
-    //   planId: string
-    // ): Promise<string> {
-    //   const plan = await this._planRepo.findById(new Types.ObjectId(planId));
-    //   if (!plan) throw new Error("Plan not found");
-    //   const clientPers = await this._personalizationRepo.findByUserId(clientId);
-    //   if (!clientPers) throw new Error("Client not found");
-    //   const clientData = clientPers.data as IClientPersonalization;
-    //   if (
-    //     clientData.currentTrainerId &&
-    //     clientData.currentTrainerId.toString() !== trainerId
-    //   ) {
-    //     const activeContract =
-    //       await this._contractRepo.findActiveByClientAndTrainer(
-    //         clientId,
-    //         clientData.currentTrainerId.toString()
-    //       );
-    //     if (activeContract)
-    //       throw new Error("Client has an active contract with another trainer");
-    //   }
-    //   const startDate = new Date();
-    //   const endDate = addWeeks(startDate, plan.durationWeeks);
-    //   const chat = await this._chatRepo.create({
-    //     participants: [
-    //       new Types.ObjectId(trainerId),
-    //       new Types.ObjectId(clientId),
-    //     ],
-    //     messages: [],
-    //   });
-    //   const contract: ITrainerClientContract = {
-    //     trainerId: new Types.ObjectId(trainerId),
-    //     clientId: new Types.ObjectId(clientId),
-    //     planId: new Types.ObjectId(planId),
-    //     startDate,
-    //     endDate,
-    //     sessionsRemaining: plan.sessionsPerWeek * plan.durationWeeks,
-    //     chatId: chat.id!,
-    //   } as ITrainerClientContract;
-    //   const newContract = await this._contractRepo.create(contract);
-    //   await this._planRepo.update(plan.id, { isBooked: true });
-    //   await this._personalizationRepo.updateClientData(clientId, {
-    //     ...clientData,
-    //     currentTrainerId: new Types.ObjectId(trainerId),
-    //     chatsId: [
-    //       ...(clientData.chatsId || []),
-    //       { trainerId: new Types.ObjectId(trainerId), chatId: chat.id! },
-    //     ],
-    //     contracts: [...(clientData.contracts || []), newContract.id!],
-    //     planStatus: "Active",
-    //   });
-    //   const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
-    //   if (!trainerPers) throw new Error("Trainer not found");
-    //   const trainerData = trainerPers.data as ITrainerPersonalization;
-    //   await this._personalizationRepo.updateTrainerData(trainerId, {
-    //     ...trainerData,
-    //     chats: [...(trainerData.chats || []), chat.id!],
-    //     contracts: [...(trainerData.contracts || []), newContract.id!],
-    //   });
-    //   return "new contract";
-    //   // in the updated version we will asing payment url this returning string is just for now
-    // }
     async handleCheckoutSession(userId, trainerId, planId) {
         const plan = await this._planRepo.findById(new mongoose_1.Types.ObjectId(planId));
         if (!plan)
@@ -177,6 +114,7 @@ class BookingService {
                 contractId: newContract.id,
                 amount: plan.price,
                 currency: 'inr',
+                paymentStatus: 'completed',
                 stripePaymentIntentId: session.payment_intent,
                 stripeSessionId: session.id,
                 paymentMethod: 'card',

@@ -29,6 +29,10 @@ export const ADMIN_ROUTES = {
   SUBMIT_INTERVIEW_FEEDBACK: `${ADMIN_ROUTE}/trainers/submit-interview-feedback`,
   APPROVE_TRAINER: `${ADMIN_ROUTE}/trainers/approve`,
   REJECT_TRAINER: `${ADMIN_ROUTE}/trainers/reject`,
+  DASHBOARD_STATS: `${ADMIN_ROUTE}/dashboard/stats`,
+  DASHBOARD_REVENUE: `${ADMIN_ROUTE}/dashboard/revenue`,
+  DASHBOARD_TOP_TRAINERS: `${ADMIN_ROUTE}/dashboard/top-trainers`,
+  DASHBOARD_RECENT_PAYMENTS: `${ADMIN_ROUTE}/dashboard/recent-payments`,
 };
 
 const CLIENT_ROUTE = "/client";
@@ -76,5 +80,8 @@ export const TRAINER_ROUTES = {
   AVAILABILITY: `${TRAINER_ROUTE}/availability`,
   SALARY: `${TRAINER_ROUTE}/salary`,
   CLIENTS: `${TRAINER_ROUTE}/clients`,
-  CHAT: `${TRAINER_ROUTE}/chat`
+  CHAT: `${TRAINER_ROUTE}/chat`,
+  DASHBOARD_STATS: `${TRAINER_ROUTE}/dashboard/stats`,
+  DASHBOARD_TRENDS: `${TRAINER_ROUTE}/dashboard/trends`,
+  DASHBOARD_PAYMENTS: `${TRAINER_ROUTE}/dashboard/payments`,
 };

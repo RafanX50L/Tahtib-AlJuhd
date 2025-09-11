@@ -2,10 +2,8 @@ import Sidebar from "../../components/admin/Sidebar";
 import Header from "../../components/admin/Dashboard/Header";
 import StatsCard from "../../components/admin/Dashboard/StatsCard";
 import TrainerApplications from "../../components/admin/Dashboard/TrainerApplication";
-import TopTrainers from "../../components/admin/Dashboard/TopTrainers";
 import RevenueChart from "../../components/admin/Dashboard/RevenueChart";
-import RecentActivities from "../../components/admin/Dashboard/RecentActivities";
-import Notifications from "../../components/admin/Dashboard/Notifications";
+import RecentPayments from "../../components/admin/Dashboard/RecentPayments";
 import { HelpCircle, Info } from "lucide-react"; // Ensure this is the correct library for LucideIcon
 
 const ADashboard = () => {
@@ -23,12 +21,8 @@ const ADashboard = () => {
           <StatsCard />
           <TrainerApplications />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <TopTrainers />
             <RevenueChart />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <RecentActivities className="lg:col-span-2" />
-            <Notifications />
+            <RecentPayments />
           </div>
         </main>
         <footer className="px-6 py-4 bg-gray-900 mt-8">

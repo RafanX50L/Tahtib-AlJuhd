@@ -1,7 +1,6 @@
 import { FeedbackData } from "@/components/admin/TrainerManagment/PendingApplicationsTable";
 import api from "./api";
 import { ADMIN_ROUTES } from "@/utils/constant";
-import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const AdminService = {
@@ -25,14 +24,31 @@ export const AdminService = {
       console.log("clients ", response);
       return { data: response.data.data, error: null };
     } catch (error: unknown) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to fetch clients. Please try again.";
       console.log("Error fetching clients:", errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
+  },
+
+  getDashboardStats: async () => {
+    const res = await api.get(ADMIN_ROUTES.DASHBOARD_STATS);
+    return res.data.data as { totalTrainers: number; totalClients: number; activeClients: number; monthlyRevenue: number; pendingTrainerApprovals: number };
+  },
+  getDashboardRevenue: async (monthsBack = 6) => {
+    const res = await api.get(ADMIN_ROUTES.DASHBOARD_REVENUE, { params: { monthsBack } });
+    return res.data.data as { labels: string[]; revenue: number[] };
+  },
+  getDashboardTopTrainers: async (limit = 5) => {
+    const res = await api.get(ADMIN_ROUTES.DASHBOARD_TOP_TRAINERS, { params: { limit } });
+    return res.data.data as Array<{ trainerId: string; name?: string; revenue: number; clients: number }>;
+  },
+  getDashboardRecentPayments: async (limit = 10) => {
+    const res = await api.get(ADMIN_ROUTES.DASHBOARD_RECENT_PAYMENTS, { params: { limit } });
+    return res.data.data as Array<{ id: string; trainerId: string; trainerName: string; clientId: string; clientName: string; amount: number; currency: string; createdAt: string; planTitle?: string }>;
   },
 
   blockOrUnblockUser: async (id: string) => {
@@ -41,9 +57,9 @@ export const AdminService = {
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to update status. Please try again.";
       console.log("Error update status:", errorMessage);
       toast.error(errorMessage);
@@ -56,9 +72,9 @@ export const AdminService = {
       const response = await api.get(ADMIN_ROUTES.GET_ALL_TRAINERS);
       return { data: response.data, error: null };
     } catch (error: unknown) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to fetch trainers. Please try again.";
       console.log("Error fetching trainers:", errorMessage);
       toast.error(errorMessage);
@@ -73,9 +89,9 @@ export const AdminService = {
     );
     return response.data;
   } catch (error: unknown) {
-    const err = error as AxiosError<{ error: string }>;
+    const err = error as { response?: { data?: { error?: string }}};
     const errorMessage =
-      err.response?.data.error || "Failed to fetch trainers. Please try again.";
+      err?.response?.data?.error || "Failed to fetch trainers. Please try again.";
     toast.error(errorMessage);
     throw new Error(errorMessage);
   }
@@ -88,9 +104,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
     );
     return { data: response.data, error: null };
   } catch (error: unknown) {
-    const err = error as AxiosError<{ error: string }>;
+    const err = error as { response?: { data?: { error?: string }}};
     const errorMessage =
-      err.response?.data.error || "Failed to fetch trainers. Please try again.";
+      err?.response?.data?.error || "Failed to fetch trainers. Please try again.";
     toast.error(errorMessage);
     throw new Error(errorMessage);
   }
@@ -107,9 +123,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
       console.log("updated serfsdfas", response);
       return { data: response.data[0], error: null };
     } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to Update Trainer status. Please try again.";
       console.log("Error Update Trainer status:", errorMessage);
       toast.error(errorMessage);
@@ -128,9 +144,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to Schedule interview. Please try again.";
       console.log("Error Scheduling Interview:", errorMessage);
       toast.error(errorMessage);
@@ -146,9 +162,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
       });
       return response.data;
     } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to fetch clients. Please try again.";
       console.log("Error fetching clients:", errorMessage);
       toast.error(errorMessage);
@@ -165,9 +181,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to Approve Trainer. Please try again.";
       console.log("Error Approve Trainer:", errorMessage);
       toast.error(errorMessage);
@@ -181,9 +197,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
       console.log("updated serfsdfas", response);
       return response.data;
     } catch (error) {
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as { response?: { data?: { error?: string }}};
       const errorMessage =
-        err.response?.data.error ||
+        err?.response?.data?.error ||
         "Failed to Reject Trainer. Please try again.";
       console.log("Error Reject Trainer:", errorMessage);
       toast.error(errorMessage);

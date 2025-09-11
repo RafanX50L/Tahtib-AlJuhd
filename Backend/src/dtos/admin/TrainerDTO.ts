@@ -104,6 +104,7 @@ type TrainerDTO = {
   resumeFile: string | null;
   interviewDetails?:Partial<ITrainerInterview>;
   status:string;
+  appliedOn:string;
 };
 
 export interface TrainerCardDTO {
@@ -186,6 +187,7 @@ export class AdminTrainerDTO {
         } :null,
       }:null,
       status: raw.data.status,
+      appliedOn: raw.updatedAt.toDateString(),
     };
   }
 

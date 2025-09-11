@@ -218,6 +218,57 @@ export const TrainerService = {
     }
   },
 
+  getDashboardStats: async () => {
+    try {
+      const response = await api.get(TRAINER_ROUTES.DASHBOARD_STATS);
+      return response.data.data as {
+        activeClients: number;
+        sessionsToday: number;
+        totalRevenueThisMonth: number;
+        contractsExpiringSoon: number;
+      };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch dashboard stats';
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getDashboardTrends: async () => {
+    try {
+      const response = await api.get(TRAINER_ROUTES.DASHBOARD_TRENDS);
+      return response.data.data as {
+        labels: string[];
+        sessions: number[];
+        activeClients: number[];
+        newClients: number[];
+      };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch dashboard trends';
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  getDashboardPayments: async (params: { page?: number; limit?: number; status?: 'pending' | 'completed' | 'failed' | 'refunded' | 'all'; search?: string } = {}) => {
+    try {
+      const response = await api.get(TRAINER_ROUTES.DASHBOARD_PAYMENTS, { params });
+      return response.data.data as {
+        payments: Array<{ id: string; clientId: string; amount: number; currency: string; paymentStatus: string; createdAt: string }>;
+        total: number;
+        page: number;
+        limit: number;
+      };
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data.error || 'Failed to fetch payment history';
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
   // trainer client Services
 
   getClients: async (trainerId: string) => {

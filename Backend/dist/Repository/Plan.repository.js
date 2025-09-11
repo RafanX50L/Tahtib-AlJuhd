@@ -14,6 +14,14 @@ class PlanRepository extends base_repository_1.BaseRepository {
     async findByTrainerId(trainerId) {
         return await this.model.find({ trainerId: new mongoose_1.Types.ObjectId(trainerId), isActive: true });
     }
+    async countActiveClinetByTrainer(trainerId) {
+        const result = await this.model.aggregate([
+            { $match: { trainerId: new mongoose_1.Types.ObjectId(trainerId), isActive: true, createdAt: { $lte: new Date() }, expiresAt: { $gte: new Date() } } },
+            { $group: { _id: null, totalClients: { $sum: "$clientCount" } } }
+        ]);
+        console.log("Active clients count result:", result);
+        return result[0]?.totalClients || 0;
+    }
 }
 exports.PlanRepository = PlanRepository;
 //# sourceMappingURL=Plan.repository.js.map

@@ -2,8 +2,8 @@ import { useRef } from "react";
 import Sidebar from "../../components/client/Sidebar";
 import StatsGrid from "../../components/client/Dashboard/StatsGrid";
 import WeeklyChallenge from "../../components/client/Dashboard/WeeklyCahllenge";
-import WorkoutLevels from "../../components/client/Dashboard/WorkoutLevels";
-import Leaderboard from "../../components/client/Dashboard/LeaderBoard";
+// import WorkoutLevels from "../../components/client/Dashboard/WorkoutLevels";
+// import Leaderboard from "../../components/client/Dashboard/LeaderBoard";
 import ChatbotButton from "../../components/client/ChatbotButton";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";
 import CFooter from "@/components/client/Footer";
@@ -32,8 +32,8 @@ const CDashboard = () => {
         <div className="space-y-8">
           <StatsGrid />
           <WeeklyChallenge />
-          <WorkoutLevels />
-          <Leaderboard />
+          {/* <WorkoutLevels /> */}
+          {/* <Leaderboard /> */}
         </div>
         <ChatbotButton />
         <CFooter />

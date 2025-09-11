@@ -3,6 +3,7 @@ import { IPlanRepository } from '@/core/interface/repositories/IPlanRepository';
 import { Types } from 'mongoose';
 import { BaseRepository } from './base.repository';
 import { PlanModel } from '@/models/Plan.model';
+import { c } from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
 
 export class PlanRepository extends BaseRepository<IPlan> implements IPlanRepository {
 
@@ -15,6 +16,15 @@ export class PlanRepository extends BaseRepository<IPlan> implements IPlanReposi
 
   async findByTrainerId(trainerId: string): Promise<IPlan[]> {
     return await this.model.find({ trainerId: new Types.ObjectId(trainerId), isActive: true });
+  }
+
+  async countActiveClinetByTrainer(trainerId: string): Promise<number> {
+    const result = await this.model.aggregate([
+      { $match: { trainerId: new Types.ObjectId(trainerId), isActive: true , createdAt: { $lte: new Date() }, expiresAt: { $gte: new Date() } } },
+      { $group: { _id: null, totalClients: { $sum: "$clientCount" } } }
+    ]);
+    console.log("Active clients count result:", result);
+    return result[0]?.totalClients || 0;
   }
 
   // async findById(id: string): Promise<IPlan | null> {

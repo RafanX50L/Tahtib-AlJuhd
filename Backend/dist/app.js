@@ -29,6 +29,7 @@ const scheduling_routes_1 = __importDefault(require("./routes/domain/scheduling.
 const payment_routes_1 = __importDefault(require("./routes/shared/payment.routes"));
 const webhook_routes_1 = __importDefault(require("./routes/domain/webhook.routes"));
 const community_routes_1 = __importDefault(require("./routes/shared/community.routes"));
+const dashboard_routes_1 = __importDefault(require("./routes/client/dashboard.routes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: env_config_1.env.CLIENT_URL,
@@ -44,6 +45,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/api/auth', auth_routes_1.default);
 app.use('/api/client/', user_routes_1.default);
+app.use('/api/client/dashboard', dashboard_routes_1.default);
 app.use('/api/trainer', trainer_routes_1.default);
 app.use('/api/admin', admin_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);

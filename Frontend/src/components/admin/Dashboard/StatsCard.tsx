@@ -1,5 +1,8 @@
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Users, User, DollarSign, Clock, ArrowUp, ArrowDown } from "lucide-react";
+import { AdminService } from "@/services/implementation/adminServices";
+import { Link } from "react-router-dom";
 
 interface Stat {
   title: string;
@@ -11,44 +14,34 @@ interface Stat {
 }
 
 const StatsCard = () => {
-  const stats: Stat[] = [
-    {
-      title: "Total Trainers",
-      value: "24",
-      icon: "Users",
-      trend: "up",
-      trendValue: "8%",
-      color: "indigo",
-    },
-    {
-      title: "Active Clients",
-      value: "142",
-      icon: "User",
-      trend: "up",
-      trendValue: "12%",
-      color: "green",
-    },
-    {
-      title: "Monthly Revenue",
-      value: "$18,652",
-      icon: "DollarSign",
-      trend: "up",
-      trendValue: "15%",
-      color: "blue",
-    },
-    {
-      title: "Pending Trainer Approvals",
-      value: "7",
-      icon: "Clock",
-      trend: "down",
-      trendValue: "3",
-      color: "yellow",
-    },
-  ];
+  const [stats, setStats] = useState<Stat[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const s = await AdminService.getDashboardStats();
+        const mapped: Stat[] = [
+          { title: "Total Trainers", value: s.totalTrainers.toString(), icon: "Users", trend: "up", trendValue: "", color: "indigo" },
+          { title: "Total Clients", value: s.totalClients.toString(), icon: "User", trend: "up", trendValue: "", color: "green" },
+          { title: "Monthly Revenue", value: `₹${s.monthlyRevenue.toLocaleString()}` , icon: "DollarSign", trend: "up", trendValue: "", color: "blue" },
+          { title: "Pending Trainer Approvals", value: s.pendingTrainerApprovals.toString(), icon: "Clock", trend: s.pendingTrainerApprovals > 0 ? "down" : "up", trendValue: "", color: "yellow" },
+        ];
+        setStats(mapped);
+      } catch {
+        // toast handled upstream if needed
+      }
+    })();
+  }, []);
+
+  const pendingCount = useMemo(() => {
+    const item = stats.find(s => s.title === 'Pending Trainer Approvals');
+    return item ? parseInt(item.value || '0', 10) : 0;
+  }, [stats]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 ">
-      {stats.map((stat, index) => (
+      {stats.map((stat, index) => {
+        const content = (
         <Card key={index} className="bg-gray-800 p-6 hover:-translate-y-1 border-none transition-transform">
           <div className="flex items-center justify-between border-none">
             <div>
@@ -75,8 +68,14 @@ const StatsCard = () => {
               {stat.trend === "up" ? "From last month" : "New today"}
             </span>
           </div>
-        </Card>
-      ))}
+        </Card>);
+        if (stat.title === 'Pending Trainer Approvals' && pendingCount > 0) {
+          return (
+            <Link to="/admin/trainer-management" key={index} className="block">{content}</Link>
+          );
+        }
+        return content;
+      })}
     </div>
   );
 };
