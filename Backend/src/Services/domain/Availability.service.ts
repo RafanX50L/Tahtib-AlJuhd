@@ -62,10 +62,12 @@ export class AvailabilityService implements IAvailabilityService {
 
   async getUnFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISessionView[]> {
     const result = await this._sessionRepo.findUnFreeSlotsByTrainer(trainerId, fromDate, toDate);
+    console.log('available slots',result);
     return await SessionDto.mapToISessionData(result);
   }
   async getUnFreeSlotsByClient(clinetId: string, fromDate: Date, toDate: Date): Promise<ISessionView[]> {
     const result = await this._sessionRepo.findUnFreeSlotsByClient(clinetId, fromDate, toDate);
+    console.log('available slots',result);
     return await SessionDto.mapToISessionData(result);
   }
 }

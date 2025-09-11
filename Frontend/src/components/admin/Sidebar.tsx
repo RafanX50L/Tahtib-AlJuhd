@@ -3,10 +3,10 @@ import {
   FaTachometerAlt,
   FaUsers,
   FaUser,
-  FaCalendar,
+  // FaCalendar,
   FaDollarSign,
   FaBell,
-  FaCog,
+  // FaCog,
   FaSignOutAlt,
 } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
@@ -22,9 +22,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { logout } from "@/store/slices/authSlice";
-import { RootState } from '@/store/store';
 
 interface NavItem {
   name: string;
@@ -39,15 +38,14 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state: RootState) => state.auth);
   const navItems: NavItem[] = [
     { name: 'Dashboard', icon: FaTachometerAlt, path: `${pathadmin}/dashboard`, active: true },
     { name: 'Trainer Management', icon: FaUsers, path: `${pathadmin}/trainer-management` },
     { name: 'Client Management', icon: FaUser, path: `${pathadmin}/client-management` },
-    { name: 'Interview Schedule', icon: FaCalendar, path: `${pathadmin}/interview-schedule` },
+    // { name: 'Interview Schedule', icon: FaCalendar, path: `${pathadmin}/interview-schedule` },
     { name: 'Payments', icon: FaDollarSign, path: `${pathadmin}/payments` },
-    { name: 'Notifications', icon: FaBell, path: `${pathadmin}/notifications` },
-    { name: 'Settings', icon: FaCog, path: `${pathadmin}/settings` },
+    { name: 'Notifications', icon: FaBell, path: `${pathadmin}/notification` },
+    // { name: 'Settings', icon: FaCog, path: `${pathadmin}/settings` },
   ];
 
   const handleLogout = () => {
@@ -124,19 +122,6 @@ const Sidebar = () => {
           </Dialog>
         </div>
       </nav>
-      <div className="px-6 py-4 border-t border-gray-800">
-        <div className="flex items-center">
-          <img
-            src="https://via.placeholder.com/40"
-            className="rounded-full mr-3"
-            alt="Admin profile"
-          />
-          <div>
-            <p className="text-sm font-medium text-white">{user?.name}</p>
-            <p className="text-xs text-gray-400">{user?.email}</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

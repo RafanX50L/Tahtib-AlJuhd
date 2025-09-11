@@ -13,30 +13,33 @@ import {
   isEqual,
 } from "date-fns";
 // import { stat } from "fs";
-import { AvailabilityResponse, BookSlotInput, ISchedulingService } from "@/core/interface/services/domain/IScheduling.Service";
+import {
+  AvailabilityResponse,
+  BookSlotInput,
+  ISchedulingService,
+} from "@/core/interface/services/domain/IScheduling.Service";
 import { ISessionRepository } from "@/core/interface/repositories/ISession.repository";
 import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { ISession } from "@/core/interface/model/ISession";
-import { IClientPersonalization, ITrainerPersonalization } from "@/core/interface/model/IPersonalization.model";
+import {
+  IClientPersonalization,
+  ITrainerPersonalization,
+} from "@/core/interface/model/IPersonalization.model";
 import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
 
-
-
-export class SchedulingService implements ISchedulingService { 
- 
+export class SchedulingService implements ISchedulingService {
   constructor(
-    private readonly _sessionRepo: ISessionRepository ,
+    private readonly _sessionRepo: ISessionRepository,
     private readonly _personalizationRepo: IPersonalizationRepository,
-    private readonly _contractRepo: ITrainerClientContractRepository,
+    private readonly _contractRepo: ITrainerClientContractRepository
   ) {}
 
-  
   async getAvailabilityForDate(
     trainerId: string,
-    date?: string,
+    date?: string
   ): Promise<AvailabilityResponse> {
     const target = date ? new Date(date) : new Date();
     const from = startOfDay(target);
@@ -52,6 +55,7 @@ export class SchedulingService implements ISchedulingService {
     const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
     const data = trainerPers?.data as ITrainerPersonalization | undefined;
 
+    console.log("trainerPers", data?.availability);
     const rules = data?.availability?.weeklyRules;
     const dayStr = format(target, "yyyy-MM-dd");
     const weekday = format(target, "EEEE");
@@ -64,13 +68,15 @@ export class SchedulingService implements ISchedulingService {
         end: new Date(`${dayStr}T${r.endTime}:00`),
       }));
     } else {
-      // fallback
-      const baseStart = set(from, { hours: 9, minutes: 0, seconds: 0, milliseconds: 0 });
-      const baseEnd = set(from, { hours: 18, minutes: 0, seconds: 0, milliseconds: 0 });
-      windows = [{ start: baseStart, end: baseEnd }];
+      // No rules → no slots
+      return { date: format(target, "yyyy-MM-dd"), slots: [] };
     }
 
-    const freeTimes: Array<{ time: string; duration: number; isBooked: boolean }> = [];
+    const freeTimes: Array<{
+      time: string;
+      duration: number;
+      isBooked: boolean;
+    }> = [];
     const minutesIncrement = data?.availability?.slotLength || 30;
     const bufferMinutes = data?.availability?.bufferMinutes || 0;
 
@@ -84,11 +90,16 @@ export class SchedulingService implements ISchedulingService {
         const minutesDiff = Math.ceil(
           differenceInMinutes(now, cursor) / (minutesIncrement + bufferMinutes)
         );
-        cursor = addMinutes(cursor, minutesDiff * (minutesIncrement + bufferMinutes));
+        cursor = addMinutes(
+          cursor,
+          minutesDiff * (minutesIncrement + bufferMinutes)
+        );
       }
 
-      while ((isBefore(addMinutes(cursor, minutesIncrement), w.end) || 
-        isEqual(addMinutes(cursor, minutesIncrement), w.end))) {
+      while (
+        isBefore(addMinutes(cursor, minutesIncrement), w.end) ||
+        isEqual(addMinutes(cursor, minutesIncrement), w.end)
+      ) {
         const next = addMinutes(cursor, minutesIncrement);
 
         // skip past slots again just in case
@@ -113,10 +124,12 @@ export class SchedulingService implements ISchedulingService {
       }
     }
 
-    console.log("nice", { date: format(target, "yyyy-MM-dd"), slots: freeTimes });
+    console.log("nice", {
+      date: format(target, "yyyy-MM-dd"),
+      slots: freeTimes,
+    });
     return { date: format(target, "yyyy-MM-dd"), slots: freeTimes };
   }
-
 
   async bookSlot(input: BookSlotInput) {
     const start = new Date(`${input.date}T${input.time}:00`);
@@ -140,7 +153,8 @@ export class SchedulingService implements ISchedulingService {
     const taken = conflicts.find(
       (s) => !(end <= s.startTime || start >= s.endTime)
     );
-    if(taken) throw createHttpError(HttpStatus.CONFLICT, HttpResponse.SLOTS_CONFLICT);
+    if (taken)
+      throw createHttpError(HttpStatus.CONFLICT, HttpResponse.SLOTS_CONFLICT);
 
     // Create a session marked as booked
     const created = await this._sessionRepo.create({
@@ -154,7 +168,7 @@ export class SchedulingService implements ISchedulingService {
     await this._contractRepo.decrementSessionsRemaining(input.contractId);
     console.log("created", created);
 
-    return ;
+    return;
   }
 
   async listBookings({
@@ -166,20 +180,24 @@ export class SchedulingService implements ISchedulingService {
     clientId?: string;
     status?: string;
   }) {
-    const query:  FilterQuery<ISession> = {};
+    const query: FilterQuery<ISession> = {};
     if (trainerId) query.trainerId = new Types.ObjectId(trainerId);
     if (clientId) query.clientId = new Types.ObjectId(clientId);
     if (status === "upcoming") query.startTime = { $gte: new Date() };
     if (status === "past") query.endTime = { $lt: new Date() };
-
-    return await this._sessionRepo.findAll(query);
+    const result = await this._sessionRepo.findAll(query);
+    console.log("listBookings", result);
+    return result;
   }
 
   async cancelBooking(bookingId: string, clientId: string) {
     const session = await this._sessionRepo.findById(
       new Types.ObjectId(bookingId)
     );
-    const contractId = ((await this._personalizationRepo.findByUserId(clientId)).data as IClientPersonalization).contracts;
+    const contractId = (
+      (await this._personalizationRepo.findByUserId(clientId))
+        .data as IClientPersonalization
+    ).contracts;
     if (!session) throw new Error("Booking not found");
     session.status = "cancelled";
     session.clientId = null as null;

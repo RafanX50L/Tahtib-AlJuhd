@@ -29,13 +29,11 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
     return result;
   }
   async findUnFreeSlotsByClient(clinetId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
-    console.log('Finding unfree slots for client:', clinetId, 'from', fromDate, 'to', toDate);
-    const result = await this.model.find({
+    return await this.model.find({
       clientId: new Types.ObjectId(clinetId),
       status: { $nin: ['free', 'cancelled'] },
       startTime: { $gte: fromDate, $lte: toDate },
     });
-    return result;
   }
   
 }

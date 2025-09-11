@@ -15,8 +15,6 @@ const NotificationsPage = lazy(() => import("@/components/shared/Notification"))
 
 import { trainerTheme } from "@/components/shared/Notification";
 import CommunityApp from "@/pages/common/community/CommunityApp";
-import CreatePost from "@/pages/common/community/createPost";
-import UserSearch from "@/pages/common/community/UserSearch";
 
 const TrainerRoutes: React.FC = () => {
   return (
@@ -34,9 +32,6 @@ const TrainerRoutes: React.FC = () => {
           element={<NotificationsPage theme={trainerTheme} backPath="/trainer/dashboard" />}
         />
         <Route path="/community" element={<CommunityApp />} />
-        <Route path="/community/create" element={<CreatePost />} />
-        <Route path="/search" element={<UserSearch />} />
-        {/* <Route path="/profile/:userId" element={<UserProfile />} /> */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>

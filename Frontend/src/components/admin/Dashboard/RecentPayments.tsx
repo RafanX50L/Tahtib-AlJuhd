@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Download, FileText, File, TrendingUp, Users, DollarSign, Calendar } from "lucide-react";
+import { FileText, File, TrendingUp, Users, DollarSign, Calendar } from "lucide-react";
 import { AdminService } from "@/services/implementation/adminServices";
 
 const RecentPayments = () => {
@@ -15,7 +15,7 @@ const RecentPayments = () => {
         setError(null);
         const data = await AdminService.getDashboardRecentPayments(10);
         setRows(data);
-      } catch (err) {
+      } catch {
         setError('Failed to load payment data');
         setRows([]);
       } finally {
@@ -64,19 +64,19 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
   };
 
   const formatCurrency = (amount: number, currency: string) => {
-    const currencySymbols = {
+    const currencySymbols: Record<string, string> = {
       inr: '₹',
       usd: '$',
       eur: '€',
       gbp: '£'
     };
-    return `${currencySymbols[currency.toLowerCase()] || '₹'}${amount.toLocaleString()}`;
+    return `${(currencySymbols as Record<string, string>)[currency.toLowerCase()] || '₹'}${amount.toLocaleString()}`;
   };
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
     
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
@@ -118,8 +118,8 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl border border-gray-700/50 backdrop-blur-sm shadow-2xl overflow-hidden">
       {/* Header Section */}
-      <div className="p-6 border-b border-gray-700/50">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 sm:p-6 border-b border-gray-700/50">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 rounded-xl backdrop-blur-sm">
               <TrendingUp className="w-6 h-6 text-indigo-400" />
@@ -131,7 +131,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
               <p className="text-gray-400 text-sm">Latest transaction activity</p>
             </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 flex-wrap">
             <button 
               className="flex items-center gap-2 px-4 py-2 bg-gray-800/80 border border-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-gray-500"
               onClick={downloadCSV}
@@ -150,7 +150,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
           <div className="bg-gradient-to-br from-gray-800/60 to-gray-700/40 rounded-xl p-4 border border-gray-700/30 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-green-500/20 rounded-lg">
@@ -187,7 +187,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
       </div>
 
       {/* Table Section */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {rows.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -199,7 +199,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
         ) : (
           <div className="overflow-hidden rounded-xl border border-gray-700/50">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[720px]">
                 <thead>
                   <tr className="bg-gradient-to-r from-gray-800/80 to-gray-700/60 border-b border-gray-700/50">
                     <th className="text-left p-4 text-gray-300 font-semibold text-sm uppercase tracking-wide">Trainer</th>
@@ -270,7 +270,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
         )}
         
         {/* Footer */}
-        <div className="mt-6 flex items-center justify-between text-sm text-gray-400">
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-400">
           <div>Showing {rows.length} transactions</div>
           <div className="flex items-center gap-2">
             <span>Last updated:</span>
