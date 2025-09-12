@@ -10,6 +10,9 @@ import {
 } from "../../utils/cookie.utils";
 import { createHttpError } from "../../utils";
 import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
+import { env } from "@/config/env.config";
+
+const maxAge = Number(env.COOKIE_MAX_AGE);
 
 export class AuthController implements IAuthController {
   constructor(
@@ -35,11 +38,12 @@ export class AuthController implements IAuthController {
         await this._authService.signIn(email, password);
         console.log('user',user);
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
+      console.log('maxAge',maxAge, typeof maxAge);
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: maxAge, // 7 days
       });
 
       console.log("Refresh Token:", refreshToken);
@@ -70,7 +74,7 @@ export class AuthController implements IAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: maxAge,
       });
 
       res.status(HttpStatus.CREATED).json({
@@ -147,7 +151,7 @@ export class AuthController implements IAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: maxAge,
       });
 
       res.status(HttpStatus.OK).json({
@@ -208,7 +212,7 @@ export class AuthController implements IAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: maxAge,
       });
 
       res.status(HttpStatus.OK).json({

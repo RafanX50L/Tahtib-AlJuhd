@@ -1,7 +1,7 @@
-import { ChatController } from '@/Controller/shared/Chat.controller';
+import { ChatController } from '@/Controller/shared/chat.controller';
 import { AddedRequest } from '@/middleware/verify.token.middleware';
 import { ChatRepository } from '@/Repository/Chat.repository';
-import { ChatService } from '@/Services/shared/Chat.service';
+import { ChatService } from '@/Services/shared/chat.service';
 import express, { NextFunction, Response } from 'express';
 import { Types } from 'mongoose';
 
@@ -11,7 +11,6 @@ const chatRepo = new ChatRepository();
 const chatService = new ChatService(chatRepo);
 const chatController = new ChatController(chatService);
 
-// Middleware to ensure user is a participant in the chat
 const restrictToChatParticipant = async (req: AddedRequest, res: Response, next: NextFunction) => {
   const { chatId } = req.params;
 

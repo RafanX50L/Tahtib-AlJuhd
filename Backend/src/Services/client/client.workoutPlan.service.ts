@@ -49,21 +49,19 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
     workout: IExerciseView[]
   ) {
     const defaultReport = {
-      caloriesBurned: 0, // Example value
-      duration: 0, // Example value in minutes
-      feedback: "Great job! Keep it up!", // Example feedback
+      caloriesBurned: 0, 
+      duration: 0, 
+      feedback: "Great job! Keep it up!", 
       intensity: "low",
       estimatedDuration: "0 minutes",
       totalExercises: 0,
       totalSets: 0,
     };
-    // 1. Generate report
     const report =
       workout.length === 0
         ? defaultReport
         : await generateWorkoutReport(workout);
 
-    // 2. Increment completion counter
     const clientData = (
       (await this._personalizationRepository.updateClientWorkoutCompletionCounter(
         userId
@@ -74,13 +72,12 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
     if (!workoutId)
       throw createHttpError(400, "No workout plan assigned to user");
 
-    // 3. Generate next week if it’s day7
     if (day === "day7") {
       console.log("Generating next week plan...");
       const workoutPlan = (await this._workoutPlanRepository.findById(
         workoutId
       )) as IWorkoutPlan;
-      const previousWeekWorkouts = workoutPlan[`${week}`]; // assuming the keys are like week1, week2, etc.
+      const previousWeekWorkouts = workoutPlan[`${week}`]; 
       const currentWeek = parseInt(week.replace("week", ""), 10);
       const nextWeekPlan = await generateFitnessPlan(
         clientData.userData,
@@ -99,7 +96,6 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
       );
     }
 
-    // 4. Mark current day complete and save report
     await this._workoutPlanRepository.markWorkoutDayAsComplete(
       workoutId,
       week,

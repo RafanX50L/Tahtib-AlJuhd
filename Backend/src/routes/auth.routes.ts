@@ -3,7 +3,7 @@ import { UserRepository } from "@/Repository/user.Repository";
 import { AuthService } from "@/Services/auth/auth.service";
 import { AuthController } from "@/Controller/auth/auth.controller";
 import { NotificationRepository } from "@/Repository/Notification.repository";
-import { NotificationService } from "@/Services/shared/Notification.service";
+import { NotificationService } from "@/Services/shared/notification.service";
 
 const authRouter = Router();
 

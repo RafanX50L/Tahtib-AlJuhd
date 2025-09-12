@@ -5,10 +5,10 @@ import { ChatRepository } from "@/Repository/Chat.repository";
 import { PlanRepository } from "@/Repository/Plan.repository";
 import { PersonalizationRepository } from "@/Repository/personalization.repository";
 import { PaymentCollectionRepository } from "@/Repository/PaymentCollection.repository";
-import { BookingService } from "@/Services/domain/Booking.service";
-import { BookingController } from "@/Controller/domain/Booking.controller";
-import { PaymentController } from "@/Controller/admin/Payment.controller";
-import { PaymentService } from "@/Services/domain/Payment.service";
+import { BookingService } from "@/Services/domain/booking.service";
+import { BookingController } from "@/Controller/domain/booking.controller";
+import { PaymentController } from "@/Controller/admin/payment.controller";
+import { PaymentService } from "@/Services/domain/payment.service";
 
 const router = Router();
 

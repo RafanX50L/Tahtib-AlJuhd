@@ -1,5 +1,6 @@
 import { HttpResponse } from "@/constants/response-message.constant";
 import { HttpStatus } from "@/constants/status.constant";
+import { IUserFile } from "@/core/interface/model/IUserFile.model";
 import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
@@ -19,7 +20,7 @@ export class UserFileService implements IUserFileService{
     async updateProfilePicture(userId: string, file: Express.Multer.File,role:string):Promise<{signedUrl:string}> {
       const signedUrl = await uploadToS3(file, "profile-photos");
 
-      const fileData = {
+      const fileData : Partial<IUserFile> = {
         userId: new Types.ObjectId(userId),
         fileName: file.originalname,
         filePath: signedUrl,
@@ -28,7 +29,8 @@ export class UserFileService implements IUserFileService{
         uploadedAt: new Date(),
       };
 
-      const fileCreat = await this._userFileRepository.create(fileData);
+      const fileCreat = await this._userFileRepository.updateProfilePicture(userId, fileData);
+
       let updated;
       console.log(role);
       if(role === "trainer"){

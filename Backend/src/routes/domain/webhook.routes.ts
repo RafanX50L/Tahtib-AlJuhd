@@ -6,8 +6,8 @@ import { SessionRepository } from "@/Repository/Session.repository";
 import { ChatRepository } from "@/Repository/Chat.repository";
 import { PlanRepository } from "@/Repository/Plan.repository";
 import { PersonalizationRepository } from "@/Repository/personalization.repository";
-import { BookingService } from "@/Services/domain/Booking.service";
-import { BookingController } from "@/Controller/domain/Booking.controller";
+import { BookingService } from "@/Services/domain/booking.service";
+import { BookingController } from "@/Controller/domain/booking.controller";
 import { PaymentCollectionRepository } from "@/Repository/PaymentCollection.repository";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {

@@ -1,11 +1,11 @@
 import { IClientProgressService, ICurrentStatusView, IGraphPointView } from '@/core/interface/services/client/IClient.Progress.Service';
 import { IProgressEntry } from '@/core/interface/model/IProgress.model';
-import { ProgressRepository } from '@/Repository/Progress.repository';
 import { createHttpError } from '@/utils';
 import { HttpStatus } from '@/constants/status.constant';
+import { IProgressRepository } from '@/core/interface/repositories/IProgress.repository';
 
 export class ClientProgressService implements IClientProgressService {
-  constructor(private readonly progressRepository: ProgressRepository = new ProgressRepository()) {}
+  constructor(private readonly _progressRepository: IProgressRepository) {}
 
   calculateBmi(weightKg: number, heightCm: number): { bmi: number; bmiCategory: string } {
     const heightMeters = heightCm / 100;
@@ -20,9 +20,9 @@ export class ClientProgressService implements IClientProgressService {
   }
 
   async addEntry(userId: string, date: Date, weightKg: number, heightCm: number): Promise<void> {
-    await this.progressRepository.createIfNotExists(userId);
+    await this._progressRepository.createIfNotExists(userId);
     // Enforce: only one saved entry per calendar week
-    const latest = await this.progressRepository.getLatestEntry(userId);
+    const latest = await this._progressRepository.getLatestEntry(userId);
     if (latest) {
       const last = new Date(latest.date);
       const curr = new Date(date);
@@ -40,11 +40,11 @@ export class ClientProgressService implements IClientProgressService {
       bmi,
       bmiCategory: bmiCategory as any,
     };
-    await this.progressRepository.addEntry(userId, entry);
+    await this._progressRepository.addEntry(userId, entry);
   }
 
   async getCurrentStatus(userId: string): Promise<ICurrentStatusView | null> {
-    const latest = await this.progressRepository.getLatestEntry(userId);
+    const latest = await this._progressRepository.getLatestEntry(userId);
     if (!latest) return null;
     return {
       date: latest.date.toISOString(),
@@ -56,7 +56,7 @@ export class ClientProgressService implements IClientProgressService {
   }
 
   async getGraphData(userId: string, start: Date, end: Date): Promise<IGraphPointView[]> {
-    const entries = await this.progressRepository.getEntriesInRange(userId, start, end);
+    const entries = await this._progressRepository.getEntriesInRange(userId, start, end);
     return entries.map((e) => ({ date: e.date.toISOString(), weight: e.weight, bmi: e.bmi }));
   }
 

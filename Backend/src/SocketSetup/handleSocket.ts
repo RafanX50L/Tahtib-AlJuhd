@@ -9,7 +9,7 @@ import { TrainerClientContractRepository } from "@/Repository/TrainerClientContr
 import { UserFileRepository } from "@/Repository/UserFile.repository";
 import { NotificationRepository } from "@/Repository/Notification.repository";
 import { INotificationRepository } from "@/core/interface/repositories/INotification.repository";
-import { NotificationService } from "@/Services/shared/Notification.service";
+import { NotificationService } from "@/Services/shared/notification.service";
 import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
 import { INotificationView } from "@/dtos/shared/NotificationDTO";
 

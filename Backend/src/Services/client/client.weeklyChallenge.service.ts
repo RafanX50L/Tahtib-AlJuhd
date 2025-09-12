@@ -15,7 +15,7 @@ import { IClientWeeklyChallengeService } from "@/core/interface/services/client/
 import { UserProgressDTO } from "@/dtos/client/UserProgressDTO";
 import { ClientWeeklyChallengeDTO, IWeeklyChallengesView } from "@/dtos/client/weeklyChallengeDTO";
 import { createHttpError } from "@/utils";
-// import { generateWorkoutReport } from "@/utils/gemini1.utils";
+import { generateWorkoutReport } from "@/utils/gemini1.utils";
 import { Types } from "mongoose";
 
 export class ClientWeeklyChallengeService
@@ -31,14 +31,12 @@ export class ClientWeeklyChallengeService
   async getWeeklyChallenges(): Promise<IWeeklyChallengesView> {
     const now = new Date();
 
-    // Fetch all three types that are still active (not expired)
     const challenges = await this._weeklyChallengeRepository.findAll({
       type: { $in: ["beginner", "intermediate", "advanced"] },
       startDate: { $lte: now },
       endDate: { $gte: now },
     });
 
-    // Initialize with nulls (temporarily)
     const result: Partial<IWeeklyChallengesView> = {
       beginner: null,
       intermediate: null,
@@ -76,7 +74,6 @@ export class ClientWeeklyChallengeService
   };
 
   async joinWeeklyChallenge(userId: string, challengeId: string) {
-    // Step 1: Fetch the challenge
     const challenge = await this._weeklyChallengeRepository.findById(
       new Types.ObjectId(challengeId)
     );
@@ -84,7 +81,6 @@ export class ClientWeeklyChallengeService
       throw new Error("Challenge not found");
     }
 
-    // Step 2: Check if user already joined
     const hasJoined = challenge.enteredUsers.includes(
       new Types.ObjectId(userId)
     );
@@ -95,7 +91,6 @@ export class ClientWeeklyChallengeService
       );
     }
 
-    // Step 3: Add user to enteredUsers
     await this._weeklyChallengeRepository.update(challengeId, {
       $addToSet: { enteredUsers: userId },
     });
@@ -119,19 +114,19 @@ export class ClientWeeklyChallengeService
     dayIndex: number
   ): Promise<IWorkoutReport> {
     const defaultReport = {
-      caloriesBurned: 500, // Example value
-      duration: 60, // Example value in minutes
+      caloriesBurned: 0, // Example value
+      duration: 0, // Example value in minutes
       feedback: "Great job! Keep it up!", // Example feedback
       intensity: "low",
-      estimatedDuration: "60 minutes",
-      totalExercises: 5,
-      totalSets: 15,
+      estimatedDuration: "0 minutes",
+      totalExercises: 0,
+      totalSets: 0,
     };
     // 1. Generate report
-    const report = defaultReport;
-    // workout.length === 0
-    //   ? defaultReport
-    //   : await generateWorkoutReport(workout);
+    const report =
+    workout.length === 0
+      ? defaultReport
+      : await generateWorkoutReport(workout);
 
     const newDayReport: IUserDayReport = {
       dayIndex,

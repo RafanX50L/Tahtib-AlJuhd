@@ -1,8 +1,8 @@
-import { PlanController } from "@/Controller/domain/Plan.controller";
+import { PlanController } from "@/Controller/domain/plan.controller";
 import { restrictTo } from "@/middleware/verify.token.middleware";
 import { PersonalizationRepository } from "@/Repository/personalization.repository";
 import { PlanRepository } from "@/Repository/Plan.repository";
-import { PlanService } from "@/Services/domain/Plan.service";
+import { PlanService } from "@/Services/domain/plan.service";
 import express from "express";
 
 const router = express.Router();

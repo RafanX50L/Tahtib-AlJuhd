@@ -1,11 +1,11 @@
-import { BookingController } from '@/Controller/domain/Booking.controller';
+import { BookingController } from '@/Controller/domain/booking.controller';
 import { ChatRepository } from '@/Repository/Chat.repository';
 import { PaymentCollectionRepository } from '@/Repository/PaymentCollection.repository';
 import { PersonalizationRepository } from '@/Repository/personalization.repository';
 import { PlanRepository } from '@/Repository/Plan.repository';
 import { SessionRepository } from '@/Repository/Session.repository';
 import { TrainerClientContractRepository } from '@/Repository/TrainerClientContract.repository';
-import { BookingService } from '@/Services/domain/Booking.service';
+import { BookingService } from '@/Services/domain/booking.service';
 import express from 'express';
 
 const router = express.Router();

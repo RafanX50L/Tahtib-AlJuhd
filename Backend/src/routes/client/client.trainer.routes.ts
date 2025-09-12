@@ -1,4 +1,3 @@
-import { ClientTrainerController } from "@/Controller/client/Client.Trainer.Controller";
 import { PersonalizationRepository } from "@/Repository/personalization.repository";
 import { PlanRepository } from "@/Repository/Plan.repository";
 import { TrainerPersonalizationRepository } from "@/Repository/Trainer.personalization.repository";
@@ -7,6 +6,7 @@ import { UserRepository } from "@/Repository/user.Repository";
 import { SessionRepository } from "@/Repository/Session.repository";
 import { clientTrainerService } from "@/Services/client/client.trainer.service";
 import { Router } from "express";
+import { ClientTrainerController } from "@/Controller/client/client.trainer.Controller";
 
 const clientTraienrRoot = Router();
 

@@ -15,6 +15,8 @@ import chatRouter from "./shared/chat.routes";
 import notificationRouter from "./shared/notification.routes";
 import { verifyToken } from "@/middleware/verify.token.middleware";
 import schedulingRouter from "./domain/scheduling.routes";
+import router from "./client/client.progress.routes";
+import dashboardRouter from "./client/client.dashboard.routes";
 
 const routerRoot = Router();
 
@@ -31,6 +33,7 @@ routerRoot.use(clientTraienrRoot);
 routerRoot.use(planRouter);
 routerRoot.use(bookingRouter);  
 routerRoot.use(availabilityRouter);
+router.use('/dashboard', dashboardRouter);
 routerRoot.use('/current-trainer',chatRouter);
 routerRoot.use('/notifications', notificationRouter);
 routerRoot.use('/scheduling', schedulingRouter);

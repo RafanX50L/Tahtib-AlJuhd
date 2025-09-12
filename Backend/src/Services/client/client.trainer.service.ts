@@ -91,14 +91,13 @@ export class clientTrainerService implements IClientTrainerService{
             price: data.basicInfo.weeklySalary,
             plans: plans.map(plan => ({
                 _id: plan._id.toString(),
-                name: plan.title, // e.g., "4 Sessions/Month"
-                price: plan.price, // e.g., 500
-                sessionsPerWeek: plan.sessionsPerWeek, // e.g., 4
+                name: plan.title,
+                price: plan.price,
+                sessionsPerWeek: plan.sessionsPerWeek,
                 description: plan.description,
                 duration: plan.durationWeeks
             }))
         };
-        // return ClientTrainerDTO.mapToTrainerData(trainer);
     }
 
     async getCurrentTrainer(userId: string) {

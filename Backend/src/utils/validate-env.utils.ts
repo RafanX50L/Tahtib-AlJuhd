@@ -102,5 +102,10 @@ export const validateEnv = () => {
       "WEBHOOK_SECRET is not defined in the environment variables"
     );
   }
+  if (!env.COOKIE_MAX_AGE) {
+    throw new Error(
+      "COOKIE_MAX_AGE is not defined in the environment variables"
+    );
+  }
 
 };

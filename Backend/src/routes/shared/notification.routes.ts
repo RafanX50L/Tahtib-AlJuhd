@@ -1,8 +1,8 @@
-import { NotificationController } from "@/Controller/shared/Notification.controller";
+import { NotificationController } from "@/Controller/shared/notification.controller";
 import isBlocked from "@/middleware/isBlocked.middleware";
 import { verifyAnyToken } from "@/middleware/verify.token.middleware";
 import { NotificationRepository } from "@/Repository/Notification.repository";
-import { NotificationService } from "@/Services/shared/Notification.service";
+import { NotificationService } from "@/Services/shared/notification.service";
 import { Router } from "express";
 
 const router = Router();

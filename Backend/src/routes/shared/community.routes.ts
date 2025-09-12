@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { verifyAnyToken } from "@/middleware/verify.token.middleware";
-import { CommunityService } from "@/Services/shared/Community.service";
+import { CommunityService } from "@/Services/shared/community.service";
 import { CommunityController } from "@/Controller/shared/community.controller";
 import { PostRepository } from "@/Repository/Post.repository";
 import { CommentRepository } from "@/Repository/Comment.repository";

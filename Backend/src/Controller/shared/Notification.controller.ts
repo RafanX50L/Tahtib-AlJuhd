@@ -2,15 +2,17 @@ import { Response, NextFunction } from "express";
 import { AddedRequest } from "@/middleware/verify.token.middleware";
 import { HttpStatus } from "@/constants/status.constant";
 import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
+import { INotificationController } from "@/core/interface/controllers/shared/INotification.Controller";
 
-export class NotificationController {
+export class NotificationController implements INotificationController{
   constructor(private readonly notificationService: INotificationService) {}
 
-  async getNotifications(req: AddedRequest, res: Response, next: NextFunction) {
+  async getNotifications(req: AddedRequest, res: Response, next: NextFunction){
     try {
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        return;
       }
       const { page = 1, limit = 10, search, type, sort } = req.query;
       const notifications = await this.notificationService.getNotificationsForUser({
@@ -31,7 +33,8 @@ export class NotificationController {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        return;
       }
       const basicDetails = await this.notificationService.getBasicDetails(userId);
       res.status(HttpStatus.OK).json(basicDetails);
@@ -44,7 +47,8 @@ export class NotificationController {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        return;
       }
       const notifications = await this.notificationService.getLastFiveNotification(userId);
       res.status(HttpStatus.OK).json(notifications);
@@ -58,11 +62,13 @@ export class NotificationController {
       const { notificationId } = req.params;
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        return;
       }
       const notification = await this.notificationService.markNotificationAsRead(notificationId);
       if (!notification) {
-        return res.status(HttpStatus.NOT_FOUND).json({ error: "Notification not found" });
+        res.status(HttpStatus.NOT_FOUND).json({ error: "Notification not found" });
+        return;
       }
       res.status(HttpStatus.OK).json(notification);
     } catch (err) {
@@ -74,7 +80,8 @@ export class NotificationController {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        return;
       }
       await this.notificationService.markAllAsRead(userId);
       res.status(HttpStatus.OK).json({ message: "All notifications marked as read" });
@@ -88,7 +95,8 @@ export class NotificationController {
       const { notificationId } = req.params;
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        return;
       }
       await this.notificationService.deleteNotification(notificationId);
       res.status(HttpStatus.OK).json({ message: "Notification deleted" });

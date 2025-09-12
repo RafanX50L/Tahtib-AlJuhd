@@ -15,13 +15,16 @@ interface CookieOptions {
   path?: string;
 }
 
+const maxAge = Number(env.COOKIE_MAX_AGE);
+
 export const setCookie = (res: Response, refreshToken: string, options: CookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === 'production',
   sameSite: env.NODE_ENV === 'production' ? 'none' : 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: maxAge,
   path: '/',
 }) => {
+  console.log('Setting cookie with options:', maxAge, options);
   res.cookie('refreshToken', refreshToken, options);
 };
 

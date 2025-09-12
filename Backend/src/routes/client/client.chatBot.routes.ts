@@ -1,7 +1,7 @@
-import { ChatBotController } from '@/Controller/client/ChatBot.controller';
+import { ChatBotController } from '@/Controller/client/client.hatBot.controller';
 import { ChatBotInteractionRepository } from '@/Repository/ChatBotInteraction.repository';
 import { ChatBotSessionRepository } from '@/Repository/ChatBotSession.repository';
-import { ChatBotService } from '@/Services/client/ChatBot.service';
+import { ChatBotService } from '@/Services/client/client.chatBot.service';
 import { Router } from 'express';
 
 const chatBotRouter = Router();

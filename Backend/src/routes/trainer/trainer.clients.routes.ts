@@ -2,7 +2,7 @@ import { TrainerClientsController } from "@/Controller/trainer/trainer.clients.c
 import { ChatRepository } from "@/Repository/Chat.repository";
 import { TrainerClientContractRepository } from "@/Repository/TrainerClientContract.repository";
 import { UserFileRepository } from "@/Repository/UserFile.repository";
-import { ChatService } from "@/Services/shared/Chat.service";
+import { ChatService } from "@/Services/shared/chat.service";
 import { TrainerClientService } from "@/Services/trainer/trainer.clients.service";
 import { Router } from "express";
 

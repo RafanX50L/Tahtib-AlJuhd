@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { FileText, File, TrendingUp, Users, DollarSign, Calendar } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Calendar } from "lucide-react";
 import { AdminService } from "@/services/implementation/adminServices";
 
 const RecentPayments = () => {
@@ -24,44 +24,44 @@ const RecentPayments = () => {
     })();
   }, []);
 
-  const downloadCSV = () => {
-    const header = ["Trainer", "Client", "Amount", "Currency", "Purchase Date"];
-    const lines = rows.map(r => [
-      r.trainerName, 
-      r.clientName, 
-      r.amount, 
-      r.currency, 
-      new Date(r.createdAt).toLocaleString()
-    ]);
-    const csv = [header, ...lines].map(r => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `payments-${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+//   const downloadCSV = () => {
+//     const header = ["Trainer", "Client", "Amount", "Currency", "Purchase Date"];
+//     const lines = rows.map(r => [
+//       r.trainerName, 
+//       r.clientName, 
+//       r.amount, 
+//       r.currency, 
+//       new Date(r.createdAt).toLocaleString()
+//     ]);
+//     const csv = [header, ...lines].map(r => r.join(",")).join("\n");
+//     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+//     const url = URL.createObjectURL(blob);
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = `payments-${Date.now()}.csv`;
+//     a.click();
+//     URL.revokeObjectURL(url);
+//   };
 
-  const downloadPDF = () => {
-    // Mock PDF download functionality
-    const mockPDF = () => {
-      const content = `Recent Payments Report
-Generated: ${new Date().toLocaleString()}
+//   const downloadPDF = () => {
+//     // Mock PDF download functionality
+//     const mockPDF = () => {
+//       const content = `Recent Payments Report
+// Generated: ${new Date().toLocaleString()}
 
-${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Date(r.createdAt).toLocaleDateString()}`).join('\n')}`;
+// ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Date(r.createdAt).toLocaleDateString()}`).join('\n')}`;
       
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `payments-${Date.now()}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
+//       const blob = new Blob([content], { type: 'text/plain' });
+//       const url = URL.createObjectURL(blob);
+//       const a = document.createElement('a');
+//       a.href = url;
+//       a.download = `payments-${Date.now()}.txt`;
+//       a.click();
+//       URL.revokeObjectURL(url);
+//     };
     
-    mockPDF();
-  };
+//     mockPDF();
+//   };
 
   const formatCurrency = (amount: number, currency: string) => {
     const currencySymbols: Record<string, string> = {
@@ -131,7 +131,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
               <p className="text-gray-400 text-sm">Latest transaction activity</p>
             </div>
           </div>
-          <div className="flex gap-2 sm:gap-3 flex-wrap">
+          {/* <div className="flex gap-2 sm:gap-3 flex-wrap">
             <button 
               className="flex items-center gap-2 px-4 py-2 bg-gray-800/80 border border-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-gray-500"
               onClick={downloadCSV}
@@ -146,7 +146,7 @@ ${rows.map(r => `${r.trainerName} | ${r.clientName} | ₹${r.amount} | ${new Dat
               <FileText className="w-4 h-4" />
               PDF
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Stats Cards */}

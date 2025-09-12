@@ -64,5 +64,8 @@ export const env = {
   },
   get WEBHOOK_SECRET(){
     return process.env.WEBHOOK_SECRET;
+  },
+  get COOKIE_MAX_AGE(){
+    return process.env.COOKIE_MAX_AGE;
   }
 };

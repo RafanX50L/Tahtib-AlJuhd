@@ -13,7 +13,7 @@ export class PlanController implements IPlanController {
   async createPlan(req: Request, res: Response, next: NextFunction) {
     try {
       const plan = req.body;
-      plan.trainerId = new Types.ObjectId(plan.trainerId); // Assume auth middleware sets user
+      plan.trainerId = new Types.ObjectId(plan.trainerId);
       const newPlan = await this._planService.createPlan(plan);
       res.status(HttpStatus.OK).json(newPlan);
     } catch (err) {

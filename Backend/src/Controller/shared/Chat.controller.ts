@@ -1,8 +1,9 @@
 import { HttpStatus } from '@/constants/status.constant';
+import { IChatController } from '@/core/interface/controllers/shared/IChat.Controller';
 import { IChatService } from '@/core/interface/services/shared/IChat.Service';
 import { NextFunction, Request, Response } from 'express';
 
-export class ChatController {
+export class ChatController implements IChatController {
 
   constructor(
     private readonly _chatService: IChatService,
