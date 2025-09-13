@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import { IPaymentCollection } from "../model/IPaymentCollection";
 import { IBaseRepository } from "./IBase.repository";
 
@@ -9,4 +10,5 @@ export interface IPaymentRepository extends IBaseRepository<IPaymentCollection> 
   getPaymentsByDateRange(startDate: Date, endDate: Date): Promise<IPaymentCollection[]>;
   getTotalRevenue(): Promise<number>;
   getTotalRevenueByTrainer(trainerId: string): Promise<number>;
+  findPayments(filter: FilterQuery<IPaymentCollection>, skip: number, pageSize: number): Promise<IPaymentCollection[]> ;
 }

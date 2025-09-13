@@ -1,13 +1,11 @@
-import { Document, Types } from 'mongoose';
-import IUser from './IUser.model';
-import { IPlan } from './IPlan';
+import mongoose, { Document } from "mongoose";
 
 export interface IPaymentCollection extends Document {
-  _id: Types.ObjectId;
-  clientId: Types.ObjectId | IUser;
-  trainerId: Types.ObjectId | IUser;
-  planId: Types.ObjectId | IPlan;
-  contractId: Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
+  clientId: mongoose.Types.ObjectId;
+  trainerId: mongoose.Types.ObjectId;
+  planId: mongoose.Types.ObjectId;
+  contractId: mongoose.Types.ObjectId;
   amount: number;
   currency: string;
   stripePaymentIntentId: string;

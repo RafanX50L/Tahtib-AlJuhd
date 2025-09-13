@@ -68,21 +68,41 @@ export class AdminDashboardService implements IAdminDashboardService {
     return sorted;
   }
 
-  async getRecentPayments(limit = 10) {
-    const list = await this._paymentRepo.findAll({ paymentStatus: 'completed' });
-    const sorted = (list).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, limit);
-    // load names
-    const trainerIds = Array.from(new Set(sorted.map(p => p.trainerId?.toString()).filter(Boolean)));
-    const clientIds = Array.from(new Set(sorted.map(p => p.clientId?.toString()).filter(Boolean)));
-    const [trainers, clients] = await Promise.all([
-      this._userRepo.findAll({ _id: { $in: trainerIds.map((id: string) => new Types.ObjectId(id)) } }),
-      this._userRepo.findAll({ _id: { $in: clientIds.map((id: string) => new Types.ObjectId(id)) } }),
+  async getRecentPayments(page: number, pageSize: number, searchTerm: string = "") {
+    const skip = (page - 1) * pageSize;
+    const filter: { paymentStatus: 'completed' , trainerId?: { $in: Types.ObjectId[] } } = { paymentStatus: 'completed' };
+
+    // If searchTerm is provided, find trainers matching the search term first
+    let trainerIds: string[] = [];
+    if (searchTerm) {
+      const trainers = await this._userRepo.findAll({
+        name: { $regex: searchTerm, $options: 'i' }
+      });
+      trainerIds = trainers.map((t) => t._id.toString());
+      if (trainerIds.length === 0) {
+        return { data: [], total: 0 }; // No matching trainers, return empty
+      }
+      filter.trainerId = { $in: trainerIds.map((id: string) => new Types.ObjectId(id)) };
+    }
+
+    const [list, total] = await Promise.all([
+      this._paymentRepo.findPayments(filter, skip, pageSize),
+      this._paymentRepo.countDocuments(filter)
     ]);
-    console.log({ trainers, clients });
-    // { _id: 1, name: 1 }
+
+    const sorted = list;
+    const allTrainerIds = Array.from(new Set(sorted.map((p) => p.trainerId?.toString()).filter(Boolean)));
+    const allClientIds = Array.from(new Set(sorted.map((p) => p.clientId?.toString()).filter(Boolean)));
+
+    const [trainers, clients] = await Promise.all([
+      this._userRepo.findAll({ _id: { $in: allTrainerIds.map((id: string) => new Types.ObjectId(id)) } }),
+      this._userRepo.findAll({ _id: { $in: allClientIds.map((id: string) => new Types.ObjectId(id)) } }),
+    ]);
+
     const tMap = new Map<string, string>(trainers.map((t) => [t._id.toString(), t.name]));
     const cMap = new Map<string, string>(clients.map((c) => [c._id.toString(), c.name]));
-    return sorted.map(p => ({
+
+    const data = sorted.map((p) => ({
       id: p._id.toString(),
       trainerId: p.trainerId?.toString(),
       trainerName: tMap.get(p.trainerId?.toString() || '') || '-',
@@ -93,6 +113,8 @@ export class AdminDashboardService implements IAdminDashboardService {
       createdAt: new Date(p.createdAt).toISOString(),
       planTitle: undefined,
     }));
+
+    return { data, total };
   }
 }
 

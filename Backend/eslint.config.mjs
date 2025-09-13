@@ -7,20 +7,20 @@ export default defineConfig([
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     languageOptions: {
-      parser: tseslint.parser, // Use the TypeScript parser
+      parser: tseslint.parser, 
       globals: globals.browser,
     },
     plugins: {
-      "@typescript-eslint": tseslint.plugin, // Use the TypeScript ESLint plugin
+      "@typescript-eslint": tseslint.plugin,
     },
     settings: {
       react: {
-        version: "19.1.0", // Auto-detect the version from package.json
+        version: "19.1.0",
       },
     },
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommended, // Spread recommended TS configs
+      ...tseslint.configs.recommended, 
     ],
     rules: {
       "no-console": "off",

@@ -46,9 +46,22 @@ export const AdminService = {
     const res = await api.get(ADMIN_ROUTES.DASHBOARD_TOP_TRAINERS, { params: { limit } });
     return res.data.data as Array<{ trainerId: string; name?: string; revenue: number; clients: number }>;
   },
-  getDashboardRecentPayments: async (limit = 10) => {
-    const res = await api.get(ADMIN_ROUTES.DASHBOARD_RECENT_PAYMENTS, { params: { limit } });
-    return res.data.data as Array<{ id: string; trainerId: string; trainerName: string; clientId: string; clientName: string; amount: number; currency: string; createdAt: string; planTitle?: string }>;
+  
+  async getDashboardRecentPayments(page: number, pageSize: number, searchTerm: string = "") {
+    const res = await api.get(ADMIN_ROUTES.DASHBOARD_RECENT_PAYMENTS, {
+      params: { page, pageSize, searchTerm },
+    });
+    return res.data as { data: Array<{
+      id: string;
+      trainerId: string;
+      trainerName: string;
+      clientId: string;
+      clientName: string;
+      amount: number;
+      currency: string;
+      createdAt: string;
+      planTitle?: string;
+    }>, total: number };
   },
 
   blockOrUnblockUser: async (id: string) => {

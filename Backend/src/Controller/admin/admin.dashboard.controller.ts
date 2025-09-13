@@ -37,9 +37,11 @@ export class AdminDashboardController implements IAdminDashboardController {
 
   async getRecentPayments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-      const result = await this._service.getRecentPayments(limit);
-      res.status(HttpStatus.OK).json({ success: true, data: result });
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string) : 10;
+      const searchTerm = req.query.searchTerm ? (req.query.searchTerm as string) : "";
+      const result = await this._service.getRecentPayments(page, pageSize, searchTerm);
+      res.status(HttpStatus.OK).json({ success: true, data: result.data, total: result.total });
     } catch (error) {
       next(error);
     }
