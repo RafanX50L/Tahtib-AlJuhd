@@ -2,17 +2,13 @@ import { FilterQuery, Types } from "mongoose";
 import {
   startOfDay,
   endOfDay,
-  set,
   addMinutes,
   isBefore,
-  // isAfter,
-  // formatISO,
   format,
   differenceInMinutes,
   isSameDay,
   isEqual,
 } from "date-fns";
-// import { stat } from "fs";
 import {
   AvailabilityResponse,
   BookSlotInput,

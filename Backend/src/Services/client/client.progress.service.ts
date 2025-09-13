@@ -38,7 +38,7 @@ export class ClientProgressService implements IClientProgressService {
       weight: weightKg,
       height: heightCm,
       bmi,
-      bmiCategory: bmiCategory as any,
+      bmiCategory: bmiCategory as IProgressEntry['bmiCategory'],
     };
     await this._progressRepository.addEntry(userId, entry);
   }

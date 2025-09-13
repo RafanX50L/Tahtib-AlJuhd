@@ -1,6 +1,5 @@
 import { IChatBotnteraction } from "@/core/interface/model/IChatBotInteraction.model";
 import { IChatBotSession } from "@/core/interface/model/IChatBotSession.model";
-import { ObjectId } from "mongoose";
 export interface IChatBotInteractionView {
   id?: string;
   content?: string;

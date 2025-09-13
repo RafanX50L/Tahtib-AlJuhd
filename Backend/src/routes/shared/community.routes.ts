@@ -25,7 +25,7 @@ const controller = new CommunityController(service);
 
 router.get("/feed", verifyAnyToken(), controller.getFeed.bind(controller));
 router.get("/search", verifyAnyToken(), controller.searchUsers.bind(controller));
-router.get("/user/:userId/posts", verifyAnyToken(), controller.getUserPosts.bind(controller));
+router.get("/user/:authorId/posts", verifyAnyToken(), controller.getUserPosts.bind(controller));
 router.get("/user/:userId/profile", verifyAnyToken(), controller.getUserProfile.bind(controller));
 router.post("/posts", verifyAnyToken(), upload.array("media", 10), controller.createPost.bind(controller));
 router.get("/posts/:postId/comments", verifyAnyToken(), controller.listComments.bind(controller));

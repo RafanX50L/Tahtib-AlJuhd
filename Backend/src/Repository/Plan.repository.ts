@@ -3,7 +3,6 @@ import { IPlanRepository } from '@/core/interface/repositories/IPlanRepository';
 import { Types } from 'mongoose';
 import { BaseRepository } from './base.repository';
 import { PlanModel } from '@/models/Plan.model';
-import { c } from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
 
 export class PlanRepository extends BaseRepository<IPlan> implements IPlanRepository {
 

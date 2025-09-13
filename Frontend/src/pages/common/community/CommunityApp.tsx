@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { Home, Plus, Search, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { InputHTMLAttributes, useEffect, useState } from "react";
 import CommunityFeed from "./communityFeed";
 import CreatePost from "./createPost";
 import UserSearch from "./UserSearch";
@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useNavigate } from "react-router-dom";
 import logo from '@/assets/images/logo.jpg';
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
 // Modern UI Components
 const AvatarCstm = ({ src, name, size = "md", className = "", role }: {
@@ -51,31 +52,46 @@ const AvatarCstm = ({ src, name, size = "md", className = "", role }: {
   );
 };
 
-const ButtonCstm = ({ children, variant = "primary", size = "md", className = "", disabled = false, onClick, icon, ...props }: {
-  children?: React.ReactNode;
+interface ButtonCstmProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children?: ReactNode;
   variant?: "primary" | "secondary" | "ghost" | "danger" | "success";
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   disabled?: boolean;
   onClick?: () => void;
-  icon?: React.ReactNode;
-  [key: string]: any;
-}) => {
-  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
-  
+  icon?: ReactNode;
+}
+
+const ButtonCstm = ({
+  children,
+  variant = "primary",
+  size = "md",
+  className = "",
+  disabled = false,
+  onClick,
+  icon,
+  ...props
+}: ButtonCstmProps) => {
+  const baseClasses =
+    "inline-flex items-center justify-center font-medium transition-all duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
   const variants = {
-    primary: "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl focus:ring-purple-500 hover:scale-105",
-    secondary: "bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 shadow-sm hover:shadow-md focus:ring-gray-500",
+    primary:
+      "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl focus:ring-purple-500 hover:scale-105",
+    secondary:
+      "bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 shadow-sm hover:shadow-md focus:ring-gray-500",
     ghost: "hover:bg-gray-100 text-gray-600 hover:text-gray-900 hover:scale-105",
-    danger: "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl focus:ring-red-500 hover:scale-105",
-    success: "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-xl focus:ring-green-500 hover:scale-105"
+    danger:
+      "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl focus:ring-red-500 hover:scale-105",
+    success:
+      "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg hover:shadow-xl focus:ring-green-500 hover:scale-105",
   };
-  
+
   const sizes = {
     xs: "px-2.5 py-1.5 text-xs gap-1",
     sm: "px-3 py-1.5 text-sm gap-1.5",
     md: "px-4 py-2 text-sm gap-2",
-    lg: "px-6 py-3 text-base gap-3"
+    lg: "px-6 py-3 text-base gap-3",
   };
 
   return (
@@ -91,10 +107,11 @@ const ButtonCstm = ({ children, variant = "primary", size = "md", className = ""
   );
 };
 
-const InputCstm = ({ className = "", ...props }: {
+interface InputCstmProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
-  [key: string]: any;
-}) => (
+}
+
+const InputCstm = ({ className = "", ...props }: InputCstmProps) => (
   <input
     className={`w-full px-4 py-3 bg-gray-50/80 backdrop-blur-sm border border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 ${className}`}
     {...props}

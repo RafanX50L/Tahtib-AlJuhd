@@ -6,16 +6,16 @@ import { ICommunityController } from "@/core/interface/controllers/shared/ICommu
 import { HttpStatus } from "@/constants/status.constant";
 
 export class CommunityController implements ICommunityController {
-  constructor(private readonly service: ICommunityService) {}
+  constructor(private readonly _communityService: ICommunityService) {}
 
   async createPost(req: AddedRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
-      if (!userId) throw createHttpError(401, "Unauthorized");
+      if (!userId) throw createHttpError(HttpStatus.UNAUTHORIZED, "Unauthorized");
       const files = (req.files as Express.Multer.File[]) || [];
-      if (!files.length) throw createHttpError(400, "No media uploaded");
+      if (!files.length) throw createHttpError(HttpStatus.BAD_REQUEST, "No media uploaded");
       const { caption } = req.body as { caption?: string };
-      const post = await this.service.createPost(userId, caption, files);
+      const post = await this._communityService.createPost(userId, caption, files);
       res.status(HttpStatus.CREATED).json(post);
     } catch (err) {
       next(err);
@@ -27,7 +27,7 @@ export class CommunityController implements ICommunityController {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
       const { cursor } = req.query as { cursor?: string };
-      const posts = await this.service.getFeed(userId, cursor);
+      const posts = await this._communityService.getFeed(userId, cursor);
       
       // Check if there are more posts to load
       const hasMore = posts.length === 20;
@@ -41,9 +41,10 @@ export class CommunityController implements ICommunityController {
 
   async getUserPosts(req: AddedRequest, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.params as { userId: string };
+      const { authorId } = req.params as { authorId: string };
       const { cursor } = req.query as { cursor?: string };
-      const posts = await this.service.getUserPosts(userId, cursor);
+      const userId = req.user?.id;
+      const posts = await this._communityService.getUserPosts(authorId, cursor, userId);
       res.json({ posts });
     } catch (err) {
       next(err);
@@ -58,7 +59,7 @@ export class CommunityController implements ICommunityController {
         return;
       }
       const currentUserId = req.user?.id;
-      const users = await this.service.searchUsers(q.trim(), currentUserId, cursor);
+      const users = await this._communityService.searchUsers(q.trim(), currentUserId, cursor);
       
       // Check if there are more users to load
       const hasMore = users.length === 20;
@@ -76,7 +77,7 @@ export class CommunityController implements ICommunityController {
       if (!userId) throw createHttpError(401, "Unauthorized");
       const { postId } = req.params as { postId: string };
       const { content, parentCommentId } = req.body as { content: string; parentCommentId?: string };
-      const comment = await this.service.addComment(userId, postId, content, parentCommentId);
+      const comment = await this._communityService.addComment(userId, postId, content, parentCommentId);
       res.status(201).json(comment);
     } catch (err) {
       next(err);
@@ -87,7 +88,7 @@ export class CommunityController implements ICommunityController {
     try {
       const { postId } = req.params as { postId: string };
       const { cursor } = req.query as { cursor?: string };
-      const comments = await this.service.listComments(postId, cursor);
+      const comments = await this._communityService.listComments(postId, cursor);
       
       // Check if there are more comments to load
       const hasMore = comments.length === 20;
@@ -102,15 +103,9 @@ export class CommunityController implements ICommunityController {
   async getPost(req: AddedRequest, res: Response, next: NextFunction):Promise<void> {
     try {
       const { postId } = req.params as { postId: string };
-      // reuse get by id via repo to map one
-      const { service } = this as any;
-      const post = await (this as any).service.postRepo.findById(postId);
-      if (!post) {
-        res.status(HttpStatus.NOT_FOUND).json({ error: 'Post not found' });
-        return;
-      } 
-      const mapped = await (this as any).service["mapPostWithSignedMedia"].call(this.service, post);
-      res.json(mapped);
+      const userId = req.user?.id;
+      const post = await this._communityService.getPostById(postId, userId);
+      res.json(post);
     } catch (err) {
       next(err);
     }
@@ -121,7 +116,7 @@ export class CommunityController implements ICommunityController {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
       const { postId } = req.params as { postId: string };
-      const result = await this.service.toggleLike(userId, postId);
+      const result = await this._communityService.toggleLike(userId, postId);
       res.json(result);
     } catch (err) {
       next(err);
@@ -133,7 +128,7 @@ export class CommunityController implements ICommunityController {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
       const { targetUserId } = req.params as { targetUserId: string };
-      const result = await this.service.follow(userId, targetUserId);
+      const result = await this._communityService.follow(userId, targetUserId);
       res.json(result);
     } catch (err) {
       next(err);
@@ -145,7 +140,7 @@ export class CommunityController implements ICommunityController {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
       const { targetUserId } = req.params as { targetUserId: string };
-      const result = await this.service.unfollow(userId, targetUserId);
+      const result = await this._communityService.unfollow(userId, targetUserId);
       res.json(result);
     } catch (err) {
       next(err);
@@ -155,7 +150,7 @@ export class CommunityController implements ICommunityController {
     try {
       const viewerId = req.user?.id;
       const { userId } = req.params as { userId: string };
-      const data = await this.service.getUserProfile(userId, viewerId);
+      const data = await this._communityService.getUserProfile(userId, viewerId);
       if (!data) {
         res.status(HttpStatus.NOT_FOUND).json({ error: 'User not found' });
         return;

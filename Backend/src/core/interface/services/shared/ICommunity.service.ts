@@ -1,5 +1,9 @@
-import { Types } from "mongoose";
-import { SearchUserDTO, PostDTO, CommentDTO, ProfileDTO } from "@/dtos/shared/CommunityDTO";
+import {
+  SearchUserDTO,
+  PostDTO,
+  CommentDTO,
+  ProfileDTO,
+} from "@/dtos/shared/CommunityDTO";
 
 export interface ICommunityService {
   createPost(
@@ -14,15 +18,9 @@ export interface ICommunityService {
     cursor?: string
   ): Promise<SearchUserDTO[]>;
 
-  getFeed(
-    userId: string,
-    cursor?: string
-  ): Promise<PostDTO[]>;
+  getFeed(userId: string, cursor?: string): Promise<PostDTO[]>;
 
-  getUserPosts(
-    profileUserId: string,
-    cursor?: string
-  ): Promise<PostDTO[]>;
+  getUserPosts(profileUserId: string, cursor?: string, currentUserId?: string): Promise<PostDTO[]>;
 
   addComment(
     userId: string,
@@ -31,25 +29,18 @@ export interface ICommunityService {
     parentCommentId?: string
   ): Promise<CommentDTO>;
 
-  listComments(
-    postId: string,
-    cursor?: string
-  ): Promise<CommentDTO[]>;
+  listComments(postId: string, cursor?: string): Promise<CommentDTO[]>;
 
-  toggleLike(
-    userId: string,
-    postId: string
-  ): Promise<{ liked: boolean }>;
+  toggleLike(userId: string, postId: string): Promise<{ liked: boolean }>;
 
-  follow(
-    userId: string,
-    targetUserId: string
-  ): Promise<{ following: boolean }>;
+  follow(userId: string, targetUserId: string): Promise<{ following: boolean }>;
 
   unfollow(
     userId: string,
     targetUserId: string
   ): Promise<{ following: boolean }>;
+
+  getPostById(postId: string, userId: string): Promise<PostDTO>;
 
   getUserProfile(
     profileUserId: string,

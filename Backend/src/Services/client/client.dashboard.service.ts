@@ -4,6 +4,9 @@ import { IPersonalizationRepository } from "@/core/interface/repositories/IPerso
 import { IProgressRepository } from "@/core/interface/repositories/IProgress.repository";
 import { ISessionRepository } from "@/core/interface/repositories/ISession.repository";
 import { IUserWeeklyChallengeRepository } from "@/core/interface/repositories/IUserWeeklyChallenge.repositoy";
+import { IClientPersonalization } from "@/core/interface/model/IPersonalization.model";
+import { IUserWeeklyChallenge } from "@/core/interface/model/IUserWeeklyChallenge.model";
+import { IProgressEntry } from "@/core/interface/model/IProgress.model";
 
 export class DashboardService implements IDashboardService {
   constructor(
@@ -18,7 +21,7 @@ export class DashboardService implements IDashboardService {
     if (!clientPers) {
       throw new Error("Client not found");
     }
-    const clientData = clientPers.data as any;
+    const clientData = clientPers.data as IClientPersonalization;
 
     const userChallenges = await this._userWeeklyChallengeRepo.findAll({ user: new Types.ObjectId(clientId) });
     const workoutsCompleted = this.calculateWorkoutsCompleted(userChallenges);
@@ -48,12 +51,12 @@ export class DashboardService implements IDashboardService {
     };
   }
 
-  private calculateWorkoutsCompleted(userChallenges: any[]): number {
+  private calculateWorkoutsCompleted(userChallenges: IUserWeeklyChallenge[]): number {
     let totalCompleted = 0;
     
     userChallenges.forEach(challenge => {
       if (challenge.progress && Array.isArray(challenge.progress)) {
-        challenge.progress.forEach((day: any) => {
+        challenge.progress.forEach((day) => {
           if (day.completed) {
             totalCompleted++;
           }
@@ -64,7 +67,7 @@ export class DashboardService implements IDashboardService {
     return totalCompleted;
   }
 
-  private calculateActiveMinutes(clientData: any, workoutsCompleted: number): number {
+  private calculateActiveMinutes(clientData: IClientPersonalization, workoutsCompleted: number): number {
     const workoutDuration = this.parseWorkoutDuration(clientData.userData?.workoutDuration || "30 minutes");
     const daysPerWeek = clientData.userData?.workoutDaysPerWeek || 3;
     
@@ -87,13 +90,13 @@ export class DashboardService implements IDashboardService {
     return 30; 
   }
 
-  private calculateCaloriesBurned(clientData: any, activeMinutes: number): number {
+  private calculateCaloriesBurned(clientData: IClientPersonalization, activeMinutes: number): number {
     const weight = clientData.userData?.currentWeight || 70; 
     const baseCaloriesPerMinute = (weight / 10) * 0.8; 
     return Math.round(activeMinutes * baseCaloriesPerMinute);
   }
 
-  private calculateCurrentStreak(userChallenges: any[]): number {
+  private calculateCurrentStreak(userChallenges: IUserWeeklyChallenge[]): number {
     if (!userChallenges || userChallenges.length === 0) return 0;
 
     const sortedChallenges = userChallenges.sort((a, b) => 
@@ -119,7 +122,7 @@ export class DashboardService implements IDashboardService {
     return currentStreak;
   }
 
-  private calculateWeightProgress(clientData: any, progress: any): { current: number; target: number; lost: number } {
+  private calculateWeightProgress(clientData: IClientPersonalization, progress: IProgressEntry): { current: number; target: number; lost: number } {
     const currentWeight = clientData.userData?.currentWeight || 0;
     const targetWeight = clientData.userData?.targetWeight || 0;
     
@@ -135,7 +138,7 @@ export class DashboardService implements IDashboardService {
     };
   }
 
-  private calculateWeeklyProgress(clientData: any, userChallenges: any[]): { completed: number; total: number } {
+  private calculateWeeklyProgress(clientData: IClientPersonalization, userChallenges: IUserWeeklyChallenge[]): { completed: number; total: number } {
     const daysPerWeek = clientData.userData?.workoutDaysPerWeek || 3;
     
     if (!userChallenges || userChallenges.length === 0) {
@@ -147,7 +150,7 @@ export class DashboardService implements IDashboardService {
       return { completed: 0, total: daysPerWeek };
     }
 
-    const completed = currentWeek.progress.filter((day: any) => day.completed).length;
+    const completed = currentWeek.progress.filter((day) => day.completed).length;
     return { completed, total: daysPerWeek };
   }
 

@@ -27,8 +27,8 @@ import adminRouter from '@/routes/admin.routes';
 import notificationRoute from '@/routes/shared/notification.routes';
 import schedulingRouter from '@/routes/domain/scheduling.routes';
 import paymentRouter from '@/routes/shared/payment.routes';
-import webhookRouter from '@/routes/domain/webhook.routes'
-import communityRouter from '@/routes/shared/community.routes'
+import webhookRouter from '@/routes/domain/webhook.routes';
+import communityRouter from '@/routes/shared/community.routes';
 
 const app = express();
 

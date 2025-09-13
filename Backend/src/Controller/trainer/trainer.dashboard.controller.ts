@@ -22,7 +22,7 @@ export class TrainerDashboardController implements ITrainerDashboardController {
 
   async getPayments(req: AddedRequest, res: Response): Promise<void> {
     const trainerId = req.user?.id as string;
-    const { page, limit, status = 'all', search } = req.query as any;
+    const { page, limit, status = 'all', search } = req.query as | { page?: string; limit?: string; status?: 'pending' | 'completed' | 'failed' | 'refunded' | 'all'; search?: string };
     const result = await this._service.getPayments(trainerId, {
       page: page ? parseInt(page) : undefined,
       limit: limit ? parseInt(limit) : undefined,

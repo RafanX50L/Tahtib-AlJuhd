@@ -11,4 +11,6 @@ export interface IBaseRepository<T> {
   findOne(filter: FilterQuery<T>): Promise<T | null>;
 
   deleteOne(filter: FilterQuery<T>): Promise<void>;
+
+  countDocuments(filter: FilterQuery<T>): Promise<number>;
 }

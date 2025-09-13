@@ -1,37 +1,13 @@
-import { FilterQuery, Types } from "mongoose";
 import { IPaymentCollection } from "@/core/interface/model/IPaymentCollection";
 import { IPaymentRepository } from "@/core/interface/repositories/IPaymentRepository";
 import { PaymentCollection } from "@/models/PaymentCollection.model";
 import { BaseRepository } from "./base.repository";
+import { Types } from "mongoose";
 
 export class PaymentCollectionRepository extends BaseRepository<IPaymentCollection> implements IPaymentRepository {
   constructor() {
       super(PaymentCollection);
     }
-  // async findById(id: Types.ObjectId): Promise<IPaymentCollection | null> {
-  //   return await PaymentCollection.findById(id).populate('clientId trainerId planId contractId');
-  // }
-
-  // // async create(data: Partial<IPaymentCollection>): Promise<IPaymentCollection> {
-  // //   const payment = new PaymentCollection(data);
-  // //   return await payment.save();
-  // // }
-
-  // async findAll(filter: FilterQuery<IPaymentCollection>): Promise<IPaymentCollection[]> {
-  //   return await PaymentCollection.find(filter).populate('clientId trainerId planId contractId').sort({ createdAt: -1 });
-  // }
-
-  // async findOne(filter: FilterQuery<IPaymentCollection>): Promise<IPaymentCollection | null> {
-  //   return await PaymentCollection.findOne(filter).populate('clientId trainerId planId contractId');
-  // }
-
-  // async update(id: string, data: Partial<IPaymentCollection>): Promise<IPaymentCollection | null> {
-  //   return await PaymentCollection.findByIdAndUpdate(id, data, { new: true }).populate('clientId trainerId planId contractId');
-  // }
-
-  // async deleteOne(filter: FilterQuery<IPaymentCollection>): Promise<void> {
-  //   await PaymentCollection.deleteOne(filter);
-  // }
 
   async findByClientId(clientId: string): Promise<IPaymentCollection[]> {
     return await PaymentCollection.find({ clientId: new Types.ObjectId(clientId) })

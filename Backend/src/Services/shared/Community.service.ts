@@ -10,6 +10,8 @@ import { ILikeRepository } from "@/core/interface/repositories/ILike.repository"
 import { ICommunityService } from "@/core/interface/services/shared/ICommunity.service";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
 import { IPost } from "@/models/Post.model";
+import { createHttpError } from "@/utils";
+import { HttpStatus } from "@/constants/status.constant";
 
 export class CommunityService implements ICommunityService {
   constructor(
@@ -98,7 +100,7 @@ export class CommunityService implements ICommunityService {
     );
   }
 
-  async getUserPosts(profileUserId: string, cursor?: string) {
+  async getUserPosts(profileUserId: string, cursor?: string, currentUserId?: string) {
     const posts = await this.postRepo.findAll({
       authorId: new Types.ObjectId(profileUserId),
       ...(cursor ? { createdAt: { $lt: new Date(cursor) } } : {}),
@@ -106,7 +108,7 @@ export class CommunityService implements ICommunityService {
     const sorted = posts
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, 20);
-    return Promise.all(sorted.map((p) => this.mapPostWithSignedMedia(p)));
+    return Promise.all(sorted.map((p) => this.mapPostWithSignedMedia(p, currentUserId)));
   }
 
   async addComment(
@@ -201,7 +203,14 @@ export class CommunityService implements ICommunityService {
     return { following: false };
   }
 
-  private async mapPostWithSignedMedia(post: IPost, userId?: string) {
+  async getPostById(postId: string, userId: string){
+    const post = await this.postRepo.findById(new Types.ObjectId(postId));
+    if (!post) throw createHttpError(HttpStatus.NOT_FOUND, "Post not found");
+    const mapped = await this.mapPostWithSignedMedia(post, userId);
+    return mapped;
+  }
+
+  private async mapPostWithSignedMedia(post: IPost, userId: string) {
     const media: MediaDTO[] = await Promise.all(
       (post.media || []).map(async (m: IPost['media'][0]) => ({
         url: await generateSignedUrl(m.key),
@@ -210,7 +219,7 @@ export class CommunityService implements ICommunityService {
       }))
     );
     const author = await this.userRepo.findById(post.authorId);
-    console.log(author._id)
+    console.log(author._id);
     let profilePhotoUrl: string | null = null;
     if (author) {
       const profilePhoto = await this.userFile.findLatestProfilePicture(author._id.toString());

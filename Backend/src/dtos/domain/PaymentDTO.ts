@@ -1,4 +1,6 @@
 import { IPaymentCollection } from "@/core/interface/model/IPaymentCollection";
+import { IPlan } from "@/core/interface/model/IPlan";
+import IUser from "@/core/interface/model/IUser.model";
 
 export interface IPaymentView {
   id: string;
@@ -57,23 +59,23 @@ export class PaymentDto {
       ...(raw.clientId && typeof raw.clientId === 'object' && {
         client: {
           id: raw.clientId._id?.toString() || raw.clientId.toString(),
-          name: (raw.clientId as any).name || 'N/A',
-          email: (raw.clientId as any).email || 'N/A',
+          name: (raw.clientId as IUser).name || 'N/A',
+          email: (raw.clientId as IUser).email || 'N/A',
         }
       }),
       ...(raw.trainerId && typeof raw.trainerId === 'object' && {
         trainer: {
           id: raw.trainerId._id?.toString() || raw.trainerId.toString(),
-          name: (raw.trainerId as any).name || 'N/A',
-          email: (raw.trainerId as any).email || 'N/A',
+          name: (raw.trainerId as IUser).name || 'N/A',
+          email: (raw.trainerId as IUser).email || 'N/A',
         }
       }),
       ...(raw.planId && typeof raw.planId === 'object' && {
         plan: {
           id: raw.planId._id?.toString() || raw.planId.toString(),
-          title: (raw.planId as any).title || 'N/A',
-          description: (raw.planId as any).description || 'N/A',
-          price: (raw.planId as any).price || 0,
+          title: (raw.planId as IPlan).title || 'N/A',
+          description: (raw.planId as IPlan).description || 'N/A',
+          price: (raw.planId as IPlan).price || 0,
         }
       }),
     };

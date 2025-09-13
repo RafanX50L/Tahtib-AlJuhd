@@ -15,12 +15,10 @@ import { IBookingService } from "@/core/interface/services/domain/IBooking.Servi
 import Stripe from "stripe";
 import { env } from "@/config/env.config";
 import { createHttpError } from "@/utils";
-import { Http } from "winston/lib/winston/transports";
 import { HttpStatus } from "@/constants/status.constant";
 import { IPaymentCollection } from "@/models/PaymentCollection.model";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
-const webhookSecret = env.WEBHOOK_SECRET;
 
 export class BookingService implements IBookingService {
   constructor(

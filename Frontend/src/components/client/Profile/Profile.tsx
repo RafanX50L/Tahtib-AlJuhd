@@ -146,8 +146,6 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
 import { ChangeEvent } from "react";
 import { IconType } from "react-icons"; // assuming you're using react-icons
 import { clientProfileSchema } from "./ClientProfileValidationSchema";
-import { IClient } from "@/components/admin/ClientManagment/ClientTable";
-import z, { ZodError } from "zod";
 
 interface ProfileInfoFieldProps {
   icon: IconType;

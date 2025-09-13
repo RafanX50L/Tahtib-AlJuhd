@@ -1,6 +1,4 @@
 import express from "express";
-import Stripe from "stripe";
-import { env } from "@/config/env.config";
 import { TrainerClientContractRepository } from "@/Repository/TrainerClientContract.repository";
 import { SessionRepository } from "@/Repository/Session.repository";
 import { ChatRepository } from "@/Repository/Chat.repository";
@@ -9,11 +7,6 @@ import { PersonalizationRepository } from "@/Repository/personalization.reposito
 import { BookingService } from "@/Services/domain/booking.service";
 import { BookingController } from "@/Controller/domain/booking.controller";
 import { PaymentCollectionRepository } from "@/Repository/PaymentCollection.repository";
-
-const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-08-27.basil",
-});
-const webhookSecret = env.WEBHOOK_SECRET!;
 
 const router = express.Router();
 

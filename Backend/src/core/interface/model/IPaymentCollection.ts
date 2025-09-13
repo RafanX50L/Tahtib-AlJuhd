@@ -1,10 +1,12 @@
 import { Document, Types } from 'mongoose';
+import IUser from './IUser.model';
+import { IPlan } from './IPlan';
 
 export interface IPaymentCollection extends Document {
   _id: Types.ObjectId;
-  clientId: Types.ObjectId;
-  trainerId: Types.ObjectId;
-  planId: Types.ObjectId;
+  clientId: Types.ObjectId | IUser;
+  trainerId: Types.ObjectId | IUser;
+  planId: Types.ObjectId | IPlan;
   contractId: Types.ObjectId;
   amount: number;
   currency: string;

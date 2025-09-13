@@ -1,5 +1,3 @@
-import { IProgressEntry } from '@/core/interface/model/IProgress.model';
-
 export interface ICurrentStatusView {
   date: string;
   weight: number;

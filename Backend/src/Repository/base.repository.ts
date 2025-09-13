@@ -29,4 +29,8 @@
     async deleteOne(filter: FilterQuery<T>): Promise<void> {
       await this.model.deleteOne(filter);
     }
+
+    async countDocuments(filter: FilterQuery<T> = {}): Promise<number> {
+      return this.model.countDocuments(filter);
+    }
   }

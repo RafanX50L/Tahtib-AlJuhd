@@ -1,4 +1,3 @@
-import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { IGetAllClientFilterResponse, IUserRepository } from "@/core/interface/repositories/IUser.repository";
 import { IAdminClientService } from "@/core/interface/services/admin/IAdmin.Clinet.Service";
 

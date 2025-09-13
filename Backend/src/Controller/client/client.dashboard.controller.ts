@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction,  Response } from "express";
 import { IDashboardController } from "@/core/interface/controllers/client/IDashboard.Controller";
 import { IDashboardService } from "@/core/interface/services/client/IDashboard.Service";
 import { createHttpError } from "@/utils";
@@ -10,7 +10,7 @@ export class DashboardController implements IDashboardController {
     private readonly _dashboardService: IDashboardService
   ) {}
 
-  async getClientDashboardStats(req: AddedRequest, res: Response): Promise<void> {
+  async getClientDashboardStats(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const clientId = req.params.clientId || req.user?.id;
       
@@ -26,6 +26,7 @@ export class DashboardController implements IDashboardController {
         data: stats,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve dashboard statistics");
     }
   }

@@ -68,7 +68,7 @@ const PaymentHistory = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as "all" | "pending" | "completed" | "failed" | "refunded")}>
             <SelectTrigger className="min-w-[150px] bg-[#121212] border-[#2c2c2c] text-[#ffffff] focus:border-[#6366f1] focus:ring-[#6366f1]/20">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
@@ -80,7 +80,7 @@ const PaymentHistory = () => {
               <SelectItem value="refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as any)}>
+          <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as "all" | "month" | "last-month" | "year")}>
             <SelectTrigger className="min-w-[150px] bg-[#121212] border-[#2c2c2c] text-[#ffffff] focus:border-[#6366f1] focus:ring-[#6366f1]/20">
               <SelectValue placeholder="All Time" />
             </SelectTrigger>

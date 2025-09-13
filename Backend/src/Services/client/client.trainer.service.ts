@@ -78,7 +78,7 @@ export class clientTrainerService implements IClientTrainerService{
         const user = (await this._userRepo.findById(new Types.ObjectId(id))) ;
         const trainer = await this._trainerRepo.getTrainerProfileData(user.personalizationId.toString());
         const plans = await this._planRepo.findByTrainerId(id);
-        if (!trainer) throw new Error('Trainer not found');
+        if (!trainer) throw createHttpError(HttpStatus.NO_CONTENT,'Trainer not found');
         const data = trainer.data;
         return {
             id: id,
@@ -105,10 +105,9 @@ export class clientTrainerService implements IClientTrainerService{
         const contract = await this.getCurrentTrainerContract(userId);
         if (!contract || contract.endDate < new Date()) {
             console.log('No active contract or contract expired');
-            // throw createHttpError(HttpStatus.,'Current trainer contract has expired');
             return null;
         }
-        if (!currentTrainerId) throw new Error('No current trainer found for this user');
+        if (!currentTrainerId) throw createHttpError(HttpStatus.NO_CONTENT,'No current trainer found for this user');
         const trainer = (await this._userRepo.findById(currentTrainerId));
         const result = await this._trainerRepo.getTrainerProfileData(trainer.personalizationId.toString());
         const data = result.data;
@@ -125,7 +124,6 @@ export class clientTrainerService implements IClientTrainerService{
     async getCurrentTrainerContract(clientId: string) {
         const contract = await this._contractRepo.findActiveContractByClientId(clientId);
         if (!contract) {
-        // throw new Error('No active contract found');
         return null;
         }
         const plan = contract.planId as unknown as IPlan;
@@ -142,16 +140,16 @@ export class clientTrainerService implements IClientTrainerService{
     async bookSlot(clientId: string, sessionId: string) {
         const session = await this._sessionRepo.findById(new Types.ObjectId(sessionId));
         if (!session || session.clientId || session.status !== 'free') {
-            throw new Error('Slot not available');
+            throw createHttpError(HttpStatus.NO_CONTENT,'Slot not available');
         }
 
         const contract = await this._contractRepo.findActiveByClientAndTrainer(clientId, session.trainerId.toString());
         if (!contract || contract.sessionsRemaining <= 0) {
-            throw new Error('No remaining sessions in your plan');
+            throw createHttpError(HttpStatus.NO_CONTENT,'No remaining sessions in your plan');
         }
 
         if (contract.endDate < new Date()) {
-            throw new Error('Your plan has expired');
+            throw createHttpError(HttpStatus.NO_CONTENT,'Your plan has expired');
         }
 
         session.clientId = new Types.ObjectId(clientId);
@@ -168,16 +166,16 @@ export class clientTrainerService implements IClientTrainerService{
     async cancelSession(clientId: string, sessionId: string) {
         const session = await this._sessionRepo.findById(new Types.ObjectId(sessionId));
         if (!session) {
-            throw new Error('Session not found');
+            throw createHttpError(HttpStatus.NO_CONTENT,'Session not found');
         }
 
         if (session.clientId?.toString() !== clientId) {
-            throw new Error('You can only cancel your own sessions');
+            throw createHttpError(HttpStatus.NO_CONTENT,'You can only cancel your own sessions');
         }
 
         const contract = await this._contractRepo.findById(session.planId);
         if (!contract) {
-            throw new Error('Contract not found');
+            throw createHttpError(HttpStatus.NO_CONTENT,'Contract not found');
         }
 
         const hoursToStart = differenceInHours(session.startTime, new Date());

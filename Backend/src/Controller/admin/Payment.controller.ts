@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { IPaymentController } from "@/core/interface/controllers/admin/IPayment.Controller";
 import { IPaymentService } from "@/core/interface/services/domain/IPayment.Service";
 import { createHttpError } from "@/utils";
@@ -9,7 +9,7 @@ export class PaymentController implements IPaymentController {
     private readonly _paymentService: IPaymentService
   ) {}
 
-  async getAllPayments(req: Request, res: Response): Promise<void> {
+  async getAllPayments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const payments = await this._paymentService.getAllPayments();
       res.status(HttpStatus.OK).json({
@@ -18,11 +18,12 @@ export class PaymentController implements IPaymentController {
         data: payments,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve payments");
     }
   }
 
-  async getPaymentsByClient(req: Request, res: Response): Promise<void> {
+  async getPaymentsByClient(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { clientId } = req.params;
       if (!clientId) {
@@ -36,11 +37,12 @@ export class PaymentController implements IPaymentController {
         data: payments,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve client payments");
     }
   }
 
-  async getPaymentsByTrainer(req: Request, res: Response): Promise<void> {
+  async getPaymentsByTrainer(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { trainerId } = req.params;
       if (!trainerId) {
@@ -54,11 +56,12 @@ export class PaymentController implements IPaymentController {
         data: payments,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve trainer payments");
     }
   }
 
-  async getPaymentById(req: Request, res: Response): Promise<void> {
+  async getPaymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { paymentId } = req.params;
       if (!paymentId) {
@@ -76,11 +79,12 @@ export class PaymentController implements IPaymentController {
         data: payment,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve payment");
     }
   }
 
-  async getPaymentsByDateRange(req: Request, res: Response): Promise<void> {
+  async getPaymentsByDateRange(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { startDate, endDate } = req.query;
       if (!startDate || !endDate) {
@@ -101,11 +105,12 @@ export class PaymentController implements IPaymentController {
         data: payments,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve payments by date range");
     }
   }
 
-  async getTotalRevenue(req: Request, res: Response): Promise<void> {
+  async getTotalRevenue(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const totalRevenue = await this._paymentService.getTotalRevenue();
       res.status(HttpStatus.OK).json({
@@ -114,11 +119,12 @@ export class PaymentController implements IPaymentController {
         data: { totalRevenue },
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve total revenue");
     }
   }
 
-  async getTotalRevenueByTrainer(req: Request, res: Response): Promise<void> {
+  async getTotalRevenueByTrainer(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { trainerId } = req.params;
       if (!trainerId) {
@@ -132,11 +138,12 @@ export class PaymentController implements IPaymentController {
         data: { totalRevenue },
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve trainer revenue");
     }
   }
 
-  async updatePaymentStatus(req: Request, res: Response): Promise<void> {
+  async updatePaymentStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { paymentId } = req.params;
       const { status } = req.body;
@@ -160,11 +167,12 @@ export class PaymentController implements IPaymentController {
         data: updatedPayment,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update payment status");
     }
   }
 
-  async getPaymentByStripePaymentIntentId(req: Request, res: Response): Promise<void> {
+  async getPaymentByStripePaymentIntentId(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { paymentIntentId } = req.params;
       if (!paymentIntentId) {
@@ -182,11 +190,12 @@ export class PaymentController implements IPaymentController {
         data: payment,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve payment");
     }
   }
 
-  async getPaymentByStripeSessionId(req: Request, res: Response): Promise<void> {
+  async getPaymentByStripeSessionId(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { sessionId } = req.params;
       if (!sessionId) {
@@ -204,6 +213,7 @@ export class PaymentController implements IPaymentController {
         data: payment,
       });
     } catch (error) {
+      next(error);
       throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve payment");
     }
   }
