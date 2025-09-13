@@ -25,22 +25,19 @@ export const refreshAccessToken = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       console.log("Sending refresh token request...");
-      const { tokenVersion } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
       const response = await api.post(
         "/auth/refresh-token",
-        { tokenVersion },
         { withCredentials: true }
       );
       console.log("Refresh token response:", response.data);
       if (!response.data.accessToken) {
         throw new Error("No access token in response");
       }
-      dispatch(setCredentials({ user: response.data.user, notifications:response.data.notifications, accessToken: response.data.accessToken, tokenVersion: response.data.tokenVersion }));
+      dispatch(setCredentials({ user: response.data.user, notifications:response.data.notifications, accessToken: response.data.accessToken }));
       return {
         user: response.data.user,
         notifications: response.data.notifications,
         accessToken: response.data.accessToken,
-        tokenVersion: response.data.tokenVersion || tokenVersion + 1
       };
     } catch (error) {
       console.error("Refresh token error:", error);
@@ -56,13 +53,13 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: UserInterface; notifications: INotificationView[]; accessToken: string; tokenVersion: number }>
+      action: PayloadAction<{ user: UserInterface; notifications: INotificationView[]; accessToken: string;}>
     ) => {
       console.log("Setting credentials:", action.payload);
       state.user = action.payload.user;
       state.notifications = action.payload.notifications;
       state.isAuthenticated = true;
-      localStorage.setItem("accessTokenData", JSON.stringify({accessToken:action.payload.accessToken, tokenVersion:action.payload.tokenVersion}));
+      localStorage.setItem("accessTokenData", JSON.stringify({accessToken:action.payload.accessToken,}));
       localStorage.setItem("sessionActive", "true");
     },
     logout: (state) => {
@@ -99,7 +96,6 @@ const authSlice = createSlice({
             user: action.payload.user,
             notifications: action.payload.notifications,
             accessToken: action.payload.accessToken,
-            tokenVersion: action.payload.tokenVersion,
           },
           type: action.type,
         });

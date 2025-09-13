@@ -18,7 +18,7 @@ export class ClientTrainerDTO{
             id: user._id.toString(),
             name: user.name,
             speciality: data.professionalSummary.specializations,
-            photo: await generateSignedUrl( raw.profilePicture[0].filePath),
+            photo: raw.profilePicture[0] ? await generateSignedUrl( raw.profilePicture[0].filePath) : null,
             experience: data.professionalSummary.yearsOfExperience.toString(),
             price: data.basicInfo.weeklySalary
         };

@@ -8,7 +8,6 @@ export interface AddedRequest extends Request {
   user?: {
     id: string;
     role: "client" | "admin" | "trainer";
-    tokenVersion: number;
   };
 }
 // ✅ Base verification: any user
@@ -40,10 +39,9 @@ function verifyTokenInternal(requiredRole?: "client" | "admin" | "trainer") {
         );
       }
 
-      const { id, role, tokenVersion } = payload as {
+      const { id, role} = payload as {
         id?: string;
         role?: string;
-        tokenVersion?: number;
       };
 
       if (!id || !role || !["client", "admin", "trainer"].includes(role)) {
@@ -68,16 +66,10 @@ function verifyTokenInternal(requiredRole?: "client" | "admin" | "trainer") {
           createHttpError(HttpStatus.UNAUTHORIZED, HttpResponse.USER_IS_BLOKED)
         );
       }
-      if (user.tokenVersion !== tokenVersion) {
-        return next(
-          createHttpError(HttpStatus.UNAUTHORIZED, "Invalid token version")
-        );
-      }
 
       req.user = {
         id,
         role: role as "client" | "admin" | "trainer",
-        tokenVersion,
       };
 
       next();

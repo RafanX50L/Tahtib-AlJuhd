@@ -34,7 +34,7 @@ export class AuthController implements IAuthController {
   async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
-      const { user, accessToken, refreshToken, tokenVersion } =
+      const { user, accessToken, refreshToken} =
         await this._authService.signIn(email, password);
         console.log('user',user);
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
@@ -53,7 +53,6 @@ export class AuthController implements IAuthController {
         user,
         notifications,
         accessToken,
-        tokenVersion: tokenVersion || 0,
       });
     } catch (error) {
       next(error);
@@ -67,7 +66,7 @@ export class AuthController implements IAuthController {
   ): Promise<void> {
     try {
       const { email, otp } = req.body;
-      const { user, accessToken, refreshToken, tokenVersion } =
+      const { user, accessToken, refreshToken } =
         await this._authService.verifyOtp(email, otp);
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
       setCookie(res, refreshToken, {
@@ -82,7 +81,6 @@ export class AuthController implements IAuthController {
         user,
         notifications,
         accessToken,
-        tokenVersion: tokenVersion || 0,
       });
     } catch (error) {
       next(error);
@@ -144,7 +142,7 @@ export class AuthController implements IAuthController {
   ): Promise<void> {
     try {
       const { email, name, role } = req.body;
-      const { user, accessToken, refreshToken, tokenVersion } =
+      const { user, accessToken, refreshToken } =
         await this._authService.googleSignUp(email, name, role);
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
       setCookie(res, refreshToken, {
@@ -159,7 +157,6 @@ export class AuthController implements IAuthController {
         user,
         notifications,
         accessToken,
-        tokenVersion: tokenVersion || 0,
       });
     } catch (error) {
       next(error);
@@ -179,11 +176,10 @@ export class AuthController implements IAuthController {
           "Access token is missing or invalid"
         );
       }
-      const { user, tokenVersion } = await this._authService.getUserData(id);
+      const { user } = await this._authService.getUserData(id);
       res.status(HttpStatus.OK).json({
         message: HttpResponse.DATA_FETCHING_SUCCESSFULL,
         user,
-        tokenVersion: tokenVersion || 0,
       });
     } catch (error) {
       next(error);
@@ -219,7 +215,6 @@ export class AuthController implements IAuthController {
         accessToken: result.accessToken,
         user: result.user,
         notifications,
-        tokenVersion: result.tokenVersion,
       });
     } catch (error) {
       deleteCookie(res);

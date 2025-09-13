@@ -35,11 +35,10 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
       console.log(
         `Request interceptor triggered for: ${config.url} [${config.method?.toUpperCase()}]`
       );
-      const tokens = secureTokenStorage.get() as { token: string; version: number };
+      const tokens = secureTokenStorage.get() as { token: string;};
       if (tokens && tokens.token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${tokens.token}`;
-        config.headers['X-Token-Version'] = tokens.version;
       } else {
         console.log("No token found in secureTokenStorage");
       }
@@ -75,7 +74,7 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
       if (
         (status === 401 &&
           (data?.error === "User is Blocked" ||
-            data?.error === "Invalid token version")) ||
+            data?.error === "Invalid token ")) ||
         (status === 403 && data?.error === "Unauthorized")
       ) {
         console.log(
@@ -119,22 +118,21 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
           const response = await dispatch(refreshAccessToken()).unwrap();
           console.log("Refresh token response:", response);
 
-          const { accessToken, tokenVersion, user, notifications } = response;
-          if (!accessToken || tokenVersion === undefined) {
+          const { accessToken, user, notifications } = response;
+          if (!accessToken) {
             throw new Error(
-              "Invalid refresh response: missing accessToken or tokenVersion"
+              "Invalid refresh response: missing accessToken"
             );
           }
 
-          secureTokenStorage.set(user,notifications,accessToken, tokenVersion,dispatch);
+          secureTokenStorage.set(user,notifications,accessToken,dispatch);
           originalRequest.headers = {
             ...originalRequest.headers,
             Authorization: `Bearer ${accessToken}`,
-            "X-Token-Version": tokenVersion,
           };
 
           console.log(
-            `Retrying original request for ${originalRequest.url} from ${frontendUrl} with new token, version: ${tokenVersion}`
+            `Retrying original request for ${originalRequest.url} from ${frontendUrl} with new token`
           );
           processQueue(null, accessToken);
           return api(originalRequest);

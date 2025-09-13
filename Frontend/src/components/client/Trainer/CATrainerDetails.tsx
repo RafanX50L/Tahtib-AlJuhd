@@ -109,23 +109,20 @@ const TrainerPage: React.FC = () => {
     fetchTrainer();
   }, [trainerId]);
 
-  // Handle payment session cleanup and completion detection
   useEffect(() => {
-    // Check if user is returning from a successful payment
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment_status');
     
     if (paymentStatus === 'success' && currentSession) {
       updateSessionStatus('completed');
-      // Clear URL parameters
+      clearSession();
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (paymentStatus === 'cancelled' && currentSession) {
       updateSessionStatus('cancelled');
-      // Clear URL parameters
+      clearSession();
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // Clean up expired sessions on component mount
     if (currentSession && currentSession.status === 'expired') {
       clearSession();
     }
@@ -146,7 +143,6 @@ const TrainerPage: React.FC = () => {
   };
 
   const handlePurchasePlan = async () => {
-    // Check if there's already an active payment session
     if (hasActiveSession) {
       alert('A payment session is already active. Please complete or cancel the existing payment before starting a new one.');
       setShowConfirmModal(false);
@@ -168,35 +164,34 @@ const TrainerPage: React.FC = () => {
       return;
     }
 
+    const selectedPlanDetails = trainer.plans.find((plan) => plan._id === selectedPlan);
+    if (!selectedPlanDetails) return;
+
     try {
-      // Create payment session before proceeding
       const sessionData = {
         sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: user._id,
-        trainerId: trainerId,
+        trainerId: trainerId!,
         planId: selectedPlan,
-        amount: 200000, // Amount in paise (₹2000.00)
+        amount: selectedPlanDetails.price * 100, // Dynamic: price in paise
         currency: 'inr'
       };
 
       createSession(sessionData);
 
-      const  data = await ClientService.purchasePlan(
+      const data = await ClientService.purchasePlan(
         user._id,
         trainerId!,
         selectedPlan
       );
-      // const { data } = await api.post("/payment/create-checkout-session", {
-      //   userId: user._id,
-      //   trainerId: trainerId,
-      //   planId: selectedPlan
-      // });
-      console.log("response", data);
+
+      if (!data.id) {
+        throw new Error('Invalid session ID from server');
+      }
 
       const result = await stripe?.redirectToCheckout({ sessionId: data.id });
       if (result?.error) {
-        console.log(result.error);
-        // Update session status to cancelled on error
+        console.error(result.error);
         updateSessionStatus('cancelled');
       }
 
@@ -205,7 +200,6 @@ const TrainerPage: React.FC = () => {
     } catch (error) {
       console.error("Error purchasing plan:", error);
       setShowConfirmModal(false);
-      // Update session status to cancelled on error
       updateSessionStatus('cancelled');
     }
   };

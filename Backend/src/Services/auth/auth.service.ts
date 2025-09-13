@@ -82,7 +82,6 @@ export class AuthService implements IAuthService {
     const payload = {
       id: existingUser._id.toString(),
       role: existingUser.role,
-      tokenVersion: existingUser.tokenVersion,
     };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
@@ -92,7 +91,6 @@ export class AuthService implements IAuthService {
       user: userData,
       accessToken,
       refreshToken,
-      tokenVersion: existingUser.tokenVersion,
     };
   }
 
@@ -133,7 +131,6 @@ export class AuthService implements IAuthService {
 
     return {
       user: userData,
-      tokenVersion: createdUser.tokenVersion,
       accessToken,
       refreshToken,
     };
@@ -238,7 +235,6 @@ export class AuthService implements IAuthService {
 
       return {
         user: userData,
-        tokenVersion: createdUser.tokenVersion,
         accessToken,
         refreshToken,
       };
@@ -261,7 +257,6 @@ export class AuthService implements IAuthService {
 
       return {
         user: userData,
-        tokenVersion: existingUser.tokenVersion,
         accessToken,
         refreshToken,
       };
@@ -282,7 +277,6 @@ export class AuthService implements IAuthService {
         email: userData.email,
         role: userData.role,
       },
-      tokenVersion: user.tokenVersion,
     };
   }
 
@@ -298,16 +292,14 @@ export class AuthService implements IAuthService {
       !decoded ||
       typeof decoded !== "object" ||
       !("id" in decoded) ||
-      !("role" in decoded) ||
-      !("tokenVersion" in decoded)
+      !("role" in decoded)
     ) {
       throw createHttpError(HttpStatus.FORBIDDEN, "Invalid refresh token");
     }
 
-    const { id, role, tokenVersion } = decoded as {
+    const { id, role } = decoded as {
       id: string;
       role: string;
-      tokenVersion: number;
     };
     const user = await this._userRepository.getUserById(id);
     if (!user) {
@@ -318,22 +310,16 @@ export class AuthService implements IAuthService {
       throw createHttpError(HttpStatus.UNAUTHORIZED, "User is blocked");
     }
 
-    if (user.tokenVersion !== tokenVersion) {
-      throw createHttpError(HttpStatus.FORBIDDEN, "Invalid token version");
-    }
 
     const newRefreshToken = generateRefreshToken({
       id: user._id.toString(),
       role,
-      tokenVersion: user.tokenVersion + 1,
     });
 
-    await this._userRepository.updateTokenVersion(id, user.tokenVersion + 1);
 
     const payload = {
       id: user._id.toString(),
       role,
-      tokenVersion: user.tokenVersion + 1,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -343,12 +329,7 @@ export class AuthService implements IAuthService {
       accessToken,
       refreshToken: newRefreshToken,
       user: userData,
-      tokenVersion: user.tokenVersion + 1,
     };
-  }
-
-  async updateTokenVersion(userId: string, newVersion: number): Promise<void> {
-    await this._userRepository.updateTokenVersion(userId, newVersion);
   }
 
   async getUserById(id: string): Promise<IUser | null> {

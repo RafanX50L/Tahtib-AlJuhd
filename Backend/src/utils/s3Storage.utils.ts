@@ -1,4 +1,4 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from 'uuid';
 import { env } from "@/config/env.config";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -31,8 +31,6 @@ async function uploadToS3(file: Express.Multer.File, folder: FolderCategory): Pr
 
   await s3Client.send(new PutObjectCommand(params));
 
-  // Public S3 URL
-  // return `https://${env.S3_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com/${fileName}`;
   return fileKey;
 };
 
@@ -49,4 +47,17 @@ async function generateSignedUrl(fileKey: string): Promise<string> {
 }
 
 
-export { uploadToS3, generateSignedUrl };
+/**
+ * Deletes a file from S3 by its key
+ */
+async function deleteFromS3(fileKey: string): Promise<void> {
+  const command = new DeleteObjectCommand({
+    Bucket: env.S3_BUCKET_NAME!,
+    Key: fileKey,
+  });
+
+  await s3Client.send(command);
+  console.log(`Deleted file: ${fileKey}`);
+}
+
+export { uploadToS3, generateSignedUrl, deleteFromS3 };

@@ -85,7 +85,7 @@ export class clientTrainerService implements IClientTrainerService{
             name: user.name,
             email: user.email,
             Specialty: data.professionalSummary.specializations,
-            photo: await generateSignedUrl( data.basicInfo.profilePhoto[0].filePath),
+            photo: data.basicInfo.profilePhoto[0] ? await generateSignedUrl( data.basicInfo.profilePhoto[0].filePath) : null,
             experience: data.professionalSummary.yearsOfExperience.toString(),
             location: data.basicInfo.location,
             price: data.basicInfo.weeklySalary,
@@ -104,6 +104,7 @@ export class clientTrainerService implements IClientTrainerService{
         const currentTrainerId = ((await this._clinetRepo.findOne({userId:userId})).data as IClientPersonalization).currentTrainerId;
         const contract = await this.getCurrentTrainerContract(userId);
         if (!contract || contract.endDate < new Date()) {
+            console.log('No active contract or contract expired');
             // throw createHttpError(HttpStatus.,'Current trainer contract has expired');
             return null;
         }
@@ -115,7 +116,7 @@ export class clientTrainerService implements IClientTrainerService{
             id: currentTrainerId.toString(),
             name: trainer.name,
             speciality: data.professionalSummary.specializations,
-            photo: await generateSignedUrl(data.basicInfo?.profilePhoto[0]?.filePath),
+            photo: data.basicInfo?.profilePhoto[0] ? await generateSignedUrl(data.basicInfo?.profilePhoto[0]?.filePath) : null,
             experience: data.professionalSummary.yearsOfExperience,
             price: data.basicInfo.weeklySalary,
         };

@@ -8,7 +8,6 @@ import { INotificationView } from "@/components/shared/Notification";
 
 interface TokenData {
   token: string;
-  version: number;
 }
 
 
@@ -16,23 +15,22 @@ export const secureTokenStorage = {
   get: (): TokenData | null => {
     try {
 
-      const { tokenVersion, accessToken } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
+      const {  accessToken } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
       if (!accessToken) {
         console.log('No token found in local storage');
         return null;
       }
 
-      return { token: accessToken, version: tokenVersion };
+      return { token: accessToken };
     } catch (error) {
       console.error('Failed to retrieve token:', error);
       return null;
     }
   },
 
-  set: (user: UserInterface, notifications: INotificationView[], token: string, version: number, dispatch: AppDispatch) => {
+  set: (user: UserInterface, notifications: INotificationView[], token: string, dispatch: AppDispatch) => {
     try {
-      dispatch(setCredentials({ user,notifications, accessToken: token, tokenVersion: version }));
-      console.log('Token stored successfully, version:', version);
+      dispatch(setCredentials({ user,notifications, accessToken: token }));
     } catch (error) {
       console.error('Failed to store token:', error);
     }

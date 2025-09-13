@@ -10,14 +10,12 @@ export interface verifyOtpReturnType {
   user: Partial<IUser> & { status: string | null };
   accessToken: string;
   refreshToken: string;
-  tokenVersion: number;
 }
 
 export interface signInReturnType {
   user: Partial<IUser> & { status: string | null };
   accessToken: string;
   refreshToken: string;
-  tokenVersion: number;
 }
 
 export interface forgotPasswordReturnType {
@@ -32,14 +30,12 @@ export interface resetPasswordReturnType {
 
 export interface getUserDataReturnType {
   user: Partial<IUser>;
-  tokenVersion: number;
 }
 
 export interface refreshTokenReturnType {
   user: Partial<IUser> & { status: string | null };
   accessToken: string;
   refreshToken: string;
-  tokenVersion: number;
 }
 
 export interface IAuthService {
@@ -51,7 +47,6 @@ export interface IAuthService {
   resetPassword(token: string, password: string): Promise<resetPasswordReturnType>;
   googleSignUp(email: string, name: string, role: "client" | "trainer" | "admin"): Promise<verifyOtpReturnType>;
   refreshAccessToken(refreshToken: string): Promise<refreshTokenReturnType>;
-  updateTokenVersion(userId: string, newVersion: number): Promise<void>;
   getUserData(id: string): Promise<getUserDataReturnType>;
   getUserById(id: string): Promise<IUser | null>;
 }

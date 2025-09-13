@@ -345,19 +345,6 @@ const TrainerProfile: React.FC = () => {
                 >
                   Close
                 </button>
-                {/* <button
-                  onClick={() => {
-                    console.log('this works');
-                    if (!selectedPlan) {
-                      alert('Please select a plan before confirming.');
-                      return;
-                    }
-                    setShowCheckout(true); // show the checkout form
-                  }}
-                  className="px-4 sm:px-6 py-2 bg-[#5D5FEF] text-white rounded-lg text-sm sm:text-base hover:bg-[#4C4EE5]"
-                >
-                  Confirm Booking
-                </button> */}
                 <button
                   onClick={() => {
                     console.log('this works');

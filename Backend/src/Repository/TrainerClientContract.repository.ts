@@ -9,19 +9,11 @@ export class TrainerClientContractRepository extends BaseRepository<ITrainerClie
   constructor() {
     super(TrainerClientContractModel);
   }
-  // async create(contract: ITrainerClientContract): Promise<ITrainerClientContract> {
-  //   const newContract = new TrainerClientContractModel(contract);
-  //   return await newContract.save();
-  // }
-
-  // async findById(id: string): Promise<ITrainerClientContract | null> {
-  //   return await TrainerClientContractModel.findById(id);
-  // }
 
   async findActiveContractByClientId(clientId: string): Promise<ITrainerClientContract | null> {
     return await TrainerClientContractModel.findOne({
       clientId,
-      sessionsRemaining: { $gt: 0 },
+      // sessionsRemaining: { $gt: 0 },
       endDate: { $gte: new Date() },
     })
       .populate('planId')

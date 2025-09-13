@@ -142,14 +142,6 @@ The backend payment routes now accept session metadata:
 
 Success and cancel URLs are dynamically generated to return users to the correct page with payment status.
 
-## Testing
-
-Use the `PaymentSessionTest` component to test the functionality:
-
-1. Create a test session
-2. Open the same page in another tab
-3. Try to create another session - it should be blocked
-4. Complete or cancel the session to allow new sessions
 
 ## Security Considerations
 

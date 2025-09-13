@@ -98,7 +98,6 @@ export function RegisterPage() {
           user: response.user,
           notifications: response.notifications,
           accessToken: response.accessToken,
-          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);

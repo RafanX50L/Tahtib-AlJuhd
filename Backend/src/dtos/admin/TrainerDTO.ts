@@ -227,7 +227,7 @@ export class AdminTrainerDTO {
     name: user.name,
     email: user.email,
     isBlocked: user.isBlocked,
-    profilePhoto: await generateSignedUrl(raw.profilePicture?.filePath) || "",
+    profilePhoto: raw.profilePicture?.filePath ? await generateSignedUrl(raw.profilePicture?.filePath) : null,
     specializations: profSummary.specializations || [],
     yearsOfExperience: profSummary.yearsOfExperience || 0,
     weeklySalary: basicInfo.weeklySalary || 0,

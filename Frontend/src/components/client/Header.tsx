@@ -1,7 +1,7 @@
 import { RootState } from "@/store/store";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  ChevronDown, Sidebar } from "lucide-react";
+import { ChevronDown, Sidebar } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { logout } from "@/store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
-import NotificationDropdown, { clientTheme } from "../shared/NotificationDropDown";
+import NotificationDropdown, {
+  clientTheme,
+} from "../shared/NotificationDropDown";
 
 interface HeaderProps {
   title: string;
@@ -31,7 +33,6 @@ const Header: React.FC<HeaderProps> = ({ title, content, onMenuToggle }) => {
 
   return (
     <div className="flex justify-between items-center mb-6 lg:mb-10 fixed lg:static top-0 left-0 right-0 bg-gradient-to-r from-[#12151E] to-[#1E2235] p-4 lg:p-0 border-b border-[#2A3042] lg:border-none z-10 h-[70px] lg:h-auto shadow-lg lg:shadow-none backdrop-blur-sm lg:backdrop-blur-none">
-      
       {/* Left side with integrated menu button */}
       <div className="flex items-center gap-4 flex-1">
         {/* Mobile Menu Button */}
@@ -57,12 +58,9 @@ const Header: React.FC<HeaderProps> = ({ title, content, onMenuToggle }) => {
       <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
         {/* Notification Dropdown */}
         <div className="hidden sm:block">
-          <NotificationDropdown
-            theme={clientTheme}
-            navPath="/notifications"
-          />
+          <NotificationDropdown theme={clientTheme} navPath="/notifications" />
         </div>
-        
+
         {/* Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -76,10 +74,10 @@ const Header: React.FC<HeaderProps> = ({ title, content, onMenuToggle }) => {
                 </span>
               </div>
               <div className="hidden md:flex flex-col items-start max-w-24">
-                <span className="text-white text-sm font-medium truncate">
+                <span className="text-white text-sm font-medium truncate w-full overflow-hidden whitespace-nowrap">
                   {user?.name ?? "User"}
                 </span>
-                <span className="text-[#A0A7B8] text-xs truncate">
+                <span className="text-[#A0A7B8] text-xs truncate w-full overflow-hidden whitespace-nowrap">
                   {user?.role ?? "Member"}
                 </span>
               </div>

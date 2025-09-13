@@ -65,10 +65,6 @@ export class UserRepository
     return await UserModel.findById(id);
   }
 
-  async updateTokenVersion(userId: string, newVersion: number): Promise<void> {
-    await UserModel.findByIdAndUpdate(userId, { tokenVersion: newVersion });
-  }
-
   async findByEmail(email: string): Promise<IUser | null> {
     return await this.model.findOne({ email });
   }

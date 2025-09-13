@@ -73,7 +73,6 @@ export default function LoginPage() {
           user: response.user,
           notifications: response.notifications,
           accessToken: response.accessToken,
-          tokenVersion: response.tokenVersion,
         })
       );
       toast.success(response.message);
@@ -145,7 +144,6 @@ export default function LoginPage() {
           user: response.user,
           notifications: response.notifications,
           accessToken: response.accessToken,
-          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);

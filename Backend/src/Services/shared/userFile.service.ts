@@ -6,7 +6,7 @@ import { ITrainerPersonalizationRepository } from "@/core/interface/repositories
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
 import {  IUserFileService } from "@/core/interface/services/shared/IUserFile.Service";
 import { createHttpError } from "@/utils";
-import { uploadToS3 } from "@/utils/s3Storage.utils";
+import { deleteFromS3, uploadToS3 } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";
 
 export class UserFileService implements IUserFileService{
@@ -20,6 +20,15 @@ export class UserFileService implements IUserFileService{
     async updateProfilePicture(userId: string, file: Express.Multer.File,role:string):Promise<{signedUrl:string}> {
       const signedUrl = await uploadToS3(file, "profile-photos");
 
+      const existingFile = await this._userFileRepository.findLatestProfilePicture(userId);
+
+      if (existingFile) {
+        // Delete from S3
+        await deleteFromS3(existingFile.filePath);
+
+        await this._userFileRepository.deleteOne({ _id: existingFile._id });
+      }
+
       const fileData : Partial<IUserFile> = {
         userId: new Types.ObjectId(userId),
         fileName: file.originalname,
@@ -29,6 +38,7 @@ export class UserFileService implements IUserFileService{
         uploadedAt: new Date(),
       };
 
+      
       const fileCreat = await this._userFileRepository.updateProfilePicture(userId, fileData);
 
       let updated;

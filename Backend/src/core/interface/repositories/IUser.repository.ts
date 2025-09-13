@@ -30,7 +30,6 @@ export interface IUserRepository extends IBaseRepository<IUser> {
 
   findByIdWithPersonalization(id: string): Promise<IUser | null>;
   updatePassword(email: string, hashedPassword: string): Promise<IUser | null>;
-  updateTokenVersion(userId: string, newVersion: number): Promise<void>;
   // updatePersonalizationId(userId: string, personalizationId:string): Promise<void>;
   getUserById(id: string): Promise<IUser | null>;
   updatePersonalizationsId(

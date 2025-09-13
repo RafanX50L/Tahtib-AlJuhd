@@ -27,9 +27,9 @@ export const AuthService = {
 
   login: async (formData: LoginForm) => {
     try {
-      const res = await api.post<{message:string,user:UserInterface,notifications: INotificationView[], accessToken:string,tokenVersion:number}>(AUTH_ROUTES.LOGIN, formData);
+      const res = await api.post<{message:string,user:UserInterface,notifications: INotificationView[], accessToken:string}>(AUTH_ROUTES.LOGIN, formData);
       const response = res.data;
-      return { user: response.user, notifications: response.notifications, message: response.message, accessToken:response.accessToken, tokenVersion:response.tokenVersion, status: res.status };
+      return { user: response.user, notifications: response.notifications, message: response.message, accessToken:response.accessToken, status: res.status };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -40,9 +40,9 @@ export const AuthService = {
 
   verifyOtp: async (data: OtpData) => {
     try {
-      const res = await api.post<{ message: string; user: UserInterface,notifications: INotificationView[], accessToken:string, tokenVersion:number }>(AUTH_ROUTES.VERIFY_OTP, data);
+      const res = await api.post<{ message: string; user: UserInterface,notifications: INotificationView[], accessToken:string }>(AUTH_ROUTES.VERIFY_OTP, data);
       const response = res.data;
-      return { user: response.user,notifications: response.notifications, message: response.message,accessToken:response.accessToken,tokenVersion:response.tokenVersion, status:res.status };
+      return { user: response.user,notifications: response.notifications, message: response.message,accessToken:response.accessToken, status:res.status };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -89,9 +89,9 @@ export const AuthService = {
   },
   GoogleSignUP: async (data: {email:string,password:string}) => {
     try {
-      const res = await api.post<{message:string, user:UserInterface,notifications: INotificationView[], accessToken:string, tokenVersion:number}>(AUTH_ROUTES.GOOGLE_SIGNUP, data);
+      const res = await api.post<{message:string, user:UserInterface,notifications: INotificationView[], accessToken:string }>(AUTH_ROUTES.GOOGLE_SIGNUP, data);
       const response = res.data;
-      return { message: response.message, user: response.user, notifications: response.notifications, accessToken:response.accessToken, tokenVersion:response.tokenVersion, status: res.status };
+      return { message: response.message, user: response.user, notifications: response.notifications, accessToken:response.accessToken, status: res.status };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
