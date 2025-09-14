@@ -2,6 +2,14 @@ import { HttpStatus } from "@/constants/status.constant";
 import { IAdminDashboardController } from "@/core/interface/controllers/admin/IAdmin.Dashboard.Controller";
 import { IAdminDashboardService } from "@/core/interface/services/admin/IAdmin.Dashboard.Service";
 import { NextFunction, Request, Response } from "express";
+import { 
+  AdminDashboardDTO,
+  GetRevenueTrendsRequestDTO,
+  GetTopTrainersRequestDTO,
+  GetRecentPaymentsRequestDTO
+} from "@/dtos/reverse-mapping/admin/DashboardDTO";
+import { ValidationError } from "@/utils/validation.util";
+import { ControllerErrorHandler } from "@/utils/controller-error-handler.util";
 
 export class AdminDashboardController implements IAdminDashboardController {
   constructor(private readonly _service: IAdminDashboardService) {}
@@ -9,41 +17,55 @@ export class AdminDashboardController implements IAdminDashboardController {
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const stats = await this._service.getStats();
-      res.status(HttpStatus.OK).json({ success: true, data: stats });
+      ControllerErrorHandler.handleSuccess(res, stats, "Dashboard stats retrieved successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
   async getRevenueTrends(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const monthsBack = req.query.monthsBack ? parseInt(req.query.monthsBack as string) : 6;
-      const result = await this._service.getRevenueTrends(monthsBack);
-      res.status(HttpStatus.OK).json({ success: true, data: result });
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetRevenueTrendsRequestDTO = AdminDashboardDTO.validateGetRevenueTrendsRequest(req.query);
+      
+      // Call service with validated parameters - service already returns DTOs
+      const result = await this._service.getRevenueTrends(validatedParams.monthsBack);
+
+      ControllerErrorHandler.handleSuccess(res, result, "Revenue trends retrieved successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
   async getTopTrainers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
-      const result = await this._service.getTopTrainers(limit);
-      res.status(HttpStatus.OK).json({ success: true, data: result });
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetTopTrainersRequestDTO = AdminDashboardDTO.validateGetTopTrainersRequest(req.query);
+      
+      // Call service with validated parameters - service already returns DTOs
+      const result = await this._service.getTopTrainers(validatedParams.limit);
+
+      ControllerErrorHandler.handleSuccess(res, result, "Top trainers retrieved successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
   async getRecentPayments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const page = req.query.page ? parseInt(req.query.page as string) : 1;
-      const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string) : 10;
-      const searchTerm = req.query.searchTerm ? (req.query.searchTerm as string) : "";
-      const result = await this._service.getRecentPayments(page, pageSize, searchTerm);
-      res.status(HttpStatus.OK).json({ success: true, data: result.data, total: result.total });
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetRecentPaymentsRequestDTO = AdminDashboardDTO.validateGetRecentPaymentsRequest(req.query);
+      
+      // Call service with validated parameters - service already returns DTOs
+      const result = await this._service.getRecentPayments(
+        validatedParams.page || 1,
+        validatedParams.pageSize || 10,
+        validatedParams.searchTerm || ""
+      );
+
+      ControllerErrorHandler.handleSuccess(res, result, "Recent payments retrieved successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 }

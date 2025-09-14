@@ -11,6 +11,17 @@ import {
 import { createHttpError } from "../../utils";
 import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
 import { env } from "@/config/env.config";
+import { 
+  AuthDTO,
+  SignUpRequestDTO,
+  SignInRequestDTO,
+  VerifyOtpRequestDTO,
+  ResendOtpRequestDTO,
+  ForgotPasswordRequestDTO,
+  ResetPasswordRequestDTO,
+  GoogleSignUpRequestDTO
+} from "@/dtos/reverse-mapping/auth/AuthDTO";
+import { ControllerErrorHandler } from "@/utils/controller-error-handler.util";
 
 const maxAge = Number(env.COOKIE_MAX_AGE);
 
@@ -22,23 +33,29 @@ export class AuthController implements IAuthController {
 
   async signUp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const user = await this._authService.signUp(req.body);
-      res.status(HttpStatus.OK).json({
-        email: user,
-      });
+      // Validate and transform request body using DTO
+      const validatedBody: SignUpRequestDTO = AuthDTO.validateSignUpRequest(req.body);
+      
+      // Call service with validated parameters
+      const user = await this._authService.signUp(validatedBody);
+      
+      ControllerErrorHandler.handleSuccess(res, { email: user }, "User registration initiated successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
   async signIn(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { email, password } = req.body;
+      // Validate and transform request body using DTO
+      const validatedBody: SignInRequestDTO = AuthDTO.validateSignInRequest(req.body);
+      
+      // Call service with validated parameters
       const { user, accessToken, refreshToken} =
-        await this._authService.signIn(email, password);
-        console.log('user',user);
+        await this._authService.signIn(validatedBody.email, validatedBody.password);
+        
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
-      console.log('maxAge',maxAge, typeof maxAge);
+      
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -46,16 +63,13 @@ export class AuthController implements IAuthController {
         maxAge: maxAge, // 7 days
       });
 
-      console.log("Refresh Token:", refreshToken);
-      console.log("notifications",notifications);
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.LOGIN_SUCCESS,
+      ControllerErrorHandler.handleSuccess(res, {
         user,
         notifications,
         accessToken,
-      });
+      }, HttpResponse.LOGIN_SUCCESS);
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -65,10 +79,15 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email, otp } = req.body;
+      // Validate and transform request body using DTO
+      const validatedBody: VerifyOtpRequestDTO = AuthDTO.validateVerifyOtpRequest(req.body);
+      
+      // Call service with validated parameters
       const { user, accessToken, refreshToken } =
-        await this._authService.verifyOtp(email, otp);
+        await this._authService.verifyOtp(validatedBody.email, validatedBody.otp);
+        
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
+      
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -76,14 +95,13 @@ export class AuthController implements IAuthController {
         maxAge: maxAge,
       });
 
-      res.status(HttpStatus.CREATED).json({
-        message: HttpResponse.USER_CREATION_SUCCESS,
+      ControllerErrorHandler.handleSuccess(res, {
         user,
         notifications,
         accessToken,
-      });
+      }, HttpResponse.USER_CREATION_SUCCESS, HttpStatus.CREATED);
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -93,14 +111,15 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email } = req.body;
-      const user = await this._authService.resendOtp(email);
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.OTP_RESEND_SUCCESS,
-        user,
-      });
+      // Validate and transform request body using DTO
+      const validatedBody: ResendOtpRequestDTO = AuthDTO.validateResendOtpRequest(req.body);
+      
+      // Call service with validated parameters
+      const user = await this._authService.resendOtp(validatedBody.email);
+      
+      ControllerErrorHandler.handleSuccess(res, { user }, HttpResponse.OTP_RESEND_SUCCESS);
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -110,11 +129,15 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email } = req.body;
-      const forgotPassword = await this._authService.forgotPassword(email);
-      res.status(HttpStatus.OK).json({ forgotPassword });
+      // Validate and transform request body using DTO
+      const validatedBody: ForgotPasswordRequestDTO = AuthDTO.validateForgotPasswordRequest(req.body);
+      
+      // Call service with validated parameters
+      const forgotPassword = await this._authService.forgotPassword(validatedBody.email);
+      
+      ControllerErrorHandler.handleSuccess(res, { forgotPassword }, "Password reset email sent successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -124,14 +147,18 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { token, password } = req.body;
+      // Validate and transform request body using DTO
+      const validatedBody: ResetPasswordRequestDTO = AuthDTO.validateResetPasswordRequest(req.body);
+      
+      // Call service with validated parameters
       const updatedUserPassword = await this._authService.resetPassword(
-        token,
-        password
+        validatedBody.token,
+        validatedBody.password
       );
-      res.status(HttpStatus.OK).json(updatedUserPassword);
+      
+      ControllerErrorHandler.handleSuccess(res, updatedUserPassword, "Password reset successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -141,10 +168,15 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email, name, role } = req.body;
+      // Validate and transform request body using DTO
+      const validatedBody: GoogleSignUpRequestDTO = AuthDTO.validateGoogleSignUpRequest(req.body);
+      
+      // Call service with validated parameters
       const { user, accessToken, refreshToken } =
-        await this._authService.googleSignUp(email, name, role);
+        await this._authService.googleSignUp(validatedBody.email, validatedBody.name, validatedBody.role);
+        
       const notifications = await this._notificationService.getLastFiveNotification((user._id as string));
+      
       setCookie(res, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -152,14 +184,13 @@ export class AuthController implements IAuthController {
         maxAge: maxAge,
       });
 
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.LOGIN_SUCCESS,
+      ControllerErrorHandler.handleSuccess(res, {
         user,
         notifications,
         accessToken,
-      });
+      }, HttpResponse.LOGIN_SUCCESS);
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -177,12 +208,10 @@ export class AuthController implements IAuthController {
         );
       }
       const { user } = await this._authService.getUserData(id);
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.DATA_FETCHING_SUCCESSFULL,
-        user,
-      });
+      
+      ControllerErrorHandler.handleSuccess(res, { user }, HttpResponse.DATA_FETCHING_SUCCESSFULL);
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -191,7 +220,6 @@ export class AuthController implements IAuthController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    console.log("Entering to refreshToken");
     try {
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
@@ -211,14 +239,14 @@ export class AuthController implements IAuthController {
         maxAge: maxAge,
       });
 
-      res.status(HttpStatus.OK).json({
+      ControllerErrorHandler.handleSuccess(res, {
         accessToken: result.accessToken,
         user: result.user,
         notifications,
-      });
+      }, "Token refreshed successfully");
     } catch (error) {
       deleteCookie(res);
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 }

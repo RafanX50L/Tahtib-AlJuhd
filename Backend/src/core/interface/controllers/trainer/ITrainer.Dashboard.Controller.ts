@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { AddedRequest } from "@/middleware/verify.token.middleware";
+import { NextFunction, Response } from "express";
 
 export interface ITrainerDashboardController {
-  getStats(req: Request, res: Response): Promise<void>;
-  getTrends(req: Request, res: Response): Promise<void>;
-  getPayments(req: Request, res: Response): Promise<void>;
+  getStats(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
+  getTrends(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
+  getPayments(req: AddedRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 

@@ -1,35 +1,57 @@
 
 import { ITrainerDashboardController } from "@/core/interface/controllers/trainer/ITrainer.Dashboard.Controller";
 import { ITrainerDashboardService } from "@/core/interface/services/trainer/ITrainer.Dashboard.Service";
-import { HttpStatus } from "@/constants/status.constant";
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 import { AddedRequest } from "@/middleware/verify.token.middleware";
+import { 
+  TrainerDashboardDTO,
+  GetPaymentsRequestDTO
+} from '@/dtos/reverse-mapping/trainer/TrainerDashboardDTO';
+import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
 
 export class TrainerDashboardController implements ITrainerDashboardController {
   constructor(private readonly _service: ITrainerDashboardService) {}
 
-  async getStats(req: AddedRequest, res: Response): Promise<void> {
-    const trainerId = req.user?.id as string;
-    const stats = await this._service.getStats(trainerId);
-    res.status(HttpStatus.OK).json({ success: true, data: stats });
+  async getStats(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const trainerId = req.user?.id as string;
+      const stats = await this._service.getStats(trainerId);
+      
+      ControllerErrorHandler.handleSuccess(res, stats, "Dashboard stats retrieved successfully");
+    } catch (error) {
+      ControllerErrorHandler.handleError(error, res, next);
+    }
   }
 
-  async getTrends(req: AddedRequest, res: Response): Promise<void> {
-    const trainerId = req.user?.id as string;
-    const trends = await this._service.getTrends(trainerId);
-    res.status(HttpStatus.OK).json({ success: true, data: trends });
+  async getTrends(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const trainerId = req.user?.id as string;
+      const trends = await this._service.getTrends(trainerId);
+      
+      ControllerErrorHandler.handleSuccess(res, trends, "Trends retrieved successfully");
+    } catch (error) {
+      ControllerErrorHandler.handleError(error, res, next);
+    }
   }
 
-  async getPayments(req: AddedRequest, res: Response): Promise<void> {
-    const trainerId = req.user?.id as string;
-    const { page, limit, status = 'all', search } = req.query as | { page?: string; limit?: string; status?: 'pending' | 'completed' | 'failed' | 'refunded' | 'all'; search?: string };
-    const result = await this._service.getPayments(trainerId, {
-      page: page ? parseInt(page) : undefined,
-      limit: limit ? parseInt(limit) : undefined,
-      status,
-      search,
-    });
-    res.status(HttpStatus.OK).json({ success: true, data: result });
+  async getPayments(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const trainerId = req.user?.id as string;
+      
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetPaymentsRequestDTO = TrainerDashboardDTO.validateGetPaymentsRequest(req.query);
+      
+      const result = await this._service.getPayments(trainerId, {
+        page: validatedParams.page,
+        limit: validatedParams.limit,
+        status: validatedParams.status || 'all',
+        search: validatedParams.search,
+      });
+      
+      ControllerErrorHandler.handleSuccess(res, result, "Payments retrieved successfully");
+    } catch (error) {
+      ControllerErrorHandler.handleError(error, res, next);
+    }
   }
 }
 
