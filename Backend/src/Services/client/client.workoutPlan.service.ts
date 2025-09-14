@@ -73,7 +73,6 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
       throw createHttpError(400, "No workout plan assigned to user");
 
     if (day === "day7") {
-      console.log("Generating next week plan...");
       const workoutPlan = (await this._workoutPlanRepository.findById(
         workoutId
       )) as IWorkoutPlan;
@@ -104,5 +103,37 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
     );
 
     return report;
+  }
+
+  async getWorkoutReport(userId: string, week: string, day: string) {
+    const personalization =
+      (await this._personalizationRepository.getPersonalization(
+        userId
+      )) as IPersonalization;
+    const workoutId = new Types.ObjectId(
+      (personalization.data as IClientPersonalization).workoutPlanId
+    );
+    
+    if (!workoutId) {
+      throw createHttpError(400, "No workout plan assigned to user");
+    }
+
+    const workoutPlan = await this._workoutPlanRepository.findById(workoutId);
+    if (!workoutPlan) {
+      throw createHttpError(404, "Workout plan not found");
+    }
+
+    const weekData = workoutPlan[`${week}`];
+    if (!weekData) {
+      throw createHttpError(404, `${week} not found in workout plan`);
+    }
+
+    const dayData = weekData[day];
+    if (!dayData) {
+      throw createHttpError(404, `${day} not found in week ${week}`);
+    }
+
+    // Return the report if it exists, otherwise return null
+    return dayData.report || null;
   }
 }

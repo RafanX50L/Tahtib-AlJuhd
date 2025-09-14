@@ -22,7 +22,7 @@ const StatsGrid = () => {
   }, []);
 
   const cards = [
-    { value: stats.activeClients.toString(), label: 'Active Clients' },
+    { value: stats.activeClients?stats.activeClients.toString() : null, label: 'Active Clients' },
     { value: stats.sessionsToday.toString(), label: 'Sessions Today' },
     { value: `₹${stats.totalRevenueThisMonth.toLocaleString()}`, label: 'Total Revenue (This Month)' },
     { value: stats.contractsExpiringSoon.toString(), label: 'Contracts Expiring Soon' },

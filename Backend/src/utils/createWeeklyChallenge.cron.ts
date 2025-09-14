@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import { WeeklyChallengeModel } from '@/models/WeeklyChallenge.model';
 import { generateExercisesForWeek } from './gemini1.utils';
+import logger from './logger.utils';
 
 
 const createWeeklyChallenge = async () => {
@@ -36,7 +37,7 @@ const createWeeklyChallenge = async () => {
     });
 
     if (existingBeginner && existingAdvanced && existingIntermediate) {
-      console.log('⚠️ Both weekly challenges already exist.');
+      logger.info('⚠️ Both weekly challenges already exist.');
       return;
     }
 
@@ -45,7 +46,7 @@ const createWeeklyChallenge = async () => {
     const intermediateTasks = await generateExercisesForWeek('intermediate');
     const advancedTasks = await generateExercisesForWeek('advanced');
 
-    console.log('Beginner Tasks:', beginnerTasks,'/n Intermediate Tasks:', intermediateTasks,'/n Advanced Tasks:', advancedTasks);
+    logger.info('Beginner Tasks:', beginnerTasks,'/n Intermediate Tasks:', intermediateTasks,'/n Advanced Tasks:', advancedTasks);
 
     if (!existingBeginner) {
       await new WeeklyChallengeModel({
@@ -56,7 +57,7 @@ const createWeeklyChallenge = async () => {
         enteredUsers: [],
         score: 100 
       }).save();
-      console.log('✅ Beginner challenge created');
+      logger.info('✅ Beginner challenge created');
     }
     if (!existingIntermediate) {
       await new WeeklyChallengeModel({
@@ -67,7 +68,7 @@ const createWeeklyChallenge = async () => {
         enteredUsers: [],
         score: 200
       }).save();
-      console.log('✅ Intermediate challenge created');
+      logger.info('✅ Intermediate challenge created');
     }
 
     if (!existingAdvanced) {
@@ -79,10 +80,10 @@ const createWeeklyChallenge = async () => {
         enteredUsers: [],
         score: 300
       }).save();
-      console.log('✅ Advanced challenge created');
+      logger.info('✅ Advanced challenge created');
     }
   } catch (err) {
-    console.error('❌ Error creating weekly challenges:', err);
+    logger.error('❌ Error creating weekly challenges:', err);
   }
 };
 
@@ -98,6 +99,6 @@ const createWeeklyChallenge = async () => {
 // * * * * *
 
 cron.schedule('29 01 * * *', () => {
-  console.log('🕐 Running weekly challenge cron job...');
+  logger.info('🕐 Running weekly challenge cron job...');
   createWeeklyChallenge();
 });

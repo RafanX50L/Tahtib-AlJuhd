@@ -125,7 +125,10 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
             );
           }
 
-          secureTokenStorage.set(user,notifications,accessToken,dispatch);
+          // Update token storage with new token
+          secureTokenStorage.set(user, notifications, accessToken, dispatch);
+          
+          // Update the original request headers with new token
           originalRequest.headers = {
             ...originalRequest.headers,
             Authorization: `Bearer ${accessToken}`,
@@ -134,13 +137,19 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
           console.log(
             `Retrying original request for ${originalRequest.url} from ${frontendUrl} with new token`
           );
+          
+          // Process queued requests with new token
           processQueue(null, accessToken);
+          
+          // Retry the original request
           return api(originalRequest);
-        } catch (refreshError:{message:string}) {
+        } catch (refreshError: any) {
           console.error(
             `Token refresh failed on ${frontendUrl}:`,
-            refreshError.message
+            refreshError.message || refreshError
           );
+          
+          // Clear token storage and redirect to login
           secureTokenStorage.remove();
           processQueue(refreshError);
           window.location.href = `/auth?path=login&from=${encodeURIComponent(frontendUrl)}`;

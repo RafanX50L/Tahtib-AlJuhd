@@ -156,7 +156,6 @@ export class CommunityService implements ICommunityService {
             ? await generateSignedUrl(profilePhoto.filePath)
             : null;
         }
-        console.log("author", profilePhotoUrl);
         const authorSummary = author
           ? CommunityDTOMapper.toUserSummaryDTO(author, profilePhotoUrl)
           : undefined;
@@ -213,13 +212,12 @@ export class CommunityService implements ICommunityService {
   private async mapPostWithSignedMedia(post: IPost, userId: string) {
     const media: MediaDTO[] = await Promise.all(
       (post.media || []).map(async (m: IPost['media'][0]) => ({
-        url: await generateSignedUrl(m.key),
+        url: m.key?await generateSignedUrl(m.key):null,
         type: m.type,
         mimeType: m.mimeType,
       }))
     );
     const author = await this.userRepo.findById(post.authorId);
-    console.log(author._id);
     let profilePhotoUrl: string | null = null;
     if (author) {
       const profilePhoto = await this.userFile.findLatestProfilePicture(author._id.toString());
@@ -248,8 +246,6 @@ export class CommunityService implements ICommunityService {
       ? await generateSignedUrl(profilePhoto.filePath)
       : null;
 
-    console.log("files", profilePhoto);
-    console.log("file url", photoUrl);
     const [followers, following] = await Promise.all([
       await this.followRepo.countFollowers(profileUserId),
       await this.followRepo.countFollowing(profileUserId),

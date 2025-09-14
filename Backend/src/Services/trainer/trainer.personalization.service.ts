@@ -174,7 +174,7 @@ export class TrainerPersonalizationService
       logger.info("Application Data Saved");
       return;
     } catch (error) {
-      console.error("Error processing application:", error);
+      logger.error("Error processing application:", error);
       throw error;
     }
   }
@@ -186,7 +186,6 @@ export class TrainerPersonalizationService
     ).data as ITrainerPersonalization;
     const interview =
       await this._trainerInterviewRepository.findById(interviewDetailsId);
-    console.log("returnig data", basicInfo, interview);
     return {
       basicInfo,
       interviewDetails: interview
@@ -208,7 +207,6 @@ export class TrainerPersonalizationService
   async getTrainerProfile(userId: string): Promise<TrainerProfileDTO> {
     const trainerId = (await this._userRepository.findById(new Types.ObjectId(userId))).personalizationId;
     const rawTrainerData = await this._personalizationRepository.getTrainerProfileData(trainerId.toString());
-    console.log(rawTrainerData);
     if (!rawTrainerData) {
       throw createHttpError(
         HttpStatus.NO_CONTENT,

@@ -12,6 +12,7 @@ import { INotificationRepository } from "@/core/interface/repositories/INotifica
 import { NotificationService } from "@/Services/shared/notification.service";
 import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
 import { INotificationView } from "@/dtos/shared/NotificationDTO";
+import logger from "@/utils/logger.utils";
 
 export default class SocketHandler {
   private trainerService: TrainerClientService;
@@ -42,7 +43,7 @@ export default class SocketHandler {
       ({ userId, role }: { userId: string; role: string }) => {
         socket.join(`user_${userId}`);
         socket.join(`${role}_${userId}`);
-        console.log(`User ${userId} (${role}) joined rooms: user_${userId}, ${role}_${userId}`);
+        logger.info(`User ${userId} (${role}) joined rooms: user_${userId}, ${role}_${userId}`);
       }
     );
 
@@ -62,7 +63,7 @@ export default class SocketHandler {
         text: string;
         category: string;
       }) => {
-        console.log(`Notification from ${sender} to ${receiver || role}: ${text}`);
+        logger.info(`Notification from ${sender} to ${receiver || role}: ${text}`);
         try {
           const notification = await this.notificationService.createNotification({
             senderId: sender,
@@ -82,13 +83,13 @@ export default class SocketHandler {
           };
           if (receiver) {
             socket.to(`user_${receiver}`).emit(chatEvents.receiveNotification, notificationDto);
-            console.log(`Notification emitted to user_${receiver}`);
+            logger.info(`Notification emitted to user_${receiver}`);
           } else if (role) {
             socket.to(`${role}_${receiver}`).emit(chatEvents.receiveNotification, notificationDto);
-            console.log(`Notification emitted to ${role}_${receiver}`);
+            logger.info(`Notification emitted to ${role}_${receiver}`);
           }
         } catch (error) {
-          console.error("Error in sendNotification:", error);
+          logger.error("Error in sendNotification:", error);
           socket.emit(chatEvents.error, error.message || "Failed to send notification");
         }
       }
@@ -108,7 +109,7 @@ export default class SocketHandler {
         message: string;
         type: string;
       }) => {
-        console.log(`Form submission notification from ${senderId}: ${message}`);
+        logger.info(`Form submission notification from ${senderId}: ${message}`);
         try {
           const notification = await this.notificationService.createNotification({
             senderId,
@@ -118,10 +119,10 @@ export default class SocketHandler {
           });
           if (recipientId) {
             socket.to(`user_${recipientId}`).emit("adminNotification", notification);
-            console.log(`Admin notification emitted to user_${recipientId}`);
+            logger.info(`Admin notification emitted to user_${recipientId}`);
           }
         } catch (error) {
-          console.error("Error in SubmitForm:", error);
+          logger.error("Error in SubmitForm:", error);
           socket.emit(chatEvents.error, error.message || "Failed to send admin notification");
         }
       }
@@ -131,13 +132,13 @@ export default class SocketHandler {
     socket.on(
       chatEvents.sendMessage,
       async ({ chatId, sender, text }: { chatId: string; sender: string; text: string }) => {
-        console.log(`Received message for chat ${chatId} from ${sender}: ${text}`);
+        logger.info(`Received message for chat ${chatId} from ${sender}: ${text}`);
         try {
           const message = await this.trainerService.sendMessage(chatId, sender, text);
           socket.to(chatId).emit(chatEvents.receive, message);
-          console.log(`Message emitted to other sockets in chat ${chatId}`);
+          logger.info(`Message emitted to other sockets in chat ${chatId}`);
         } catch (error) {
-          console.error("Error in handleSendMessage:", error);
+          logger.error("Error in handleSendMessage:", error);
           socket.emit(chatEvents.error, error.message || "Failed to send message");
         }
       }
@@ -145,7 +146,7 @@ export default class SocketHandler {
 
     socket.on(chatEvents.joinChat, (chatId: string) => {
       socket.join(chatId);
-      console.log(`User ${socket.id} joined chat ${chatId}`);
+      logger.info(`User ${socket.id} joined chat ${chatId}`);
       socket.to(chatId).emit(chatEvents.joined, { userId: socket.id });
     });
 
@@ -156,7 +157,7 @@ export default class SocketHandler {
         try {
           this.handleJoinRoom(socket, room);
         } catch (error) {
-          console.error("Error joining room:", error);
+          logger.error("Error joining room:", error);
           socket.emit(chatEvents.error, error.message || "An error occurred");
         }
       }
@@ -168,7 +169,7 @@ export default class SocketHandler {
         try {
           this.handleJoinRoom(socket, { roomId: room, username, email });
         } catch (error) {
-          console.error("Error in joinmeet:", error);
+          logger.error("Error in joinmeet:", error);
           socket.emit(chatEvents.error, error.message || "An error occurred");
         }
       }
@@ -204,7 +205,7 @@ export default class SocketHandler {
         }
       });
     } catch (error) {
-      console.error("Error in handleJoinRoom:", error);
+      logger.error("Error in handleJoinRoom:", error);
       socket.emit(chatEvents.error, error.message || "Failed to join room");
     }
   }

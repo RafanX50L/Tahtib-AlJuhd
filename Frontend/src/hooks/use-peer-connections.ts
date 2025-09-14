@@ -40,7 +40,7 @@ export const usePeerConnections = (
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("streamRef", streamRef, "\n", "user", user, "\n", "meetId", "\n", meetId, "socket", socket);
+    // Initializing peer connections
     setParticipants([]);
   }, [streamRef, user, meetId]);
 
@@ -92,7 +92,7 @@ export const usePeerConnections = (
 
   const createPeer = useCallback(
     (to: string, initiator: boolean, stream: React.RefObject<MediaStream | null>): SimplePeerInstance | null => {
-      console.log(`🔄 Attempting to create peer with ${to}, initiator: ${initiator}`);
+      // Creating peer connection
 
       if (!window.RTCPeerConnection) {
         console.error("❌ WebRTC is not supported in this environment");
@@ -115,8 +115,7 @@ export const usePeerConnections = (
       }
 
       try {
-        console.log(`✅ Creating peer with stream:`, stream.current);
-        console.log(`📊 Stream tracks:`, stream.current.getTracks());
+        // Creating peer with stream
 
         const peer = new Peer({
           initiator: initiator,
@@ -127,11 +126,10 @@ export const usePeerConnections = (
           },
         });
 
-        console.log(`🎯 Peer created for ${to}, waiting for signal...`);
+        // Peer created, waiting for signal
 
         peer.on("signal", (signal) => {
-          console.log(`📡 Signal generated for ${to}:`, signal.type || "unknown");
-          console.log(`📤 Emitting signal to backend for ${to}`);
+          // Signal generated and emitted
 
           socket.emit(chatEnum.signal, {
             to,
@@ -143,16 +141,15 @@ export const usePeerConnections = (
         });
 
         peer.on("connect", () => {
-          console.log(`🔗 Peer connected with ${to}`);
+          console.log(`🔗 Peer connected with ${to}`); // Keeping for debugging
         });
 
         peer.on("stream", (remoteStream) => {
-          console.log(`📹 Receiving remote stream from ${to}`);
-          console.log(`📊 Remote stream tracks:`, remoteStream.getTracks());
+          // Receiving remote stream
 
           if (remoteVideosRef.current) {
             remoteVideosRef.current.srcObject = remoteStream;
-            console.log(`✅ Remote stream attached to video element`);
+            // Remote stream attached
           } else {
             console.warn(`⚠️ No video element available for remote stream`);
           }
@@ -167,13 +164,13 @@ export const usePeerConnections = (
         });
 
         peer.on("close", () => {
-          console.log(`🔌 Peer connection with ${to} closed`);
+          console.log(`🔌 Peer connection with ${to} closed`); // Keeping for debugging
           delete peersRef.current[to];
         });
 
         // Store the peer connection immediately
         peersRef.current[to] = peer;
-        console.log(`💾 Peer stored for ${to}`);
+        // Peer stored
 
         return peer;
       } catch (error) {
@@ -198,7 +195,7 @@ export const usePeerConnections = (
     socket.emit(chatEnum.joinmeet, roomIdRef.current, user.email, user.name);
 
     socket.on(chatEnum.joined, ({ id, room }) => {
-      console.log(`Joined room: ${room?.roomId} with socket ID: ${id}`);
+      console.log(`Joined room: ${room?.roomId} with socket ID: ${id}`); // Keeping for debugging
 
       setMessages((prev) => [
         ...prev,
@@ -212,9 +209,7 @@ export const usePeerConnections = (
     });
 
     socket.on(chatEnum.userConnected, ({ email, id, username }) => {
-      console.log(`👤 New user connected: ${username} (${id}) ${email}`);
-      console.log(`📊 Current stream state:`, streamRef.current);
-      console.log(`📊 Stream tracks:`, streamRef.current?.getTracks());
+      console.log(`👤 New user connected: ${username} (${id})`); // Keeping for debugging
 
       setMessages((prev) => [
         ...prev,
@@ -229,10 +224,10 @@ export const usePeerConnections = (
       // Add delay to ensure stream is ready
       setTimeout(() => {
         if (!peersRef.current[id] && streamRef.current) {
-          console.log(`🚀 Creating peer for new user ${username} (${id})`);
+          // Creating peer for new user
           const peer = createPeer(id, true, streamRef);
           if (peer) {
-            console.log(`✅ Peer created successfully for ${username}`);
+            // Peer created successfully
           } else {
             console.error(`❌ Failed to create peer for ${username}`);
           }
@@ -243,10 +238,10 @@ export const usePeerConnections = (
     });
 
     socket.on(chatEnum.signal, ({ from, signal }) => {
-      console.log(`📡 Received signal from ${from}:`, signal.type || "unknown");
+      // Received signal from peer
 
       if (!peersRef.current[from] && streamRef.current) {
-        console.log(`🆕 Creating new peer for incoming signal from ${from}`);
+        // Creating new peer for incoming signal
         const peer = createPeer(from, false, streamRef);
         if (!peer) {
           console.error(`❌ Failed to create peer for signal from ${from}`);
@@ -256,9 +251,8 @@ export const usePeerConnections = (
 
       try {
         if (peersRef.current[from]) {
-          console.log(`📥 Processing signal from ${from}`);
+          // Processing signal
           peersRef.current[from].signal(signal);
-          console.log(`✅ Signal processed successfully`);
         } else {
           console.error(`❌ No peer found for ${from}`);
         }
@@ -272,7 +266,7 @@ export const usePeerConnections = (
     });
 
     socket.on(chatEnum.videoState, (data) => {
-      console.log(`${data.username} turned ${data.enabled ? "ON" : "OFF"} their video`);
+      console.log(`${data.username} turned ${data.enabled ? "ON" : "OFF"} their video`); // Keeping for debugging
       setRemoteVideoEnabled(data.enabled);
 
       setMessages((prev) => [
@@ -287,7 +281,7 @@ export const usePeerConnections = (
     });
 
     socket.on(chatEnum.audioState, (data) => {
-      console.log(`${data.username} turned ${data.enabled ? "ON" : "OFF"} their audio`);
+      console.log(`${data.username} turned ${data.enabled ? "ON" : "OFF"} their audio`); // Keeping for debugging
       setRemoteAudioEnabled(data.enabled);
 
       setMessages((prev) => [
@@ -314,7 +308,7 @@ export const usePeerConnections = (
     });
 
     socket.on("u-disconnect", (userId) => {
-      console.log("User disconnected:", userId);
+      console.log("User disconnected:", userId); // Keeping for debugging
 
       setMessages((prev) => [
         ...prev,

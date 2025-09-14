@@ -13,10 +13,11 @@ import { IPaymentRepository } from "@/core/interface/repositories/IPaymentReposi
 import { ITrainerClientContract } from "@/core/interface/model/ITrainerClientContract";
 import { IBookingService } from "@/core/interface/services/domain/IBooking.Service";
 import Stripe from "stripe";
+import logger from "@/utils/logger.utils";
 import { env } from "@/config/env.config";
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
-import { IPaymentCollection } from "@/models/PaymentCollection.model";
+import { IPaymentCollection } from "@/core/interface/model/IPaymentCollection";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
@@ -73,22 +74,17 @@ export class BookingService implements IBookingService {
       },
     });
 
-    console.log("Created checkout session:", session.id, "for user:", userId);
     return session.id;
   }
   async handlePaymentSuccess(event: Stripe.Event) {
-    console.log("Handling payment success event:", event);
     if (event.type === "payment_intent.succeeded") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.log("✅ Raw PaymentIntent succeeded:", paymentIntent.id);
-      // TODO: update MongoDB here (e.g. mark user as paid)
+      logger.info("✅ Raw PaymentIntent succeeded:", paymentIntent.id);
     }
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log("✅ Checkout session completed:", session.id);
       const { userId, trainerId, planId } = session.metadata || {};
-      console.log("Metadata:", { userId, trainerId, planId });
 
       const plan = await this._planRepo.findById(new Types.ObjectId(planId));
       if (!plan) throw new Error("Plan not found");
@@ -136,7 +132,7 @@ export class BookingService implements IBookingService {
       };
 
       await this._paymentRepo.create(paymentData);
-      console.log("✅ Payment information saved to database");
+      logger.info("✅ Payment information saved to database");
 
       await this._planRepo.update(plan.id, { isBooked: true });
       await this._personalizationRepo.updateClientData(userId, {

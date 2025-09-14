@@ -51,7 +51,6 @@ export class SchedulingService implements ISchedulingService {
     const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
     const data = trainerPers?.data as ITrainerPersonalization | undefined;
 
-    console.log("trainerPers", data?.availability);
     const rules = data?.availability?.weeklyRules;
     const dayStr = format(target, "yyyy-MM-dd");
     const weekday = format(target, "EEEE");
@@ -119,18 +118,12 @@ export class SchedulingService implements ISchedulingService {
         cursor = addMinutes(next, bufferMinutes);
       }
     }
-
-    console.log("nice", {
-      date: format(target, "yyyy-MM-dd"),
-      slots: freeTimes,
-    });
     return { date: format(target, "yyyy-MM-dd"), slots: freeTimes };
   }
 
   async bookSlot(input: BookSlotInput) {
     const start = new Date(`${input.date}T${input.time}:00`);
     const end = addMinutes(start, input.duration || 30);
-    console.log("start and end", start, end);
 
     // Prevent double booking by checking ANY session in the range
     const dayFrom = startOfDay(start);
@@ -153,7 +146,7 @@ export class SchedulingService implements ISchedulingService {
       throw createHttpError(HttpStatus.CONFLICT, HttpResponse.SLOTS_CONFLICT);
 
     // Create a session marked as booked
-    const created = await this._sessionRepo.create({
+    await this._sessionRepo.create({
       trainerId: new Types.ObjectId(input.trainerId),
       clientId: new Types.ObjectId(input.clientId),
       startTime: start,
@@ -162,7 +155,6 @@ export class SchedulingService implements ISchedulingService {
       meetingLink: `room_${Math.random().toString(36).slice(2, 10)}`,
     });
     await this._contractRepo.decrementSessionsRemaining(input.contractId);
-    console.log("created", created);
 
     return;
   }
@@ -182,7 +174,6 @@ export class SchedulingService implements ISchedulingService {
     if (status === "upcoming") query.startTime = { $gte: new Date() };
     if (status === "past") query.endTime = { $lt: new Date() };
     const result = await this._sessionRepo.findAll(query);
-    console.log("listBookings", result);
     return result;
   }
 

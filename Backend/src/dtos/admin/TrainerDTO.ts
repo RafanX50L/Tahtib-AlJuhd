@@ -207,7 +207,7 @@ export class AdminTrainerDTO {
   const certProofEntries = await Promise.all(
     (raw.certificationProof || []).map(async (file: IUserFile) => [
       file._id?.toString(),
-      await generateSignedUrl(file.filePath),
+      file.filePath?await generateSignedUrl(file.filePath):null,
     ])
   );
 

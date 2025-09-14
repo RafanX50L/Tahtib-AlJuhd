@@ -4,6 +4,11 @@ import { IBookingService } from "@/core/interface/services/domain/IBooking.Servi
 import { NextFunction, Request, Response } from "express";
 import Stripe from "stripe";
 import { env } from "@/config/env.config";
+import { 
+  BookingDTO,
+  CheckoutSessionRequestDTO
+} from '@/dtos/reverse-mapping/domain/BookingDTO';
+import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 const webhookSecret = env.WEBHOOK_SECRET;
@@ -13,18 +18,18 @@ export class BookingController implements IBookingController {
 
   async checkOutSessionHandle(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log("etnered here");
-      console.log(req.body);
-      const { userId, trainerId, planId } = req.body;
+      // Validate and transform request body using DTO
+      const validatedBody: CheckoutSessionRequestDTO = BookingDTO.validateCheckoutSessionRequest(req.body);
+      
       const sessionId = await this._bookingService.handleCheckoutSession(
-        userId,
-        trainerId,
-        planId
+        validatedBody.userId,
+        validatedBody.trainerId,
+        validatedBody.planId
       );
-      console.log("sesion", sessionId);
-      res.status(HttpStatus.OK).json({ id: sessionId });
+      
+      ControllerErrorHandler.handleSuccess(res, { id: sessionId }, "Checkout session created successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
   
@@ -37,9 +42,10 @@ export class BookingController implements IBookingController {
         webhookSecret
       );
       await this._bookingService.handlePaymentSuccess(event);
-      res.sendStatus(HttpStatus.OK);
+      
+      ControllerErrorHandler.handleSuccess(res, null, "Payment processed successfully", HttpStatus.OK);
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 }

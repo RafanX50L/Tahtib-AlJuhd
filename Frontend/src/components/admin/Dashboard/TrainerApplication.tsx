@@ -20,6 +20,7 @@ interface ApplicationRow {
   experience: string;
   appliedOn: string;
   status: string;
+  profilePhoto: string | null;
 }
 
 const TrainerApplications = () => {
@@ -30,15 +31,32 @@ const TrainerApplications = () => {
     (async () => {
       try {
         const res = await AdminService.getPendingTrainers(1, 5, "");
-        const rows = (res.data?.data?.trainers || []).map((t: { id: string; name: string; email?: string; specializations?: string[]; yearsOfExperience?: number; appliedOn?: string; status?: string; }) => ({
-          id: t.id,
-          name: t.name,
-          email: t.email,
-          specialization: t.specializations?.[0] || "-",
-          experience: t.yearsOfExperience ? `${t.yearsOfExperience} years` : "-",
-          appliedOn: t.appliedOn ? new Date(t.appliedOn).toLocaleDateString() : "-",
-          status: t.status || "Pending",
-        }));
+        // Pending applications fetched
+        const rows = (res.data?.trainers || []).map(
+          (t: {
+            id: string;
+            name: string;
+            email?: string;
+            specializations?: string[];
+            yearsOfExperience?: number;
+            appliedOn?: string;
+            profilePhoto?:string | null;
+            status?: string;
+          }) => ({
+            id: t.id,
+            name: t.name,
+            email: t.email,
+            specialization: t.specializations?.[0] || "-",
+            experience: t.yearsOfExperience
+              ? `${t.yearsOfExperience} years`
+              : "-",
+            appliedOn: t.appliedOn
+              ? new Date(t.appliedOn).toLocaleDateString()
+              : "-",
+            status: t.status || "Pending",
+            profilePhoto: t.profilePhoto || null,
+          })
+        );
         setApplications(rows);
       } catch {
         setApplications([]);
@@ -67,19 +85,39 @@ const TrainerApplications = () => {
               <TableHead className="text-gray-300">Experience</TableHead>
               <TableHead className="text-gray-300">Applied On</TableHead>
               <TableHead className="text-gray-300">Status</TableHead>
-              <TableHead className="text-gray-300 text-right">Actions</TableHead>
+              <TableHead className="text-gray-300 text-right">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {applications.map((app) => (
-              <TableRow key={app.id} className=" border-none bg-gray-800 hover:bg-gray-700">
+              <TableRow
+                key={app.id}
+                className=" border-none bg-gray-800 hover:bg-gray-700"
+              >
                 <TableCell>
                   <div className="flex items-center">
-                    <img
-                      className="h-10 w-10 rounded-full"
-                      src="https://via.placeholder.com/40"
-                      alt=""
-                    />
+                    <div className="relative">
+                      {app.profilePhoto ? (
+                        <img
+                          className="h-10 w-10 rounded-full"
+                          src={app.profilePhoto}
+                          alt={app.name}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const avatarDiv =
+                              target.previousElementSibling as HTMLDivElement;
+                            avatarDiv.classList.remove("opacity-0");
+                          }}
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium uppercase">
+                          {app.name?.charAt(0) || "N/A"}
+                        </div>
+                      )}
+                    </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-white">
                         {app.name}
@@ -108,7 +146,7 @@ const TrainerApplications = () => {
                   <Button
                     className="mr-3 text-indigo-400 hover:text-indigo-300"
                     variant="ghost"
-                    onClick={() => navigate('/admin/trainer-management')}
+                    onClick={() => navigate("/admin/trainer-management")}
                   >
                     Review
                   </Button>

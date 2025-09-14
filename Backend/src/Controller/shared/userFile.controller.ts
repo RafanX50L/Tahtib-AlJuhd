@@ -3,6 +3,7 @@ import { IUserFileController } from "@/core/interface/controllers/common/IUserFi
 import { AddedRequest } from "@/middleware/verify.token.middleware";
 import { createHttpError } from "@/utils";
 import { NextFunction, Response } from "express";
+import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
 
 export class UserFileController implements IUserFileController {
   constructor(
@@ -20,20 +21,21 @@ export class UserFileController implements IUserFileController {
       const file = req.file;
       const role = req.user?.role;
 
-      console.log(req.file);
       if (!file) {
         return next(createHttpError(400, "No file uploaded"));
       }
 
+      // Validate request using DTO (for consistency with other controllers)
+
       const { signedUrl } =
         await this._userFileService.updateProfilePicture(userId, file, role);
 
-      res.status(200).json({
+      ControllerErrorHandler.handleSuccess(res, {
         message: "Profile picture updated successfully",
         profilePicture: signedUrl,
-      });
+      }, "Profile picture updated successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 }

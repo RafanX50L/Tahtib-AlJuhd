@@ -16,7 +16,6 @@ export class UserRepository
   }
 
   async createUser(user: Partial<IUser>): Promise<IUser> {
-    console.log("Creating user:", user);
     const createdUser = await this.model.create(user);
     return createdUser;
   }
@@ -25,7 +24,6 @@ export class UserRepository
     id: string
   ): Promise<{ success: boolean; message: string }> {
     const user = await this.findById(new Types.ObjectId(id));
-    console.log(user);
     if (!user) {
       throw createHttpError(HttpStatus.NOT_FOUND, "User not found");
     }
@@ -47,7 +45,6 @@ export class UserRepository
       );
     }
 
-    console.log("updated", updated);
 
     return { success: true, message: "User status updated scuccessfully" };
   }
@@ -97,7 +94,6 @@ export class UserRepository
   ) {
     const skip = (page - 1) * limit;
     searchTerm = searchTerm?.trim() || "";
-    console.log(statusFilter);
     const matchStatus =
       statusFilter === "all"
         ? {}

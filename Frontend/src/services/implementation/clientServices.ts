@@ -63,12 +63,12 @@ export const ClientService = {
         userData,
         { timeout: 60000 }
       );
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to generate fitness plan";
-      console.log("Error creating fitness Plan: ", errorMessage);
+      // Error handled
       throw new Error(errorMessage);
     }
   },
@@ -77,7 +77,7 @@ export const ClientService = {
   getProgressCurrent: async () => {
     try {
       const response = await api.get(CLIENT_ROUTES.PROGRESS_CURRENT);
-      return (response.data?.current ?? null) as { date: string; weight: number; height: number; bmi: string; bmiCategory: string } | null;
+      return (response.data?.data?.current ?? null) as { date: string; weight: number; height: number; bmi: string; bmiCategory: string } | null;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string }>;
       const message = err.response?.data?.error ?? 'Failed to fetch current progress';
@@ -89,7 +89,7 @@ export const ClientService = {
   getProgressGraph: async (start: string, end: string) => {
     try {
       const response = await api.get(`${CLIENT_ROUTES.PROGRESS_GRAPH}?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
-      return (response.data?.points ?? []) as { date: string; weight: number; bmi: number }[];
+      return (response.data?.data?.points ?? []) as { date: string; weight: number; bmi: number }[];
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string }>;
       const message = err.response?.data?.error ?? 'Failed to fetch progress graph';
@@ -101,7 +101,7 @@ export const ClientService = {
   addProgressEntry: async (payload: { date: string; weight: number; height: number }) => {
     try {
       const response = await api.post(CLIENT_ROUTES.PROGRESS, payload);
-      return response.data;
+      return response.data.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string }>;
       const message = err.response?.data?.error ?? 'Failed to add progress entry';
@@ -113,7 +113,7 @@ export const ClientService = {
   previewProgressEntry: async (payload: { date: string; weight: number; height: number }) => {
     try {
       const response = await api.post(CLIENT_ROUTES.PROGRESS_PREVIEW, payload);
-      return response.data.preview as { date: string; weight: number; height: number; bmi: string; bmiCategory: string };
+      return response.data.data.preview as { date: string; weight: number; height: number; bmi: string; bmiCategory: string };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string }>;
       const message = err.response?.data?.error ?? 'Failed to preview progress entry';
@@ -128,7 +128,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_BASIC_WORKOUT_DETAILS);
       console.log("basic finess response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -144,7 +144,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.GET_CLIENT_WORKOUTS}/${week}`
       );
       console.log("workouts response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -158,7 +158,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_WEEK_COMPLETION_STATUS);
       console.log("week completion status response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -205,7 +205,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.GET_WORKOUT_REPORT}?week=${week}&day=${day}`
       );
       console.log("Workout report response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data.report };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -219,7 +219,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_WEEKLY_CHALLENGES);
       console.log("Weekly challenges response: ", response.data);
-      return response.data.weeklyChallenges;
+      return response.data.data.weeklyChallenges;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -235,7 +235,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.GET_WEEKLY_CHALLENGES}/${challengeId}`
       );
       console.log("Challenge response: ", response.data.challenge);
-      return { data: response.data.challenge };
+      return { data: response.data.data.challenge };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -251,7 +251,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.JOIN_WEEKLY_CHALLENGE}/${challengeId}`
       );
       console.log("Join challenge response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -280,7 +280,7 @@ export const ClientService = {
         { exercises, day, challengeId }
       );
       console.log("Updated day completion response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -294,7 +294,7 @@ export const ClientService = {
     try {
       const response = await api.get(CLIENT_ROUTES.GET_CLIENT_PROFILE);
       console.log("response of profile", response.data);
-      return response.data.data;
+      return response.data.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -317,7 +317,7 @@ export const ClientService = {
         }
       );
       console.log("Updated day completion response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -335,7 +335,7 @@ export const ClientService = {
         formData
       );
       console.log("response of profile", response.data);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -360,7 +360,7 @@ export const ClientService = {
       );
 
       console.log("Available trainers response: ", response);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -375,7 +375,7 @@ export const ClientService = {
     try {
       const response = await api.get(`${CLIENT_ROUTES.TRAINER}/${trainerId}`);
       console.log("Trainer details response: ", response.data);
-      return response.data.trainerData;
+      return response.data.data.trainerData;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -389,7 +389,7 @@ export const ClientService = {
   purchasePlan: async (userId: string, trainerId: string, planId: string) => {
     try {
       const response = await api.post("/payment/create-checkout-session", { userId, trainerId, planId });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -403,7 +403,7 @@ export const ClientService = {
   getCurrentTrainerPartialData: async () => {
     try {
       const response = await api.get(CLIENT_ROUTES.CURRENT_TRAINER);
-      return response.data.trainerData;
+      return response.data.data.trainerData;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -419,7 +419,7 @@ export const ClientService = {
   getCurrentTrainerContract: async () => {
     try {
       const response = await api.get(CLIENT_ROUTES.CURRENT_TRAINER_CONTRACT);
-      return response.data.contractData;
+      return response.data.data.contractData;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -435,7 +435,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.CURRENT_TRAINER}/${chatId}`
       );
       console.log("chat messages", response);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -452,7 +452,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}`
       );
       console.log("Fetched slots response: ", response.data);
-      return { data: response.data };
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || "Failed to fetch slots";
@@ -468,7 +468,7 @@ export const ClientService = {
     try {
       console.log("");
       const response = await api.get(CLIENT_ROUTES.GET_DIET_PLAN);
-      return response.data.data;
+      return response.data.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -486,7 +486,7 @@ export const ClientService = {
         clientId,
         title,
       });
-      return response.data.session;
+      return response.data.data.session;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -503,7 +503,7 @@ export const ClientService = {
       const response = await api.get(
         CLIENT_ROUTES.CHAT_BOT_INTERACTION(sessionId)
       );
-      return response.data.interactions;
+      return response.data.data.interactions;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -519,7 +519,7 @@ export const ClientService = {
       console.log("");
       const response = await api.get(CLIENT_ROUTES.CHAT_BOT_SESSIONS);
       toast.success(response.data.message);
-      return response.data.sessions;
+      return response.data.data.sessions;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -543,7 +543,7 @@ export const ClientService = {
         { timeout: 60000 }
       );
       console.log(response);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -560,7 +560,7 @@ export const ClientService = {
         `${CLIENT_ROUTES.CHAT_BOT_SESSIONS}/${sessionId}`
       );
       console.log(response);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =

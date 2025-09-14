@@ -103,7 +103,7 @@ const TrainerPage: React.FC = () => {
 
   useEffect(() => {
     if (!trainerId) {
-      console.log("Invalid trainer ID");
+      // Invalid trainer ID
       return;
     }
     fetchTrainer();
@@ -154,12 +154,12 @@ const TrainerPage: React.FC = () => {
     );
 
     if (!user?._id) {
-      console.log("Please log in to purchase a plan");
+      // User not logged in
       setShowConfirmModal(false);
       return;
     }
     if (!trainer || !selectedPlan) {
-      console.log("Please select a plan");
+      // No plan selected
       setShowConfirmModal(false);
       return;
     }
@@ -260,14 +260,6 @@ const TrainerPage: React.FC = () => {
                   You have an active payment session. Please complete or cancel it before starting a new payment.
                 </p>
               </div>
-              {/* <Button
-                variant="outline"
-                size="sm"
-                className="ml-auto border-yellow-500/30 text-yellow-200 hover:bg-yellow-500/10"
-                onClick={clearSession}
-              >
-                Cancel Session
-              </Button> */}
             </div>
           </div>
         )}

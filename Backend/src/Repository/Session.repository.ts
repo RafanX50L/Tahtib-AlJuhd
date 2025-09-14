@@ -10,7 +10,6 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
   }
 
   async findFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
-    console.log('Finding free slots for trainer:', trainerId, 'from', fromDate, 'to', toDate);
     const result =  await this.model.find({
       trainerId: new Types.ObjectId(trainerId),
       status: 'free',
@@ -20,7 +19,6 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
   }
 
   async findUnFreeSlotsByTrainer(trainerId: string, fromDate: Date, toDate: Date): Promise<ISession[]> {
-    console.log('Finding unfree slots for trainer:', trainerId, 'from', fromDate, 'to', toDate);
     const result = await this.model.find({
       trainerId: new Types.ObjectId(trainerId),
       status: { $nin: ['free', 'cancelled'] },

@@ -1,14 +1,15 @@
 import api from "./api";
 import { TRAINER_ROUTES } from "../../utils/constant";
-import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import { IPlan } from "@/components/trainer/SetPlan/plan";
-import { WeeklyRulesPayload } from "@/components/trainer/SetAvailability/SetAvailabilityPage";
+
+// Local AxiosError type to avoid version/type mismatches
+type AxiosError<T = unknown> = { response?: { data: T } };
 
 export type DayWindow = { startTime: string; endTime: string };
 export type WeeklyRulesPayloads = {
   trainerId: string;
-  rules: WeeklyRulesPayload
+  rules: WeeklyRulesPayloads
 };
 
 export const TrainerService = {
@@ -17,15 +18,15 @@ export const TrainerService = {
       const response = await api.get(
         TRAINER_ROUTES.GET_PENDING_TRAINER_APPLICATION
       );
-      console.log("response form backned", response.data[0]);
-      return response.data;
+      // Response received
+      return response.data.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
       const errorMessage =
         err.response?.data.error ||
         err.response?.data.message ||
         "Failed to submit trainer application";
-      console.log("Error submitting trainer application: ", errorMessage);
+      // Error handled
       throw new Error(errorMessage);
     }
   },
@@ -33,7 +34,7 @@ export const TrainerService = {
   // Service for submitting trainer application
   submitTrainerApplication: async (applicationData: FormData) => {
     try {
-      console.log("applicationData: ", applicationData);
+      // Submitting application
       const response = await api.post(
         TRAINER_ROUTES.SUBMIT_TRAINER_APPLICATION,
         applicationData,
@@ -43,14 +44,14 @@ export const TrainerService = {
           },
         }
       );
-      return { data: response.data, ok: true };
+      return { data: response.data.data, ok: true };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
       const errorMessage =
         err.response?.data.error ||
         err.response?.data.message ||
         "Failed to submit trainer application";
-      console.log("Error submitting trainer application: ", errorMessage);
+      // Error handled
       throw new Error(errorMessage);
     }
   },
@@ -58,7 +59,7 @@ export const TrainerService = {
   getProfileData: async () => {
     try {
       const response = await api.get(TRAINER_ROUTES.GET_PROFILE_DATA);
-      console.log("response form backned", response.data);
+      // Profile data received
       return response.data.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
@@ -66,7 +67,7 @@ export const TrainerService = {
         err.response?.data.error ||
         err.response?.data.message ||
         "Failed to submit trainer application";
-      console.log("Error submitting trainer application: ", errorMessage);
+      // Error handled
       throw new Error(errorMessage);
     }
   },
@@ -82,13 +83,13 @@ export const TrainerService = {
           },
         }
       );
-      console.log("Updated day completion response: ", response.data);
-      return { data: response.data };
+      // Day completion updated
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to update uesr profile Photo";
-      console.log("Error updating user Profile Photo: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -100,13 +101,13 @@ export const TrainerService = {
         TRAINER_ROUTES.UPDATE_TRAINER_PROFILE,
         formDataToSend,
       );
-      console.log("Updated response: ", response.data);
-      return { data: response.data };
+      // Profile updated
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to update uesr profile ";
-      console.log("Error updating user Profile : ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -116,13 +117,13 @@ export const TrainerService = {
   getPlans: async (trainerId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.PLAN}?trainerId=${trainerId}`);
-      console.log("Fetched plans response: ", response.data);
-      return { data: response.data };
+      // Plans fetched
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to fetch plans";
-      console.log("Error fetching plans: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -131,13 +132,13 @@ export const TrainerService = {
   AddnewPlan: async (formData:Partial<IPlan>,trainerId:string) => {
     try {
       const response = await api.post(TRAINER_ROUTES.PLAN, { ...formData, trainerId});
-      console.log("Added new plan response: ", response.data);
-      return { data: response.data };
+      // Plan added
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to add new plan";
-      console.log("Error adding new plan: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -145,13 +146,13 @@ export const TrainerService = {
   updatePlan: async (editingPlanId: string, formData: Partial<IPlan>) => {
     try {
       const response = await api.put(TRAINER_ROUTES.PLAN, { formData,editingPlanId});
-      console.log("Updated plan response: ", response.data);
-      return { data: response.data };
+      // Plan updated
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to update plan";
-      console.log("Error updating plan: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -159,13 +160,13 @@ export const TrainerService = {
   deactivatePlan: async (editingPlanId: string) => {
     try {
       const response = await api.patch(TRAINER_ROUTES.PLAN, { editingPlanId });
-      console.log("Deactivated plan response: ", response.data);
-      return { data: response.data };
+      // Plan deactivated
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to deactivate plan";
-      console.log("Error deactivating plan: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -175,29 +176,29 @@ export const TrainerService = {
   getSlots: async(trainerId:string, fromDate:string, toDate: string)=>{
     try {
       const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/slots?trainerId=${trainerId}&fromDate=${fromDate}&toDate=${toDate}&mode=all`);
-      console.log("Fetched slots response: ", response.data);
-      return { data: response.data };
+      // Slots fetched
+      return { data: response.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to fetch slots";
-      console.log("Error fetching slots: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
   },
   setWeeklyRules: async (payload: WeeklyRulesPayloads) => {
     const res = await api.post(`${TRAINER_ROUTES.AVAILABILITY}/rules`, payload);
-    return res.data as { message: string };
+    return res.data.data as { message: string };
   },
   getWeeklyRules: async(trainerId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.AVAILABILITY}/rules`, { params: { trainerId } });
-      return response.data;
+      return response.data.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || 'Failed to fetch weekly rules';
-      console.log('Error fetching weekly rules: ', errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -206,13 +207,13 @@ export const TrainerService = {
   getSalary: async () => {
     try {
       const response = await api.get(TRAINER_ROUTES.SALARY);
-      console.log("Fetched salary response: ", response.data);
-      return { data: response.data.salary };
+      // Salary fetched
+      return { data: response.data.data.salary };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to fetch salary";
-      console.log("Error fetching salary: ", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -255,7 +256,7 @@ export const TrainerService = {
   getDashboardPayments: async (params: { page?: number; limit?: number; status?: 'pending' | 'completed' | 'failed' | 'refunded' | 'all'; search?: string } = {}) => {
     try {
       const response = await api.get(TRAINER_ROUTES.DASHBOARD_PAYMENTS, { params });
-      return response.data.data as {
+      return response.data.data.data as {
         payments: Array<{ id: string; clientId: string; amount: number; currency: string; paymentStatus: string; createdAt: string }>;
         total: number;
         page: number;
@@ -274,11 +275,11 @@ export const TrainerService = {
   getClients: async (trainerId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.CLIENTS}?trainerId=${trainerId}`);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || 'Failed to fetch clients';
-      console.log('Error fetching clients: ', errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -287,11 +288,11 @@ export const TrainerService = {
   getChatMessages: async (chatId: string) => {
     try {
       const response = await api.get(`${TRAINER_ROUTES.CHAT}/${chatId}/messages`);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || 'Failed to fetch chat messages';
-      console.log('Error fetching chat messages: ', errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }

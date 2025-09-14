@@ -13,5 +13,6 @@ const workoutPlanController = new ClientWorkoutPlanController(workoutPlanService
 
 workoutPlanRouter.get('/workouts/:week',workoutPlanController.getWorkouts.bind(workoutPlanController));
 workoutPlanRouter.patch('/workouts/complete-daily',workoutPlanController.completeDailyWorkoutAndFetchReport.bind(workoutPlanController));
+workoutPlanRouter.get('/get-workout-report',workoutPlanController.getWorkoutReport.bind(workoutPlanController));
 
 export default workoutPlanRouter;

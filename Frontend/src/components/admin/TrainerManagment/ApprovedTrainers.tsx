@@ -64,8 +64,8 @@ const ApprovedTrainersTable = () => {
     const fetchTrainers = async () => {
       try {
         const response = await AdminService.getApprovedTrainers(currentPage,itemsPerPage,debouncedSearchTerm,);
-        console.log("approved trainers", response);
-        setTrainers(response.data.data ? response.data.data : []);
+        // Approved trainers fetched
+        setTrainers(response.data ? response.data: []);
         setTotalItems(response.total || 0);
       } catch (error) {
         toast.error("Failed to fetch trainers");

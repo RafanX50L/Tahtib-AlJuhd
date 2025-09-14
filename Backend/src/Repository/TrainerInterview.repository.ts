@@ -36,7 +36,6 @@ export class TrainerInterviewRepository
     adminId: string,
     feedback: ITrainerInterview["result"]
   ) {
-    console.log(feedback);
     const updatedData = await this.model.findOneAndUpdate(
       { trainerId: trainerId, adminId: adminId },
       {

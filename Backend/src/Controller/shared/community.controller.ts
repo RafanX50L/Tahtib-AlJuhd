@@ -4,6 +4,21 @@ import { createHttpError } from "@/utils";
 import { ICommunityService } from "@/core/interface/services/shared/ICommunity.service";
 import { ICommunityController } from "@/core/interface/controllers/shared/ICommunity.Controller";
 import { HttpStatus } from "@/constants/status.constant";
+import { 
+  CommunityDTO,
+  CreatePostRequestDTO,
+  GetFeedRequestDTO,
+  GetUserPostsRequestDTO,
+  SearchUsersRequestDTO,
+  AddCommentRequestDTO,
+  ListCommentsRequestDTO,
+  GetPostRequestDTO,
+  ToggleLikeRequestDTO,
+  FollowRequestDTO,
+  UnfollowRequestDTO,
+  GetUserProfileRequestDTO
+} from '@/dtos/reverse-mapping/shared/CommunityDTO';
+import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
 
 export class CommunityController implements ICommunityController {
   constructor(private readonly _communityService: ICommunityService) {}
@@ -12,13 +27,18 @@ export class CommunityController implements ICommunityController {
     try {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(HttpStatus.UNAUTHORIZED, "Unauthorized");
+      
+      // Validate and transform request body using DTO
+      const validatedBody: CreatePostRequestDTO = CommunityDTO.validateCreatePostRequest(req.body);
+      
       const files = (req.files as Express.Multer.File[]) || [];
       if (!files.length) throw createHttpError(HttpStatus.BAD_REQUEST, "No media uploaded");
-      const { caption } = req.body as { caption?: string };
-      const post = await this._communityService.createPost(userId, caption, files);
-      res.status(HttpStatus.CREATED).json(post);
+      
+      const post = await this._communityService.createPost(userId, validatedBody.caption, files);
+      
+      ControllerErrorHandler.handleSuccess(res, post, "Post created successfully", HttpStatus.CREATED);
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -26,48 +46,51 @@ export class CommunityController implements ICommunityController {
     try {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
-      const { cursor } = req.query as { cursor?: string };
-      const posts = await this._communityService.getFeed(userId, cursor);
+      
+      // Validate and transform request query using DTO
+      const validatedQuery: GetFeedRequestDTO = CommunityDTO.validateGetFeedRequest(req.query);
+      
+      const posts = await this._communityService.getFeed(userId, validatedQuery.cursor);
       
       // Check if there are more posts to load
       const hasMore = posts.length === 20;
       const nextCursor = posts.length > 0 ? posts[posts.length - 1].createdAt : undefined;
       
-      res.status(HttpStatus.OK).json({ posts, hasMore, nextCursor });
+      ControllerErrorHandler.handleSuccess(res, { posts, hasMore, nextCursor }, "Feed retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
   async getUserPosts(req: AddedRequest, res: Response, next: NextFunction) {
     try {
-      const { authorId } = req.params as { authorId: string };
-      const { cursor } = req.query as { cursor?: string };
+      // Validate and transform request parameters and query using DTO
+      const validatedData: GetUserPostsRequestDTO = CommunityDTO.validateGetUserPostsRequest(req.params, req.query);
+      
       const userId = req.user?.id;
-      const posts = await this._communityService.getUserPosts(authorId, cursor, userId);
-      res.json({ posts });
+      const posts = await this._communityService.getUserPosts(validatedData.authorId, validatedData.cursor, userId);
+      
+      ControllerErrorHandler.handleSuccess(res, { posts }, "User posts retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
   async searchUsers(req: AddedRequest, res: Response, next: NextFunction):Promise<void> {
     try {
-      const { q, cursor } = req.query as { q?: string; cursor?: string };
-      if (!q || q.trim().length < 2){
-        res.status(HttpStatus.BAD_REQUEST).json({ users: [], hasMore: false, nextCursor: undefined });
-        return;
-      }
+      // Validate and transform request query using DTO
+      const validatedQuery: SearchUsersRequestDTO = CommunityDTO.validateSearchUsersRequest(req.query);
+      
       const currentUserId = req.user?.id;
-      const users = await this._communityService.searchUsers(q.trim(), currentUserId, cursor);
+      const users = await this._communityService.searchUsers(validatedQuery.q, currentUserId, validatedQuery.cursor);
       
       // Check if there are more users to load
       const hasMore = users.length === 20;
       const nextCursor = users.length > 0 ? users[users.length - 1]._id : undefined;
       
-      res.status(HttpStatus.OK).json({ users, hasMore, nextCursor });
+      ControllerErrorHandler.handleSuccess(res, { users, hasMore, nextCursor }, "Users search completed successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -75,39 +98,46 @@ export class CommunityController implements ICommunityController {
     try {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
-      const { postId } = req.params as { postId: string };
-      const { content, parentCommentId } = req.body as { content: string; parentCommentId?: string };
-      const comment = await this._communityService.addComment(userId, postId, content, parentCommentId);
-      res.status(201).json(comment);
+      
+      // Validate and transform request parameters and body using DTO
+      const validatedData: AddCommentRequestDTO = CommunityDTO.validateAddCommentRequest(req.params, req.body);
+      
+      const comment = await this._communityService.addComment(userId, validatedData.postId, validatedData.content, validatedData.parentCommentId);
+      
+      ControllerErrorHandler.handleSuccess(res, comment, "Comment added successfully", 201);
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
   async listComments(req: AddedRequest, res: Response, next: NextFunction) {
     try {
-      const { postId } = req.params as { postId: string };
-      const { cursor } = req.query as { cursor?: string };
-      const comments = await this._communityService.listComments(postId, cursor);
+      // Validate and transform request parameters and query using DTO
+      const validatedData: ListCommentsRequestDTO = CommunityDTO.validateListCommentsRequest(req.params, req.query);
+      
+      const comments = await this._communityService.listComments(validatedData.postId, validatedData.cursor);
       
       // Check if there are more comments to load
       const hasMore = comments.length === 20;
       const nextCursor = comments.length > 0 ? comments[comments.length - 1].createdAt : undefined;
       
-      res.json({ comments, hasMore, nextCursor });
+      ControllerErrorHandler.handleSuccess(res, { comments, hasMore, nextCursor }, "Comments retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
   async getPost(req: AddedRequest, res: Response, next: NextFunction):Promise<void> {
     try {
-      const { postId } = req.params as { postId: string };
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetPostRequestDTO = CommunityDTO.validateGetPostRequest(req.params);
+      
       const userId = req.user?.id;
-      const post = await this._communityService.getPostById(postId, userId);
-      res.json(post);
+      const post = await this._communityService.getPostById(validatedParams.postId, userId);
+      
+      ControllerErrorHandler.handleSuccess(res, post, "Post retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -115,11 +145,15 @@ export class CommunityController implements ICommunityController {
     try {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
-      const { postId } = req.params as { postId: string };
-      const result = await this._communityService.toggleLike(userId, postId);
-      res.json(result);
+      
+      // Validate and transform request parameters using DTO
+      const validatedParams: ToggleLikeRequestDTO = CommunityDTO.validateToggleLikeRequest(req.params);
+      
+      const result = await this._communityService.toggleLike(userId, validatedParams.postId);
+      
+      ControllerErrorHandler.handleSuccess(res, result, "Like toggled successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -127,11 +161,15 @@ export class CommunityController implements ICommunityController {
     try {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
-      const { targetUserId } = req.params as { targetUserId: string };
-      const result = await this._communityService.follow(userId, targetUserId);
-      res.json(result);
+      
+      // Validate and transform request parameters using DTO
+      const validatedParams: FollowRequestDTO = CommunityDTO.validateFollowRequest(req.params);
+      
+      const result = await this._communityService.follow(userId, validatedParams.targetUserId);
+      
+      ControllerErrorHandler.handleSuccess(res, result, "User followed successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -139,25 +177,34 @@ export class CommunityController implements ICommunityController {
     try {
       const userId = req.user?.id;
       if (!userId) throw createHttpError(401, "Unauthorized");
-      const { targetUserId } = req.params as { targetUserId: string };
-      const result = await this._communityService.unfollow(userId, targetUserId);
-      res.json(result);
+      
+      // Validate and transform request parameters using DTO
+      const validatedParams: UnfollowRequestDTO = CommunityDTO.validateUnfollowRequest(req.params);
+      
+      const result = await this._communityService.unfollow(userId, validatedParams.targetUserId);
+      
+      ControllerErrorHandler.handleSuccess(res, result, "User unfollowed successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
+  
   async getUserProfile(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetUserProfileRequestDTO = CommunityDTO.validateGetUserProfileRequest(req.params);
+      
       const viewerId = req.user?.id;
-      const { userId } = req.params as { userId: string };
-      const data = await this._communityService.getUserProfile(userId, viewerId);
+      const data = await this._communityService.getUserProfile(validatedParams.userId, viewerId);
+      
       if (!data) {
-        res.status(HttpStatus.NOT_FOUND).json({ error: 'User not found' });
+        ControllerErrorHandler.handleNotFound(res, "User not found");
         return;
       }
-      res.status(HttpStatus.OK).json(data);
+      
+      ControllerErrorHandler.handleSuccess(res, data, "User profile retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
   

@@ -12,7 +12,6 @@ export const errorHandler = (
 ) => {
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message:string = HttpResponse.SERVER_ERROR;
-    console.log('err',err.message);
     if (err instanceof HttpError) {
       logger.error("Errors:", err);
         statusCode = err.statusCode;

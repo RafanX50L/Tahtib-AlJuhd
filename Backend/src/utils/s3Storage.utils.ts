@@ -2,6 +2,7 @@ import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } fro
 import { v4 as uuidv4 } from 'uuid';
 import { env } from "@/config/env.config";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import logger from "./logger.utils";
 
 
 // Configure AWS S3
@@ -57,7 +58,7 @@ async function deleteFromS3(fileKey: string): Promise<void> {
   });
 
   await s3Client.send(command);
-  console.log(`Deleted file: ${fileKey}`);
+  logger.info(`Deleted file: ${fileKey}`);
 }
 
 export { uploadToS3, generateSignedUrl, deleteFromS3 };

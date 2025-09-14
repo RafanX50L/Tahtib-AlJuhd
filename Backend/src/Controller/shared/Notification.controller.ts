@@ -1,8 +1,14 @@
 import { Response, NextFunction } from "express";
 import { AddedRequest } from "@/middleware/verify.token.middleware";
-import { HttpStatus } from "@/constants/status.constant";
 import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
 import { INotificationController } from "@/core/interface/controllers/shared/INotification.Controller";
+import { 
+  NotificationDTO,
+  GetNotificationsRequestDTO,
+  MarkAsReadRequestDTO,
+  DeleteNotificationRequestDTO
+} from '@/dtos/reverse-mapping/shared/NotificationDTO';
+import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
 
 export class NotificationController implements INotificationController{
   constructor(private readonly notificationService: INotificationService) {}
@@ -11,21 +17,25 @@ export class NotificationController implements INotificationController{
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        ControllerErrorHandler.handleError(new Error("Unauthorized"), res, next);
         return;
       }
-      const { page = 1, limit = 10, search, type, sort } = req.query;
+      
+      // Validate and transform request query using DTO
+      const validatedQuery: GetNotificationsRequestDTO = NotificationDTO.validateGetNotificationsRequest(req.query);
+      
       const notifications = await this.notificationService.getNotificationsForUser({
         userId,
-        page: parseInt(page as string, 10),
-        limit: parseInt(limit as string, 10),
-        search: search as string,
-        type: type as string,
-        sort: sort as string,
+        page: validatedQuery.page,
+        limit: validatedQuery.limit,
+        search: validatedQuery.search,
+        type: validatedQuery.type,
+        sort: validatedQuery.sort,
       });
-      res.status(HttpStatus.OK).json(notifications);
+      
+      ControllerErrorHandler.handleSuccess(res, notifications, "Notifications retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -33,13 +43,15 @@ export class NotificationController implements INotificationController{
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        ControllerErrorHandler.handleError(new Error("Unauthorized"), res, next);
         return;
       }
+      
       const basicDetails = await this.notificationService.getBasicDetails(userId);
-      res.status(HttpStatus.OK).json(basicDetails);
+      
+      ControllerErrorHandler.handleSuccess(res, basicDetails, "Basic details retrieved successfully");
     } catch (error) {
-      next(error);
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 
@@ -47,32 +59,39 @@ export class NotificationController implements INotificationController{
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        ControllerErrorHandler.handleError(new Error("Unauthorized"), res, next);
         return;
       }
+      
       const notifications = await this.notificationService.getLastFiveNotification(userId);
-      res.status(HttpStatus.OK).json(notifications);
+      
+      ControllerErrorHandler.handleSuccess(res, notifications, "Last five notifications retrieved successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
   async markAsRead(req: AddedRequest, res: Response, next: NextFunction) {
     try {
-      const { notificationId } = req.params;
       const userId = req.user?.id;
       if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        ControllerErrorHandler.handleError(new Error("Unauthorized"), res, next);
         return;
       }
-      const notification = await this.notificationService.markNotificationAsRead(notificationId);
+      
+      // Validate and transform request parameters using DTO
+      const validatedParams: MarkAsReadRequestDTO = NotificationDTO.validateMarkAsReadRequest(req.params);
+      
+      const notification = await this.notificationService.markNotificationAsRead(validatedParams.notificationId);
+      
       if (!notification) {
-        res.status(HttpStatus.NOT_FOUND).json({ error: "Notification not found" });
+        ControllerErrorHandler.handleNotFound(res, "Notification not found");
         return;
       }
-      res.status(HttpStatus.OK).json(notification);
+      
+      ControllerErrorHandler.handleSuccess(res, notification, "Notification marked as read successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
@@ -80,28 +99,34 @@ export class NotificationController implements INotificationController{
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        ControllerErrorHandler.handleError(new Error("Unauthorized"), res, next);
         return;
       }
+      
       await this.notificationService.markAllAsRead(userId);
-      res.status(HttpStatus.OK).json({ message: "All notifications marked as read" });
+      
+      ControllerErrorHandler.handleSuccess(res, null, "All notifications marked as read");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 
   async deleteNotification(req: AddedRequest, res: Response, next: NextFunction) {
     try {
-      const { notificationId } = req.params;
       const userId = req.user?.id;
       if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({ error: "Unauthorized" });
+        ControllerErrorHandler.handleError(new Error("Unauthorized"), res, next);
         return;
       }
-      await this.notificationService.deleteNotification(notificationId);
-      res.status(HttpStatus.OK).json({ message: "Notification deleted" });
+      
+      // Validate and transform request parameters using DTO
+      const validatedParams: DeleteNotificationRequestDTO = NotificationDTO.validateDeleteNotificationRequest(req.params);
+      
+      await this.notificationService.deleteNotification(validatedParams.notificationId);
+      
+      ControllerErrorHandler.handleSuccess(res, null, "Notification deleted successfully");
     } catch (err) {
-      next(err);
+      ControllerErrorHandler.handleError(err, res, next);
     }
   }
 }

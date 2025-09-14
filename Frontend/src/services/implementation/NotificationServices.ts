@@ -1,7 +1,9 @@
-import { AxiosError } from "axios";
 import api from "./api";
 import { toast } from "sonner";
 import { INotificationView } from "@/components/shared/Notification";
+
+// Local AxiosError type to avoid version/type mismatches
+type AxiosError<T = unknown> = { response?: { data: T } };
 
 export const NotificationServices = {
   getLastFiveNotifications: async (
@@ -13,7 +15,7 @@ export const NotificationServices = {
         params: { userId },
       });
       return {
-        data: response.data.map((n: INotificationView) => ({
+        data: response.data.data.map((n: INotificationView) => ({
           ...n,
           date: new Date(n.date),
         })),
@@ -29,7 +31,7 @@ export const NotificationServices = {
   getBasicDetails: async (): Promise<{total: number, read: number}> => {
     try {
       const response = await api.get("/notifications/base-details");
-      return response.data;
+      return response.data.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || "Failed to Delete chat bot Session";
@@ -59,7 +61,7 @@ export const NotificationServices = {
       const response = await api.get("/notifications", {
         params: { userId, page, limit, search, type, sort },
       });
-      return {data: response.data};
+      return {data: response.data.data};
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data.error || "Failed to Delete chat bot Session";

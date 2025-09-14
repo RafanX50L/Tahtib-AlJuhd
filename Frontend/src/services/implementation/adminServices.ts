@@ -3,6 +3,9 @@ import api from "./api";
 import { ADMIN_ROUTES } from "@/utils/constant";
 import { toast } from "sonner";
 
+// Local AxiosError type to avoid version/type mismatches
+type AxiosError<T = unknown> = { response?: { data: T } };
+
 export const AdminService = {
   getAllClients: async (
     statusFilter: string,
@@ -12,7 +15,7 @@ export const AdminService = {
   ) => {
     try {
       searchTerm = searchTerm.toString();
-      console.log("datafasdfa", searchTerm, statusFilter, page, limit);
+      // Fetching clients with filters
       const response = await api.get(ADMIN_ROUTES.GET_ALL_CLIENTS, {
         params: {
           page,
@@ -21,14 +24,14 @@ export const AdminService = {
           planStatus: statusFilter,
         },
       });
-      console.log("clients ", response);
+      // Clients fetched
       return { data: response.data.data, error: null };
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to fetch clients. Please try again.";
-      console.log("Error fetching clients:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -51,7 +54,7 @@ export const AdminService = {
     const res = await api.get(ADMIN_ROUTES.DASHBOARD_RECENT_PAYMENTS, {
       params: { page, pageSize, searchTerm },
     });
-    return res.data as { data: Array<{
+    return res.data.data as { data: Array<{
       id: string;
       trainerId: string;
       trainerName: string;
@@ -67,14 +70,14 @@ export const AdminService = {
   blockOrUnblockUser: async (id: string) => {
     try {
       const response = await api.patch(`${ADMIN_ROUTES.BLOCK_OR_UNBLOCK}/${id}`);
-      console.log("updated serfsdfas", response);
-      return response.data;
+      // Status updated
+      return response.data.data;
     } catch (error) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to update status. Please try again.";
-      console.log("Error update status:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -83,13 +86,13 @@ export const AdminService = {
   getAllTrainers: async () => {
     try {
       const response = await api.get(ADMIN_ROUTES.GET_ALL_TRAINERS);
-      return { data: response.data, error: null };
+      return { data: response.data.data, error: null };
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to fetch trainers. Please try again.";
-      console.log("Error fetching trainers:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -100,9 +103,9 @@ export const AdminService = {
     const response = await api.get(
       `${ADMIN_ROUTES.GET_APPROVED_TRAINERS}?page=${page}&limit=${limit}&search=${search}`
     );
-    return response.data;
+    return response.data.data;
   } catch (error: unknown) {
-    const err = error as { response?: { data?: { error?: string }}};
+    const err = error as AxiosError<{ error?: string }>;
     const errorMessage =
       err?.response?.data?.error || "Failed to fetch trainers. Please try again.";
     toast.error(errorMessage);
@@ -115,9 +118,9 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
     const response = await api.get(
       `${ADMIN_ROUTES.GET_PENDING_TRAINERS}?page=${page}&limit=${limit}&search=${search}`
     );
-    return { data: response.data, error: null };
+    return { data: response.data.data, error: null };
   } catch (error: unknown) {
-    const err = error as { response?: { data?: { error?: string }}};
+    const err = error as AxiosError<{ error?: string }>;
     const errorMessage =
       err?.response?.data?.error || "Failed to fetch trainers. Please try again.";
     toast.error(errorMessage);
@@ -128,19 +131,19 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
 
   updateTrainerStatus: async (id: string, status: string) => {
     try {
-      console.log("afdnasjfkas");
+      // Updating trainer status
       const response = await api.post(ADMIN_ROUTES.UPDATE_TRAINER_STATUS, {
         id,
         status,
       });
-      console.log("updated serfsdfas", response);
-      return { data: response.data[0], error: null };
+      // Status updated
+      return { data: response.data.data[0], error: null };
     } catch (error) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to Update Trainer status. Please try again.";
-      console.log("Error Update Trainer status:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -154,14 +157,14 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
       const response = await api.post(
         `${ADMIN_ROUTES.SCHEDULE_INTERVIEW}/id/${id}/date/${date}/time/${time}`
       );
-      console.log("updated serfsdfas", response);
-      return response.data;
+      // Status updated
+      return response.data.data;
     } catch (error) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to Schedule interview. Please try again.";
-      console.log("Error Scheduling Interview:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -173,13 +176,13 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
         id,
         feedback,
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to fetch clients. Please try again.";
-      console.log("Error fetching clients:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -191,14 +194,14 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
         id,
         salary,
       });
-      console.log("updated serfsdfas", response);
-      return response.data;
+      // Status updated
+      return response.data.data;
     } catch (error) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to Approve Trainer. Please try again.";
-      console.log("Error Approve Trainer:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -207,14 +210,14 @@ getPendingTrainers: async (page: number, limit: number, search: string) => {
   rejectTrainer: async (id: string) => {
     try {
       const response = await api.patch(ADMIN_ROUTES.REJECT_TRAINER, { id });
-      console.log("updated serfsdfas", response);
-      return response.data;
+      // Status updated
+      return response.data.data;
     } catch (error) {
-      const err = error as { response?: { data?: { error?: string }}};
+      const err = error as AxiosError<{ error?: string }>;
       const errorMessage =
         err?.response?.data?.error ||
         "Failed to Reject Trainer. Please try again.";
-      console.log("Error Reject Trainer:", errorMessage);
+      // Error handled
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }

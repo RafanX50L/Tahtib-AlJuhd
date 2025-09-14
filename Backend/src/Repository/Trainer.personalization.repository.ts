@@ -263,7 +263,6 @@ export class TrainerPersonalizationRepository
     ];
 
     const result = await this.model.aggregate(pipeline);
-    console.log(result);
     const data = result[0]?.data || [];
     const totalCount = result[0]?.totalCount[0]?.count || 0;
 

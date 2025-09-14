@@ -403,8 +403,8 @@ const PendingApplicationsTable: React.FC = () => {
           limit,
           debouncedSearchTerm
         );
-        const trainerData = trainers.data?.data?.trainers || [];
-        const totalCount = trainers.data?.data?.totalCount || 0;
+        const trainerData = trainers.data?.trainers || [];
+        const totalCount = trainers.data?.totalCount || 0;
         setApplications(trainerData);
         setTotalItems(totalCount);
       } catch (error) {

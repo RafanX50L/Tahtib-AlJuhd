@@ -22,11 +22,6 @@ export class PlanRepository extends BaseRepository<IPlan> implements IPlanReposi
       { $match: { trainerId: new Types.ObjectId(trainerId), isActive: true , createdAt: { $lte: new Date() }, expiresAt: { $gte: new Date() } } },
       { $group: { _id: null, totalClients: { $sum: "$clientCount" } } }
     ]);
-    console.log("Active clients count result:", result);
     return result[0]?.totalClients || 0;
   }
-
-  // async findById(id: string): Promise<IPlan | null> {
-  //   return await this.model.findById(id);
-  // }
 }

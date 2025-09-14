@@ -50,7 +50,6 @@ export class clientTrainerService implements IClientTrainerService{
             data.planStatus = "Inactive";
             await personalizationDoc.save();
 
-            console.log(`⚡ Contract expired for client ${contract.clientId}`);
         }
         }
 
@@ -62,7 +61,6 @@ export class clientTrainerService implements IClientTrainerService{
             currentTrainerId = null;
         }
         const result = await this._trainerRepo.getAvailableTrainer(currentTrainerId,page, limit, search, specialty);
-        console.log('available trainers:', result); 
         const mappedResult = await Promise.all(
         result.trainers.map((data) => ClientTrainerDTO.mapToTrainerData(data))
         );
@@ -74,7 +72,6 @@ export class clientTrainerService implements IClientTrainerService{
         };
     }
     async getTrainerById(id: string):Promise<ITrainerByIdResult> {
-        console.log(id);
         const user = (await this._userRepo.findById(new Types.ObjectId(id))) ;
         const trainer = await this._trainerRepo.getTrainerProfileData(user.personalizationId.toString());
         const plans = await this._planRepo.findByTrainerId(id);
@@ -85,7 +82,9 @@ export class clientTrainerService implements IClientTrainerService{
             name: user.name,
             email: user.email,
             Specialty: data.professionalSummary.specializations,
-            photo: data.basicInfo.profilePhoto[0] ? await generateSignedUrl( data.basicInfo.profilePhoto[0].filePath) : null,
+            photo: data.basicInfo.profilePhoto?.[0]?.filePath 
+                ? await generateSignedUrl(data.basicInfo.profilePhoto[0].filePath) 
+                : null,
             experience: data.professionalSummary.yearsOfExperience.toString(),
             location: data.basicInfo.location,
             price: data.basicInfo.weeklySalary,
@@ -104,7 +103,6 @@ export class clientTrainerService implements IClientTrainerService{
         const currentTrainerId = ((await this._clinetRepo.findOne({userId:userId})).data as IClientPersonalization).currentTrainerId;
         const contract = await this.getCurrentTrainerContract(userId);
         if (!contract || contract.endDate < new Date()) {
-            console.log('No active contract or contract expired');
             return null;
         }
         if (!currentTrainerId) throw createHttpError(HttpStatus.NO_CONTENT,'No current trainer found for this user');
@@ -115,7 +113,9 @@ export class clientTrainerService implements IClientTrainerService{
             id: currentTrainerId.toString(),
             name: trainer.name,
             speciality: data.professionalSummary.specializations,
-            photo: data.basicInfo?.profilePhoto[0] ? await generateSignedUrl(data.basicInfo?.profilePhoto[0]?.filePath) : null,
+            photo: data.basicInfo?.profilePhoto?.[0]?.filePath 
+                ? await generateSignedUrl(data.basicInfo.profilePhoto[0].filePath) 
+                : null,
             experience: data.professionalSummary.yearsOfExperience,
             price: data.basicInfo.weeklySalary,
         };

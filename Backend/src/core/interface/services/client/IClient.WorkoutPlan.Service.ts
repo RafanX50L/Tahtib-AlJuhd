@@ -6,5 +6,6 @@ export interface IClientWorkoutPlanService {
 
   getWorkouts(userId:string,week:string):Promise<IDayView[]>;
   completeDailyWorkoutAndFetchReport(userId:string, week:string, day:string, workout:IExerciseView[]):Promise<IWorkoutReportView>;
+  getWorkoutReport(userId:string, week:string, day:string):Promise<IWorkoutReportView>;
 
 }

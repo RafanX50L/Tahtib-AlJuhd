@@ -6,6 +6,7 @@ import { Response, Request } from 'express';
 import {  verifyRefreshToken } from './jwt.utils';
 import { createHttpError } from './http-error.util';
 import { HttpStatus } from '../constants/status.constant';
+import logger from './logger.utils';
 
 interface CookieOptions {
   httpOnly: boolean;
@@ -24,13 +25,13 @@ export const setCookie = (res: Response, refreshToken: string, options: CookieOp
   maxAge: maxAge,
   path: '/',
 }) => {
-  console.log('Setting cookie with options:', maxAge, options);
+  logger.debug('Setting cookie with options:', maxAge, options);
   res.cookie('refreshToken', refreshToken, options);
 };
 
 export const getCookie = (req: Request, name: string): string | undefined => {
   if (!req.cookies) {
-    console.warn('Cookie-parser middleware is not initialized or cookies are not present');
+    logger.warn('Cookie-parser middleware is not initialized or cookies are not present');
     return undefined;
   }
   return req.cookies[name];
@@ -46,7 +47,7 @@ export const deleteCookie = (res: Response) => {
 };
 
 export const getIdFromCookie = (req: Request, cookieName: string = 'refreshToken'): string => {
-  console.log('Entered getIdFromCookie for:', cookieName);
+  logger.debug('Entered getIdFromCookie for:', cookieName);
   try {
     const token = getCookie(req, cookieName);
     if (!token) {
@@ -60,7 +61,7 @@ export const getIdFromCookie = (req: Request, cookieName: string = 'refreshToken
 
     return decoded.id as string;
   } catch (error) {
-    console.error('Error in getIdFromCookie:', error);
+    logger.error('Error in getIdFromCookie:', error);
     throw error; // Propagate the error to be handled by the caller
   }
 };

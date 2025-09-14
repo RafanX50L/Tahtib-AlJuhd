@@ -1,4 +1,4 @@
-import { ValidationUtil, ValidationError } from "@/utils/validation.util";
+import { ValidationUtil } from "@/utils/validation.util";
 
 /**
  * Request DTOs for Trainer Dashboard Controller

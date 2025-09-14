@@ -6,7 +6,7 @@ import { ITrainerPersonalizationRepository } from "@/core/interface/repositories
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
 import {  IUserFileService } from "@/core/interface/services/shared/IUserFile.Service";
 import { createHttpError } from "@/utils";
-import { deleteFromS3, uploadToS3 } from "@/utils/s3Storage.utils";
+import { deleteFromS3, generateSignedUrl, uploadToS3 } from "@/utils/s3Storage.utils";
 import { Types } from "mongoose";
 
 export class UserFileService implements IUserFileService{
@@ -42,7 +42,6 @@ export class UserFileService implements IUserFileService{
       const fileCreat = await this._userFileRepository.updateProfilePicture(userId, fileData);
 
       let updated;
-      console.log(role);
       if(role === "trainer"){
         updated =
           await this._trainerPersonalizationRepository.updateProfilePictureId(
@@ -55,7 +54,8 @@ export class UserFileService implements IUserFileService{
       if (!updated) {
         throw createHttpError(HttpStatus.BAD_REQUEST,HttpResponse.USER_NOT_FOUND);
       }
+      const url = await generateSignedUrl(signedUrl);
 
-      return { signedUrl };
+      return { signedUrl:url };
     }
 }

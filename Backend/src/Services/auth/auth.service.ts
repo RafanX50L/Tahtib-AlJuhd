@@ -23,6 +23,7 @@ import { redisClient } from "../../config/redis.config";
 import { createHttpError } from "../../utils/http-error.util";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
+import logger from "../../utils/logger.utils";
 import IUser from "@/core/interface/model/IUser.model";
 import { generateNanoId } from "../../utils/generate-nanoid";
 import mongoose from "mongoose";
@@ -38,7 +39,7 @@ export class AuthService implements IAuthService {
     }
 
     const otp = generateOTP();
-    console.log("Generated OTP:", otp);
+    logger.info("Generated OTP:", otp);
     await sendOtpEmail(user.email, otp);
 
     const response = await redisClient.setEx(
@@ -52,7 +53,7 @@ export class AuthService implements IAuthService {
         "Error saving OTP to Redis"
       );
     }
-    console.log("OTP sent to email:", user.email);
+    logger.info("OTP sent to email:", user.email);
     return user.email;
   }
 
@@ -144,7 +145,7 @@ export class AuthService implements IAuthService {
 
     const storedData = JSON.parse(storedDataString as string);
     const otp = generateOTP();
-    console.log("Resending OTP:", otp);
+    logger.info("Resending OTP:", otp);
     await sendOtpEmail(email, otp);
     await redisClient.setEx(email, 300, JSON.stringify({ ...storedData, otp }));
     return email;

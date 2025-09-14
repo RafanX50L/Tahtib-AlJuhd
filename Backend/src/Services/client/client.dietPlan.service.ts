@@ -14,7 +14,6 @@ export class ClientDietPlanService implements IClientDietPlanService{
         const personalization = await this._PersonalizationRepository.getPersonalization(userId);
         const dietId = (personalization.data as IClientPersonalization).dietPlanId._id;
         const dietPlan = await this._dietPlanRepository.findById(dietId);
-        console.log('dietplan',dietId);
         const returnData = {
             mealPlan: dietPlan.mealPlan,
             notes: dietPlan.notes,

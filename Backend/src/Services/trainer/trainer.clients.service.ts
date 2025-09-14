@@ -20,16 +20,13 @@ export class TrainerClientService implements ITrainerClientService {
 
   async getClients(trainerId: string): Promise<IGetClentInterface[]> {
     const contracts = await this._contractRepo.findActiveContractsByTrainerId(trainerId);
-    console.log(contracts);
     return Promise.all(contracts.map(async (contract) => {
       const plan = contract.planId as unknown as IPlan;
       const chat = contract.chatId as unknown as IChat;
       const client = contract.clientId as unknown as IUser;
       const personalization = (client.personalizationId as unknown as IPersonalization).data as IClientPersonalization;
       const photo = await this._userfileRepo.findById(personalization.userData.profilePictureId as Types.ObjectId);
-      const photoUrl = photo ? await generateSignedUrl(photo.filePath ) : null;
-      console.log('nice');
-      console.log('mesaages',chat?.messages[chat?.messages.length-1]?.content);
+      const photoUrl = photo?.filePath ? await generateSignedUrl(photo.filePath) : null;
       const lastMessage = chat?.messages?.[chat.messages.length - 1];
       let lastMessageTime: string | undefined;
 

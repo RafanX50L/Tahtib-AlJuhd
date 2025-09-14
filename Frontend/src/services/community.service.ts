@@ -19,7 +19,7 @@ export const CommunityService = {
       const res = await api.get(`/community/feed`, { params: { cursor } });
       console.log(res);
       toast.success("Feed fetched successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -36,7 +36,7 @@ export const CommunityService = {
         params: { cursor },
       });
       toast.success("Comments fetched successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -53,7 +53,7 @@ export const CommunityService = {
         params: { cursor },
       });
       toast.success("User posts fetched successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -68,7 +68,7 @@ export const CommunityService = {
     try {
       const res = await api.get(`/community/user/${userId}/profile`);
       toast.success("User profile fetched successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -83,7 +83,7 @@ export const CommunityService = {
     try {
       const res = await api.get(`/community/posts/${postId}`);
       toast.success("Post fetched successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -100,7 +100,7 @@ export const CommunityService = {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post created successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -115,7 +115,7 @@ export const CommunityService = {
     try {
       const res = await api.post(`/community/posts/${postId}/like`);
       toast.success("Like toggled successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -137,7 +137,7 @@ export const CommunityService = {
         parentCommentId,
       });
       toast.success("Comment added successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -152,7 +152,7 @@ export const CommunityService = {
     try {
       const res = await api.post(`/community/follow/${targetUserId}`);
       toast.success("User followed successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -167,7 +167,7 @@ export const CommunityService = {
     try {
       const res = await api.delete(`/community/follow/${targetUserId}`);
       toast.success("User unfollowed successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =
@@ -182,7 +182,7 @@ export const CommunityService = {
     try {
       const res = await api.get(`/community/search`, { params: { q, cursor } });
       toast.success("Users searched successfully");
-      return { data: res.data, error: null };
+      return { data: res.data.data, error: null };
     } catch (error: unknown) {
       const err = error as ApiError;
       const errorMessage =

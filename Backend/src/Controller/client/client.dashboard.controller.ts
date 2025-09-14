@@ -4,6 +4,11 @@ import { IDashboardService } from "@/core/interface/services/client/IDashboard.S
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { AddedRequest } from "@/middleware/verify.token.middleware";
+import { 
+  ClientDashboardDTO,
+  GetClientDashboardStatsRequestDTO
+} from '@/dtos/reverse-mapping/client/ClientDashboardDTO';
+import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
 
 export class DashboardController implements IDashboardController {
   constructor(
@@ -12,7 +17,10 @@ export class DashboardController implements IDashboardController {
 
   async getClientDashboardStats(req: AddedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const clientId = req.params.clientId || req.user?.id;
+      // Validate and transform request parameters using DTO
+      const validatedParams: GetClientDashboardStatsRequestDTO = ClientDashboardDTO.validateGetClientDashboardStatsRequest(req.params);
+      
+      const clientId = validatedParams.clientId || req.user?.id;
       
       if (!clientId) {
         throw createHttpError(HttpStatus.BAD_REQUEST, "Client ID is required");
@@ -20,14 +28,9 @@ export class DashboardController implements IDashboardController {
 
       const stats = await this._dashboardService.getClientDashboardStats(clientId);
       
-      res.status(HttpStatus.OK).json({
-        success: true,
-        message: "Dashboard statistics retrieved successfully",
-        data: stats,
-      });
+      ControllerErrorHandler.handleSuccess(res, stats, "Dashboard statistics retrieved successfully");
     } catch (error) {
-      next(error);
-      throw createHttpError(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve dashboard statistics");
+      ControllerErrorHandler.handleError(error, res, next);
     }
   }
 }

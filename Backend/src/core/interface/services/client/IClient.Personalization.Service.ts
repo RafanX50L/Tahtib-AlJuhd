@@ -35,7 +35,7 @@ export interface IClientPersonalizationService {
   generatePersonalization(
     userId: string,
     userData: Partial<IClientUserData>
-  ): Promise<string>;// sir here also that all data are wanted
+  ): Promise<string>;
   getWorkoutDetails(userId: string): Promise<IGetWorkoutDetails>;
   getProfileData(userId: string): Promise<IProfileDataReturn>;
   updateClientProfile(userId: string, formdata: ClientProfileData)

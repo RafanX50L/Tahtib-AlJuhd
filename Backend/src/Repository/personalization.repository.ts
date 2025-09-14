@@ -48,9 +48,6 @@ export class PersonalizationRepository
   }
 
   async updateProfilePictureId(clientId: string, signedUrl: string) {
-    console.log('fndfij');
-    const data = await this.model.findOne({userId:clientId});
-    console.log('data',data);
     const personalData = await this.model.findOneAndUpdate(
       { userId: clientId },
       { "data.userData.profilePictureId": signedUrl },

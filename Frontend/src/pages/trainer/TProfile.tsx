@@ -80,6 +80,7 @@ const TProfile: React.FC<TProfileProps> = () => {
     setIsLoading(true);
     try {
       const response = await TrainerService.getProfileData();
+      // Profile data received
       if (isValidTrainerData(response)) {
         setTrainerData(response);
         setError(null);

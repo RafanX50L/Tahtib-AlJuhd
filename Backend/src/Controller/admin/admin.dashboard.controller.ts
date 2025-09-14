@@ -1,4 +1,3 @@
-import { HttpStatus } from "@/constants/status.constant";
 import { IAdminDashboardController } from "@/core/interface/controllers/admin/IAdmin.Dashboard.Controller";
 import { IAdminDashboardService } from "@/core/interface/services/admin/IAdmin.Dashboard.Service";
 import { NextFunction, Request, Response } from "express";
@@ -8,7 +7,6 @@ import {
   GetTopTrainersRequestDTO,
   GetRecentPaymentsRequestDTO
 } from "@/dtos/reverse-mapping/admin/DashboardDTO";
-import { ValidationError } from "@/utils/validation.util";
 import { ControllerErrorHandler } from "@/utils/controller-error-handler.util";
 
 export class AdminDashboardController implements IAdminDashboardController {

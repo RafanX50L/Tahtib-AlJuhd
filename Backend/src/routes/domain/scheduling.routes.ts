@@ -18,6 +18,7 @@ router.get('/trainers/:trainerId/availability', verifyAnyToken(), restrictTo('cl
 
 router.post('/bookings', verifyAnyToken(), restrictTo('client'), schedulingController.bookSlot.bind(schedulingController));
 
+router.get('/bookings', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.listBookings.bind(schedulingController));
 
 router.patch('/bookings/:bookingId/cancel', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.cancelBooking.bind(schedulingController));
 router.patch('/bookings/:bookingId/complete', verifyAnyToken(), restrictTo('client','trainer','admin'), schedulingController.completeBooking.bind(schedulingController));

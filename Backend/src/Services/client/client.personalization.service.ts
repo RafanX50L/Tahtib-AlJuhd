@@ -34,7 +34,6 @@ export class ClientPersonalizationService
     userId: string,
     userData: Partial<IClientUserData>
   ) {
-    console.log(userData, userId);
     const workout = await generateFitnessPlan(userData, 1, "workout") as IWorkoutPlan;
     const diet = await generateFitnessPlan(userData, 1, "diet");
     const workoutPlan = (await this._workoutPlanRepository.create(
@@ -166,7 +165,6 @@ export class ClientPersonalizationService
         HttpResponse.FAILED_TO_UPDATE_PROFILE
       );
     }
-
     return updated;
   }
 }

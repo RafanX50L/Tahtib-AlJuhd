@@ -12,7 +12,6 @@ const CProfile = lazy(() => import("@/pages/client/CProfile"));
 const NotFoundPage = lazy(() => import("@/pages/common/NotFond"));
 const CTrainerSession = lazy(() => import("@/pages/client/CTrainerSession"));
 const CChatBotPage = lazy(() => import("@/pages/client/CChatbot"));
-const CTProfilePage = lazy(() => import("@/pages/client/CTProfile"));
 const CDietPlanPage = lazy(() => import("@/pages/client/CDietPlan"));
 const CATrainerDetailsPage = lazy(() => import("@/pages/client/CATProfilePage"));
 const CCurrentTrainerPage = lazy(() => import("@/pages/client/CCTrainerPage"));
@@ -21,14 +20,13 @@ const NotificationsPage = lazy(() => import("@/components/shared/Notification"))
 
 import { clientTheme } from "@/components/shared/Notification";
 
-// import UserProfile from "@/pages/common/community/UserProfile";
 import CommunityApp from "@/pages/common/community/CommunityApp";
 import ProgressPage from "@/pages/client/CProgressPage";
 
 
 
 const UserRoutes: React.FC = () => {
-  console.log("Entered UserRoutes");
+  // UserRoutes component loaded
 
   return (
     <Suspense fallback={<div className="p-6 text-center">Loading...</div>}>
@@ -41,7 +39,6 @@ const UserRoutes: React.FC = () => {
         <Route path="/challenge/:id" element={<ChallengeDetail />} />
         <Route path="/profile" element={<CProfile />} />
         <Route path="/trainerSession" element={<CTrainerSession />} />
-        <Route path="/trainer-details" element={<CTProfilePage />} />
         <Route path="/current-trainer" element={<CCurrentTrainerPage />} />
         <Route path="/diet" element={<CDietPlanPage />} />
         <Route path="/chat" element={<CChatBotPage />} />
@@ -49,9 +46,6 @@ const UserRoutes: React.FC = () => {
         <Route path="/booking/:trainerId" element={<CBookingPage />} />
         <Route path="/community" element={<CommunityApp />} />
         <Route path="/progress" element={<ProgressPage/>} />
-        {/* <Route path="/community/create" element={<CreatePost />} /> */}
-        {/* <Route path="/search" element={<Search />} /> */}
-        {/* <Route path="/profile/:userId" element={<UserProfile />} /> */}
         <Route
           path="/notifications"
           element={<NotificationsPage theme={clientTheme} backPath="/dashboard" />}

@@ -6,6 +6,7 @@ import { TrainerClientContractRepository } from "@/Repository/TrainerClientContr
 import { UserRepository } from "@/Repository/user.Repository";
 import { clientTrainerService } from "@/Services/client/client.trainer.service";
 import cron from "node-cron";
+import logger from "./logger.utils";
 
 // inject repositories into service however you’re doing DI
 const trainerRepo = new TrainerPersonalizationRepository();
@@ -17,6 +18,6 @@ const sessionRepo = new SessionRepository();
 const clinetTrainerServ = new clientTrainerService(trainerRepo,userRepo,clinetRepo,planRepo,contractRepo,sessionRepo);
 
 cron.schedule("* * * * *", async () => {
-  console.log("⏰ Running contract expiration check...");
+  logger.info("⏰ Running contract expiration check...");
   await clinetTrainerServ.contractExpiration();
 });

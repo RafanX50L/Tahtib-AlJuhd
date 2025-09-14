@@ -53,7 +53,9 @@ export class TrainerDTO{
         dateOfBirth: data.basicInfo.dateOfBirth,
         age: data.basicInfo.age,
         gender: data.basicInfo.gender,
-        profilePhoto: await generateSignedUrl(data.basicInfo.profilePhoto?.[0]?.filePath) || null,
+        profilePhoto: data.basicInfo.profilePhoto?.[0]?.filePath 
+            ? await generateSignedUrl(data.basicInfo.profilePhoto[0].filePath) 
+            : null,
         weeklySalary: data.basicInfo.weeklySalary,
         },
 

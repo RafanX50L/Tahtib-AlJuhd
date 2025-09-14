@@ -4,6 +4,7 @@ import {
   IPersonalization,
   ITrainerPersonalization,
 } from "@/core/interface/model/IPersonalization.model";
+import logger from "@/utils/logger.utils";
 import mongoose, { Schema, model } from "mongoose";
 
 // const ClientPersonalizationSchema = new Schema<IClientPersonalization>({
@@ -326,7 +327,7 @@ const PersonalizationSchema = new Schema<IPersonalization>(
             await tempDoc.validate();
             return true;
           } catch (err) {
-            console.error("Validation error:", err);
+            logger.error("Validation error:", err);
             return false;
           }
         },

@@ -11,14 +11,15 @@ export interface TrainerData{
 
 export class ClientTrainerDTO{
     static async mapToTrainerData(raw):Promise<TrainerData>{
-        console.log(raw);
         const data = raw.data;
         const user = raw.user;
         return {
             id: user._id.toString(),
             name: user.name,
             speciality: data.professionalSummary.specializations,
-            photo: raw.profilePicture[0] ? await generateSignedUrl( raw.profilePicture[0].filePath) : null,
+            photo: raw.profilePicture?.[0]?.filePath 
+                ? await generateSignedUrl(raw.profilePicture[0].filePath) 
+                : null,
             experience: data.professionalSummary.yearsOfExperience.toString(),
             price: data.basicInfo.weeklySalary
         };

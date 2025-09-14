@@ -26,18 +26,28 @@ export const refreshAccessToken = createAsyncThunk(
     try {
       console.log("Sending refresh token request...");
       const response = await api.post(
-        "/auth/refresh-token",
+        "/auth/refresh-Token",
+        {},
         { withCredentials: true }
       );
       console.log("Refresh token response:", response.data);
-      if (!response.data.accessToken) {
+      
+      // Handle new backend response format: response.data.data
+      const responseData = response.data.data;
+      if (!responseData || !responseData.accessToken) {
         throw new Error("No access token in response");
       }
-      dispatch(setCredentials({ user: response.data.user, notifications:response.data.notifications, accessToken: response.data.accessToken }));
+      
+      dispatch(setCredentials({ 
+        user: responseData.user, 
+        notifications: responseData.notifications, 
+        accessToken: responseData.accessToken 
+      }));
+      
       return {
-        user: response.data.user,
-        notifications: response.data.notifications,
-        accessToken: response.data.accessToken,
+        user: responseData.user,
+        notifications: responseData.notifications,
+        accessToken: responseData.accessToken,
       };
     } catch (error) {
       console.error("Refresh token error:", error);

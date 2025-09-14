@@ -22,7 +22,6 @@ import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TrainerService } from "@/services/implementation/trainerServices";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useSocket } from "@/hooks/socketio";
 import { RootState } from "@/store/store";
@@ -106,14 +105,14 @@ const ChatInterface: React.FC = () => {
   useEffect(() => {
     if (socket && user?._id) {
       socket.on("connect", () => {
-        console.log("Socket connected");
+        // Socket connected - keeping for debugging
         clients.forEach((client) => {
           socket.emit("joinChat", client.chatId);
         });
       });
 
       socket.on(chatEnum.receive, (msg: Message) => {
-        console.log("Received message:", msg);
+        // Message received - keeping for debugging
 
         // Skip processing if the message is from the current user (avoid echo)
         if (msg.sender === user._id) return;
@@ -159,9 +158,9 @@ const ChatInterface: React.FC = () => {
         return;
       }
       const response = await TrainerService.getClients(user._id!);
-      setClients(response.data || []);
+      setClients(response || []);
     } catch (error) {
-      console.log(error);
+      // Error fetching clients
     } finally {
       setIsLoadingClients(false);
     }
@@ -176,7 +175,7 @@ const ChatInterface: React.FC = () => {
 
     try {
       const response = await TrainerService.getChatMessages(client.chatId);
-      const messages = response.data.map((msg: Message) => ({
+      const messages = response.map((msg: Message) => ({
         ...msg,
         type: msg.sender === user?._id ? "sent" : "received",
       }));
@@ -204,7 +203,7 @@ const ChatInterface: React.FC = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      // Error fetching chat messages
     } finally {
       setLoadingChats((prev) => {
         const newSet = new Set(prev);
@@ -261,9 +260,7 @@ const ChatInterface: React.FC = () => {
 
   // Filter and sort clients by most recent message
   const filteredClients = clients
-    .filter((client) =>
-      client.name.toLowerCase().includes("".toLowerCase())
-    )
+    .filter((client) => client.name.toLowerCase().includes("".toLowerCase()))
     .sort((a, b) => {
       const timeA = parseLastMessageTime(a.lastMessageTime);
       const timeB = parseLastMessageTime(b.lastMessageTime);
@@ -316,26 +313,40 @@ const ChatInterface: React.FC = () => {
                 )}
                 onClick={() => handleClientSelect(client)}
               >
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-12 h-12 border-2 border-[#6366f1]">
-                    <AvatarImage src={client.photo} alt={client.name} />
-                    <AvatarFallback>{client.name[0] || "U"}</AvatarFallback>
-                  </Avatar>
+                <div className="flex items-center gap-3 p-2 sm:p-3">
+                  {/* Avatar wrapper */}
+                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+                    {client.photo ? (
+                      <img
+                        src={client.photo}
+                        alt={client.name}
+                        className="w-full h-full rounded-full object-cover border-2 border-indigo-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg sm:text-xl font-semibold border-2 border-indigo-500">
+                        {client.name?.charAt(0).toUpperCase() || "U"}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Text content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-semibold text-white truncate">
+                      <h3 className="font-semibold text-white truncate text-sm sm:text-base">
                         {client.name}
                       </h3>
                       {client.lastMessageTime && (
-                        <span className="text-xs text-gray-400">
+                        <span className="text-[10px] sm:text-xs text-gray-400 flex-shrink-0 ml-2">
                           {client.lastMessageTime}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-400 truncate">
+
+                    <p className="text-xs sm:text-sm text-gray-400 truncate">
                       {client.lastMessage || "No messages yet"}
                     </p>
-                    <p className="text-xs text-gray-500">
+
+                    <p className="text-[10px] sm:text-xs text-gray-500 truncate">
                       {client.planName} • {client.sessionsRemaining} sessions
                     </p>
                   </div>
@@ -351,19 +362,28 @@ const ChatInterface: React.FC = () => {
         {selectedClient ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-700 flex items-center gap-4 bg-gray-800">
-              <Avatar className="w-10 h-10 border-2 border-[#6366f1]">
-                <AvatarImage
-                  src={selectedClient.photo}
-                  alt={selectedClient.name}
-                />
-                <AvatarFallback>{selectedClient.name[0] || "U"}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-semibold text-white">
+            <div className="p-3 sm:p-4 border-b border-gray-700 flex flex-col sm:flex-row sm:items-center sm:gap-4 bg-gray-800">
+              {/* Avatar */}
+              <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+                {selectedClient.photo ? (
+                  <img
+                    src={selectedClient.photo}
+                    alt={selectedClient.name}
+                    className="w-full h-full rounded-full object-cover border-2 border-indigo-500"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg sm:text-xl font-semibold border-2 border-indigo-500">
+                    {selectedClient.name?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                )}
+              </div>
+
+              {/* Text section */}
+              <div className="mt-2 sm:mt-0 flex-1 min-w-0">
+                <h3 className="font-semibold text-white text-sm sm:text-base truncate">
                   {selectedClient.name}
                 </h3>
-                <p className="text-sm text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-400 truncate">
                   {selectedClient.planName} • {selectedClient.sessionsRemaining}{" "}
                   sessions remaining
                 </p>

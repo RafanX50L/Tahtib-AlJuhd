@@ -28,14 +28,12 @@ export class AdminTrainerSerice implements IAdminTrainerSerice {
         search
       );
 
-      console.log(data,totalCount);
     const mapped: TrainerCardDTO[] = await Promise.all(
       data.map((trainer) =>
         AdminTrainerDTO.mapApprovedTrainerToDTO(trainer)
       )
     );
 
-    console.log(mapped);
 
     return { data: mapped, totalCount };
   }
@@ -46,7 +44,6 @@ export class AdminTrainerSerice implements IAdminTrainerSerice {
       limit,
       search
     );
-    console.log(raw.data);
     if(!raw){
       createHttpError(HttpStatus.BAD_REQUEST,HttpResponse.FAILED_TO_FETCH_PENDING_TRAINERS);
     }
@@ -94,18 +91,14 @@ export class AdminTrainerSerice implements IAdminTrainerSerice {
         roomId: "room_" + Math.random().toString(36).substring(2, 10),
         result: null
     };
-    console.log('upto here');
     const interview = await this._trainerInterviewRepository.create(interviewData);
     
-    console.log('upto here3');
     await this._personalizationRepository.updateInterviewDetails(
         trainerId,
         interview.id
     );
-    console.log(trainerId);
     
     const user = await this._userRepository.findById(new Types.ObjectId(trainerId));
-    console.log(user);
 
     await sendInterviewScheduleEmail(
       user.email,
