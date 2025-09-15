@@ -209,7 +209,7 @@ export const usePeerConnections = (
     });
 
     socket.on(chatEnum.userConnected, ({ email, id, username }) => {
-      console.log(`👤 New user connected: ${username} (${id})`); // Keeping for debugging
+      console.log(`👤 New user connected: ${username} (${id}) ${email}`); // Keeping for debugging
 
       setMessages((prev) => [
         ...prev,

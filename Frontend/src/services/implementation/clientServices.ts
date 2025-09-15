@@ -188,7 +188,7 @@ export const ClientService = {
         { timeout: 60000 }
       );
       console.log("Updated workout response: ", response.data);
-      return { data: response.data.data };
+      return { data: response.data.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -280,7 +280,7 @@ export const ClientService = {
         { exercises, day, challengeId }
       );
       console.log("Updated day completion response: ", response.data);
-      return { data: response.data.data };
+      return { data: response.data.data.data };
     } catch (error: unknown) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
@@ -334,13 +334,11 @@ export const ClientService = {
         CLIENT_ROUTES.UPDATE_CLIENT_PROFILE,
         formData
       );
-      console.log("response of profile", response.data);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =
         err.response?.data.error || "Failed to update clinet data";
-      console.log("Error update client data: ", errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     }

@@ -159,8 +159,6 @@ const ChatInterface: React.FC = () => {
       }
       const response = await TrainerService.getClients(user._id!);
       setClients(response || []);
-    } catch (error) {
-      // Error fetching clients
     } finally {
       setIsLoadingClients(false);
     }
@@ -202,8 +200,6 @@ const ChatInterface: React.FC = () => {
           );
         }
       }
-    } catch (error) {
-      // Error fetching chat messages
     } finally {
       setLoadingChats((prev) => {
         const newSet = new Set(prev);

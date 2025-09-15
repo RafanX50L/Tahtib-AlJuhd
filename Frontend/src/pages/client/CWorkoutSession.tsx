@@ -606,9 +606,9 @@ const WorkoutSession: React.FC = () => {
     }
   }, [currentExerciseIndex, workout, parseExerciseMetrics]);
 
-  // const completeFullWorkout = async () => {
-  //   handleWorkoutFinished();
-  // };
+  const completeFullWorkout = async () => {
+    handleWorkoutFinished();
+  };
   // No workout data
   if (isLoading) {
     return (
@@ -647,9 +647,9 @@ const WorkoutSession: React.FC = () => {
 
   return (
     <main className="bg-[#12151E] text-white min-h-screen font-sans">
-      {/* <Button className="bg-[#12151D]" onClick={() => completeFullWorkout()}>
+      <Button className="bg-[#12151D]" onClick={() => completeFullWorkout()}>
         CompleteFull Excersise
-      </Button> */}
+      </Button>
       <div className="max-w-3xl mx-auto p-8 flex flex-col animate-[fadeIn_0.6s_ease-out]">
         {/* Exercise Header */}
         <div className="text-center mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl shadow-lg relative">

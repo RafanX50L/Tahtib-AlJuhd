@@ -188,7 +188,7 @@ const SetPlansPage = () => {
     try {
       await TrainerService.deactivatePlan(planId);
       setPlans(
-        plans.map((p) => (p.id === planId ? { ...p, isActive: false } : p))
+        plans.map((p) => (p.id === planId ? { ...p, isActive: !p.isActive } : p))
       );
       setSuccess("Plan deactivated successfully!");
       setTimeout(() => setSuccess(""), 3000);

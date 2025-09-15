@@ -143,7 +143,7 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
           
           // Retry the original request
           return api(originalRequest);
-        } catch (refreshError: any) {
+        } catch (refreshError:any) {
           console.error(
             `Token refresh failed on ${frontendUrl}:`,
             refreshError.message || refreshError

@@ -47,7 +47,7 @@ const VerifyingTrainer = () => {
         const response = await TrainerService.getPendingApplicationDetails();
 
         console.log(response);
-        setTrainerData(response.data);
+        setTrainerData(response);
         toast.success("Trainer details fetched successfully");
 
         // setError("No trainer data found");
@@ -180,8 +180,9 @@ const VerifyingTrainer = () => {
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={() => navigate(`/room/${interviewDetails?.roomId}`)}
                   disabled={
-                    new Date(trainerData.interviewDetails.startTime).getTime() >=
-                    new Date().getTime()
+                    new Date(
+                      trainerData.interviewDetails.startTime
+                    ).getTime() >= new Date().getTime()
                   }
                 >
                   Join Now
@@ -417,20 +418,20 @@ const VerifyingTrainer = () => {
       </div>
       <main className="flex-1 ml-0 lg:ml-[280px] p-4 lg:p-8">
         <div className="flex justify-between items-center mb-8 bg-[#1e1e1e]/70 p-4 rounded-md shadow-[0_4px_6px_rgba(0,0,0,0.3)]">
-          <h1 className="text-2xl font-semibold text-[#6366f1]">Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-[#6366f1] sm:text-3xl md:text-4xl">
+            Dashboard
+          </h1>
+
           <div className="flex items-center gap-4 cursor-pointer p-2 rounded-md hover:bg-[#1e1e1e] transition-all">
             <span className="text-[#ffffff]">
-              {trainerData?.name || user?.name || "User"}
+              { user?.name || "User"}
             </span>
-            <img
-              src={
-                trainerData?.basicInfo?.profilePhoto || "/api/placeholder/40/40"
-              }
-              alt="User avatar"
-              className="w-10 h-10 rounded-full border-2 border-[#6366f1] object-cover"
-            />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl sm:text-3xl md:text-4xl font-semibold">
+              {user?.name?.charAt(0).toUpperCase() || "U"}
+            </div>
           </div>
         </div>
+
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
           {renderStatusCard()}
         </div>

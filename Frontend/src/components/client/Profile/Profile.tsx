@@ -28,7 +28,6 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
   user,
   onPictureUpdate,
 }) => {
-  console.log("user", user);
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
   const [tempProfilePic, setTempProfilePic] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -146,6 +145,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
 import { ChangeEvent } from "react";
 import { IconType } from "react-icons"; // assuming you're using react-icons
 import { clientProfileSchema } from "./ClientProfileValidationSchema";
+import z from "zod";
 
 interface ProfileInfoFieldProps {
   icon: IconType;
@@ -229,8 +229,7 @@ const ProfilePage = () => {
         setFormData(formattedUser);
         setError(null);
       } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        setError("Failed to load profile data. Please try again later.");
+        setError(`Failed to load profile data. Please try again later. error:${error}`);
       } finally {
         setLoading(false);
       }
