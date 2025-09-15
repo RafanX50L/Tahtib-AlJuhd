@@ -36,8 +36,8 @@ export class PlanService implements IPlanService {
     return;
   }
 
-  async getPlansByTrainer(trainerId: string): Promise<IPlanView[]> {
-    const result = (await this._planRepo.findByTrainerId(trainerId)) as IPlan[];
+  async getPlansByTrainer(trainerId: string,role): Promise<IPlanView[]> {
+    const result = role === 'client' ? (await this._planRepo.findByTrainerId(trainerId)) as IPlan[]: (await this._planRepo.findAll({ trainerId: new Types.ObjectId(trainerId)}) as IPlan[]);
     return  await Promise.all(
       result.map(async (plan) => {
         return await PlanDto.mapToPlanData(plan);

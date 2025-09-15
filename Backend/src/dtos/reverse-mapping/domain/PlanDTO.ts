@@ -1,5 +1,4 @@
 import { ValidationUtil } from "@/utils/validation.util";
-import { IPlan } from "@/core/interface/model/IPlan";
 
 /**
  * Request DTOs for Plan Controller
@@ -47,11 +46,6 @@ export class PlanDTO {
     const title = ValidationUtil.validateString(body.title, 'title', 100);
     const description = ValidationUtil.validateString(body.description, 'description', 500);
     
-    const price = ValidationUtil.validatePositiveNumber(body.price, 'price');
-    if (price < 0 || price > 10000) {
-      throw new Error('Price must be between 0 and 10000');
-    }
-    
     const sessionsPerWeek = ValidationUtil.validatePositiveInteger(body.sessionsPerWeek, 'sessionsPerWeek');
     if (sessionsPerWeek < 1 || sessionsPerWeek > 7) {
       throw new Error('Sessions per week must be between 1 and 7');
@@ -69,7 +63,7 @@ export class PlanDTO {
       trainerId,
       title,
       description,
-      price,
+      price:body.price as number,
       sessionsPerWeek,
       durationWeeks,
       isActive,

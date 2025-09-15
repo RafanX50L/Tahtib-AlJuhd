@@ -35,8 +35,8 @@ export class ClientProgressDTO {
    */
   static validateAddEntryRequest(body: Record<string, unknown>): AddEntryRequestDTO {
     const date = ValidationUtil.validateString(body.date, 'date', 50);
-    const weight = ValidationUtil.validatePositiveNumber(body.weight, 'weight');
-    const height = ValidationUtil.validatePositiveNumber(body.height, 'height');
+    const weight = ValidationUtil.validatePositiveInteger(body.weight, 'weight');
+    const height = ValidationUtil.validatePositiveInteger(body.height, 'height');
 
     // Validate date format
     const dateObj = new Date(date);
@@ -95,8 +95,8 @@ export class ClientProgressDTO {
    */
   static validatePreviewEntryRequest(body: Record<string, unknown>): PreviewEntryRequestDTO {
     const date = ValidationUtil.validateString(body.date, 'date', 50);
-    const weight = ValidationUtil.validatePositiveNumber(body.weight, 'weight');
-    const height = ValidationUtil.validatePositiveNumber(body.height, 'height');
+    const weight = ValidationUtil.validatePositiveInteger(body.weight, 'weight');
+    const height = ValidationUtil.validatePositiveInteger(body.height, 'height');
 
     // Validate date format
     const dateObj = new Date(date);

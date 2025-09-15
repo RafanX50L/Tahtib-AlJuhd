@@ -10,7 +10,6 @@ export class PostRepository extends BaseRepository<IPost> implements IPostReposi
 
   async getFeedForUser(userId: Types.ObjectId, followingIds: Types.ObjectId[], limit = 20, cursor?: Date) {
     const filter: Record<string, unknown> = {
-      // authorId: { $in: [userId, ...followingIds] },
     };
     if (cursor) {
       filter.createdAt = { $lt: cursor };

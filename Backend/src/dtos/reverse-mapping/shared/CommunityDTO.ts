@@ -111,7 +111,7 @@ export class CommunityDTO {
   static validateSearchUsersRequest(query: Record<string, unknown>): SearchUsersRequestDTO {
     const q = ValidationUtil.validateString(query.q, 'q', 100);
     
-    if (q.trim().length < 2) {
+    if (q.trim().length < 1) {
       throw new Error('Search query must be at least 2 characters long');
     }
 

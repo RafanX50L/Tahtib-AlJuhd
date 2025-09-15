@@ -88,11 +88,10 @@ export class ClientPersonalizationDTO {
     if (body.name !== undefined) {
       ValidationUtil.validateString(body.name, 'name', 100);
     }
-    
+
     if (body.email !== undefined) {
       ValidationUtil.validateEmail(body.email, 'email');
     }
-    
     if (body.phoneNumber !== undefined) {
       ValidationUtil.validateString(body.phone, 'phone', 20);
     }
@@ -102,7 +101,7 @@ export class ClientPersonalizationDTO {
     }
 
     if(body.profilePicture !== undefined){
-      ValidationUtil.validateString(body.profilePicture, 'profilePicture',50);
+      ValidationUtil.validateString(body.profilePicture, 'profilePicture',500);
     }
 
     return {

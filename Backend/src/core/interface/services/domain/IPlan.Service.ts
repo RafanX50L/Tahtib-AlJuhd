@@ -13,7 +13,7 @@ export interface IPlanView {
 }
 export interface IPlanService {
     createPlan(plan: IPlan): Promise<void>;
-    getPlansByTrainer(trainerId: string): Promise<IPlanView[]>;
+    getPlansByTrainer(trainerId: string, role: string): Promise<IPlanView[]>;
     getPlanById(id: string): Promise<IPlanView | null>;
     updatePlan(id: string, updates: Partial<IPlanView>): Promise<void>;
     deactivatePlan(id: string): Promise<void>;

@@ -20,11 +20,10 @@ export class WorkoutPlanRepository
     return this.findById(workoutId);
   }
 
- // ✅ Mark a day as complete and save its report
   async markWorkoutDayAsComplete(
     workoutPlanId: Types.ObjectId,
-    week: string, // e.g., 'week1'
-    day: string,  // e.g., 'day3'
+    week: string,
+    day: string, 
     report: IWorkoutReport
   ): Promise<void> {
     const completedField = `${week}.${day}.completed`;
@@ -41,10 +40,9 @@ export class WorkoutPlanRepository
     );
   }
 
-  // ✅ Insert a generated next week's workout plan
   async insertNextWeek(
     workoutPlanId: Types.ObjectId,
-    weekKey: string, // e.g., 'week2', 'week3'
+    weekKey: string,
     weekData: IWeek
   ): Promise<void> {
     await this.model.updateOne(
@@ -53,10 +51,9 @@ export class WorkoutPlanRepository
     );
   }
 
-  // ✅ Optional: mark full week as completed
   async markWeekAsCompleted(
     workoutPlanId: Types.ObjectId,
-    weekKey: string // e.g., 'week1'
+    weekKey: string 
   ): Promise<void> {
     const fieldPath = `${weekKey}.completed`;
 

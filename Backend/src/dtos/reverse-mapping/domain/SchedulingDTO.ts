@@ -38,7 +38,7 @@ export interface CompleteBookingRequestDTO {
 export interface ListBookingsRequestDTO {
   trainerId?: string;
   clientId?: string;
-  status?: 'upcoming' | 'past';
+  status?: string;
 }
 
 /**

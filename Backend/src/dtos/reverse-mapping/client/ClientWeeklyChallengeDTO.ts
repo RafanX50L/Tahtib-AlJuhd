@@ -59,8 +59,8 @@ export class ClientWeeklyChallengeDTO {
 
     // Validate day number format (should be a number between 1-7)
     const dayNum = parseInt(dayNumber);
-    if (isNaN(dayNum) || dayNum < 1 || dayNum > 7) {
-      throw new Error('Day number must be between 1 and 7');
+    if (isNaN(dayNum) || dayNum < 0 || dayNum > 6) {
+      throw new Error('Day number must be between 0 and 6');
     }
 
     // Validate exercises array

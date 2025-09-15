@@ -11,6 +11,7 @@ import {
   DeactivatePlanRequestDTO
 } from '@/dtos/reverse-mapping/domain/PlanDTO';
 import { ControllerErrorHandler } from '@/utils/controller-error-handler.util';
+import { AddedRequest } from '@/middleware/verify.token.middleware';
 
 export class PlanController implements IPlanController {
 
@@ -42,12 +43,12 @@ export class PlanController implements IPlanController {
     }
   };
 
-  async getPlansByTrainer(req: Request, res: Response, next: NextFunction) {
+  async getPlansByTrainer(req: AddedRequest, res: Response, next: NextFunction) {
     try {
       // Validate and transform request query using DTO
       const validatedQuery: GetPlansByTrainerRequestDTO = PlanDTO.validateGetPlansByTrainerRequest(req.query);
-      
-      const plans = await this._planService.getPlansByTrainer(validatedQuery.trainerId);
+      const role = req.user.role;
+      const plans = await this._planService.getPlansByTrainer(validatedQuery.trainerId,role);
       
       ControllerErrorHandler.handleSuccess(res, plans, "Plans retrieved successfully");
     } catch (err) {
