@@ -17,32 +17,6 @@ import {
 export default function Summary() {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
-  // const [summaryData, setSummaryData] = useState({
-  //   basicInfo: {
-  //     nickName: "",
-  //     age: "",
-  //     gender: "",
-  //     address: "",
-  //     phoneNumber: "",
-  //     height: "",
-  //     currentWeight: "",
-  //     targetWeight: "",
-  //   },
-  //   fitnessGoal: { goal: "" },
-  //   currentFitnessLevel: "",
-  //   activityLevel: "",
-  //   workoutPreferences: {
-  //     equipment: [],
-  //     workoutDuration: "",
-  //     workoutDaysPerWeek: "",
-  //   },
-  //   healthInfo: { healthIssues: [], medicalCondition: "" },
-  //   dietPreferences: {
-  //     dietAllergies: [],
-  //     dietPreferences: "",
-  //     dietMealsPerDay: "",
-  //   },
-  // });
 
   const [summaryData, setSummaryData] = useState<{
     basicInfo: {
