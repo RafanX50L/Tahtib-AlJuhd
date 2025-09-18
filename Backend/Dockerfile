@@ -1,9 +1,15 @@
-FROM node:18-alpine
+FROM node:22-alpine
+
 WORKDIR /app
+
 COPY package*.json ./
+# fasdfa
 RUN npm install
+
 COPY . .
-RUN npm run build
+
 ENV PORT=5000
+
 EXPOSE 5000
-CMD ["node", "--experimental-specifier-resolution=node", "dist/server.js"]
+
+CMD ["npm", "run", "dev"]

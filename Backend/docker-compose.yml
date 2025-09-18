@@ -24,5 +24,4 @@ services:
       - redis-data:/data
 
 volumes:
-  mongo-data:
   redis-data:

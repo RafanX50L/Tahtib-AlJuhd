@@ -1,3 +1,5 @@
+import { ISessionView } from "./IAvailability.Service";
+
 export type AvailabilityResponse = {
   date: string;
   slots: Array<{ time: string; duration: number; isBooked: boolean }>;
@@ -17,6 +19,15 @@ export interface ISchedulingService {
     placeholder?: never;
     getAvailabilityForDate(trainerId: string, date?: string, tz?: string): Promise<AvailabilityResponse>;
     bookSlot(input: BookSlotInput): Promise<void>;
+    listBookings({
+    trainerId,
+    clientId,
+    status,
+  }: {
+    trainerId?: string;
+    clientId?: string;
+    status?: string;
+  }):Promise<ISessionView[]>;
     cancelBooking(bookingId: string, clientId: string): Promise<void>;
     completeBooking(bookingId: string): Promise<void>;
 }

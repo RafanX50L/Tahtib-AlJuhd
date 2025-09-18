@@ -25,6 +25,7 @@ import { ITrainerClientContractRepository } from "@/core/interface/repositories/
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
+import { SessionDto } from "@/dtos/domain/SessionDTO";
 
 export class SchedulingService implements ISchedulingService {
   constructor(
@@ -174,7 +175,7 @@ export class SchedulingService implements ISchedulingService {
     if (status === "upcoming") query.startTime = { $gte: new Date() };
     if (status === "past") query.endTime = { $lt: new Date() };
     const result = await this._sessionRepo.findAll(query);
-    return result;
+    return SessionDto.mapToISessionData(result);
   }
 
   async cancelBooking(bookingId: string, clientId: string) {
