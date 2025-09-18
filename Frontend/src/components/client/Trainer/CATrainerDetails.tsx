@@ -31,6 +31,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { RootState } from "@/store/store";
 import { loadStripe } from "@stripe/stripe-js";
 import { usePaymentSession } from "@/hooks/usePaymentSession";
+import { env } from "@/config/env";
 
 // Interfaces based on Plan.model.ts
 interface Plan {
@@ -149,9 +150,7 @@ const TrainerPage: React.FC = () => {
       return;
     }
 
-    const stripe = await loadStripe(
-      "pk_test_51S2XHlC780Va8Gps39D50PquwdG2BXw1hcGhG6D9CNcRFCqxUVYTQiuPuEQzlsGeWVFEs3HIs0bIWSFviWjQrjSg007Xa5KILP"
-    );
+    const stripe = await loadStripe(env.STRIPE_KEY);
 
     if (!user?._id) {
       // User not logged in

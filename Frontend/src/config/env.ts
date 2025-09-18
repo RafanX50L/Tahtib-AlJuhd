@@ -3,4 +3,5 @@ export const env = {
   YOUTUBE_API_KEY: import.meta.env.VITE_YOUTUBE_API_KEY,
   YOUTUBE_SEARCH_URL: import.meta.env.VITE_YOUTUBE_SEARCH_URL,
   PUBLIC_DOMAIN: import.meta.env.VITE_PUBLIC_DOMAIN,
+  STRIPE_KEY: import.meta.env.VITE_STRIPE_KEY,
 };
