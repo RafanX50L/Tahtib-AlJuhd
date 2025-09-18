@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { StripeCardElement } from '@stripe/stripe-js';
-import axios from 'axios';
+import api from '@/services/implementation/api';
 
 interface CheckoutProps {
   planId: string;
@@ -25,7 +25,7 @@ const Checkout: React.FC<CheckoutProps> = ({ planId, userId, amount, currency })
 
     try {
       // Step 1: Create payment intent
-      const { data } = await axios.post<{ clientSecret: string}>('http://localhost:3000/api/payment/create-payment-intent', {
+      const { data } = await api.post<{ clientSecret: string}>('/payment/create-payment-intent', {
         amount,
         currency,
         planId,
@@ -48,7 +48,7 @@ const Checkout: React.FC<CheckoutProps> = ({ planId, userId, amount, currency })
 
       if (paymentIntent?.status === 'succeeded') {
         // Step 3: Notify backend to update user
-        await axios.post('http://localhost:3000/api/payment/confirm-payment', {
+        await api.post('/payment/confirm-payment', {
           paymentIntentId: paymentIntent.id,
           userId,
           planId,
