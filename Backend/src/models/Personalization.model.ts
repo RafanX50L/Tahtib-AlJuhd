@@ -232,6 +232,7 @@ const TrainerPersonalizationSchema = new Schema<ITrainerPersonalization>({
     },
     slotLength: { type: Number, default: 30 },
     bufferMinutes: { type: Number, default: 1 },
+    timezone: { type: String, required: false },
     engagementType: {
       type: String,
       enum: ["full-time", "part-time", "contract", "freelance"],

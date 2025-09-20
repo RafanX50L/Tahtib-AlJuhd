@@ -9,7 +9,12 @@ type AxiosError<T = unknown> = { response?: { data: T } };
 export type DayWindow = { startTime: string; endTime: string };
 export type WeeklyRulesPayloads = {
   trainerId: string;
-  rules: WeeklyRulesPayloads
+  rules: {
+    weeklyRules: Record<string, DayWindow[]>;
+    slotLength: number;
+    bufferMinutes: number;
+    timezone?: string;
+  }
 };
 
 export const TrainerService = {

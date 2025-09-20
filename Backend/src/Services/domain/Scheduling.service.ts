@@ -26,6 +26,12 @@ import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
 import { SessionDto } from "@/dtos/domain/SessionDTO";
+import {
+  createTimeWindowsFromRules,
+  localTimeToUTC,
+  utcToLocalTime,
+  getDayBoundsInUTC,
+} from "@/utils/timezone.utils";
 
 export class SchedulingService implements ISchedulingService {
   constructor(
@@ -39,8 +45,20 @@ export class SchedulingService implements ISchedulingService {
     date?: string
   ): Promise<AvailabilityResponse> {
     const target = date ? new Date(date) : new Date();
-    const from = startOfDay(target);
-    const to = endOfDay(target);
+    
+    // Fetch trainer personalization to get timezone
+    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
+    const data = trainerPers?.data as ITrainerPersonalization | undefined;
+    
+    // Get timezone from availability data first, fallback to basicInfo
+    const trainerTimezone = data?.availability?.timezone || data?.basicInfo?.timeZone;
+    
+    if (!trainerTimezone) {
+      throw createHttpError(HttpStatus.BAD_REQUEST, "Trainer timezone not found");
+    }
+    
+    // Get day bounds in UTC based on trainer's timezone
+    const { start: from, end: to } = getDayBoundsInUTC(target, trainerTimezone);
 
     const busySessions = await this._sessionRepo.findUnFreeSlotsByTrainer(
       trainerId,
@@ -48,21 +66,14 @@ export class SchedulingService implements ISchedulingService {
       to
     );
 
-    // Fetch trainer personalization
-    const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
-    const data = trainerPers?.data as ITrainerPersonalization | undefined;
-
     const rules = data?.availability?.weeklyRules;
-    const dayStr = format(target, "yyyy-MM-dd");
     const weekday = format(target, "EEEE");
 
     let windows: Array<{ start: Date; end: Date }> = [];
 
     if (rules && rules[weekday] && Array.isArray(rules[weekday])) {
-      windows = rules[weekday].map((r) => ({
-        start: new Date(`${dayStr}T${r.startTime}:00`),
-        end: new Date(`${dayStr}T${r.endTime}:00`),
-      }));
+      // Create time windows in UTC using trainer's timezone
+      windows = createTimeWindowsFromRules(rules, target, trainerTimezone);
     } else {
       // No rules → no slots
       return { date: format(target, "yyyy-MM-dd"), slots: [] };
@@ -109,8 +120,10 @@ export class SchedulingService implements ISchedulingService {
         );
 
         if (!overlap) {
+          // Convert UTC time back to trainer's timezone for display
+          const localTime = utcToLocalTime(cursor, trainerTimezone);
           freeTimes.push({
-            time: format(cursor, "HH:mm"),
+            time: localTime,
             duration: minutesIncrement,
             isBooked: false,
           });
@@ -123,10 +136,24 @@ export class SchedulingService implements ISchedulingService {
   }
 
   async bookSlot(input: BookSlotInput) {
-    const start = new Date(`${input.date}T${input.time}:00`);
+    // Get trainer's timezone for proper conversion
+    const trainerPers = await this._personalizationRepo.findByUserId(input.trainerId);
+    const data = trainerPers?.data as ITrainerPersonalization | undefined;
+    
+    // Get timezone from availability data first, fallback to basicInfo
+    const trainerTimezone = data?.availability?.timezone || data?.basicInfo?.timeZone;
+    
+    if (!trainerTimezone) {
+      throw createHttpError(HttpStatus.BAD_REQUEST, "Trainer timezone not found");
+    }
+    const targetDate = new Date(input.date);
+    
+    // Convert local time to UTC using trainer's timezone
+    const start = localTimeToUTC(input.time, targetDate, trainerTimezone);
     const end = addMinutes(start, input.duration || 30);
 
     // Prevent double booking by checking ANY session in the range
+    // Use UTC day bounds for consistency
     const dayFrom = startOfDay(start);
     const dayTo = endOfDay(start);
     const free = await this._sessionRepo.findFreeSlotsByTrainer(
@@ -175,7 +202,16 @@ export class SchedulingService implements ISchedulingService {
     if (status === "upcoming") query.startTime = { $gte: new Date() };
     if (status === "past") query.endTime = { $lt: new Date() };
     const result = await this._sessionRepo.findAll(query);
-    return SessionDto.mapToISessionData(result);
+    
+    // Get trainer timezone for time conversion
+    let trainerTimezone = 'UTC';
+    if (trainerId) {
+      const trainerPers = await this._personalizationRepo.findByUserId(trainerId);
+      const data = trainerPers?.data as ITrainerPersonalization | undefined;
+      trainerTimezone = data?.availability?.timezone || data?.basicInfo?.timeZone || 'UTC';
+    }
+    
+    return SessionDto.mapToISessionData(result, trainerTimezone);
   }
 
   async cancelBooking(bookingId: string, clientId: string) {
