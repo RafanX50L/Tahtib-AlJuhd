@@ -65,8 +65,8 @@ export class BookingService implements IBookingService {
       payment_method_types: ["card"],
       line_items: line_items,
       mode: "payment",
-      success_url: `http://localhost:5173/trainerSession`,
-      cancel_url: `http://localhost:5173/trainer-details/${trainerId}?payment_status=cancelled`,
+      success_url: `${env.CLIENT_URL}/trainerSession`,
+      cancel_url: `${env.CLIENT_URL}/${trainerId}?payment_status=cancelled`,
       metadata: {
         userId: userId || "unknown",
         trainerId: trainerId || "unknown",
