@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { TrainerFormData } from "../sample";
+import { TrainerFormData } from "./TraierForm";
 
 interface ProfilePhotoUploadProps {
   control: Control<TrainerFormData>;
@@ -115,6 +115,7 @@ const ProfilePhotoUpload: React.FC<ProfilePhotoUploadProps> = ({
   const handleFileChange = useCallback(
     (
       e: React.ChangeEvent<HTMLInputElement>,
+      /* eslint-disable-next-line */
       fieldOnChange: (value: File | null) => void
     ) => {
       const file = e.target.files?.[0];

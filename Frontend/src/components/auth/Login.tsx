@@ -26,7 +26,7 @@ import { setCredentials } from "@/store/slices/authSlice";
 import { RootState } from "@/store/store";
 import Loading from "../client/Loading";
 
-type LoginForm = z.infer<typeof loginSchema>;
+export type LoginForm = z.infer<typeof loginSchema>;
 
 interface GoogleUser {
   access_token: string;
@@ -71,8 +71,8 @@ export default function LoginPage() {
       dispath(
         setCredentials({
           user: response.user,
+          notifications: response.notifications,
           accessToken: response.accessToken,
-          tokenVersion: response.tokenVersion,
         })
       );
       toast.success(response.message);
@@ -142,8 +142,8 @@ export default function LoginPage() {
       dispath(
         setCredentials({
           user: response.user,
+          notifications: response.notifications,
           accessToken: response.accessToken,
-          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);
@@ -161,7 +161,7 @@ export default function LoginPage() {
   };
 
   if (isLoading) {
-    <Loading content="Loading login form..."/>
+    <Loading content="Loading login form..."/>;
   }
 
   return (
@@ -262,6 +262,7 @@ export default function LoginPage() {
                 to="/auth?path=register"
                 className="text-indigo-400 hover:text-indigo-300"
               >
+                {/* eslint-disable-next-line */}
                 Don't have an account? Register
               </Link>
             </div>

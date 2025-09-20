@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import handleSocket from "./handleSocket";
+import logger from "@/utils/logger.utils";
 // import { socketusecases } from "../config/dependencies";
 
 export function socketconfig(server: http.Server) {
@@ -9,7 +10,7 @@ export function socketconfig(server: http.Server) {
   });
   io.on("connection", (socket) => {
     const handlesocket = new handleSocket(io);// handleSocketusecases when needed
-    console.log("socket conntected success", socket?.id);
+    logger.info("socket connected success", socket?.id);
 
     handlesocket.registerEvent(socket);
   });

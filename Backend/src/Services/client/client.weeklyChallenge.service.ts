@@ -12,8 +12,10 @@ import {
 import { IUserWeeklyChallengeRepository } from "@/core/interface/repositories/IUserWeeklyChallenge.repositoy";
 import { IWeeklyChallengeRepository } from "@/core/interface/repositories/IWeeklyChallenge.repository";
 import { IClientWeeklyChallengeService } from "@/core/interface/services/client/IClient.WeeklyChallenge.service";
+import { UserProgressDTO } from "@/dtos/client/UserProgressDTO";
+import { ClientWeeklyChallengeDTO, IWeeklyChallengesView } from "@/dtos/client/weeklyChallengeDTO";
 import { createHttpError } from "@/utils";
-// import { generateWorkoutReport } from "@/utils/gemini1.utils";
+import { generateWorkoutReport } from "@/utils/gemini1.utils";
 import { Types } from "mongoose";
 
 export class ClientWeeklyChallengeService
@@ -26,27 +28,26 @@ export class ClientWeeklyChallengeService
   /** Reserved for Weekly Challenge specific methods */
   _placeholder?: never;
 
-  async getWeeklyChallenges() {
+  async getWeeklyChallenges(): Promise<IWeeklyChallengesView> {
     const now = new Date();
 
-    // Fetch all three types that are still active (not expired)
     const challenges = await this._weeklyChallengeRepository.findAll({
       type: { $in: ["beginner", "intermediate", "advanced"] },
-      startDate: { $lte: now }, // challenge has already started
-      endDate: { $gte: now }, // challenge has not ended
+      startDate: { $lte: now },
+      endDate: { $gte: now },
     });
 
-    const result: Record<string, IWeeklyChallenge> = {
+    const result: Partial<IWeeklyChallengesView> = {
       beginner: null,
       intermediate: null,
       advanced: null,
     };
 
-    challenges.forEach((challenge) => {
-      result[challenge.type] = challenge;
-    });
+    for (const challenge of challenges) {
+      result[challenge.type] = await ClientWeeklyChallengeDTO.mapToWeeeklyChallengeData(challenge);
+    }
 
-    return result;
+    return result as IWeeklyChallengesView;
   }
 
   async getWeeklyChallengeById(id: string, userId: string) {
@@ -58,12 +59,20 @@ export class ClientWeeklyChallengeService
       user: new Types.ObjectId(userId),
       challenge: new Types.ObjectId(id),
     })) as IUserWeeklyChallenge | null;
+    if(!userProgress){
+      const challengeData = await ClientWeeklyChallengeDTO.mapTooOneWeeklyChallengeData(challenge);
+  
+      return { challenge:challengeData };
+    }
 
-    return { challenge, userProgress };
-  }
+
+    const challengeData = await ClientWeeklyChallengeDTO.mapTooOneWeeklyChallengeData(challenge);
+    const userProgressDTO = await UserProgressDTO.mapToUserProgress(userProgress);
+
+    return { challenge:challengeData, userProgress:userProgressDTO };
+  };
 
   async joinWeeklyChallenge(userId: string, challengeId: string) {
-    // Step 1: Fetch the challenge
     const challenge = await this._weeklyChallengeRepository.findById(
       new Types.ObjectId(challengeId)
     );
@@ -71,7 +80,6 @@ export class ClientWeeklyChallengeService
       throw new Error("Challenge not found");
     }
 
-    // Step 2: Check if user already joined
     const hasJoined = challenge.enteredUsers.includes(
       new Types.ObjectId(userId)
     );
@@ -82,7 +90,6 @@ export class ClientWeeklyChallengeService
       );
     }
 
-    // Step 3: Add user to enteredUsers
     await this._weeklyChallengeRepository.update(challengeId, {
       $addToSet: { enteredUsers: userId },
     });
@@ -106,19 +113,19 @@ export class ClientWeeklyChallengeService
     dayIndex: number
   ): Promise<IWorkoutReport> {
     const defaultReport = {
-      caloriesBurned: 500, // Example value
-      duration: 60, // Example value in minutes
+      caloriesBurned: 0, // Example value
+      duration: 0, // Example value in minutes
       feedback: "Great job! Keep it up!", // Example feedback
       intensity: "low",
-      estimatedDuration: "60 minutes",
-      totalExercises: 5,
-      totalSets: 15,
+      estimatedDuration: "0 minutes",
+      totalExercises: 0,
+      totalSets: 0,
     };
     // 1. Generate report
-    const report = defaultReport;
-    // workout.length === 0
-    //   ? defaultReport
-    //   : await generateWorkoutReport(workout);
+    const report =
+    workout.length === 0
+      ? defaultReport
+      : await generateWorkoutReport(workout);
 
     const newDayReport: IUserDayReport = {
       dayIndex,

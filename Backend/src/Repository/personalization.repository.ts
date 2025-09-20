@@ -20,29 +20,6 @@ export class PersonalizationRepository
   constructor() {
     super(PersonalizationModel);
   }
-  // async createPersonalization(
-  //   personalizationData: Partial<
-  //     IClientPersonalization | ITrainerPersonalization | IAdminPersonalization
-  //   >,
-  //   userId: string,
-  //   userRole: "client" | "trainer" | "admin"
-  //   // session?: ClientSession
-  // ) {
-  //   /**  
-  //     Create or update personalization document
-  //    */
-  //   return (await this.model.findOneAndUpdate(
-  //     { userId: userId, role: "client" },
-  //     {
-  //       $set: {
-  //         role: userRole,
-  //         data: personalizationData,
-  //         updatedAt: new Date(),
-  //       },
-  //     },
-  //     { new: true, upsert: true /*session*/ }
-  //   )) as IPersonalization;
-  // }
 
   async updatePersonalizationById(
     id: string,
@@ -71,9 +48,6 @@ export class PersonalizationRepository
   }
 
   async updateProfilePictureId(clientId: string, signedUrl: string) {
-    console.log('fndfij');
-    const data = await this.model.findOne({userId:clientId});
-    console.log('data',data);
     const personalData = await this.model.findOneAndUpdate(
       { userId: clientId },
       { "data.userData.profilePictureId": signedUrl },
@@ -104,6 +78,30 @@ export class PersonalizationRepository
       { $inc: { "data.userData.workoutsCompletedIn28Days": 1 } },
       { new: true, runValidators: true }
     );
+  }
+
+  async findByUserId(userId: string): Promise<IPersonalization | null> {
+    return await PersonalizationModel.findOne({ userId: new Types.ObjectId(userId) });
+  }
+
+  async updateTrainerData(trainerId: string, updates: Partial<ITrainerPersonalization>): Promise<IPersonalization> {
+    const personalization = await PersonalizationModel.findOneAndUpdate(
+      { userId: new Types.ObjectId(trainerId), role: 'trainer' },
+      { $set: { data: { ...updates } } },
+      { new: true }
+    );
+    if (!personalization) throw new Error('Trainer personalization not found');
+    return personalization;
+  }
+
+  async updateClientData(clientId: string, updates: Partial<IClientPersonalization>): Promise<IPersonalization> {
+    const personalization = await PersonalizationModel.findOneAndUpdate(
+      { userId: new Types.ObjectId(clientId), role: 'client' },
+      { $set: { data: { ...updates } } },
+      { new: true }
+    );
+    if (!personalization) throw new Error('Client personalization not found');
+    return personalization;
   }
 
 }

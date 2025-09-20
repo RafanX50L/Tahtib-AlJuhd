@@ -36,7 +36,6 @@ export class TrainerInterviewRepository
     adminId: string,
     feedback: ITrainerInterview["result"]
   ) {
-    console.log(feedback);
     const updatedData = await this.model.findOneAndUpdate(
       { trainerId: trainerId, adminId: adminId },
       {
@@ -49,24 +48,6 @@ export class TrainerInterviewRepository
     );
 
     return updatedData;
-    
-
-    // return data;
-    // if (!updated) {
-    //   createHttpError(
-    //     HttpStatus.NO_CONTENT,
-    //     HttpResponse.FAILED_TO_UPDATE_INTERVIEW_FEEDBACK
-    //   );
-    // }
-
-    // await PersonalizationModel.updateOne(
-    //   { userId: trainerId },
-    //   {
-    //     $set: {
-    //       "data.status": "interviewed",
-    //     },
-    //   }
-    // );
   }
   
 }

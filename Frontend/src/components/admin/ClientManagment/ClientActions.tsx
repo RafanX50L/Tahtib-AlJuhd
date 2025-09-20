@@ -6,7 +6,7 @@ interface ClientActionsProps {
   onStatusChange: (value: string) => void;
 }
 
-const ClientActions = ({ onFilterClick, onExportClick, onStatusChange }: ClientActionsProps) => {
+const ClientActions = ({  onStatusChange }: ClientActionsProps) => {
   return (
     <div className="flex justify-between items-center mb-8">
       <div className="flex items-center space-x-4">

@@ -10,7 +10,7 @@ export interface IUser extends Document {
   role: "client" | "trainer" | "admin";
   personalizationId: ObjectId | null; // References Personalization
   isBlocked: boolean;
-  tokenVersion: number;
+  calendlyLink?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

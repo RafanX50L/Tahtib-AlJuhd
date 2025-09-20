@@ -1,19 +1,21 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/services/implementation/api";
 import { UserInterface } from "@/types/user";
+import { INotificationView } from "@/components/shared/Notification";
 
-console.log("Auth slice importing API instance:", (api as any).__instanceId);
 
 export interface AuthState {
   isAuthenticated: boolean;
   user: UserInterface | null;
+  notifications:INotificationView[] |[];
   status: "idle" | "loading" | "succeeded" | "failed";
   lastLocation: string | null;
-}
+};
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  notifications: [],
   status: "idle",
   lastLocation: null,
 };
@@ -23,21 +25,29 @@ export const refreshAccessToken = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       console.log("Sending refresh token request...");
-      const { tokenVersion } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
       const response = await api.post(
-        "/auth/refresh-token",
-        { tokenVersion },
+        "/auth/refresh-Token",
+        {},
         { withCredentials: true }
       );
       console.log("Refresh token response:", response.data);
-      if (!response.data.accessToken) {
+      
+      // Handle new backend response format: response.data.data
+      const responseData = response.data.data;
+      if (!responseData || !responseData.accessToken) {
         throw new Error("No access token in response");
       }
-      dispatch(setCredentials({ user: response.data.user, accessToken: response.data.accessToken, tokenVersion: response.data.tokenVersion }));
+      
+      dispatch(setCredentials({ 
+        user: responseData.user, 
+        notifications: responseData.notifications, 
+        accessToken: responseData.accessToken 
+      }));
+      
       return {
-        user: response.data.user,
-        accessToken: response.data.accessToken,
-        tokenVersion: response.data.tokenVersion || tokenVersion + 1
+        user: responseData.user,
+        notifications: responseData.notifications,
+        accessToken: responseData.accessToken,
       };
     } catch (error) {
       console.error("Refresh token error:", error);
@@ -53,12 +63,13 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: UserInterface; accessToken: string; tokenVersion: number }>
+      action: PayloadAction<{ user: UserInterface; notifications: INotificationView[]; accessToken: string;}>
     ) => {
       console.log("Setting credentials:", action.payload);
       state.user = action.payload.user;
+      state.notifications = action.payload.notifications;
       state.isAuthenticated = true;
-      localStorage.setItem("accessTokenData", JSON.stringify({accessToken:action.payload.accessToken, tokenVersion:action.payload.tokenVersion}));
+      localStorage.setItem("accessTokenData", JSON.stringify({accessToken:action.payload.accessToken,}));
       localStorage.setItem("sessionActive", "true");
     },
     logout: (state) => {
@@ -76,7 +87,7 @@ const authSlice = createSlice({
     },
     setUserPersonalization: (state, action: PayloadAction<{ _id: string }>) => {
       if (state.user) {
-        (state.user as any).personalization = action.payload._id;
+        (state.user).personalizationId = action.payload._id;
       }
     },
     setLastLocation: (state, action: PayloadAction<string>) => {
@@ -93,8 +104,8 @@ const authSlice = createSlice({
         authSlice.caseReducers.setCredentials(state, {
           payload: {
             user: action.payload.user,
+            notifications: action.payload.notifications,
             accessToken: action.payload.accessToken,
-            tokenVersion: action.payload.tokenVersion,
           },
           type: action.type,
         });

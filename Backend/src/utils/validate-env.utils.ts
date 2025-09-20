@@ -77,4 +77,35 @@ export const validateEnv = () => {
       "AWS_SECRET_ACCESS_KEY is not defined in the environment variables"
     );
   }
+  if (!env.ERROR_LOG_RETENTION_PERIOD) {
+    throw new Error(
+      "ERROR_LOG_RETENTION_PERIOD is not defined in the environment variables"
+    );
+  }
+  if (!env.START_INTERVAL) {
+    throw new Error(
+      "START_INTERVAL is not defined in the environment variables"
+    );
+  }
+  if (!env.END_INTERVAL) {
+    throw new Error(
+      "END_INTERVAL is not defined in the environment variables"
+    );
+  }
+  if (!env.STRIPE_SECRET_KEY) {
+    throw new Error(
+      "STRIPE_SECRET_KEY is not defined in the environment variables"
+    );
+  }
+  if (!env.WEBHOOK_SECRET) {
+    throw new Error(
+      "WEBHOOK_SECRET is not defined in the environment variables"
+    );
+  }
+  if (!env.COOKIE_MAX_AGE) {
+    throw new Error(
+      "COOKIE_MAX_AGE is not defined in the environment variables"
+    );
+  }
+
 };

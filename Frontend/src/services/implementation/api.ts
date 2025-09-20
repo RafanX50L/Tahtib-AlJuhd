@@ -1,15 +1,13 @@
-
 import axios from "axios";
 import { HOST } from "@/utils/constant";
-import { AppDispatch, RootState } from "@/store/store";
-import { refreshAccessToken, setCredentials } from "@/store/slices/authSlice";
-import { useSelector } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { setCredentials } from "@/store/slices/authSlice";
 import { AxiosInstance } from "axios";
 import { UserInterface } from "@/types/user";
+import { INotificationView } from "@/components/shared/Notification";
 
 interface TokenData {
   token: string;
-  version: number;
 }
 
 
@@ -17,23 +15,22 @@ export const secureTokenStorage = {
   get: (): TokenData | null => {
     try {
 
-      const { tokenVersion, accessToken } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
+      const {  accessToken } = JSON.parse(localStorage.getItem("accessTokenData") || "{}");
       if (!accessToken) {
         console.log('No token found in local storage');
         return null;
       }
 
-      return { token: accessToken, version: tokenVersion };
+      return { token: accessToken };
     } catch (error) {
       console.error('Failed to retrieve token:', error);
       return null;
     }
   },
 
-  set: (user: UserInterface, token: string, version: number, dispatch: AppDispatch) => {
+  set: (user: UserInterface, notifications: INotificationView[], token: string, dispatch: AppDispatch) => {
     try {
-      dispatch(setCredentials({ user, accessToken: token, tokenVersion: version }));
-      console.log('Token stored successfully, version:', version);
+      dispatch(setCredentials({ user,notifications, accessToken: token }));
     } catch (error) {
       console.error('Failed to store token:', error);
     }
@@ -57,9 +54,6 @@ const api: AxiosInstance = axios.create({
   }
 });
 
-console.log("API instance created:", api.defaults.baseURL);
-(api as any).__instanceId = "main-api-instance";
-
-
+api .__instanceId = "main-api-instance";
 
 export default api;

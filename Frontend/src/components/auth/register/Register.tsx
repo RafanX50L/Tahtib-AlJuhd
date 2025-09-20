@@ -11,13 +11,13 @@ import { z } from "zod";
 import { registerSchema } from "../../../schemas/authSchema";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import {  useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "@/store/slices/authSlice";
 import { RootState } from "@/store/store";
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
 interface GoogleUser {
   access_token: string;
@@ -96,8 +96,8 @@ export function RegisterPage() {
       dispath(
         setCredentials({
           user: response.user,
+          notifications: response.notifications,
           accessToken: response.accessToken,
-          tokenVersion: response.tokenVersion
         })
       );
       toast.success(response.message);
@@ -152,6 +152,7 @@ export function RegisterPage() {
     if (isAuthenticated) {
       navigate("/myFeed");
     }
+    console.log(profile);
   }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data: RegisterFormData) => {

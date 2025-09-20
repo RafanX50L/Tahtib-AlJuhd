@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.config';
+import logger from './logger.utils';
 
 const ACCESS_KEY = env.JWT_ACCESS_SECRET as string;
 const REFRESH_KEY = env.JWT_REFRESH_SECRET as string;
@@ -24,10 +25,10 @@ export function generateRefreshToken(payload: object): string {
 export function verifyAccessToken(token: string) {
   try {
     const decode = jwt.verify(token, ACCESS_KEY, { algorithms: ['HS256'] });
-    console.log('Acess Data decoded', decode);
+    logger.debug('Access Data decoded', decode);
     return decode;
   } catch (err) {
-    console.error("Access token verification failed:", err);
+    logger.error("Access token verification failed:", err);
     return null;
   }
 }
@@ -36,7 +37,7 @@ export function verifyRefreshToken(token: string) {
   try {
     return jwt.verify(token, REFRESH_KEY, { algorithms: ['HS256'] });
   } catch (err) {
-    console.error("Refresh token verification failed:", err);
+    logger.error("Refresh token verification failed:", err);
     return null;
   }
 }
@@ -46,7 +47,7 @@ export function decodeAndVerifyToken(token: string): Record<string, {_id:string}
     const decoded = jwt.verify(token, ACCESS_KEY, { algorithms: ['HS256'] });
     return typeof decoded === 'object' && decoded !== null ? decoded : null;
   } catch (err) {
-    console.error("Token verification failed:", err);
+    logger.error("Token verification failed:", err);
     return null;
   }
 }

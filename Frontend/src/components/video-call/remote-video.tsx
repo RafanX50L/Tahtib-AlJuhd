@@ -1,7 +1,5 @@
- 
-
-import { Button } from "@/components/ui/button"
-import { Maximize2, PinIcon, UserIcon, Volume2, MicOff } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Maximize2, PinIcon, UserIcon, Volume2, MicOff } from "lucide-react";
 
 interface RemoteVideoProps {
   setVideoRef: (ref: HTMLVideoElement | null) => void
@@ -19,8 +17,8 @@ const RemoteVideo = ({
   setIsPinned,
 }: RemoteVideoProps) => {
   const togglePinVideo = () => {
-    setIsPinned(!isPinned)
-  }
+    setIsPinned(!isPinned);
+  };
 
   return (
     <>
@@ -72,8 +70,7 @@ const RemoteVideo = ({
         </Button>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default RemoteVideo
-
+export default RemoteVideo;

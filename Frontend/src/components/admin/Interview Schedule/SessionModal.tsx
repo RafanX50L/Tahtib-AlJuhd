@@ -59,7 +59,7 @@ const SessionModal: React.FC<SessionModalProps> = ({ show, onClose, session }) =
           </div>
           <div>
             <p className="text-xs lg:text-sm text-gray-400">Notes</p>
-            <p className="text-white text-xs lg:text-sm">Evaluate trainer's experience and client management skills.</p>
+            <p className="text-white text-xs lg:text-sm">Evaluate trainer experience and client management skills.</p>
           </div>
           <div className="border-t border-gray-700 pt-4 mt-4">
             <div className="flex space-x-3">

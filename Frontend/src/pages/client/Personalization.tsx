@@ -9,7 +9,6 @@ import DietPreferences from '@/components/client/Personalization/DietPreferences
 import Summary from '@/components/client/Personalization/Summary';
 
 const Personalization = () => {
-  console.log('enterd to personalization')
   const [searchParams] = useSearchParams();
   const [path, setPath] = useState(searchParams.get('path') || 'basic-details');
 

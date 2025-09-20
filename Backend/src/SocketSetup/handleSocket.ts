@@ -1,56 +1,179 @@
-import { chatEnum } from "@/constants/chatEnum";
 import { Server, Socket } from "socket.io";
+import { chatEvents } from "@/constants/chatEnum";
+import { TrainerClientService } from "@/Services/trainer/trainer.clients.service";
+import { ITrainerClientContractRepository } from "@/core/interface/repositories/ITrainerClientContract.repository";
+import { IChatRepository } from "@/core/interface/repositories/IChat.repository";
+import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
+import { ChatRepository } from "@/Repository/Chat.repository";
+import { TrainerClientContractRepository } from "@/Repository/TrainerClientContract.repository";
+import { UserFileRepository } from "@/Repository/UserFile.repository";
+import { NotificationRepository } from "@/Repository/Notification.repository";
+import { INotificationRepository } from "@/core/interface/repositories/INotification.repository";
+import { NotificationService } from "@/Services/shared/notification.service";
+import { INotificationService } from "@/core/interface/services/shared/INotification.Service";
+import { INotificationView } from "@/dtos/shared/NotificationDTO";
+import logger from "@/utils/logger.utils";
 
-export default class HandleSocket {
-  constructor(private io: Server) {}
+export default class SocketHandler {
+  private trainerService: TrainerClientService;
+  private notificationService: INotificationService;
+  private _contractRepo: ITrainerClientContractRepository;
+  private _chatRepo: IChatRepository;
+  private _userfileRepo: IUserFileRepository;
+  private _notificationRepo: INotificationRepository;
+
+  constructor(private io: Server) {
+    this._contractRepo = new TrainerClientContractRepository();
+    this._chatRepo = new ChatRepository();
+    this._userfileRepo = new UserFileRepository();
+    this._notificationRepo = new NotificationRepository();
+
+    this.trainerService = new TrainerClientService(
+      this._contractRepo,
+      this._chatRepo,
+      this._userfileRepo
+    );
+    this.notificationService = new NotificationService(this._notificationRepo);
+  }
 
   public registerEvent(socket: Socket) {
-    console.log('enterd to soket handling');
-    socket.on("sendNotification", (data) => {
-      this.io.emit("receiveNotification", data);
-    });
-    socket.on("SubmitForm", (data) => {
-      this.io.emit("adminNotification", data);
-    });
+    // Join user-specific and role-based rooms for notifications
     socket.on(
-      chatEnum.joinRoom,
-      async (room: { roomId: string; username: string; email: string }) => {
-          console.log('userconnected',room.roomId,room.username);
-        try {
-        //   const res = await this.socketusecase.validatoinUser(
-        //     room.roomId,
-        //     room.email
-        //   );
+      chatEvents.joinUser,
+      ({ userId, role }: { userId: string; role: string }) => {
+        socket.join(`user_${userId}`);
+        socket.join(`${role}_${userId}`);
+        logger.info(`User ${userId} (${role}) joined rooms: user_${userId}, ${role}_${userId}`);
+      }
+    );
 
-        //   if (res) {
-        //     this.handleJoinRoom(socket, room);
-        //   } else {
-        //     socket.emit(chatEnum.error, "unknown user");
-        //   }
-          this.handleJoinRoom(socket, room);
+    // Handle notifications
+    socket.on(
+      chatEvents.sendNotification,
+      async ({
+        sender,
+        receiver,
+        role,
+        text,
+        category,
+      }: {
+        sender: string;
+        receiver?: string;
+        role?: string;
+        text: string;
+        category: string;
+      }) => {
+        logger.info(`Notification from ${sender} to ${receiver || role}: ${text}`);
+        try {
+          const notification = await this.notificationService.createNotification({
+            senderId: sender,
+            recipientId: receiver,
+            recipientRole: role,
+            message:text,
+            type:category,
+          });
+          const notificationDto: INotificationView = {
+            id: notification.id,
+            sender: notification.senderId,
+            receiver: notification.recipientId,
+            text: notification.message,
+            category: notification.type,
+            isRead: notification.read,
+            date: notification.createdAt,
+          };
+          if (receiver) {
+            socket.to(`user_${receiver}`).emit(chatEvents.receiveNotification, notificationDto);
+            logger.info(`Notification emitted to user_${receiver}`);
+          } else if (role) {
+            socket.to(`${role}_${receiver}`).emit(chatEvents.receiveNotification, notificationDto);
+            logger.info(`Notification emitted to ${role}_${receiver}`);
+          }
         } catch (error) {
-          console.error("Error joining room:", error);
-          socket.emit(chatEnum.error, error.message || "An error occurred");
+          logger.error("Error in sendNotification:", error);
+          socket.emit(chatEvents.error, error.message || "Failed to send notification");
         }
       }
     );
 
-    socket.on(chatEnum.joinmeet, async (room, email, username) => {
-        console.log('entered to joinmeet');
-      try {
-        // const ans = await this.socketusecase.valiateMeeting(room, email);
-
-        // if (!ans) {
-        //   socket.emit(chatEnum.error, "Unable to verify");
-        // } else {
-        //   this.handleJoinRoom(socket, { roomId: room, username, email });
-        // }
-        this.handleJoinRoom(socket, { roomId: room, username, email });
-      } catch (error) {
-        console.error("Error in joinmeet:", error);
-        socket.emit(chatEnum.error, error.message || "An error occurred");
+    // Handle form submission notifications (e.g., for admin)
+    socket.on(
+      "SubmitForm",
+      async ({
+        senderId,
+        recipientId,
+        message,
+        type,
+      }: {
+        senderId: string;
+        recipientId?: string;
+        message: string;
+        type: string;
+      }) => {
+        logger.info(`Form submission notification from ${senderId}: ${message}`);
+        try {
+          const notification = await this.notificationService.createNotification({
+            senderId,
+            recipientId,
+            message,
+            type,
+          });
+          if (recipientId) {
+            socket.to(`user_${recipientId}`).emit("adminNotification", notification);
+            logger.info(`Admin notification emitted to user_${recipientId}`);
+          }
+        } catch (error) {
+          logger.error("Error in SubmitForm:", error);
+          socket.emit(chatEvents.error, error.message || "Failed to send admin notification");
+        }
       }
+    );
+
+    // Chat-related events
+    socket.on(
+      chatEvents.sendMessage,
+      async ({ chatId, sender, text }: { chatId: string; sender: string; text: string }) => {
+        logger.info(`Received message for chat ${chatId} from ${sender}: ${text}`);
+        try {
+          const message = await this.trainerService.sendMessage(chatId, sender, text);
+          socket.to(chatId).emit(chatEvents.receive, message);
+          logger.info(`Message emitted to other sockets in chat ${chatId}`);
+        } catch (error) {
+          logger.error("Error in handleSendMessage:", error);
+          socket.emit(chatEvents.error, error.message || "Failed to send message");
+        }
+      }
+    );
+
+    socket.on(chatEvents.joinChat, (chatId: string) => {
+      socket.join(chatId);
+      logger.info(`User ${socket.id} joined chat ${chatId}`);
+      socket.to(chatId).emit(chatEvents.joined, { userId: socket.id });
     });
+
+    // Video call-related events
+    socket.on(
+      chatEvents.joinRoom,
+      async (room: { roomId: string; username: string; email: string }) => {
+        try {
+          this.handleJoinRoom(socket, room);
+        } catch (error) {
+          logger.error("Error joining room:", error);
+          socket.emit(chatEvents.error, error.message || "An error occurred");
+        }
+      }
+    );
+
+    socket.on(
+      chatEvents.joinmeet,
+      async (room: string, email: string, username: string) => {
+        try {
+          this.handleJoinRoom(socket, { roomId: room, username, email });
+        } catch (error) {
+          logger.error("Error in joinmeet:", error);
+          socket.emit(chatEvents.error, error.message || "An error occurred");
+        }
+      }
+    );
   }
 
   private handleJoinRoom(
@@ -58,22 +181,16 @@ export default class HandleSocket {
     room: { roomId: string; username: string; email: string }
   ): void {
     try {
-      console.log(
-        `User ${room.username} is trying to join room: ${room.roomId} ${socket.id}`
-      );
       socket.on("leave-room", async (data) => {
         socket.leave(data.roomId);
-
         if (room.username) {
           socket.to(data.roomId).emit("u-disconnect", room.username);
         }
-        return;
       });
+
       socket.join(room.roomId);
-
-      socket.emit(chatEnum.joined, { id: socket.id, room });
-
-      socket.broadcast.to(room.roomId).emit(chatEnum.userConnected, {
+      socket.emit(chatEvents.joined, { id: socket.id, room });
+      socket.broadcast.to(room.roomId).emit(chatEvents.userConnected, {
         email: room.email,
         id: socket.id,
         username: room.username,
@@ -81,34 +198,15 @@ export default class HandleSocket {
       });
 
       this.handleVidoconnection(socket, room);
-      socket.removeAllListeners(chatEnum.sendMessage);
-      //   socket.on(
-      //     chatEnum.sendMessage,
-      //     (
-      //       message: string,
-      //       roomId: string,
-      //       userEmail: string,
-      //       username: string
-      //     ) => {
-
-      //       this.handleSendMessage(socket, {
-      //         roomId,
-      //         message,
-      //         userEmail,
-      //         username,
-      //       });
-      //     }
-      //   );
 
       socket.on("disconnect", () => {
-        console.log('socket disconected',room.roomId);
         if (room && room.roomId) {
           socket.to(room.roomId).emit("u-disconnect", room.username);
         }
       });
     } catch (error) {
-      console.error("Error in handleJoinRoom:", error);
-      socket.emit(chatEnum.error, error.message || "Failed to join room");
+      logger.error("Error in handleJoinRoom:", error);
+      socket.emit(chatEvents.error, error.message || "Failed to join room");
     }
   }
 
@@ -116,72 +214,34 @@ export default class HandleSocket {
     socket: Socket,
     room: { roomId: string; username: string; email: string }
   ) {
-    socket.on(chatEnum.videoState, (data) => {
-      console.log(
-        `Video state change from ${room.username}: ${
-          data.enabled ? "ON" : "OFF"
-        }`
-      );
-      socket.broadcast.to(room.roomId).emit(chatEnum.videoState, {
+    socket.on(chatEvents.videoState, (data) => {
+      socket.broadcast.to(room.roomId).emit(chatEvents.videoState, {
         email: room.email,
         username: room.username,
         enabled: data.enabled,
       });
     });
 
-    socket.on(chatEnum.audioState, (data) => {
-      console.log(
-        `Audio state change from ${room.username}: ${
-          data.enabled ? "ON" : "OFF"
-        }`
-      );
-      socket.broadcast.to(room.roomId).emit(chatEnum.audioState, {
+    socket.on(chatEvents.audioState, (data) => {
+      socket.broadcast.to(room.roomId).emit(chatEvents.audioState, {
         email: room.email,
         username: room.username,
         enabled: data.enabled,
       });
     });
 
-    socket.on(chatEnum.error, (data) => {
-      this.io.to(data.to).emit(chatEnum.error, { message: data.message });
+
+    socket.on(chatEvents.error, (data:any) => {// eslint-disable-line
+      this.io.to(data.to).emit(chatEvents.error, { message: data.message });
     });
 
-    socket.on(chatEnum.signal, (data) => {
-        console.log('datacoming',data);
+    socket.on(chatEvents.signal, (data) => {
       if (data.to !== socket.id) {
-        console.log('emitting signal to ',data.to,'data',data);
-        this.io.to(data.to).emit(chatEnum.signal, {
+        this.io.to(data.to).emit(chatEvents.signal, {
           ...data,
           from: socket.id,
         });
       }
     });
-    
   }
-
-  //   private async handleSendMessage(
-  //     socket: Socket,
-  //     {
-  //       roomId,
-  //       message,
-  //       userEmail,
-  //       username,
-  //     }: { roomId: string; message: string; userEmail: string; username: string }
-  //   ): Promise<void> {
-  //     try {
-
-  //       const savedMessage = await this.socketusecase.sendMessage(
-  //         roomId,
-  //         userEmail,
-  //         message,
-  //         username
-  //       );
-
-  //       socket.broadcast.to(roomId).emit(chatEnum.receive, savedMessage);
-
-  //     } catch (error) {
-  //       console.error("Error in handleSendMessage:", error);
-  //       socket.emit(chatEnum.error, error.message || "Failed to send message");
-  //     }
-  //   }
 }

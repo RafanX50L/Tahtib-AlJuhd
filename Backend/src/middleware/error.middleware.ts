@@ -8,18 +8,19 @@ export const errorHandler = (
     err: HttpError | Error,
     _req: Request,
     res: Response,
-    /* eslint-disable-next-line*/
-    _next: NextFunction
+    next: NextFunction,
 ) => {
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message:string = HttpResponse.SERVER_ERROR;
-    console.log('err',err.message);
     if (err instanceof HttpError) {
       logger.error("Errors:", err);
         statusCode = err.statusCode;
         message = err.message;
     }else{
         logger.error("unhandled error:", err);
+    }
+    if (res.headersSent) {
+        return next(err);
     }
     res.status(statusCode).json({error: message});
 };

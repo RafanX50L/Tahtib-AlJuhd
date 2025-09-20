@@ -6,7 +6,7 @@ import { ITrainerInterviewRepository } from "@/core/interface/repositories/ITrai
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
 import { IUserFileRepository } from "@/core/interface/repositories/IUserFile.repository";
-import { ITrainerPersonalizationService } from "@/core/interface/services/trainer/ITrainer.Personalization.Service";
+import { IPendingApplicationReturnType, ITrainerPersonalizationService } from "@/core/interface/services/trainer/ITrainer.Personalization.Service";
 import { TrainerDTO, TrainerProfileDTO } from "@/dtos/trainer/TrainerDTO";
 import { createHttpError } from "@/utils";
 import logger from "@/utils/logger.utils";
@@ -133,7 +133,9 @@ export class TrainerPersonalizationService
           resumeFileId: resumeId,
         },
         availability: {
-          weeklySlots: JSON.parse(req.body.weeklySlots),
+          weeklyRules: {},
+          slotLength: null,
+          bufferMinutes: null,
           engagementType: req.body.engagementType,
         },
         status: "applied" as const, // or another default value as per your business logic
@@ -172,38 +174,39 @@ export class TrainerPersonalizationService
       logger.info("Application Data Saved");
       return;
     } catch (error) {
-      console.error("Error processing application:", error);
+      logger.error("Error processing application:", error);
       throw error;
     }
   }
 
-  async getPendingApplicationDetails(uesrId: string) {
+  async getPendingApplicationDetails(uesrId: string):Promise<IPendingApplicationReturnType> {
     logger.info("entered for data serviece");
     const { basicInfo, interviewDetailsId } = (
       await this._personalizationRepository.findOne({ userId: uesrId })
     ).data as ITrainerPersonalization;
     const interview =
       await this._trainerInterviewRepository.findById(interviewDetailsId);
-    console.log("returnig data", basicInfo, interview);
     return {
       basicInfo,
-      interviewDetails: {
-        adminId: interview.adminId,
-        trainerId: interview.trainerId,
-        startTime: interview.startTime,
-        endTime: interview.endTime,
-        date: interview.date,
-        roomId: interview.roomId,
-        completed: interview.completed,
-        result: interview.result ||null,
-      },
+      interviewDetails: interview
+        ? {
+            adminId: interview.adminId.toString(),
+            trainerId: interview.trainerId.toString(),
+            startTime: interview.startTime,
+            endTime: interview.endTime,
+            date: interview.date,
+            roomId: interview.roomId,
+            completed: interview.completed,
+            result: interview.result || null,
+          }
+        : null,
     };
+
   }
 
   async getTrainerProfile(userId: string): Promise<TrainerProfileDTO> {
     const trainerId = (await this._userRepository.findById(new Types.ObjectId(userId))).personalizationId;
     const rawTrainerData = await this._personalizationRepository.getTrainerProfileData(trainerId.toString());
-    console.log(rawTrainerData);
     if (!rawTrainerData) {
       throw createHttpError(
         HttpStatus.NO_CONTENT,
@@ -238,6 +241,13 @@ export class TrainerPersonalizationService
     if (Object.keys(updateFields).length > 0) {
       await this._personalizationRepository.update(user.personalizationId.toString(), updateFields);
     }
+  }
+
+  async getSalary(userId: string): Promise<number> {
+    const { basicInfo } = (
+      await this._personalizationRepository.findOne({ userId: userId })
+    ).data as ITrainerPersonalization;
+    return basicInfo?.weeklySalary || 0 ;
   }
 
 }

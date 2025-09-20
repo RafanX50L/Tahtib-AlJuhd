@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import Header from "@/components/trainer/Profile/Header";
 import TrainerProfile from "@/components/trainer/Profile/Profile";
 import Sidebar from "@/components/trainer/Sidebar";
 import { TrainerService } from "@/services/implementation/trainerServices";
+import Header from "@/components/trainer/Header";
 
 export interface ITrainerWithPersonalization {
   _id: string;
@@ -71,7 +71,7 @@ interface TProfileProps {
   trainerService?: typeof TrainerService;
 }
 
-const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) => {
+const TProfile: React.FC<TProfileProps> = () => {
   const [trainerData, setTrainerData] = useState<ITrainerWithPersonalization | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +79,8 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
   const refetchTrainerData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await trainerService.getProfileData();
+      const response = await TrainerService.getProfileData();
+      // Profile data received
       if (isValidTrainerData(response)) {
         setTrainerData(response);
         setError(null);
@@ -92,7 +93,7 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
     } finally {
       setIsLoading(false);
     }
-  }, [trainerService]);
+  }, []);
 
   useEffect(() => {
     refetchTrainerData();
@@ -113,7 +114,7 @@ const TProfile: React.FC<TProfileProps> = ({ trainerService = TrainerService }) 
     <div className="min-h-screen bg-[#121212] text-[#ffffff] font-sans flex">
       <Sidebar />
       <main className="flex-1 p-4 md:p-6 lg:p-8 transition-all duration-300 lg:ml-[280px]">
-        <Header />
+        <Header text="Profile" />
         {error ? (
           <div className="text-red-400 text-center text-lg">{error}</div>
         ) : !trainerData ? (

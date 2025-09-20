@@ -1,21 +1,43 @@
+// src/routes/AdminRoutes.tsx
 import { Route, Routes } from "react-router-dom";
-import ADashboard from "@/pages/admin/ADashboard";
-import AClientManagment from "@/pages/admin/AClientManagment";
-import ATrainerManagment from "@/pages/admin/ATrainerManagment";
-import NotFoundPage from "@/pages/common/NotFond";
-import TrainerInterviewSchedule from "@/pages/admin/test";
+import { lazy, Suspense } from "react";
 
-const AdminRotues: React.FC = () => {
-  console.log("enterd to some whrere");
+const ADashboard = lazy(() => import("@/pages/admin/ADashboard"));
+const AClientManagement = lazy(() => import("@/pages/admin/AClientManagment"));
+const ATrainerManagement = lazy(
+  () => import("@/pages/admin/ATrainerManagment")
+);
+const APayments = lazy(() => import("@/pages/admin/APayments"));
+const NotFoundPage = lazy(() => import("@/pages/common/NotFond"));
+const NotificationsPage = lazy(
+  () => import("@/components/shared/Notification")
+);
+
+import { adminTheme } from "@/components/shared/Notification";
+
+const AdminRoutes: React.FC = () => {
+  console.log("Entered AdminRoutes");
+
   return (
-    <Routes>
-      <Route path="dashboard" element={<ADashboard />} />
-      <Route path="client-management" element={<AClientManagment />} />
-      <Route path="trainer-management" element={<ATrainerManagment />} />
-      <Route path ="interview-schedule" element={<TrainerInterviewSchedule/>} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <Suspense fallback={<div className="p-6 text-center">Loading...</div>}>
+      <Routes>
+        <Route path="dashboard" element={<ADashboard />} />
+        <Route path="client-management" element={<AClientManagement />} />
+        <Route path="trainer-management" element={<ATrainerManagement />} />
+        <Route path="payments" element={<APayments />} />
+        <Route
+          path="/notification"
+          element={
+            <NotificationsPage
+              theme={adminTheme}
+              backPath="/admin/dashboard"
+            />
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 };
 
-export default AdminRotues;
+export default AdminRoutes;

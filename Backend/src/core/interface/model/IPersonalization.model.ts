@@ -23,7 +23,7 @@ export interface IClientUserData{
   healthIssues?: string[];
   medicalCondition?: string;
   dietAllergies?: string[];
-  dietMealsPerDay: ('3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals')[];
+  dietMealsPerDay: '3 meals' | '3 meals + 1 snack' | '3 meals + 2 snacks' | '6 meals';
   dietPreferences?: string;
   workoutsCompletedIn28Days: number;
 }
@@ -35,7 +35,10 @@ export interface IClientPersonalization {
   dietPlanId?: Types.ObjectId;
   progressLogId: Types.ObjectId | null;
   sessionsId: Types.ObjectId[] | null;
-  chatsId: Types.ObjectId[] | null;
+  chatsId?: { trainerId: Types.ObjectId; chatId: Types.ObjectId }[]; // Non-nullable, defaults to empty array
+  currentTrainerId?: Types.ObjectId | null; // Optional, nullable to match schema
+  previousTrainers: { trainerId: Types.ObjectId; startDate: Date; endDate: Date }[];
+  contracts?: Types.ObjectId[];
 }
 
 export interface ITrainerPersonalization {
@@ -62,8 +65,15 @@ export interface ITrainerPersonalization {
     resumeFileId?: Types.ObjectId;
   };
   availability: {
-    weeklySlots: { day: string; startTime: string; endTime: string }[];
     engagementType: 'full-time' | 'part-time' | 'contract' | 'freelance';
+    weeklyRules: {
+      [key: string]: {
+        startTime: string; // "HH:mm"
+        endTime: string;   // "HH:mm"
+      }[];
+    };
+    slotLength: number;     // in minutes, e.g., 30
+    bufferMinutes: number;  
   };
   evaluation?: {
     communicationSkills?: number;
@@ -81,6 +91,8 @@ export interface ITrainerPersonalization {
   ratings: { clientId: Types.ObjectId; rating: number; comment?: string }[];
   sessions: Types.ObjectId[];
   chats: Types.ObjectId[];
+  plans?: Types.ObjectId[]; // Array of Plan IDs (new)
+  contracts?: Types.ObjectId[];
 }
 
 export interface IAdminPersonalization {

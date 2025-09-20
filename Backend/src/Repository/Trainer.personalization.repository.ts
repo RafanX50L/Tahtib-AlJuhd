@@ -2,7 +2,7 @@ import { IPersonalization } from "@/core/interface/model/IPersonalization.model"
 import { ITrainerPersonalizationRepository } from "@/core/interface/repositories/ITrainer.personalization.repository";
 import { BaseRepository } from "./base.repository";
 import { PersonalizationModel } from "@/models/Personalization.model";
-import { Types } from "mongoose";
+import { FilterQuery, PipelineStage, Types } from "mongoose";
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
@@ -263,7 +263,6 @@ export class TrainerPersonalizationRepository
     ];
 
     const result = await this.model.aggregate(pipeline);
-    console.log(result);
     const data = result[0]?.data || [];
     const totalCount = result[0]?.totalCount[0]?.count || 0;
 
@@ -291,7 +290,7 @@ export class TrainerPersonalizationRepository
     ).lean<IPersonalization>();
   }
   async approveTrainer(trainerId: string, salary: number) {
-    const updated = await PersonalizationModel.updateOne(
+    const updated = await PersonalizationModel.findOneAndUpdate(
       { userId: trainerId },
       {
         $set: {
@@ -327,4 +326,90 @@ export class TrainerPersonalizationRepository
 
     return personalData;
   }
-}
+
+  async getAvailableTrainer(
+    currentTrainerId: string,
+    page: number,
+    limit: number,
+    search: string,
+    specialty: string
+  ) {
+    const skip = (page - 1) * limit;
+
+    const matchStage: FilterQuery<IPersonalization> = {
+      role: "trainer",
+      "data.status": "approved"
+    };
+
+    if (currentTrainerId) {
+      matchStage.userId = { $ne: new Types.ObjectId(currentTrainerId) };
+    }
+
+    const pipeline: PipelineStage[] = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
+        $lookup: {
+          from: "userfiles",
+          localField: "data.basicInfo.profilePictureId",
+          foreignField: "_id",
+          as: "profilePicture"
+        }
+      },
+      { $unwind: "$user" }
+    ] as PipelineStage[];
+
+
+    // Search filter on user.name (case-insensitive)
+    if (search) {
+      pipeline.push({
+        $match: {
+          "user.name": { $regex: search, $options: "i" }
+        }
+      });
+    }
+
+    // Specialty filter on data.professionalSummary.specializations
+    if (specialty) {
+      pipeline.push({
+        $match: {
+          "data.professionalSummary.specializations": { $in: [specialty] }
+        }
+      });
+    }
+
+    // // Sort and paginate
+    pipeline.push(
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    );
+
+    // Total count for pagination
+    const countPipeline = [...pipeline];
+    countPipeline.splice(countPipeline.findIndex(stage => "$skip" in stage), countPipeline.length); // remove skip/limit
+    countPipeline.splice(countPipeline.findIndex(stage => "$sort" in stage), 1); // remove sort
+    countPipeline.push({ $count: "total" });
+
+    const [trainers, totalResult] = await Promise.all([
+      this.model.aggregate(pipeline),
+      this.model.aggregate(countPipeline)
+    ]);
+
+    const total = totalResult[0]?.total || 0;
+    return {
+      trainers,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      total
+    };
+  }
+
+};

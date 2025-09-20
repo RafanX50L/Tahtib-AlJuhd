@@ -30,7 +30,6 @@ export interface IUserRepository extends IBaseRepository<IUser> {
 
   findByIdWithPersonalization(id: string): Promise<IUser | null>;
   updatePassword(email: string, hashedPassword: string): Promise<IUser | null>;
-  updateTokenVersion(userId: string, newVersion: number): Promise<void>;
   // updatePersonalizationId(userId: string, personalizationId:string): Promise<void>;
   getUserById(id: string): Promise<IUser | null>;
   updatePersonalizationsId(
@@ -38,4 +37,5 @@ export interface IUserRepository extends IBaseRepository<IUser> {
     personalizationId: string
   ): Promise<IUser>;
   getAllClientFilter(page:number,limit:number,statusFilter:string,searchTerm:string):Promise<IGetAllClientFilterResponse>;
+  searchForUsers(filter: Record<string, unknown>):Promise<IUser[]>;
 }

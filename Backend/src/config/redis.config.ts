@@ -19,10 +19,10 @@ async function connectRedis() {
     });
 
     redisClient.on('conect', () => {
-        console.log('Redis client connected');
+        logger.info('Redis client connected');
     });
     redisClient.on('error', (err) => {
-        console.error('Redis client error:', err);
+        logger.error('Redis client error:', err);
     });
 
     await redisClient.connect();

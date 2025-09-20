@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -8,51 +9,60 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AdminService } from "@/services/implementation/adminServices";
+import { Link, useNavigate } from "react-router-dom";
 
-interface Application {
+interface ApplicationRow {
+  id: string;
   name: string;
-  email: string;
+  email?: string;
   specialization: string;
   experience: string;
   appliedOn: string;
   status: string;
-  statusColor: string;
-  actions: string[];
+  profilePhoto: string | null;
 }
 
 const TrainerApplications = () => {
-  const applications: Application[] = [
-    {
-      name: "Michael Johnson",
-      email: "michael.j@example.com",
-      specialization: "Strength Training",
-      experience: "7 years",
-      appliedOn: "April 8, 2025",
-      status: "Interview completed",
-      statusColor: "yellow",
-      actions: ["Approve", "Reject"],
-    },
-    {
-      name: "Sarah Miller",
-      email: "sarah.m@example.com",
-      specialization: "Yoga & Pilates",
-      experience: "5 years",
-      appliedOn: "April 7, 2025",
-      status: "Interview Scheduled",
-      statusColor: "green",
-      actions: ["View Details"],
-    },
-    {
-      name: "David Chen",
-      email: "david.c@example.com",
-      specialization: "CrossFit",
-      experience: "3 years",
-      appliedOn: "April 5, 2025",
-      status: "Not Scheduled",
-      statusColor: "purple",
-      actions: ["Schedule Review"],
-    },
-  ];
+  const [applications, setApplications] = useState<ApplicationRow[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await AdminService.getPendingTrainers(1, 5, "");
+        // Pending applications fetched
+        const rows = (res.data?.trainers || []).map(
+          (t: {
+            id: string;
+            name: string;
+            email?: string;
+            specializations?: string[];
+            yearsOfExperience?: number;
+            appliedOn?: string;
+            profilePhoto?:string | null;
+            status?: string;
+          }) => ({
+            id: t.id,
+            name: t.name,
+            email: t.email,
+            specialization: t.specializations?.[0] || "-",
+            experience: t.yearsOfExperience
+              ? `${t.yearsOfExperience} years`
+              : "-",
+            appliedOn: t.appliedOn
+              ? new Date(t.appliedOn).toLocaleDateString()
+              : "-",
+            status: t.status || "Pending",
+            profilePhoto: t.profilePhoto || null,
+          })
+        );
+        setApplications(rows);
+      } catch {
+        setApplications([]);
+      }
+    })();
+  }, []);
 
   return (
     <div className="mb-8">
@@ -60,9 +70,11 @@ const TrainerApplications = () => {
         <h2 className="text-xl font-bold text-white">
           Pending Trainer Applications
         </h2>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
-          View All Applications
-        </Button>
+        <Link to="/admin/trainer-management">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            View All Applications
+          </Button>
+        </Link>
       </div>
       <Card className="bg-gray-800 overflow-hidden border-none">
         <Table>
@@ -73,19 +85,39 @@ const TrainerApplications = () => {
               <TableHead className="text-gray-300">Experience</TableHead>
               <TableHead className="text-gray-300">Applied On</TableHead>
               <TableHead className="text-gray-300">Status</TableHead>
-              <TableHead className="text-gray-300 text-right">Actions</TableHead>
+              <TableHead className="text-gray-300 text-right">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {applications.map((app, index) => (
-              <TableRow key={index} className=" border-none bg-gray-800 hover:bg-gray-700">
+            {applications.map((app) => (
+              <TableRow
+                key={app.id}
+                className=" border-none bg-gray-800 hover:bg-gray-700"
+              >
                 <TableCell>
                   <div className="flex items-center">
-                    <img
-                      className="h-10 w-10 rounded-full"
-                      src="https://via.placeholder.com/40"
-                      alt=""
-                    />
+                    <div className="relative">
+                      {app.profilePhoto ? (
+                        <img
+                          className="h-10 w-10 rounded-full"
+                          src={app.profilePhoto}
+                          alt={app.name}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const avatarDiv =
+                              target.previousElementSibling as HTMLDivElement;
+                            avatarDiv.classList.remove("opacity-0");
+                          }}
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm font-medium uppercase">
+                          {app.name?.charAt(0) || "N/A"}
+                        </div>
+                      )}
+                    </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-white">
                         {app.name}
@@ -105,25 +137,19 @@ const TrainerApplications = () => {
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-${app.statusColor}-100 text-${app.statusColor}-800`}
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800`}
                   >
                     {app.status}
                   </span>
                 </TableCell>
                 <TableCell className="text-right text-sm font-medium">
-                  {app.actions.map((action, idx) => (
-                    <Button
-                      key={idx}
-                      className={`mr-3 ${
-                        action === "Approve" || action === "View Details" || action === "Schedule Review"
-                          ? "text-indigo-400 hover:text-indigo-300"
-                          : "text-red-400 hover:text-red-300"
-                      }`}
-                      variant="ghost"
-                    >
-                      {action}
-                    </Button>
-                  ))}
+                  <Button
+                    className="mr-3 text-indigo-400 hover:text-indigo-300"
+                    variant="ghost"
+                    onClick={() => navigate("/admin/trainer-management")}
+                  >
+                    Review
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

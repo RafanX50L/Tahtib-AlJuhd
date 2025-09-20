@@ -166,6 +166,7 @@ const ProfessionalInfo: React.FC<ProfessionalInfoProps> = ({ control, watch, set
                   Proof Document
                 </Label>
                 <Controller
+                  /* eslint-disable-next-line */
                   name={`certifications[${index}].proof` as any}
                   control={control}
                   render={({ field }) => (

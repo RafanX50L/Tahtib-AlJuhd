@@ -1,10 +1,11 @@
-import { IExercise, IWeek, IWorkoutReport } from "../../model/IWorkoutPlan.model";
+import { IDayView, IExerciseView, IWorkoutReportView } from "@/dtos/client/weeklyChallengeDTO";
 
 export interface IClientWorkoutPlanService {
   /** Reserved for Workout plan specific methods */
   _placeholder?: never;
 
-  getWorkouts(userId:string,week:string):Promise<IWeek>;
-  completeDailyWorkoutAndFetchReport(userId:string, week:string, day:string, workout:IExercise[]):Promise<IWorkoutReport>;
+  getWorkouts(userId:string,week:string):Promise<IDayView[]>;
+  completeDailyWorkoutAndFetchReport(userId:string, week:string, day:string, workout:IExerciseView[]):Promise<IWorkoutReportView>;
+  getWorkoutReport(userId:string, week:string, day:string):Promise<IWorkoutReportView>;
 
 }

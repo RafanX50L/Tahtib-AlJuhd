@@ -1,21 +1,18 @@
-import { IUserWeeklyChallenge } from "../../model/IUserWeeklyChallenge.model";
-import { IWeeklyChallenge } from "../../model/IWeeklyChallenge.models";
-import { IExercise, IWorkoutReport } from "../../model/IWorkoutPlan.model";
+import { IChallengesViews, IWeeklyChallengesView, IWorkoutReportView } from "@/dtos/client/weeklyChallengeDTO";
+import { IExercise,  } from "../../model/IWorkoutPlan.model";
+import { IUserWeeklyChallengeView } from "@/dtos/client/UserProgressDTO";
 
-type ChallengeTypes = "beginner" | "intermediate" | "advanced";
 export interface IClientWeeklyChallengeService {
   /** Reserved for Weekly Challenge specific methods */
   _placeholder?: never;
 
-  getWeeklyChallenges(): Promise<
-    Record<ChallengeTypes, IWeeklyChallenge | null>
-  >;
+  getWeeklyChallenges(): Promise<IWeeklyChallengesView | null>;
   getWeeklyChallengeById(
     id: string,
     userId: string
   ): Promise<{
-    challenge: IWeeklyChallenge | null;
-    userProgress: IUserWeeklyChallenge | null;
+    challenge: IChallengesViews | null;
+    userProgress?: IUserWeeklyChallengeView | null;
   }>;
 
   joinWeeklyChallenge(userId: string, challengeId: string): Promise<boolean>;
@@ -24,5 +21,5 @@ export interface IClientWeeklyChallengeService {
     workout: IExercise[],
     challengeId: string,
     dayIndex: number
-  ): Promise<IWorkoutReport>;
+  ): Promise<IWorkoutReportView>;
 }

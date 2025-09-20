@@ -1,5 +1,6 @@
 import { transporter } from "../config/mail.config";
 import { env } from "../config/env.config";
+import logger from "./logger.utils";
 
 export const sendOtpEmail = async (email: string, otp: string) => {
   try {
@@ -16,9 +17,9 @@ export const sendOtpEmail = async (email: string, otp: string) => {
                   `,
     };
     await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully to:", email);
+    logger.info("Email sent successfully to:", email);
   } catch (error) {
-    console.error("Error sending email:", error);
+    logger.error("Error sending email:", error);
     throw new Error("Error sending email");
   }
 };
@@ -39,9 +40,9 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
                   `,
     };
     await transporter.sendMail(mailOptions);
-    console.log("Password reset email sent successfully to:", email);
+    logger.info("Password reset email sent successfully to:", email);
   } catch (error) {
-    console.error("Error sending password reset email:", error);
+    logger.error("Error sending password reset email:", error);
     throw new Error("Error sending password reset email");
   }
 };
@@ -387,9 +388,9 @@ export const sendInterviewScheduleEmail = async (
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("Interview schedule email sent successfully to:", email);
+    logger.info("Interview schedule email sent successfully to:", email);
   } catch (error) {
-    console.error("Error sending interview schedule email:", error);
+    logger.error("Error sending interview schedule email:", error);
     throw new Error("Error sending interview schedule email");
   }
 };
@@ -793,9 +794,9 @@ export const sendTrainerApprovalEmail = async (
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("Trainer approval email sent successfully to:", email);
+    logger.info("Trainer approval email sent successfully to:", email);
   } catch (error) {
-    console.error("Error sending trainer approval email:", error);
+    logger.error("Error sending trainer approval email:", error);
     throw new Error("Error sending trainer approval email");
   }
 };
@@ -1010,9 +1011,9 @@ export const sendTrainerRejectionEmail = async (
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("Trainer rejection email sent successfully to:", email);
+    logger.info("Trainer rejection email sent successfully to:", email);
   } catch (error) {
-    console.error("Error sending trainer rejection email:", error);
+    logger.error("Error sending trainer rejection email:", error);
     throw new Error("Error sending trainer rejection email");
   }
 };

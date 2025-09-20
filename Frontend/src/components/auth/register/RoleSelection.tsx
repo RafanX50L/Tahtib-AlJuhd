@@ -67,6 +67,7 @@ export function RoleSelection({ setRole }: RoleSelectionProps) {
             >
               <div className="text-4xl mb-3">💪</div>
               <h3 className="text-lg font-medium text-white mb-2">
+                {/* eslint-disable-next-line */}
                 I'm here to workout
               </h3>
               <p className="text-gray-400">
@@ -86,6 +87,7 @@ export function RoleSelection({ setRole }: RoleSelectionProps) {
             >
               <div className="text-4xl mb-3">👨‍🏫</div>
               <h3 className="text-lg font-medium text-white mb-2">
+                {/* eslint-disable-next-line */}
                 I'm a fitness trainer
               </h3>
               <p className="text-gray-400">

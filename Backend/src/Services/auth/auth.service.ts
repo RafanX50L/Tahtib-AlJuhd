@@ -23,6 +23,7 @@ import { redisClient } from "../../config/redis.config";
 import { createHttpError } from "../../utils/http-error.util";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
+import logger from "../../utils/logger.utils";
 import IUser from "@/core/interface/model/IUser.model";
 import { generateNanoId } from "../../utils/generate-nanoid";
 import mongoose from "mongoose";
@@ -38,7 +39,7 @@ export class AuthService implements IAuthService {
     }
 
     const otp = generateOTP();
-    console.log("Generated OTP:", otp);
+    logger.info("Generated OTP:", otp);
     await sendOtpEmail(user.email, otp);
 
     const response = await redisClient.setEx(
@@ -52,7 +53,7 @@ export class AuthService implements IAuthService {
         "Error saving OTP to Redis"
       );
     }
-    console.log("OTP sent to email:", user.email);
+    logger.info("OTP sent to email:", user.email);
     return user.email;
   }
 
@@ -82,7 +83,6 @@ export class AuthService implements IAuthService {
     const payload = {
       id: existingUser._id.toString(),
       role: existingUser.role,
-      tokenVersion: existingUser.tokenVersion,
     };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
@@ -92,7 +92,6 @@ export class AuthService implements IAuthService {
       user: userData,
       accessToken,
       refreshToken,
-      tokenVersion: existingUser.tokenVersion,
     };
   }
 
@@ -133,7 +132,6 @@ export class AuthService implements IAuthService {
 
     return {
       user: userData,
-      tokenVersion: createdUser.tokenVersion,
       accessToken,
       refreshToken,
     };
@@ -147,7 +145,7 @@ export class AuthService implements IAuthService {
 
     const storedData = JSON.parse(storedDataString as string);
     const otp = generateOTP();
-    console.log("Resending OTP:", otp);
+    logger.info("Resending OTP:", otp);
     await sendOtpEmail(email, otp);
     await redisClient.setEx(email, 300, JSON.stringify({ ...storedData, otp }));
     return email;
@@ -238,7 +236,6 @@ export class AuthService implements IAuthService {
 
       return {
         user: userData,
-        tokenVersion: createdUser.tokenVersion,
         accessToken,
         refreshToken,
       };
@@ -261,7 +258,6 @@ export class AuthService implements IAuthService {
 
       return {
         user: userData,
-        tokenVersion: existingUser.tokenVersion,
         accessToken,
         refreshToken,
       };
@@ -282,7 +278,6 @@ export class AuthService implements IAuthService {
         email: userData.email,
         role: userData.role,
       },
-      tokenVersion: user.tokenVersion,
     };
   }
 
@@ -298,16 +293,14 @@ export class AuthService implements IAuthService {
       !decoded ||
       typeof decoded !== "object" ||
       !("id" in decoded) ||
-      !("role" in decoded) ||
-      !("tokenVersion" in decoded)
+      !("role" in decoded)
     ) {
       throw createHttpError(HttpStatus.FORBIDDEN, "Invalid refresh token");
     }
 
-    const { id, role, tokenVersion } = decoded as {
+    const { id, role } = decoded as {
       id: string;
       role: string;
-      tokenVersion: number;
     };
     const user = await this._userRepository.getUserById(id);
     if (!user) {
@@ -318,22 +311,16 @@ export class AuthService implements IAuthService {
       throw createHttpError(HttpStatus.UNAUTHORIZED, "User is blocked");
     }
 
-    if (user.tokenVersion !== tokenVersion) {
-      throw createHttpError(HttpStatus.FORBIDDEN, "Invalid token version");
-    }
 
     const newRefreshToken = generateRefreshToken({
       id: user._id.toString(),
       role,
-      tokenVersion: user.tokenVersion + 1,
     });
 
-    await this._userRepository.updateTokenVersion(id, user.tokenVersion + 1);
 
     const payload = {
       id: user._id.toString(),
       role,
-      tokenVersion: user.tokenVersion + 1,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -343,12 +330,7 @@ export class AuthService implements IAuthService {
       accessToken,
       refreshToken: newRefreshToken,
       user: userData,
-      tokenVersion: user.tokenVersion + 1,
     };
-  }
-
-  async updateTokenVersion(userId: string, newVersion: number): Promise<void> {
-    await this._userRepository.updateTokenVersion(userId, newVersion);
   }
 
   async getUserById(id: string): Promise<IUser | null> {

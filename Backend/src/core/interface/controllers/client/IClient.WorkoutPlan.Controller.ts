@@ -8,5 +8,6 @@ export interface IClientWorkoutPlanController {
 
   getWorkouts(req:AddedRequest, res:Response, next:NextFunction):Promise<void>;
   completeDailyWorkoutAndFetchReport(req:AddedRequest, res:Response, next:NextFunction):Promise<void>;
+  getWorkoutReport(req:AddedRequest, res:Response, next:NextFunction):Promise<void>;
 
 }

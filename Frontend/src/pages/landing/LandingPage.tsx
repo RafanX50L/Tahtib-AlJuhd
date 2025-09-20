@@ -7,7 +7,6 @@ import CTA from "../../components/landing/CTA";
 import Footer from "../../components/landing/Footer";
 
 function LandingPage() {
-  console.log('entered to landing pagew')
   return (
     <>
       <div className="bg-slate-900 text-slate-100 min-h-screen">
@@ -24,7 +23,7 @@ function LandingPage() {
     </>
   );
 }
-const calculateBMI = (weightKg: number, heightCm: number): number => {
+export const calculateBMI = (weightKg: number, heightCm: number): number => {
   const heightM = heightCm / 100;
   return parseFloat((weightKg / (heightM * heightM)).toFixed(2));
 };

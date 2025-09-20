@@ -3,7 +3,8 @@ import { env } from '@/config/env';
 
 const searchYouTube = async (query) => {
   console.log('env', env.YOUTUBE_API_KEY); // Debug
-  const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+  const youtubesearchurl=env.YOUTUBE_SEARCH_URL;
+  const response = await axios.get(youtubesearchurl, {
     params: {
       part: 'snippet',
       maxResults: 1,

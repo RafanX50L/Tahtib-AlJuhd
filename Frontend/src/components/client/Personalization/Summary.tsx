@@ -9,12 +9,41 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserPersonalization } from "@/store/slices/authSlice";
 import { RootState } from "@/store/store";
-import { ClientService, IClientUserData } from "@/services/implementation/clientServices";
+import {
+  ClientService,
+  IClientUserData,
+} from "@/services/implementation/clientServices";
 
 export default function Summary() {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [summaryData, setSummaryData] = useState({
+
+  const [summaryData, setSummaryData] = useState<{
+    basicInfo: {
+      nickName: "";
+      age: "";
+      gender: "";
+      address: "";
+      phoneNumber: "";
+      height: "";
+      currentWeight: "";
+      targetWeight: "";
+    };
+    fitnessGoal: { goal: string };
+    currentFitnessLevel: string;
+    activityLevel: string;
+    workoutPreferences: {
+      equipment: IClientUserData["equipment"]; // <-- Correct type
+      workoutDuration: string;
+      workoutDaysPerWeek: string;
+    };
+    healthInfo: { healthIssues: string[]; medicalCondition: string };
+    dietPreferences: {
+      dietAllergies: string[];
+      dietPreferences: string;
+      dietMealsPerDay: string;
+    };
+  }>({
     basicInfo: {
       nickName: "",
       age: "",
@@ -28,9 +57,17 @@ export default function Summary() {
     fitnessGoal: { goal: "" },
     currentFitnessLevel: "",
     activityLevel: "",
-    workoutPreferences: { equipment: [], workoutDuration: "", workoutDaysPerWeek: "" },
+    workoutPreferences: {
+      equipment: [] as IClientUserData["equipment"], // <-- Explicit cast here
+      workoutDuration: "",
+      workoutDaysPerWeek: "",
+    },
     healthInfo: { healthIssues: [], medicalCondition: "" },
-    dietPreferences: { dietAllergies: [], dietPreferences: "", dietMealsPerDay: "" },
+    dietPreferences: {
+      dietAllergies: [],
+      dietPreferences: "",
+      dietMealsPerDay: "",
+    },
   });
 
   const { user } = useSelector((state: RootState) => state.auth);
@@ -38,13 +75,22 @@ export default function Summary() {
 
   useEffect(() => {
     try {
-      const basicInfo = JSON.parse(localStorage.getItem("userBasicInfo") || "{}");
-      const fitnessGoal = JSON.parse(localStorage.getItem("fitnessGoal") || "{}");
-      const currentFitnessLevel = localStorage.getItem("currentFitnessLevel") || "";
+      const basicInfo = JSON.parse(
+        localStorage.getItem("userBasicInfo") || "{}"
+      );
+      const fitnessGoal = JSON.parse(
+        localStorage.getItem("fitnessGoal") || "{}"
+      );
+      const currentFitnessLevel =
+        localStorage.getItem("currentFitnessLevel") || "";
       const activityLevel = localStorage.getItem("activityLevel") || "";
-      const workoutPreferences = JSON.parse(localStorage.getItem("workoutPreferences") || "{}");
+      const workoutPreferences = JSON.parse(
+        localStorage.getItem("workoutPreferences") || "{}"
+      );
       const healthInfo = JSON.parse(localStorage.getItem("healthInfo") || "{}");
-      const dietPreferences = JSON.parse(localStorage.getItem("dietPreferences") || "{}");
+      const dietPreferences = JSON.parse(
+        localStorage.getItem("dietPreferences") || "{}"
+      );
 
       setSummaryData({
         basicInfo: {
@@ -63,7 +109,8 @@ export default function Summary() {
         workoutPreferences: {
           equipment: workoutPreferences.equipment || [],
           workoutDuration: workoutPreferences.workoutDuration || "Not selected",
-          workoutDaysPerWeek: workoutPreferences.workoutDaysPerWeek || "Not selected",
+          workoutDaysPerWeek:
+            workoutPreferences.workoutDaysPerWeek || "Not selected",
         },
         healthInfo: {
           healthIssues: healthInfo.healthIssues || [],
@@ -84,140 +131,115 @@ export default function Summary() {
   const handleBack = () => {
     navigate("/personalization?path=diet-preferences");
   };
+  const handleGeneratePlan = async () => {
+    setIsGenerating(true);
+    try {
+      // Define valid enum values for type checking
+      const validFitnessGoals = [
+        "build muscle",
+        "lose weight",
+        "get stronger",
+        "improve endurance",
+        "tone body",
+        "increase flexibility",
+      ] as const;
+      const validFitnessLevels = [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "athlete",
+      ] as const;
+      const validActivityLevels = [
+        "sedentary",
+        "lightly active",
+        "moderately active",
+        "very active",
+      ] as const;
+      const validMealsPerDay = [
+        "3 meals",
+        "3 meals + 1 snack",
+        "3 meals + 2 snacks",
+        "6 meals",
+      ] as const;
 
-  // const handleGeneratePlan = async () => {
-  //   setIsGenerating(true);
-  //   try {
-  //     const data :IClientUserData = {
-  //       nickName: summaryData.basicInfo.nickName,
-  //       age: Number(summaryData.basicInfo.age) ,
-  //       gender: summaryData.basicInfo.gender ,
-  //       address: summaryData.basicInfo.address || undefined,
-  //       phoneNumber: summaryData.basicInfo.phoneNumber || undefined,
-  //       height: Number(summaryData.basicInfo.height) ,
-  //       currentWeight: Number(summaryData.basicInfo.currentWeight) ,
-  //       targetWeight: Number(summaryData.basicInfo.targetWeight),
-  //       fitnessGoal: summaryData.fitnessGoal.goal || undefined,
-  //       currentFitnessLevel: summaryData.currentFitnessLevel || undefined,
-  //       activityLevel: summaryData.activityLevel || undefined,
-  //       equipment: summaryData.workoutPreferences.equipment || [],
-  //       workoutDuration: summaryData.workoutPreferences.workoutDuration ,
-  //       workoutDaysPerWeek: Number(summaryData.workoutPreferences.workoutDaysPerWeek),
-  //       healthIssues: summaryData.healthInfo.healthIssues || [],
-  //       medicalCondition: summaryData.healthInfo.medicalCondition || undefined,
-  //       dietAllergies: summaryData.dietPreferences.dietAllergies || [],
-  //       dietPreferences: summaryData.dietPreferences.dietPreferences || undefined,
-  //       dietMealsPerDay: summaryData.dietPreferences.dietMealsPerDay || undefined,
-  //     };
+      // Validate and cast values
+      const fitnessGoal = validFitnessGoals.includes(
+        summaryData.fitnessGoal.goal as IClientUserData["fitnessGoal"]
+      )
+        ? (summaryData.fitnessGoal.goal as IClientUserData["fitnessGoal"])
+        : validFitnessGoals[0]; // Default to first valid value if invalid
+      const currentFitnessLevel = validFitnessLevels.includes(
+        summaryData.currentFitnessLevel as IClientUserData["currentFitnessLevel"]
+      )
+        ? (summaryData.currentFitnessLevel as IClientUserData["currentFitnessLevel"])
+        : validFitnessLevels[0]; // Default to first valid value if invalid
+      const activityLevel = validActivityLevels.includes(
+        summaryData.activityLevel as IClientUserData["activityLevel"]
+      )
+        ? (summaryData.activityLevel as IClientUserData["activityLevel"])
+        : validActivityLevels[0]; // Default to first valid value if invalid
+      const dietMealsPerDay = validMealsPerDay.includes(
+        summaryData.dietPreferences
+          .dietMealsPerDay as IClientUserData["dietMealsPerDay"]
+      )
+        ? (summaryData.dietPreferences
+            .dietMealsPerDay as IClientUserData["dietMealsPerDay"])
+        : undefined;
 
-  //     if (!user?._id) {
-  //       throw new Error("User ID not found");
-  //     }
+      const data: Partial<IClientUserData> = {
+        nickName: summaryData.basicInfo.nickName || "Unknown",
+        age: Number(summaryData.basicInfo.age),
+        gender: summaryData.basicInfo.gender,
+        address: summaryData.basicInfo.address || undefined,
+        phoneNumber: summaryData.basicInfo.phoneNumber || undefined,
+        height: Number(summaryData.basicInfo.height),
+        currentWeight: Number(summaryData.basicInfo.currentWeight),
+        targetWeight: Number(summaryData.basicInfo.targetWeight),
+        fitnessGoal,
+        currentFitnessLevel,
+        activityLevel,
+        equipment: summaryData.workoutPreferences
+          .equipment as IClientUserData["equipment"],
+        workoutDuration: summaryData.workoutPreferences.workoutDuration,
+        workoutDaysPerWeek: Number(
+          summaryData.workoutPreferences.workoutDaysPerWeek
+        ),
+        healthIssues: summaryData.healthInfo.healthIssues || [],
+        medicalCondition: summaryData.healthInfo.medicalCondition || undefined,
+        dietAllergies: summaryData.dietPreferences.dietAllergies || [],
+        dietPreferences:
+          summaryData.dietPreferences.dietPreferences || undefined,
+        dietMealsPerDay,
+      };
 
-  //     const response = await ClientService.generatePersonalization(data);
-  //     dispatch(setUserPersonalization({_id:'done'}));
-      
-  //     localStorage.removeItem("userBasicInfo");
-  //     localStorage.removeItem("fitnessGoal");
-  //     localStorage.removeItem("currentFitnessLevel");
-  //     localStorage.removeItem("activityLevel");
-  //     localStorage.removeItem("workoutPreferences");
-  //     localStorage.removeItem("healthInfo");
-  //     localStorage.removeItem("dietPreferences");
+      if (!user?._id) {
+        throw new Error("User ID not found");
+      }
 
-  //     toast.success("Personalized plan generated successfully!");
-  //     setTimeout(() => {
-  //       navigate("/dashboard");
-  //     }, 500);
-  //   } catch (error) {
-  //     const errorMessage = error instanceof Error ? error.message : "Failed to generate plan";
-  //     toast.error(errorMessage);
-  //   } finally {
-  //     setIsGenerating(false);
-  //   }
-  // };
+      await ClientService.generatePersonalization(data);
+      dispatch(setUserPersonalization({ _id: "done" }));
 
-  // Summary.tsx (updated handleGeneratePlan function)
+      // Clear localStorage
+      localStorage.removeItem("userBasicInfo");
+      localStorage.removeItem("fitnessGoal");
+      localStorage.removeItem("currentFitnessLevel");
+      localStorage.removeItem("activityLevel");
+      localStorage.removeItem("workoutPreferences");
+      localStorage.removeItem("healthInfo");
+      localStorage.removeItem("dietPreferences");
 
-const handleGeneratePlan = async () => {
-  setIsGenerating(true);
-  try {
-    // Define valid enum values for type checking
-    const validFitnessGoals = [
-      "build muscle",
-      "lose weight",
-      "get stronger",
-      "improve endurance",
-      "tone body",
-      "increase flexibility",
-    ] as const;
-    const validFitnessLevels = ["beginner", "intermediate", "advanced", "athlete"] as const;
-    const validActivityLevels = ["sedentary", "lightly active", "moderately active", "very active"] as const;
-    const validMealsPerDay = ["3 meals", "3 meals + 1 snack", "3 meals + 2 snacks", "6 meals"] as const;
-
-    // Validate and cast values
-    const fitnessGoal = validFitnessGoals.includes(summaryData.fitnessGoal.goal as any)
-      ? summaryData.fitnessGoal.goal as IClientUserData['fitnessGoal']
-      : validFitnessGoals[0]; // Default to first valid value if invalid
-    const currentFitnessLevel = validFitnessLevels.includes(summaryData.currentFitnessLevel as any)
-      ? summaryData.currentFitnessLevel as IClientUserData['currentFitnessLevel']
-      : validFitnessLevels[0]; // Default to first valid value if invalid
-    const activityLevel = validActivityLevels.includes(summaryData.activityLevel as any)
-      ? summaryData.activityLevel as IClientUserData['activityLevel']
-      : validActivityLevels[0]; // Default to first valid value if invalid
-    const dietMealsPerDay = validMealsPerDay.includes(summaryData.dietPreferences.dietMealsPerDay as any)
-      ? [summaryData.dietPreferences.dietMealsPerDay] as IClientUserData['dietMealsPerDay']
-      : []; // Default to empty array if invalid
-
-    const data: Partial<IClientUserData> = {
-      nickName: summaryData.basicInfo.nickName || "Unknown",
-      age: Number(summaryData.basicInfo.age) ,
-      gender: summaryData.basicInfo.gender ,
-      address: summaryData.basicInfo.address || undefined,
-      phoneNumber: summaryData.basicInfo.phoneNumber || undefined,
-      height: Number(summaryData.basicInfo.height) ,
-      currentWeight: Number(summaryData.basicInfo.currentWeight) ,
-      targetWeight: Number(summaryData.basicInfo.targetWeight) ,
-      fitnessGoal,
-      currentFitnessLevel,
-      activityLevel,
-      equipment: summaryData.workoutPreferences.equipment || [],
-      workoutDuration: summaryData.workoutPreferences.workoutDuration ,
-      workoutDaysPerWeek: Number(summaryData.workoutPreferences.workoutDaysPerWeek) ,
-      healthIssues: summaryData.healthInfo.healthIssues || [],
-      medicalCondition: summaryData.healthInfo.medicalCondition || undefined,
-      dietAllergies: summaryData.dietPreferences.dietAllergies || [],
-      dietPreferences: summaryData.dietPreferences.dietPreferences || undefined,
-      dietMealsPerDay,
-    };
-
-    if (!user?._id) {
-      throw new Error("User ID not found");
+      toast.success("Personalized plan generated successfully!");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 500);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to generate plan";
+      toast.error(errorMessage);
+    } finally {
+      setIsGenerating(false);
     }
-
-    const response = await ClientService.generatePersonalization(data);
-    dispatch(setUserPersonalization({_id:'done'}));
-
-    // Clear localStorage
-    localStorage.removeItem("userBasicInfo");
-    localStorage.removeItem("fitnessGoal");
-    localStorage.removeItem("currentFitnessLevel");
-    localStorage.removeItem("activityLevel");
-    localStorage.removeItem("workoutPreferences");
-    localStorage.removeItem("healthInfo");
-    localStorage.removeItem("dietPreferences");
-
-    toast.success("Personalized plan generated successfully!");
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 500);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to generate plan";
-    toast.error(errorMessage);
-  } finally {
-    setIsGenerating(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
@@ -254,30 +276,69 @@ const handleGeneratePlan = async () => {
 
             <div className="space-y-6">
               <div className="bg-gray-700/50 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Basic Information</h2>
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">
+                  Basic Information
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
-                  <p><span className="font-medium">Name:</span> {summaryData.basicInfo.nickName}</p>
-                  <p><span className="font-medium">Age:</span> {summaryData.basicInfo.age}</p>
-                  <p><span className="font-medium">Gender:</span> {summaryData.basicInfo.gender}</p>
-                  <p><span className="font-medium">Address:</span> {summaryData.basicInfo.address}</p>
-                  <p><span className="font-medium">Phone:</span> {summaryData.basicInfo.phoneNumber}</p>
-                  <p><span className="font-medium">Height:</span> {summaryData.basicInfo.height} cm</p>
-                  <p><span className="font-medium">Current Weight:</span> {summaryData.basicInfo.currentWeight} kg</p>
-                  <p><span className="font-medium">Target Weight:</span> {summaryData.basicInfo.targetWeight} kg</p>
+                  <p>
+                    <span className="font-medium">Name:</span>{" "}
+                    {summaryData.basicInfo.nickName}
+                  </p>
+                  <p>
+                    <span className="font-medium">Age:</span>{" "}
+                    {summaryData.basicInfo.age}
+                  </p>
+                  <p>
+                    <span className="font-medium">Gender:</span>{" "}
+                    {summaryData.basicInfo.gender}
+                  </p>
+                  <p>
+                    <span className="font-medium">Address:</span>{" "}
+                    {summaryData.basicInfo.address}
+                  </p>
+                  <p>
+                    <span className="font-medium">Phone:</span>{" "}
+                    {summaryData.basicInfo.phoneNumber}
+                  </p>
+                  <p>
+                    <span className="font-medium">Height:</span>{" "}
+                    {summaryData.basicInfo.height} cm
+                  </p>
+                  <p>
+                    <span className="font-medium">Current Weight:</span>{" "}
+                    {summaryData.basicInfo.currentWeight} kg
+                  </p>
+                  <p>
+                    <span className="font-medium">Target Weight:</span>{" "}
+                    {summaryData.basicInfo.targetWeight} kg
+                  </p>
                 </div>
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Fitness Goals</h2>
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">
+                  Fitness Goals
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
-                  <p><span className="font-medium">Goal:</span> {summaryData.fitnessGoal.goal}</p>
-                  <p><span className="font-medium">Fitness Level:</span> {summaryData.currentFitnessLevel}</p>
-                  <p><span className="font-medium">Activity Level:</span> {summaryData.activityLevel}</p>
+                  <p>
+                    <span className="font-medium">Goal:</span>{" "}
+                    {summaryData.fitnessGoal.goal}
+                  </p>
+                  <p>
+                    <span className="font-medium">Fitness Level:</span>{" "}
+                    {summaryData.currentFitnessLevel}
+                  </p>
+                  <p>
+                    <span className="font-medium">Activity Level:</span>{" "}
+                    {summaryData.activityLevel}
+                  </p>
                 </div>
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Workout Preferences</h2>
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">
+                  Workout Preferences
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
                   <p>
                     <span className="font-medium">Equipment:</span>{" "}
@@ -285,7 +346,10 @@ const handleGeneratePlan = async () => {
                       ? summaryData.workoutPreferences.equipment.join(", ")
                       : "None selected"}
                   </p>
-                  <p><span className="font-medium">Duration:</span> {summaryData.workoutPreferences.workoutDuration}</p>
+                  <p>
+                    <span className="font-medium">Duration:</span>{" "}
+                    {summaryData.workoutPreferences.workoutDuration}
+                  </p>
                   <p>
                     <span className="font-medium">Days/Week:</span>{" "}
                     {summaryData.workoutPreferences.workoutDaysPerWeek}
@@ -294,7 +358,9 @@ const handleGeneratePlan = async () => {
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Health Considerations</h2>
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">
+                  Health Considerations
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
                   <p>
                     <span className="font-medium">Health Issues:</span>{" "}
@@ -310,7 +376,9 @@ const handleGeneratePlan = async () => {
               </div>
 
               <div className="bg-gray-700/50 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-indigo-400 mb-4">Diet Preferences</h2>
+                <h2 className="text-lg font-semibold text-indigo-400 mb-4">
+                  Diet Preferences
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-300">
                   <p>
                     <span className="font-medium">Allergies:</span>{" "}

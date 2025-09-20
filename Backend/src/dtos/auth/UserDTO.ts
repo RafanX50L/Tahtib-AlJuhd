@@ -3,15 +3,14 @@ import { PersonalizationModel } from "@/models/Personalization.model";
 import IUser from "@/core/interface/model/IUser.model";
 
 export class UserDTO {
-  static async toResponse(user: IUser): Promise<Partial<IUser> & { status: string | null, tokenVersion?: number }> {
-    const userData: Partial<IUser> & { status: string | null, tokenVersion?: number } = {
+  static async toResponse(user: IUser): Promise<Partial<IUser> & { status: string | null }> {
+    const userData: Partial<IUser> & { status: string | null } = {
       _id: user._id.toString(),
       name: user.name,
       email: user.email,
       role: user.role,
       personalizationId: user.personalizationId,
       status: null,
-      tokenVersion: user.tokenVersion
     };
 
     if (user.role === "trainer" && user.personalizationId !== null) {

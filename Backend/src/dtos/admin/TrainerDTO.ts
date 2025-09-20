@@ -104,6 +104,7 @@ type TrainerDTO = {
   resumeFile: string | null;
   interviewDetails?:Partial<ITrainerInterview>;
   status:string;
+  appliedOn:string;
 };
 
 export interface TrainerCardDTO {
@@ -131,7 +132,6 @@ export class AdminTrainerDTO {
     const professional = raw.data?.professionalSummary || {};
     const sample = raw.data?.sampleMaterials || {};
     const availability = raw.data?.availability || {};
-    console.log(raw.interviewDetails[0].result);
 
     const certifications = await Promise.all(
       (professional.certifications || []).map(async (cert) => {
@@ -168,7 +168,7 @@ export class AdminTrainerDTO {
       },
       profilePhoto: raw.profilePicture?.filePath ? await generateSignedUrl(raw.profilePicture.filePath) : null,
       resumeFile: raw.resumeFile?.filePath ? await generateSignedUrl(raw.resumeFile.filePath) : null,
-      interviewDetails: raw.interviewDetails ? {
+      interviewDetails: raw.interviewDetails[0] ? {
         adminId: raw.interviewDetails[0].adminId,
         trainerId: raw.interviewDetails[0].trainerId,
         startTime: raw.interviewDetails[0].startTime,
@@ -176,7 +176,7 @@ export class AdminTrainerDTO {
         date: raw.interviewDetails[0].date,
         roomId: raw.interviewDetails[0].roomId,
         completed: raw.interviewDetails[0].completed,
-        result: raw.interviewDetails[0].result ? {
+        result: raw.interviewDetails && raw.interviewDetails[0].result ? {
           communicationSkills: raw.interviewDetails[0].result.communicationSkills || null,
           technicalKnowledge: raw.interviewDetails[0].result.technicalKnowledge || null,
           coachingStyle: raw.interviewDetails[0].result.coachingStyle || null,
@@ -187,6 +187,7 @@ export class AdminTrainerDTO {
         } :null,
       }:null,
       status: raw.data.status,
+      appliedOn: raw.updatedAt.toDateString(),
     };
   }
 
@@ -206,7 +207,7 @@ export class AdminTrainerDTO {
   const certProofEntries = await Promise.all(
     (raw.certificationProof || []).map(async (file: IUserFile) => [
       file._id?.toString(),
-      await generateSignedUrl(file.filePath),
+      file.filePath?await generateSignedUrl(file.filePath):null,
     ])
   );
 
@@ -226,7 +227,7 @@ export class AdminTrainerDTO {
     name: user.name,
     email: user.email,
     isBlocked: user.isBlocked,
-    profilePhoto: await generateSignedUrl(raw.profilePicture?.filePath) || "",
+    profilePhoto: raw.profilePicture?.filePath ? await generateSignedUrl(raw.profilePicture?.filePath) : null,
     specializations: profSummary.specializations || [],
     yearsOfExperience: profSummary.yearsOfExperience || 0,
     weeklySalary: basicInfo.weeklySalary || 0,

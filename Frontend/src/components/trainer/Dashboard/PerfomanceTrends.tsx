@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Line } from 'react-chartjs-2';
@@ -12,53 +12,52 @@ import {
   Tooltip,
   Filler,
   Legend,
+  ChartOptions,
+  TooltipItem,
 } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend);
 
 const PerformanceTrends = () => {
-  const [currentChart, setCurrentChart] = useState('revenue');
+  const [currentChart, setCurrentChart] = useState<'sessions' | 'activeClients' | 'clients'>('sessions');
 
-  const chartData = {
-    revenue: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      dataset: [1200, 1350, 1400, 1280],
-      color: '#6366f1',
-      label: 'Revenue ($)',
-    },
-    reviews: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      dataset: [4.2, 4.5, 4.7, 4.8],
-      color: '#10b981',
-      label: 'Rating (out of 5)',
-    },
-    clients: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      dataset: [12, 18, 22, 24],
-      color: '#f59e0b',
-      label: 'New Clients',
-    },
-  };
+  const [labels, setLabels] = useState<string[]>(['Jan', 'Feb', 'Mar', 'Apr']);
+  const [series, setSeries] = useState<{ sessions: number[]; activeClients: number[]; clients: number[] }>({ sessions: [0,0,0,0], activeClients: [0,0,0,0], clients: [0,0,0,0] });
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await (await import('@/services/implementation/trainerServices')).TrainerService.getDashboardTrends();
+        if (!mounted) return;
+        setLabels(res.labels);
+        setSeries({ sessions: res.sessions, activeClients: res.activeClients, clients: res.newClients });
+      } catch {
+        // toast handled in service
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   const data = {
-    labels: chartData[currentChart].labels,
+    labels,
     datasets: [
       {
-        label: chartData[currentChart].label,
-        data: chartData[currentChart].dataset,
-        borderColor: chartData[currentChart].color,
-        backgroundColor: `${chartData[currentChart].color}33`,
+        label: currentChart === 'sessions' ? 'Sessions' : currentChart === 'activeClients' ? 'Active Clients' : 'New Clients',
+        data: currentChart === 'sessions' ? series.sessions : currentChart === 'activeClients' ? series.activeClients : series.clients,
+        borderColor: currentChart === 'sessions' ? '#6366f1' : currentChart === 'activeClients' ? '#10b981' : '#f59e0b',
+        backgroundColor: `${currentChart === 'sessions' ? '#6366f1' : currentChart === 'activeClients' ? '#10b981' : '#f59e0b'}33`,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: chartData[currentChart].color,
+        pointBackgroundColor: currentChart === 'sessions' ? '#6366f1' : currentChart === 'activeClients' ? '#10b981' : '#f59e0b',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: chartData[currentChart].color,
+        pointHoverBorderColor: currentChart === 'sessions' ? '#6366f1' : currentChart === 'activeClients' ? '#10b981' : '#f59e0b',
       },
     ],
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -66,7 +65,7 @@ const PerformanceTrends = () => {
         beginAtZero: true,
         ticks: {
           color: '#b0b0b0',
-          callback: (value) => (currentChart === 'revenue' ? `$${value}` : value),
+          callback: (value: number | string) => value as string | number,
         },
         grid: { color: '#2c2c2c' },
       },
@@ -84,15 +83,15 @@ const PerformanceTrends = () => {
         borderColor: '#2c2c2c',
         borderWidth: 1,
         callbacks: {
-          label: (context) => {
-            if (currentChart === 'revenue') return `Revenue: $${context.parsed.y}`;
-            if (currentChart === 'reviews') return `Rating: ${context.parsed.y}/5`;
-            return `Clients: ${context.parsed.y}`;
+          label: (context: TooltipItem<'line'>) => {
+            if (currentChart === 'sessions') return `Sessions: ${context.parsed.y}`;
+            if (currentChart === 'activeClients') return `Active Clients: ${context.parsed.y}`;
+            return `New Clients: ${context.parsed.y}`;
           },
         },
       },
     },
-    animation: { duration: 1000, easing: 'easeInOutQuart' },
+    animation: { duration: 1000, easing: 'easeInOutQuart' as const },
   };
 
   return (
@@ -101,7 +100,7 @@ const PerformanceTrends = () => {
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-semibold text-[#6366f1]">Performance Trends</CardTitle>
           <div className="flex gap-2">
-            {['revenue', 'reviews', 'clients'].map((chart) => (
+            {(['sessions', 'activeClients', 'clients'] as const).map((chart) => (
               <Button
                 key={chart}
                 variant={currentChart === chart ? 'default' : 'outline'}

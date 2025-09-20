@@ -61,6 +61,7 @@ export const HttpResponse = {
     FAILED_TO_FETCH_USER_WEEKLY_CHALLENGE: "Failed to fetch user weekly challenge",
     FAILED_TO_UPDATE_USER_WEEKLY_CHALLENGE: "Failed to update user weekly challenge",
 
+    DATA_CREATION_SUCCESSFULL: "Data creation successfull",
 
     INTERVIEW_FEEDBACK_UPDATED_SUCCESSFULL:'Interview feedback updated successfull',
     FAILED_TO_UPDATE_INTERVIEW_FEEDBACK: "Failed to update interview feedback",
@@ -77,5 +78,15 @@ export const HttpResponse = {
     FAILED_TO_FETCH_AVAILABLE_TRAINERS: "Failed to fetch available trainers",
     FAILED_TO_FETCH_PENDING_TRAINERS: "Failed to fetch pending trainers",
 
-    APPLICATION_SUBMISSION_SUCCESSFULL: "Application Submission Succesfull"
+    APPLICATION_SUBMISSION_SUCCESSFULL: "Application Submission Succesfull",
+
+    // chatbot
+    CREATING_CHAT_BOT_SESSION_SUCCESSFULL: "Chat bot session created succesfully",
+    CHAT_BOT_SESSION_DELETION_SUCCESSFULL: "Chat bot session deleted successfully",
+
+    // availability
+    SLOTS_CONFLICT : "Slots conflict with existing sessions",
+    SLOT_BOOKING_SUCCESSFULL: "Slot booking successfull",
+    SLOT_CANCELLING_SUCCESSFULL: "Slot canceling successfull",
+
 };

@@ -1,0 +1,13 @@
+import { ITrainerClientContract } from "../model/ITrainerClientContract";
+import { IBaseRepository } from "./IBase.repository";
+
+export interface ITrainerClientContractRepository extends IBaseRepository<ITrainerClientContract>{
+  // create(contract: ITrainerClientContract): Promise<ITrainerClientContract>;
+  // findById(id: string): Promise<ITrainerClientContract | null>;
+  findActiveContractByClientId(clientId: string): Promise<ITrainerClientContract | null>;
+  findExpiredContracts(now: Date): Promise<ITrainerClientContract[]>
+  findActiveByClientAndTrainer(clientId: string, trainerId: string): Promise<ITrainerClientContract | null>;
+  findActiveContractsByTrainerId(trainerId: string): Promise<ITrainerClientContract[]>
+  decrementSessionsRemaining(id: string): Promise<void>;
+  incrementSessionsRemaining(id: string): Promise<void>;
+}

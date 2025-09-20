@@ -20,9 +20,7 @@ const ADMIN_ROUTE = "/admin";
 export const ADMIN_ROUTES = {
   GET_ALL_CLIENTS: `${ADMIN_ROUTE}/clients`,
   GET_PENDING_TRAINERS: `${ADMIN_ROUTE}/trainers/pending`,
-  // GET_APPROVED_TRAINERS: `${ADMIN_ROUTE}/approved-trainers`,
-  GET_APPROVED_TRAINERS: (page:number,limit:number,search:string)=>
-    `${ADMIN_ROUTE}/trainers/approved/${page}/limit/${limit}/search/${search}`,
+  GET_APPROVED_TRAINERS: `${ADMIN_ROUTE}/trainers/approved/`,
   BLOCK_OR_UNBLOCK: `${ADMIN_ROUTE}/block-or-unblock`,
   GET_ALL_TRAINERS: `${ADMIN_ROUTE}/trainers`,
   UPDATE_CLIENT_STATUS: `${ADMIN_ROUTE}/clients/updateStatus`,
@@ -31,6 +29,10 @@ export const ADMIN_ROUTES = {
   SUBMIT_INTERVIEW_FEEDBACK: `${ADMIN_ROUTE}/trainers/submit-interview-feedback`,
   APPROVE_TRAINER: `${ADMIN_ROUTE}/trainers/approve`,
   REJECT_TRAINER: `${ADMIN_ROUTE}/trainers/reject`,
+  DASHBOARD_STATS: `${ADMIN_ROUTE}/dashboard/stats`,
+  DASHBOARD_REVENUE: `${ADMIN_ROUTE}/dashboard/revenue`,
+  DASHBOARD_TOP_TRAINERS: `${ADMIN_ROUTE}/dashboard/top-trainers`,
+  DASHBOARD_RECENT_PAYMENTS: `${ADMIN_ROUTE}/dashboard/recent-payments`,
 };
 
 const CLIENT_ROUTE = "/client";
@@ -49,8 +51,22 @@ export const CLIENT_ROUTES = {
   MARK_CHALLENGE_DAY_COMPLETE: (challengeId: string, day: number) =>
   `${CLIENT_ROUTE}/challenges/${challengeId}/days/${day}/complete`,
   UPDATE_CLIENT_PROFILE_PHOTO: `${CLIENT_ROUTE}/update-profile-photo`,
-  GET_AVAILABLE_TRAINERS: `${CLIENT_ROUTE}/available-trainers`,
+  GET_AVAILABLE_TRAINERS: `${CLIENT_ROUTE}/trainers`,
+  TRAINER: `${CLIENT_ROUTE}/trainer`,
   GET_DIET_PLAN: `${CLIENT_ROUTE}/diet-plan`,
+  CHAT_BOT_INTERACTION:(sessionId: string)=> `${CLIENT_ROUTE}/chatBot/sessions/${sessionId}/interactions`,
+  CHAT_BOT_SESSIONS:`${CLIENT_ROUTE}/chatBot/sessions`,
+  PURCHASE_PLAN: `${CLIENT_ROUTE}/purchase-plan`,
+  CURRENT_TRAINER: `${CLIENT_ROUTE}/current-trainer`,
+  CURRENT_TRAINER_CONTRACT: `${CLIENT_ROUTE}/current-trainer/contract`,
+  CURRENT_TRAINER_MESSAGES: `${CLIENT_ROUTE}/current-trainer/messages`,
+  AVAILABILITY: `${CLIENT_ROUTE}/availability`,
+  NOTIFICATIONS: `${CLIENT_ROUTE}/notifications`,
+  // Progress
+  PROGRESS: `${CLIENT_ROUTE}/progress`,
+  PROGRESS_CURRENT: `${CLIENT_ROUTE}/progress/current`,
+  PROGRESS_GRAPH: `${CLIENT_ROUTE}/progress/graph`,
+  PROGRESS_PREVIEW: `${CLIENT_ROUTE}/progress/preview`,
 };
 
 const TRAINER_ROUTE = "/trainer";
@@ -60,4 +76,12 @@ export const TRAINER_ROUTES = {
   GET_PROFILE_DATA: `${TRAINER_ROUTE}/profile-data`,
   UPDATE_TRAINER_PROFILE_PHOTO: `${TRAINER_ROUTE}/update-profile-photo`,
   UPDATE_TRAINER_PROFILE: `${TRAINER_ROUTE}/update-profile`,
+  PLAN: `${TRAINER_ROUTE}/plan`,
+  AVAILABILITY: `${TRAINER_ROUTE}/availability`,
+  SALARY: `${TRAINER_ROUTE}/salary`,
+  CLIENTS: `${TRAINER_ROUTE}/clients`,
+  CHAT: `${TRAINER_ROUTE}/chat`,
+  DASHBOARD_STATS: `${TRAINER_ROUTE}/dashboard/stats`,
+  DASHBOARD_TRENDS: `${TRAINER_ROUTE}/dashboard/trends`,
+  DASHBOARD_PAYMENTS: `${TRAINER_ROUTE}/dashboard/payments`,
 };

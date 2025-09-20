@@ -2,10 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
-import { refreshAccessToken, setCredentials, setLastLocation } from '@/store/slices/authSlice';
-import { AuthService } from '@/services/implementation/authService';
+import { refreshAccessToken,  setLastLocation } from '@/store/slices/authSlice';
 import { useLocation } from 'react-router-dom';
-import { UserInterface } from '@/types/user';
 import { secureTokenStorage } from '@/services/implementation/api';
 
 interface AuthInitializerProps {

@@ -19,9 +19,13 @@ const userSchema = new Schema<IUser>(
       enum: ["client", "trainer", "admin"],
       default: "client",
     },
-    personalizationId: { type: Schema.Types.ObjectId, ref: "Personalization", default: null },
+    calendlyLink: { type: String, default: null },
+    personalizationId: {
+      type: Schema.Types.ObjectId,
+      ref: "Personalization",
+      default: null,
+    },
     isBlocked: { type: Boolean, default: false },
-    tokenVersion: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Eye, PlayCircle, PauseCircle, X } from "lucide-react";
 import { toast } from "sonner";
-import { ITrainerWithPersonalization } from "@/pages/admin/ATrainerManagment";
 import { AdminService } from "@/services/implementation/adminServices";
 export interface TrainerCardDTO {
   _id: string;
@@ -30,6 +29,21 @@ export interface TrainerCardDTO {
     proofFile?: string;
   }[];
 }
+export function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+
+    return debouncedValue;
+  }
 const ApprovedTrainersTable = () => {
   const [trainers, setTrainers] = useState<TrainerCardDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,15 +56,16 @@ const ApprovedTrainersTable = () => {
     willBlock: false,
   });
   const [totalItems, setTotalItems] = useState(0);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
 
   const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
-        const response = await AdminService.getApprovedTrainers(currentPage,itemsPerPage,searchTerm,);
-        console.log("approved trainers", response);
-        setTrainers(response.data.data ? response.data.data : []);
+        const response = await AdminService.getApprovedTrainers(currentPage,itemsPerPage,debouncedSearchTerm,);
+        // Approved trainers fetched
+        setTrainers(response.data ? response.data: []);
         setTotalItems(response.total || 0);
       } catch (error) {
         toast.error("Failed to fetch trainers");
@@ -59,7 +74,7 @@ const ApprovedTrainersTable = () => {
     };
 
     fetchTrainers();
-  }, [currentPage, searchTerm]);
+  }, [currentPage, debouncedSearchTerm]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -92,19 +107,20 @@ const ApprovedTrainersTable = () => {
       ? "text-red-400 bg-red-200/20"
       : "text-green-400 bg-green-200/20";
   };
+   
 
-  const getExpertiseStyle = (level?: string) => {
-    switch (level) {
-      case "advanced":
-        return "text-blue-400 bg-blue-200/20";
-      case "intermediate":
-        return "text-purple-400 bg-purple-200/20";
-      case "beginner":
-        return "text-orange-400 bg-orange-200/20";
-      default:
-        return "text-gray-400 bg-gray-200/20";
-    }
-  };
+  // const getExpertiseStyle = (level?: string) => {
+  //   switch (level) {
+  //     case "advanced":
+  //       return "text-blue-400 bg-blue-200/20";
+  //     case "intermediate":
+  //       return "text-purple-400 bg-purple-200/20";
+  //     case "beginner":
+  //       return "text-orange-400 bg-orange-200/20";
+  //     default:
+  //       return "text-gray-400 bg-gray-200/20";
+  //   }
+  // };
 
   return (
     <div className="mb-8">

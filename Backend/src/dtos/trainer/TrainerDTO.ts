@@ -1,3 +1,5 @@
+import { generateSignedUrl } from "@/utils/s3Storage.utils";
+
 export interface TrainerProfileDTO {
   _id: string;
   name: string;
@@ -51,7 +53,9 @@ export class TrainerDTO{
         dateOfBirth: data.basicInfo.dateOfBirth,
         age: data.basicInfo.age,
         gender: data.basicInfo.gender,
-        profilePhoto: data.basicInfo.profilePhoto?.[0]?.filePath || null,
+        profilePhoto: data.basicInfo.profilePhoto?.[0]?.filePath 
+            ? await generateSignedUrl(data.basicInfo.profilePhoto[0].filePath) 
+            : null,
         weeklySalary: data.basicInfo.weeklySalary,
         },
 

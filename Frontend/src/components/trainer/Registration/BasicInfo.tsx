@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TrainerFormData } from "@/pages/trainer/TSubmittingDetails"; // Adjust import path based on your project structure
+import ProfilePhotoUpload from "./ProfilePhotoUpload";
+import TimezoneSelect from "react-timezone-select";
 
 interface BasicInfoProps {
   control: Control<TrainerFormData>;
@@ -141,25 +143,3 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ control, errors, watch }) => {
 
 export default BasicInfo;
 
-
-import TimezoneSelect from "react-timezone-select";
-import ProfilePhotoUpload from "./ProfilePhotoUpload";
-import { useState } from "react";
-
-const TimeZonePicker:React.FC<{onChange: any}> = ({ onChange }) => {
-  const [selectedTimezone, setSelectedTimezone] = useState(
-    Intl.DateTimeFormat().resolvedOptions().timeZone
-  );
-
-  return (
-    <div className="text-black">
-      <TimezoneSelect
-        value={selectedTimezone}
-        onChange={(tz) => {
-          setSelectedTimezone(tz.value);
-          onChange(tz.value);
-        }}
-      />
-    </div>
-  );
-};

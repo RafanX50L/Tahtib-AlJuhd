@@ -23,4 +23,9 @@ export interface ITrainerPersonalizationController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
+  getSalary(
+    req: AddedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
 }

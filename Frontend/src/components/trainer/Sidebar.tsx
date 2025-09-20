@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaBars, FaTachometerAlt, FaCalendarAlt, FaUsers, FaComments, FaStar, FaUser, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaTachometerAlt, FaComments, FaUser, FaSignOutAlt, FaBoxOpen, FaClock, FaUsers } from 'react-icons/fa';
 import logo from '../../assets/images/logo.png'; // Adjust the path as necessary
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { logout } from '@/store/slices/authSlice';
-import path from 'path';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,10 +27,10 @@ const Sidebar = () => {
 
   const navItems = [
     { icon: FaTachometerAlt, text: 'Overview', path: '/trainer/dashboard' },
-    { icon: FaCalendarAlt, text: 'Schedule', path: '/trainer/schedule' },
-    { icon: FaUsers, text: 'Clients', path: '/trainer/clients' },
     { icon: FaComments, text: 'Messages', path: '/trainer/messages' },
-    { icon: FaStar, text: 'Reviews', path: '/trainer/reviews' },
+    { icon: FaUsers, text: 'Community', path: '/trainer/community' },
+    { icon: FaClock  , text: 'Set Availability', path: '/trainer/availability' },
+    { icon: FaBoxOpen , text: 'Set Plans', path: '/trainer/plans' },
     { icon: FaUser, text: 'Profile', path: '/trainer/profile' },
   ];
 

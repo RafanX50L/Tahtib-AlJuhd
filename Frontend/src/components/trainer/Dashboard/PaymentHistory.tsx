@@ -5,54 +5,48 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FaSearch, FaEye, FaEdit, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { TrainerService } from '@/services/implementation/trainerServices';
 
 const PaymentHistory = () => {
-  const paymentData = [
-    { client: 'John Doe', amount: 150, date: 'Apr 15, 2025', status: 'paid' },
-    { client: 'Jane Smith', amount: 200, date: 'Apr 12, 2025', status: 'pending' },
-    { client: 'Mike Johnson', amount: 150, date: 'Apr 10, 2025', status: 'pending' },
-    { client: 'Sarah Williams', amount: 125, date: 'Apr 8, 2025', status: 'paid' },
-    { client: 'Robert Brown', amount: 175, date: 'Apr 5, 2025', status: 'paid' },
-    { client: 'Emily Davis', amount: 225, date: 'Apr 3, 2025', status: 'pending' },
-    { client: 'David Miller', amount: 150, date: 'Mar 30, 2025', status: 'paid' },
-    { client: 'Jessica Wilson', amount: 180, date: 'Mar 27, 2025', status: 'pending' },
-    { client: 'Thomas Taylor', amount: 200, date: 'Mar 25, 2025', status: 'paid' },
-    { client: 'Jennifer Moore', amount: 160, date: 'Mar 22, 2025', status: 'paid' },
-    { client: 'Daniel Anderson', amount: 190, date: 'Mar 20, 2025', status: 'paid' },
-    { client: 'Lisa Martinez', amount: 175, date: 'Mar 18, 2025', status: 'pending' },
-    { client: 'Paul Harris', amount: 145, date: 'Mar 15, 2025', status: 'paid' },
-    { client: 'Michelle Lee', amount: 215, date: 'Mar 12, 2025', status: 'pending' },
-    { client: 'Kevin Clark', amount: 185, date: 'Mar 10, 2025', status: 'paid' },
-    { client: 'Karen Lewis', amount: 170, date: 'Mar 8, 2025', status: 'paid' },
-    { client: 'Brian Walker', amount: 195, date: 'Mar 5, 2025', status: 'pending' },
-    { client: 'Nancy Hall', amount: 160, date: 'Mar 3, 2025', status: 'paid' },
-  ];
-
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredData, setFilteredData] = useState(paymentData);
+  const [payments, setPayments] = useState<Array<{ id: string; clientId: string; amount: number; currency: string; paymentStatus: string; createdAt: string }>>([]);
+  const [total, setTotal] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [timeFilter, setTimeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'failed' | 'refunded'>('all');
+  const [timeFilter, setTimeFilter] = useState<'all' | 'month' | 'last-month' | 'year'>('all');
 
   useEffect(() => {
-    const filtered = paymentData.filter((payment) => {
-      const matchesSearch = payment.client.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
-      let matchesTime = true;
-      if (timeFilter === 'month' && !payment.date.includes('Apr')) matchesTime = false;
-      else if (timeFilter === 'last-month' && !payment.date.includes('Mar')) matchesTime = false;
-      else if (timeFilter === 'year' && !payment.date.includes('2025')) matchesTime = false;
-      return matchesSearch && matchesStatus && matchesTime;
-    });
-    setFilteredData(filtered);
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter, timeFilter]);
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await TrainerService.getDashboardPayments({ page: currentPage, limit: itemsPerPage, status: statusFilter === 'all' ? 'all' : statusFilter, search: searchTerm || undefined });
+        if (!mounted) return;
+        // apply time filter client-side for now
+        const filtered = res.payments.filter((p) => {
+          const date = new Date(p.createdAt);
+          const now = new Date();
+          if (timeFilter === 'month') return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+          if (timeFilter === 'last-month') {
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            return date.getMonth() === lastMonth.getMonth() && date.getFullYear() === lastMonth.getFullYear();
+          }
+          if (timeFilter === 'year') return date.getFullYear() === now.getFullYear();
+          return true;
+        });
+        setPayments(filtered);
+        setTotal(res.total);
+      } catch {
+        // toast handled in service
+      }
+    })();
+    return () => { mounted = false; };
+  }, [currentPage, itemsPerPage, statusFilter, searchTerm, timeFilter]);
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
   const start = (currentPage - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  const paginatedData = filteredData.slice(start, end);
+  const end = start + Math.min(payments.length, itemsPerPage);
+  const paginatedData = payments;
 
   const handlePageChange = (page:number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -74,18 +68,19 @@ const PaymentHistory = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as "all" | "pending" | "completed" | "failed" | "refunded")}>
             <SelectTrigger className="min-w-[150px] bg-[#121212] border-[#2c2c2c] text-[#ffffff] focus:border-[#6366f1] focus:ring-[#6366f1]/20">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent className="bg-[#121212] border-[#2c2c2c] text-[#ffffff]">
               <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="overdue">Overdue</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={timeFilter} onValueChange={setTimeFilter}>
+          <Select value={timeFilter} onValueChange={(v) => setTimeFilter(v as "all" | "month" | "last-month" | "year")}>
             <SelectTrigger className="min-w-[150px] bg-[#121212] border-[#2c2c2c] text-[#ffffff] focus:border-[#6366f1] focus:ring-[#6366f1]/20">
               <SelectValue placeholder="All Time" />
             </SelectTrigger>
@@ -110,24 +105,24 @@ const PaymentHistory = () => {
             </TableHeader>
             <TableBody>
               {paginatedData.map((payment) => (
-                <TableRow key={`${payment.client}-${payment.date}`} className="hover:bg-white/5 border-[#2c2c2c]">
+                <TableRow key={payment.id} className="hover:bg-white/5 border-[#2c2c2c]">
                   <TableCell
                     data-label="Client"
                     className="text-sm max-sm:block max-sm:border-none text-[#ffffff] max-sm:border-b max-sm:border-[#ffffff00] max-sm:pl-[40%] max-sm:pr-4 max-sm:py-2 max-sm:text-right max-sm:before:content-['Client'] max-sm:before:absolute max-sm:before:left-4 max-sm:before:w-[35%] max-sm:before:pr-4 max-sm:before:whitespace-nowrap max-sm:before:font-semibold max-sm:before:text-[#b0b0b0] max-sm:before:text-left"
                   >
-                    {payment.client}
+                    {payment.clientId}
                   </TableCell>
                   <TableCell
                     data-label="Amount"
                     className="text-sm max-sm:block max-sm:border-none text-[#ffffff] max-sm:border-b max-sm:border-[#2c2c2c] max-sm:pl-[40%] max-sm:pr-4 max-sm:py-2 max-sm:text-right max-sm:before:content-['Amount'] max-sm:before:absolute max-sm:before:left-4 max-sm:before:w-[35%] max-sm:before:pr-4 max-sm:before:whitespace-nowrap max-sm:before:font-semibold max-sm:before:text-[#b0b0b0] max-sm:before:text-left"
                   >
-                    ${payment.amount}
+                    ₹{payment.amount}
                   </TableCell>
                   <TableCell
                     data-label="Date"
                     className="text-sm max-sm:block max-sm:border-none text-[#ffffff] max-sm:border-b max-sm:border-[#2c2c2c] max-sm:pl-[40%] max-sm:pr-4 max-sm:py-2 max-sm:text-right max-sm:before:content-['Date'] max-sm:before:absolute max-sm:before:left-4 max-sm:before:w-[35%] max-sm:before:pr-4 max-sm:before:whitespace-nowrap max-sm:before:font-semibold max-sm:before:text-[#b0b0b0] max-sm:before:text-left"
                   >
-                    {payment.date}
+                    {new Date(payment.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell
                     data-label="Status"
@@ -135,14 +130,14 @@ const PaymentHistory = () => {
                   >
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        payment.status === 'paid'
+                        payment.paymentStatus === 'completed'
                           ? 'bg-[#10b981]/20 text-[#10b981]'
-                          : payment.status === 'pending'
+                          : payment.paymentStatus === 'pending'
                           ? 'bg-[#f59e0b]/20 text-[#f59e0b]'
                           : 'bg-[#ef4444]/20 text-[#ef4444]'
                       }`}
                     >
-                      {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                      {payment.paymentStatus.charAt(0).toUpperCase() + payment.paymentStatus.slice(1)}
                     </span>
                   </TableCell>
                   <TableCell
@@ -173,7 +168,7 @@ const PaymentHistory = () => {
         </div>
         <div className="flex justify-center items-center mt-6 gap-2 flex-wrap">
           <div className="text-sm text-[#b0b0b0] mr-auto">
-            Showing {start + 1}-{Math.min(end, filteredData.length)} of {filteredData.length} payments
+            Showing {start + 1}-{Math.min(end, payments.length)} of {total} payments
           </div>
           <Button
             variant="outline"

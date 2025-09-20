@@ -20,29 +20,9 @@ import {
 } from "@/components/ui/pagination";
 import { X } from "lucide-react";
 import ClientActions from "./ClientActions";
-import { Types } from "mongoose";
 import { AdminService } from "@/services/implementation/adminServices";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-
-// export interface IClientPersonalizationData {
-//   trainer: string;
-//   planStatus: "Active" | "Inactive";
-//   sessionStatus: "Purchased" | "Not Purchased";
-//   userData: {
-//     profilePicture: string;
-//   };
-// }
-
-// export interface IPersonalization {
-//   _id: Types.ObjectId;
-//   userId: Types.ObjectId;
-//   role: "client" | "trainer" | "admin";
-//   data: IClientPersonalizationData;
-//   createdAt: Date;
-//   updatedAt: Date;
-//   __v: number;
-// }
 
 export interface IClient {
   _id: string;
@@ -145,7 +125,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({
     const items: JSX.Element[] = [];
     const maxPagesToShow = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
     // Adjust startPage if endPage is at the totalPages limit
     if (endPage === totalPages) {

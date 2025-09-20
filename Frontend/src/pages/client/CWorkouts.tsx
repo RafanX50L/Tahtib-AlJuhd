@@ -1,32 +1,22 @@
-import { useEffect, useState } from "react";
+// CWorkouts.tsx
+import { useEffect, useState, useRef } from "react";
 import styles from "../../components/client/Personalization/styles/BasicDetails.module.css";
 import WorkoutCards from "@/components/client/Workouts/WorkoutCards";
 import LevelTabs from "@/components/client/Workouts/LevelTabs";
 import Sidebar from "@/components/client/Sidebar";
 import CFooter from "@/components/client/Footer";
-import CWHeader from "@/components/client/Workouts/CWHeader";
 import MainCard from "@/components/client/Workouts/MainCard";
 import ChatbotButton from "@/components/client/ChatbotButton";
 import { ClientService } from "@/services/implementation/clientServices";
+import Header, { SidebarRef } from "@/components/client/Header";
+import { IDayView } from "@/interfaces/client/IWorkout";
 
 // Define the response type for ClientService.getWorkouts
 interface WorkoutResponse {
   data: {
-    workouts: Workout[];
-    notes?: string; // Notes are optional, as per previous context
+    workouts: IDayView[];
+    notes?: string;
   };
-}
-
-interface Exercise {
-  name: string;
-  duration: string;
-}
-
-interface Workout {
-  day: string;
-  status: "completed" | "today" | "locked";
-  exercises: Exercise[];
-  action: "view" | "start" | "locked";
 }
 
 export interface MainData {
@@ -43,11 +33,18 @@ interface WeekStatuses {
 const WorkoutPlan = () => {
   const [activeTab, setActiveTab] = useState<number>(1);
   const [mainData, setMainData] = useState<MainData | null>(null);
-  const [workouts, setWorkouts] = useState<Workout[] | null>(null);
+  const [workouts, setWorkouts] = useState<IDayView[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [weekStatuses, setWeekStatuses] = useState<WeekStatuses | null>(null);
-  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(null);
+  const [currentWeekStatus, setCurrentWeekStatus] = useState<boolean | null>(
+    null
+  );
+  const sidebarRef = useRef<SidebarRef>(null);
+
+  const handleMenuToggle = () => {
+    sidebarRef.current?.toggleSidebar();
+  };
 
   // Fetch initial data on component mount
   useEffect(() => {
@@ -82,16 +79,19 @@ const WorkoutPlan = () => {
   const fetchWorkoutsForTab = async () => {
     try {
       setIsLoading(true);
-      const response: WorkoutResponse = await ClientService.getWorkouts(activeTab);
+      const response: WorkoutResponse =
+        await ClientService.getWorkouts(activeTab);
       setWorkouts(response.data.workouts);
       setMainData((prev) =>
-        prev
-          ? { ...prev, notes: response.data.notes || prev.notes } // Update notes if prev exists
-          : null // Return null if prev is null, as we can't construct a full MainData
+        prev ? { ...prev, notes: response.data.notes || prev.notes } : null
       );
-      setCurrentWeekStatus(weekStatuses ? weekStatuses[`week${activeTab}`] : false);
+      setCurrentWeekStatus(
+        weekStatuses ? weekStatuses[`week${activeTab}`] : false
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch workouts.");
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch workouts."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -122,6 +122,7 @@ const WorkoutPlan = () => {
             </h3>
           </div>
           <p className="text-[#A0A7B8] text-sm mb-4">
+            {/* eslint-disable-next-line */}
             Please complete the previous week's workouts before accessing this
             one.
           </p>
@@ -138,9 +139,9 @@ const WorkoutPlan = () => {
 
   return (
     <div className="bg-[#12151E] text-white min-h-screen font-sans">
-      <Sidebar />
+      <Sidebar ref={sidebarRef} />
       <main
-        className={`lg:ml-[280px] p-8 min-h-screen transition-all duration-300 ${styles.container}`}
+        className={`pt-[70px] lg:pt-0 px-4 py-8 lg:px-8 lg:ml-[280px] transition-all duration-300 ${styles.container}`}
       >
         {isLoading ? (
           <div
@@ -168,7 +169,11 @@ const WorkoutPlan = () => {
           </div>
         ) : (
           <>
-            <CWHeader />
+            <Header
+              title="My Workouts"
+              content="Track your progress in the 28-Day Challenge"
+              onMenuToggle={handleMenuToggle}
+            />
             {mainData && <MainCard data={mainData} />}
             <LevelTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             {workouts && currentWeekStatus !== null ? (

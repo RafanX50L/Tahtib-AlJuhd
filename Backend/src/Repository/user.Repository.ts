@@ -1,13 +1,11 @@
 import { IUserRepository } from "../core/interface/repositories/IUser.repository";
 import { BaseRepository } from "@/Repository/base.repository";
 import { UserModel } from "@/models/user.model";
-import  IUser  from "@/core/interface/model/IUser.model";
+import IUser from "@/core/interface/model/IUser.model";
 import { createHttpError } from "@/utils";
 import { HttpStatus } from "@/constants/status.constant";
 import { HttpResponse } from "@/constants/response-message.constant";
-import {  Types } from "mongoose";
-
-
+import { Types } from "mongoose";
 
 export class UserRepository
   extends BaseRepository<IUser>
@@ -18,21 +16,14 @@ export class UserRepository
   }
 
   async createUser(user: Partial<IUser>): Promise<IUser> {
-    try {
-      console.log("Creating user:", user);
-      const createdUser = await this.model.create(user);
-      return createdUser;
-    } catch (error) {
-      console.error("Error creating user:", error);
-      throw new Error("Error creating user");
-    }
+    const createdUser = await this.model.create(user);
+    return createdUser;
   }
 
   async blockOrUnblockUser(
     id: string
   ): Promise<{ success: boolean; message: string }> {
     const user = await this.findById(new Types.ObjectId(id));
-    console.log(user);
     if (!user) {
       throw createHttpError(HttpStatus.NOT_FOUND, "User not found");
     }
@@ -54,7 +45,6 @@ export class UserRepository
       );
     }
 
-    console.log("updated", updated);
 
     return { success: true, message: "User status updated scuccessfully" };
   }
@@ -72,137 +62,128 @@ export class UserRepository
     return await UserModel.findById(id);
   }
 
-  async updateTokenVersion(userId: string, newVersion: number): Promise<void> {
-    await UserModel.findByIdAndUpdate(userId, { tokenVersion: newVersion });
-  }
-
   async findByEmail(email: string): Promise<IUser | null> {
-    try {
-      return await this.model.findOne({ email });
-    } catch (error) {
-      console.error("Error finding user by email:", error);
-      throw new Error("Error finding user by email");
-    }
+    return await this.model.findOne({ email });
   }
 
   async findByIdWithPersonalization(id: string): Promise<IUser | null> {
-    try {
-      return await this.model.findById(id).populate("personalization");
-    } catch (error) {
-      console.error("Error finding user by ID with personalization:", error);
-      throw new Error("Error finding user by ID with personalization");
-    }
+    return await this.model.findById(id).populate("personalization");
   }
 
   async updatePassword(
     email: string,
     hashedPassword: string
   ): Promise<IUser | null> {
-    try {
-      return await this.model
-        .findOneAndUpdate(
-          { email },
-          { password: hashedPassword },
-          { new: true }
-        )
-        .populate("personalization");
-    } catch (error) {
-      console.error("Error updating password:", error);
-      throw new Error("Error updating password");
-    }
+    return await this.model
+      .findOneAndUpdate({ email }, { password: hashedPassword }, { new: true })
+      .populate("personalization");
   }
 
-  async updatePersonalizationsId(userId:string,personalizationId:string):Promise<IUser>{
-    return await this.update(userId,{personalizationId});
+  async updatePersonalizationsId(
+    userId: string,
+    personalizationId: string
+  ): Promise<IUser> {
+    return await this.update(userId, { personalizationId });
   }
 
   async getAllClientFilter(
-  page: number,
-  limit: number,
-  statusFilter: string,
-  searchTerm: string
-){
-  const skip = (page - 1) * limit;
-  searchTerm = searchTerm?.trim() || "";
-  console.log(statusFilter);
-  const matchStatus = statusFilter === "all" ? {} : { "personalization.data.planStatus": statusFilter };
+    page: number,
+    limit: number,
+    statusFilter: string,
+    searchTerm: string
+  ) {
+    const skip = (page - 1) * limit;
+    searchTerm = searchTerm?.trim() || "";
+    const matchStatus =
+      statusFilter === "all"
+        ? {}
+        : { "personalization.data.planStatus": statusFilter };
 
-  const pipeline = [
-    {
-      $match: {
-        role: "client",
-        ...(searchTerm && { name: { $regex: searchTerm, $options: "i" } }),
+    const pipeline = [
+      {
+        $match: {
+          role: "client",
+          ...(searchTerm && { name: { $regex: searchTerm, $options: "i" } }),
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "personalizations",
-        localField: "personalizationId",
-        foreignField: "_id",
-        as: "personalization",
+      {
+        $lookup: {
+          from: "personalizations",
+          localField: "personalizationId",
+          foreignField: "_id",
+          as: "personalization",
+        },
       },
-    },
-    { $unwind: { path: "$personalization", preserveNullAndEmptyArrays: true } },
-    {
-      $lookup: {
-        from: "userfiles",
-        localField: "personalization.data.userData.profilePictureId",
-        foreignField: "_id",
-        as: "profilePictureDoc",
+      {
+        $unwind: { path: "$personalization", preserveNullAndEmptyArrays: true },
       },
-    },
-    {
-      $lookup: {
-        from: "sessions",
-        localField: "personalization.data.sessionsId",
-        foreignField: "_id",
-        as: "sessions",
+      {
+        $lookup: {
+          from: "userfiles",
+          localField: "personalization.data.userData.profilePictureId",
+          foreignField: "_id",
+          as: "profilePictureDoc",
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "sessions.trainerId",
-        foreignField: "_id",
-        as: "trainers",
+      {
+        $lookup: {
+          from: "sessions",
+          localField: "personalization.data.sessionsId",
+          foreignField: "_id",
+          as: "sessions",
+        },
       },
-    },
-    {
-      $match: {
-        ...matchStatus,
+      {
+        $lookup: {
+          from: "users",
+          localField: "sessions.trainerId",
+          foreignField: "_id",
+          as: "trainers",
+        },
       },
-    },
-    {
-      $facet: {
-        data: [
-          { $skip: skip },
-          { $limit: limit },
-          {
-            $project: {
-              _id: 1,
-              name: 1,
-              email: 1,
-              isBlocked: 1,
-              role: 1,
-              createdAt: 1,
-              planStatus: "$personalization.data.planStatus",
-              profilePicture: { $arrayElemAt: ["$profilePictureDoc.filePath", 0] },
-              trainer: { $arrayElemAt: ["$trainers.name", 0] },
-              sessionStatus: { $arrayElemAt: ["$sessions.status", 0] },
+      {
+        $match: {
+          ...matchStatus,
+        },
+      },
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                isBlocked: 1,
+                role: 1,
+                createdAt: 1,
+                planStatus: "$personalization.data.planStatus",
+                profilePicture: {
+                  $arrayElemAt: ["$profilePictureDoc.filePath", 0],
+                },
+                trainer: { $arrayElemAt: ["$trainers.name", 0] },
+                sessionStatus: { $arrayElemAt: ["$sessions.status", 0] },
+              },
             },
-          },
-        ],
-        totalCount: [{ $count: "count" }],
+          ],
+          totalCount: [{ $count: "count" }],
+        },
       },
-    },
-  ];
+    ];
 
-  const result = await this.model.aggregate(pipeline);
-  const data = result[0]?.data || [];
-  const totalCount = result[0]?.totalCount[0]?.count || 0;
+    const result = await this.model.aggregate(pipeline);
+    const data = result[0]?.data || [];
+    const totalCount = result[0]?.totalCount[0]?.count || 0;
 
-  return { data, totalCount };
-}
+    return { data, totalCount };
+  }
 
-
+  async searchForUsers(filter: Record<string, unknown>):Promise<IUser[]> {
+    return await this.model
+      .find(filter, { _id: 1, name: 1, role: 1 })
+      .sort({ _id: -1 })
+      .limit(20);
+  }
 }

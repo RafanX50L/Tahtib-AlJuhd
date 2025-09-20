@@ -10,106 +10,24 @@ import { ClientService } from "@/services/implementation/clientServices";
 import { useNavigate } from "react-router-dom";
 import { CurrentTrainerCard, PreviousTrainerCard } from "./TrainerCards";
 
+// Trainer interface
 export interface Trainer {
-  _id: string;
+  id: string;
   name: string;
-
-  personalization?: {
-    data: {
-      basicInfo: {
-        profilePhoto: string;
-        weeklySalary: number;
-      };
-      professionalSummary?: {
-        specializations?: string[];
-        yearsOfExperience?: string;
-      };
-      profilePicture?: string;
-    };
-  };
+  speciality: string[];
+  photo: string;
+  experience: string;
+  price: number;
 }
 
-// Sample Current Trainer
-const sampleCurrentTrainer: Trainer = {
-  _id: "trainer_001",
-  name: "Alex Johnson",
-  personalization: {
-    data: {
-      basicInfo: {
-        profilePhoto: "https://example.com/images/trainers/alex_johnson.jpg",
-        weeklySalary: 150,
-      },
-      professionalSummary: {
-        specializations: ["Strength", "Cardio", "HIIT"],
-        yearsOfExperience: "8 years",
-      },
-    },
-  },
-};
-
-// Sample Previous Trainers
-const samplePreviousTrainers: Trainer[] = [
-  {
-    _id: "trainer_002",
-    name: "Sarah Miller",
-    personalization: {
-      data: {
-        basicInfo: {
-          profilePhoto: "https://example.com/images/trainers/sarah_miller.jpg",
-          weeklySalary: 120,
-        },
-        professionalSummary: {
-          specializations: ["Yoga", "Pilates", "Meditation"],
-          yearsOfExperience: "5 years",
-        },
-      },
-    },
-  },
-  {
-    _id: "trainer_003",
-    name: "Michael Chen",
-    personalization: {
-      data: {
-        basicInfo: {
-          profilePhoto: "https://example.com/images/trainers/michael_chen.jpg",
-          weeklySalary: 130,
-        },
-        professionalSummary: {
-          specializations: ["Weightlifting", "Bodybuilding"],
-          yearsOfExperience: "10 years",
-        },
-      },
-    },
-  },
-  {
-    _id: "trainer_004",
-    name: "Emily Davis",
-    personalization: {
-      data: {
-        basicInfo: {
-          profilePhoto: "https://example.com/images/trainers/emily_davis.jpg",
-          weeklySalary: 100,
-        },
-        professionalSummary: {
-          specializations: ["Zumba", "Cardio"],
-          yearsOfExperience: "3 years",
-        },
-      },
-    },
-  },
-];
-
 /**
- * Trainers page with search, filter and infinite‑scroll pagination.
- *
- * Fix 2025‑07‑01: `hasMore` was turning false after five pages because the backend
- * calculates `totalPages` using its own default `limit`. We now compute `hasMore`
- * on the client with `total` instead, so scrolling continues until all records
- * are fetched.
+ * Trainers page with search, filter, and infinite-scroll pagination.
+ * Optimized for backend response: { message, availableTrainers, currentPage, totalPages, total }
+ * Uses IntersectionObserver for efficient infinite scrolling.
  */
 const TrainersMain: React.FC = () => {
   /* ---------------------------------------------------------------------
-   * STATE
+   * STATE & REFS
    * ------------------------------------------------------------------ */
   const [displayedTrainers, setDisplayedTrainers] = useState<Trainer[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -120,96 +38,111 @@ const TrainersMain: React.FC = () => {
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentTrainer, setCurrentTrainer] = useState<Trainer | null>(null);
-  const [previousTrainers, setPreviousTrainer] = useState<Trainer[]>([]);
+  const [previousTrainers, setPreviousTrainers] = useState<Trainer[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const isMountedRef = useRef(true);
-  const limit = 5; // page size
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const lastFetchedPageRef = useRef(0); // Track last fetched page
+  const limit = 5; // Adjusted page size for better UX
 
   const navigate = useNavigate();
+
   /* ---------------------------------------------------------------------
    * EFFECTS
    * ------------------------------------------------------------------ */
-  // Debounce raw search input ⇒ debouncedSearchTerm
+  // Debounce search input
   useEffect(() => {
     const id = setTimeout(() => setDebouncedSearchTerm(searchTerm.trim()), 500);
     return () => clearTimeout(id);
   }, [searchTerm]);
 
-  // Track component mount status (safety against race‑conditions)
+  // Set sample data and cleanup
   useEffect(() => {
-    setCurrentTrainer(sampleCurrentTrainer);
-    setPreviousTrainer(samplePreviousTrainers);
+    const fetchCurrentTrainer = async () => {
+      const response = await ClientService.getCurrentTrainerPartialData();
+      console.log('current trainer',response);
+      setCurrentTrainer(response);
+    };
+    fetchCurrentTrainer();
+    // Set sample data for testing purposes
+    setPreviousTrainers([]);
+    console.log(previousTrainers);
     return () => {
       isMountedRef.current = false;
     };
   }, []);
 
-  // Fetch trainers whenever currentPage, debouncedSearchTerm or specialtyFilter changes
+  // Reset list when search/filter changes
   useEffect(() => {
-    // Define the expected response type
-    interface TrainersResponse {
-      total: number;
-      trainers: Trainer[];
-    }
-
-    const fetchPage = async () => {
-      if (isLoading || !hasMore) return;
-      setIsLoading(true);
-
-      try {
-        const rawRes = await ClientService.getAvailabeTrainers(
-          currentPage,
-          limit,
-          debouncedSearchTerm,
-          specialtyFilter.trim()
-        );
-        if (!isMountedRef.current) return;
-        // Normalize response to always have { total, trainers }
-        const res: TrainersResponse = Array.isArray(rawRes)
-          ? { total: rawRes.length, trainers: rawRes }
-          : rawRes;
-
-        console.log("response", res);
-
-        // 🚨 NEW: compute `hasMore` from total count rather than backend's totalPages
-        const more =
-          typeof res.total === "number"
-            ? currentPage * limit < res.total
-            : res.trainers.length === limit;
-        setDisplayedTrainers((prev) =>
-          currentPage === 1 ? res.trainers : [...prev, ...res.trainers]
-        );
-        setHasMore(more);
-      } catch (err) {
-        console.error("Failed to load trainers", err);
-      } finally {
-        if (isMountedRef.current) setIsLoading(false);
-      }
-    };
-
-    fetchPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, debouncedSearchTerm, specialtyFilter]);
-
-  // When search/filter changes we reset list & start from page 1
-  useEffect(() => {
+    setDisplayedTrainers([]);
     setCurrentPage(1);
     setHasMore(true);
+    setError(null);
+    lastFetchedPageRef.current = 0; // Reset last fetched page
   }, [debouncedSearchTerm, specialtyFilter]);
 
-  // Window‑scroll listener: bump page when user is near bottom
-  useEffect(() => {
-    const handleWindowScroll = () => {
-      if (isLoading || !hasMore) return;
-      const scrolledToBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 100;
-      if (scrolledToBottom) setCurrentPage((p) => p + 1);
-    };
+  // Fetch trainers
+  const fetchPage = useCallback(async () => {
+    if (isLoading || !hasMore || lastFetchedPageRef.current >= currentPage) return;
+    setIsLoading(true);
+    setError(null);
+    lastFetchedPageRef.current = currentPage;
 
-    window.addEventListener("scroll", handleWindowScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleWindowScroll);
-  }, [isLoading, hasMore]);
+    try {
+      // Assuming the correct method name is getAvailableTrainers
+      const response = await ClientService.getAvailabeTrainers(
+        currentPage,
+        limit,
+        debouncedSearchTerm,
+        specialtyFilter.trim()
+      );
+      if (!isMountedRef.current) return;
+
+      const { availableTrainers, total } = response;
+
+      setDisplayedTrainers((prev) => {
+        const newList = currentPage === 1 ? availableTrainers : [...prev, ...availableTrainers];
+        setHasMore(newList.length < total);
+        return newList;
+      });
+
+      if (availableTrainers.length === 0) {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error("Failed to load trainers", err);
+      setError("Failed to load trainers. Please try again.");
+    } finally {
+      if (isMountedRef.current) setIsLoading(false);
+    }
+  }, [currentPage, debouncedSearchTerm, specialtyFilter, hasMore, isLoading]);
+
+  useEffect(() => {
+    fetchPage();
+  }, [fetchPage]);
+
+  // IntersectionObserver for infinite scroll
+  useEffect(() => {
+    if (!hasMore || isLoading || !observerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading && hasMore) {
+          setCurrentPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "100px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(observerRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading]);
 
   /* ---------------------------------------------------------------------
    * HELPERS
@@ -217,54 +150,44 @@ const TrainersMain: React.FC = () => {
   const renderTrainerCard = useCallback(
     (t: Trainer) => (
       <div
-        key={t._id}
+        key={t.id}
         className="group bg-gradient-to-br from-[#1E2235] to-[#252A40] border border-[#2A3042] rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:border-[#5D5FEF] hover:shadow-[0_8px_30px_rgba(93,95,239,0.15)] transition-all duration-500 transform hover:-translate-y-1 backdrop-blur-sm relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-[rgba(93,95,239,0.05)] before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 sm:p-6"
       >
         {/* Profile Section */}
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <div className="relative">
             <img
-              src={t.personalization?.data.basicInfo.profilePhoto}
+              src={t.photo}
               alt={t.name}
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-[#2A3042] group-hover:ring-[#5D5FEF] transition-all duration-300 shadow-lg"
             />
-            {/* <span>{t.personalization?.data.basicInfo.profilePhoto}</span> */}
-            {/* Online indicator */}
             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#10B981] border-2 border-[#1E2235] rounded-full"></div>
           </div>
 
-          {/* Name and basic info - visible on mobile */}
+          {/* Name and basic info - mobile */}
           <div className="flex-1 sm:hidden">
             <h3 className="text-white font-bold text-lg leading-tight">
               {t.name}
             </h3>
             <p className="text-[#A0A7B8] text-sm mt-1 line-clamp-2">
-              {t.personalization?.data.professionalSummary?.specializations
-                ?.slice(0, 2)
-                .join(", ") || "No specialties"}
+              {t.speciality.slice(0, 2).join(", ") || "No specialties"}
             </p>
           </div>
         </div>
 
         {/* Content Section */}
         <div className="flex-1 w-full">
-          {/* Name - hidden on mobile, shown on desktop */}
           <h3 className="hidden sm:block text-white font-bold text-xl mb-2 group-hover:text-[#5D5FEF] transition-colors duration-300">
             {t.name}
           </h3>
 
-          {/* Specializations */}
           <div className="mb-3">
             <p className="text-[#A0A7B8] text-sm sm:text-base leading-relaxed">
-              {t.personalization?.data.professionalSummary?.specializations?.join(
-                ", "
-              ) || "No specialties"}
+              {t.speciality.join(", ") || "No specialties"}
             </p>
           </div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:gap-6">
-            {/* Experience */}
             <div className="flex items-center gap-2 text-[#A0A7B8] text-sm group-hover:text-white transition-colors duration-300">
               <div className="p-1.5 bg-[#2A3042] rounded-lg group-hover:bg-[#5D5FEF] transition-colors duration-300">
                 <Clock size={14} />
@@ -273,14 +196,10 @@ const TrainersMain: React.FC = () => {
                 <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">
                   Experience
                 </p>
-                <span className="font-semibold">
-                  {t.personalization?.data.professionalSummary
-                    ?.yearsOfExperience || "N/A"}
-                </span>
+                <span className="font-semibold">{t.experience || "N/A"} years</span>
               </div>
             </div>
 
-            {/* Price */}
             <div className="flex items-center gap-2 text-[#A0A7B8] text-sm group-hover:text-white transition-colors duration-300">
               <div className="p-1.5 bg-[#2A3042] rounded-lg group-hover:bg-[#5D5FEF] transition-colors duration-300">
                 <DollarSign size={14} />
@@ -289,28 +208,24 @@ const TrainersMain: React.FC = () => {
                 <p className="text-xs text-[#6B7280] uppercase tracking-wide font-medium">
                   Rate/Week
                 </p>
-                <span className="font-semibold">
-                  {t.personalization?.data.basicInfo.weeklySalary || "N/A"}
-                </span>
+                <span className="font-semibold">${t.price || "N/A"}</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Action Button - Desktop */}
         <div className="hidden sm:block">
           <button
-            onClick={() => navigate("/trainer-details")}
+            onClick={() => navigate(`/trainer-details/${t.id}`)}
             className="px-6 py-2 bg-[#5D5FEF] text-white rounded-xl font-medium hover:bg-[#4C4EE5] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-[0_4px_20px_rgba(93,95,239,0.4)]"
           >
             View Profile
           </button>
         </div>
 
-        {/* Action Button - Mobile (Full Width) */}
         <div className="sm:hidden w-full mt-2">
           <button
-            onClick={() => navigate("/trainer-details")}
+            onClick={() => navigate(`/trainer-details/${t.id}`)}
             className="w-full px-4 py-3 bg-[#5D5FEF] text-white rounded-xl font-medium hover:bg-[#4C4EE5] transition-all duration-300 shadow-lg"
           >
             View Profile
@@ -318,30 +233,21 @@ const TrainersMain: React.FC = () => {
         </div>
       </div>
     ),
-    []
+    [navigate]
   );
 
   /* ---------------------------------------------------------------------
    * RENDER
    * ------------------------------------------------------------------ */
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#0F1419] to-[#1A1F2E] transition-all duration-300">
-      {/* Container with proper responsive margins */}
-      <div className=" p-4 lg:pt-[calc(70px+1rem)] xl:p-6 2xl:p-8 max-w-7xl mx-auto lg:mx-0">
+      <div className="p-4 lg:pt-[calc(70px+1rem)] xl:p-6 2xl:p-8 max-w-7xl mx-auto lg:mx-0 ">
         {/* Current Trainer Section */}
         <section className="relative mb-8 animate-[fadeIn_0.6s_ease-out_0.1s_forwards]">
           <div className="bg-gradient-to-br from-[#1E2235] via-[#252A40] to-[rgba(30,34,53,0.8)] border border-[#2A3042] rounded-2xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-            {/* Animated border */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#5D5FEF] via-[#FF4757] to-[#5D5FEF] animate-pulse"></div>
-
-            {/* Header */}
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-[#5D5FEF] rounded-xl">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -349,7 +255,6 @@ const TrainersMain: React.FC = () => {
                 Your Current Trainer
               </h2>
             </div>
-
             {currentTrainer ? (
               <CurrentTrainerCard trainer={currentTrainer} />
             ) : (
@@ -369,28 +274,20 @@ const TrainersMain: React.FC = () => {
                     />
                   </svg>
                 </div>
-                <p className="text-[#A0A7B8] text-lg">
-                  No current trainer assigned
-                </p>
-                <p className="text-[#6B7280] text-sm mt-2">
-                  Find your perfect trainer below
-                </p>
+                <p className="text-[#A0A7B8] text-lg">No current trainer assigned</p>
+                <p className="text-[#6B7280] text-sm mt-2">Find your perfect trainer below</p>
               </div>
             )}
           </div>
         </section>
+
         {/* Previous Trainers Section */}
         {previousTrainers.length > 0 && (
           <section className="mb-8 animate-[fadeIn_0.6s_ease-out_0.2s_forwards]">
             <div className="bg-gradient-to-br from-[#1E2235] to-[#252A40] border border-[#2A3042] rounded-2xl p-6 shadow-xl backdrop-blur-sm">
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 <div className="p-2 bg-[#FF4757] rounded-xl">
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -403,7 +300,7 @@ const TrainersMain: React.FC = () => {
               </h2>
               <div className="grid gap-4">
                 {previousTrainers.map((trainer) => (
-                  <PreviousTrainerCard key={trainer._id} trainer={trainer} />
+                  <PreviousTrainerCard key={trainer.id} trainer={trainer} />
                 ))}
               </div>
             </div>
@@ -414,12 +311,7 @@ const TrainersMain: React.FC = () => {
         <section className="mb-8 animate-[fadeIn_0.6s_ease-out_0.15s_forwards]">
           <div className="bg-gradient-to-r from-[#1E2235] to-[#252A40] border border-[#2A3042] rounded-2xl p-6 shadow-xl backdrop-blur-sm">
             <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-[#5D5FEF]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-5 h-5 text-[#5D5FEF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -429,9 +321,7 @@ const TrainersMain: React.FC = () => {
               </svg>
               Find Trainers
             </h3>
-
             <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search Input */}
               <div className="flex-1 relative">
                 <Search
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A0A7B8] z-10"
@@ -445,8 +335,6 @@ const TrainersMain: React.FC = () => {
                   className="w-full bg-[#2A3042] border border-[#3A4052] rounded-xl py-4 pl-12 pr-4 text-white placeholder-[#A0A7B8] focus:border-[#5D5FEF] focus:shadow-[0_0_0_3px_rgba(93,95,239,0.1)] focus:outline-none transition-all duration-300 text-sm sm:text-base"
                 />
               </div>
-
-              {/* Filter Dropdown */}
               <div className="lg:w-80 relative">
                 <button
                   onClick={() => setIsFilterOpen((p) => !p)}
@@ -470,13 +358,8 @@ const TrainersMain: React.FC = () => {
                     </svg>
                     {specialtyFilter || "All Specialties"}
                   </span>
-                  {isFilterOpen ? (
-                    <ChevronUp size={18} />
-                  ) : (
-                    <ChevronDown size={18} />
-                  )}
+                  {isFilterOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </button>
-
                 {isFilterOpen && (
                   <div
                     role="listbox"
@@ -484,7 +367,7 @@ const TrainersMain: React.FC = () => {
                   >
                     {[
                       "",
-                      "Strength",
+                      "Strength Training",
                       "Cardio",
                       "Yoga",
                       "HIIT",
@@ -553,14 +436,12 @@ const TrainersMain: React.FC = () => {
               Available Trainers
             </h2>
             <p className="text-[#A0A7B8]">
-              {displayedTrainers.length} trainer
-              {displayedTrainers.length !== 1 ? "s" : ""} found
+              {displayedTrainers.length} trainer{displayedTrainers.length !== 1 ? "s" : ""} found
             </p>
           </div>
 
-          {/* Trainer Grid */}
           <div className="space-y-4">
-            {displayedTrainers.length === 0 && !isLoading && (
+            {displayedTrainers.length === 0 && !isLoading && !error && (
               <div className="text-center py-16 bg-gradient-to-br from-[#1E2235] to-[#252A40] border border-[#2A3042] rounded-2xl">
                 <div className="w-24 h-24 mx-auto mb-4 bg-[#2A3042] rounded-full flex items-center justify-center">
                   <svg
@@ -578,15 +459,24 @@ const TrainersMain: React.FC = () => {
                   </svg>
                 </div>
                 <p className="text-[#A0A7B8] text-lg mb-2">No trainers found</p>
-                <p className="text-[#6B7280] text-sm">
-                  Try adjusting your search or filter criteria
-                </p>
+                <p className="text-[#6B7280] text-sm">Try adjusting your search or filter criteria</p>
               </div>
             )}
 
             {displayedTrainers.map(renderTrainerCard)}
 
-            {/* Loading State */}
+            {error && (
+              <div className="text-center py-8 text-[#FF4757]">
+                {error}
+                <button
+                  onClick={() => fetchPage()}
+                  className="ml-4 px-4 py-2 bg-[#5D5FEF] text-white rounded-xl font-medium hover:bg-[#4C4EE5] transition-all duration-300"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
             {isLoading && (
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-3 text-[#A0A7B8]">
@@ -596,18 +486,15 @@ const TrainersMain: React.FC = () => {
               </div>
             )}
 
-            {/* End of Results */}
+            {hasMore && !isLoading && <div ref={observerRef} className="h-1" />}
+
             {!hasMore && displayedTrainers.length > 0 && (
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-2 text-[#A0A7B8] bg-[#1E2235] px-6 py-3 rounded-full border border-[#2A3042]">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M16.707 5.293a1 1 0 010 1414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -618,7 +505,6 @@ const TrainersMain: React.FC = () => {
           </div>
         </section>
       </div>
-    </main>
   );
 };
 

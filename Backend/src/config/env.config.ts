@@ -50,4 +50,22 @@ export const env = {
   get TRAINER_DASHBOARD_URL() {
     return process.env.TRAINER_DASHBOARD_URL;
   },
+  get ERROR_LOG_RETENTION_PERIOD(){
+    return process.env.ERROR_LOG_RETENTION_PERIOD;
+  },
+  get START_INTERVAL(){
+    return process.env.START_INTERVAL;
+  },
+  get END_INTERVAL(){
+    return process.env.END_INTERVAL;
+  },
+  get STRIPE_SECRET_KEY(){
+    return process.env.STRIPE_SECRET_KEY;
+  },
+  get WEBHOOK_SECRET(){
+    return process.env.WEBHOOK_SECRET;
+  },
+  get COOKIE_MAX_AGE(){
+    return process.env.COOKIE_MAX_AGE;
+  }
 };

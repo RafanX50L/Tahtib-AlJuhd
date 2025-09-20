@@ -1,37 +1,58 @@
 // src/routes/UserRoutes.tsx
-import { Route, Routes } from 'react-router-dom';
-import CDashboard from '@/pages/client/CDashboard';
-import Personalization from '@/pages/client/Personalization';
-import WorkoutPlan from '@/pages/client/CWorkouts';
-import WorkoutSession from '@/pages/client/CWorkoutSession';
-import WorkoutReport from '@/components/client/Workouts/WorkoutReport';
-import ChallengeDetail from '@/components/client/WeeklyChallenge/ChallengeDetails';
-import CProfile from '@/pages/client/CProfile';
-import NotFoundPage from '@/pages/common/NotFond';
-import CTrainerSession from '@/pages/client/CTrainerSession';
-import CChatBotPage from '@/pages/client/CChatbot';
-import CTProfilePage from '@/pages/client/CTProfile';
-import CurrentTrainer from '@/components/client/Trainer/CCurrentTrainers';
-import CDietPlanPage from '@/pages/client/CDietPlan';
+import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+
+const CDashboard = lazy(() => import("@/pages/client/CDashboard"));
+const Personalization = lazy(() => import("@/pages/client/Personalization"));
+const WorkoutPlan = lazy(() => import("@/pages/client/CWorkouts"));
+const WorkoutSession = lazy(() => import("@/pages/client/CWorkoutSession"));
+const WorkoutReport = lazy(() => import("@/components/client/Workouts/WorkoutReport"));
+const ChallengeDetail = lazy(() => import("@/components/client/WeeklyChallenge/ChallengeDetails"));
+const CProfile = lazy(() => import("@/pages/client/CProfile"));
+const NotFoundPage = lazy(() => import("@/pages/common/NotFond"));
+const CTrainerSession = lazy(() => import("@/pages/client/CTrainerSession"));
+const CChatBotPage = lazy(() => import("@/pages/client/CChatbot"));
+const CDietPlanPage = lazy(() => import("@/pages/client/CDietPlan"));
+const CATrainerDetailsPage = lazy(() => import("@/pages/client/CATProfilePage"));
+const CCurrentTrainerPage = lazy(() => import("@/pages/client/CCTrainerPage"));
+const CBookingPage = lazy(() => import("@/pages/client/CBooking"));
+const NotificationsPage = lazy(() => import("@/components/shared/Notification"));
+
+import { clientTheme } from "@/components/shared/Notification";
+
+import CommunityApp from "@/pages/common/community/CommunityApp";
+import ProgressPage from "@/pages/client/CProgressPage";
+
+
 
 const UserRoutes: React.FC = () => {
-  console.log('Entered UserRoutes');
+  // UserRoutes component loaded
+
   return (
-    <Routes>
-      <Route path="/dashboard" element={<CDashboard />} /> {/* Fixed to lowercase */}
-      <Route path="/personalization" element={<Personalization />} />
-      <Route path="/workouts" element={<WorkoutPlan />} />
-      <Route path="/workoutSession" element={<WorkoutSession />} />
-      <Route path="/workout-report" element={<WorkoutReport />} />
-      <Route path="/challenge/:id" element={<ChallengeDetail />} />
-      <Route path="/profile" element={<CProfile />} />
-      <Route path="/trainerSession" element={<CTrainerSession />} />
-      <Route path="/trainer-details" element={<CTProfilePage />} />
-      <Route path="/current-trainer" element={<CurrentTrainer />} />
-      <Route path="/diet" element={<CDietPlanPage />} />
-      <Route path="/chat" element={<CChatBotPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <Suspense fallback={<div className="p-6 text-center">Loading...</div>}>
+      <Routes>
+        <Route path="/dashboard" element={<CDashboard />} />
+        <Route path="/personalization" element={<Personalization />} />
+        <Route path="/workouts" element={<WorkoutPlan />} />
+        <Route path="/workoutSession" element={<WorkoutSession />} />
+        <Route path="/workout-report" element={<WorkoutReport />} />
+        <Route path="/challenge/:id" element={<ChallengeDetail />} />
+        <Route path="/profile" element={<CProfile />} />
+        <Route path="/trainerSession" element={<CTrainerSession />} />
+        <Route path="/current-trainer" element={<CCurrentTrainerPage />} />
+        <Route path="/diet" element={<CDietPlanPage />} />
+        <Route path="/chat" element={<CChatBotPage />} />
+        <Route path="/trainer-details/:trainerId" element={<CATrainerDetailsPage />} />
+        <Route path="/booking/:trainerId" element={<CBookingPage />} />
+        <Route path="/community" element={<CommunityApp />} />
+        <Route path="/progress" element={<ProgressPage/>} />
+        <Route
+          path="/notifications"
+          element={<NotificationsPage theme={clientTheme} backPath="/dashboard" />}
+        />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 };
 

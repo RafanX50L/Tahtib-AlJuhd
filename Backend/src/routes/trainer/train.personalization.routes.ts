@@ -30,5 +30,6 @@ personalizationRouter.post(
 personalizationRouter.get("/application-data",personalizationController.getPendingApplicationDetails.bind(personalizationController));
 personalizationRouter.get("/profile-data",personalizationController.getProfileData.bind(personalizationController));
 personalizationRouter.patch("/update-profile",personalizationController.updateProfileData.bind(personalizationController));
+personalizationRouter.get('/salary',personalizationController.getSalary.bind(personalizationController));
 
 export default personalizationRouter;

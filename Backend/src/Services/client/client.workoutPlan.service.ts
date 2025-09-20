@@ -1,15 +1,13 @@
-
 import {
   IClientPersonalization,
   IPersonalization,
 } from "@/core/interface/model/IPersonalization.model";
-import {
-  IExercise,
-  IWorkoutPlan,
-} from "@/core/interface/model/IWorkoutPlan.model";
+import { IWorkoutPlan } from "@/core/interface/model/IWorkoutPlan.model";
 import { IPersonalizationRepository } from "@/core/interface/repositories/IPersonalization.repository";
 import { IWorkoutPlanRepository } from "@/core/interface/repositories/IWorkoutPlan.repository";
 import { IClientWorkoutPlanService } from "@/core/interface/services/client/IClient.WorkoutPlan.Service";
+import { IExerciseView } from "@/dtos/client/weeklyChallengeDTO";
+import { WorkotsDto } from "@/dtos/client/WorkoutsDTO";
 import { createHttpError } from "@/utils";
 import {
   generateFitnessPlan,
@@ -34,63 +32,36 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
       (personalization.data as IClientPersonalization).workoutPlanId
     );
     const workouts = await this._workoutPlanRepository.getWorkouts(workoutId);
-    return workouts[`week${week}`];
+    if(workouts[`week${week}`]){
+      const workotsDto = await WorkotsDto.mapToWorkoutData(
+        workouts[`week${week}`]
+      );
+      return workotsDto;
+    }else{
+      return null;
+    }
   }
-
-  // async completeDailyWorkoutAndFetchReport(userId:string, week:string, day:string, workout:IExercise[]) {
-  //   const defaultReport = {
-  //     caloriesBurned: 500, // Example value
-  //     duration: 60, // Example value in minutes
-  //     feedback: "Great job! Keep it up!", // Example feedback
-  //     intensity: "low",
-  //     estimatedDuration: "60 minutes",
-  //     totalExercises: 5,
-  //     totalSets: 15,
-  //   };
-  //   // 1. Generate workout report
-  //   const report = workout.length === 0 ? defaultReport : await generateWorkoutReport(workout);
-
-  //   // 2. Update completion count
-  //   const clientData = (await this._personalizationRepository.updateClientWorkoutCompletionCounter(userId) as IPersonalization).data as IClientPersonalization;
-  //   const workoutId = clientData.workoutPlanId ;
-
-  //   if (!workoutId) throw createHttpError(HttpStatus.NOT_FOUND,HttpResponse.FAILED_TO_UPDATE_DAY_COMPLETION_STATUS);
-
-  //   // 3. Generate next week if it's the last day
-  //   if (day === "day7") {
-  //     const weekNumber = parseInt(week.replace("week", ""), 10);
-  //     const nextWeek = await generateFitnessPlan(clientData.userData, weekNumber + 1, "workout", weekObj);
-  //     await this._workoutPlanRepository.insertNextWeek(workoutId, nextWeek, weekNumber);
-  //   }
-
-  //   // 4. Mark current day as complete
-  //   await this._workoutPlanRepository.markWorkoutDayAsComplete(workoutId, week, day, report);
-
-  //   return report;
-  // }
 
   async completeDailyWorkoutAndFetchReport(
     userId: string,
     week: string,
     day: string,
-    workout: IExercise[]
+    workout: IExerciseView[]
   ) {
     const defaultReport = {
-      caloriesBurned: 500, // Example value
-      duration: 60, // Example value in minutes
-      feedback: "Great job! Keep it up!", // Example feedback
+      caloriesBurned: 0, 
+      duration: 0, 
+      feedback: "Great job! Keep it up!", 
       intensity: "low",
-      estimatedDuration: "60 minutes",
-      totalExercises: 5,
-      totalSets: 15,
+      estimatedDuration: "0 minutes",
+      totalExercises: 0,
+      totalSets: 0,
     };
-    // 1. Generate report
     const report =
       workout.length === 0
         ? defaultReport
         : await generateWorkoutReport(workout);
 
-    // 2. Increment completion counter
     const clientData = (
       (await this._personalizationRepository.updateClientWorkoutCompletionCounter(
         userId
@@ -101,10 +72,11 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
     if (!workoutId)
       throw createHttpError(400, "No workout plan assigned to user");
 
-    // 3. Generate next week if it’s day7
     if (day === "day7") {
-      const workoutPlan = (await this._workoutPlanRepository.findById(workoutId)) as IWorkoutPlan;
-      const previousWeekWorkouts = workoutPlan[`${week}`]; // assuming the keys are like week1, week2, etc.
+      const workoutPlan = (await this._workoutPlanRepository.findById(
+        workoutId
+      )) as IWorkoutPlan;
+      const previousWeekWorkouts = workoutPlan[`${week}`]; 
       const currentWeek = parseInt(week.replace("week", ""), 10);
       const nextWeekPlan = await generateFitnessPlan(
         clientData.userData,
@@ -115,12 +87,14 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
       await this._workoutPlanRepository.insertNextWeek(
         workoutId,
         `week${currentWeek + 1}`,
-        nextWeekPlan
+        nextWeekPlan[`week${currentWeek + 1}`]
       );
-      await this._workoutPlanRepository.markWeekAsCompleted(workoutId,`week${currentWeek}`);
+      await this._workoutPlanRepository.markWeekAsCompleted(
+        workoutId,
+        `week${currentWeek}`
+      );
     }
 
-    // 4. Mark current day complete and save report
     await this._workoutPlanRepository.markWorkoutDayAsComplete(
       workoutId,
       week,
@@ -129,5 +103,37 @@ export class ClientWorkoutPlanService implements IClientWorkoutPlanService {
     );
 
     return report;
+  }
+
+  async getWorkoutReport(userId: string, week: string, day: string) {
+    const personalization =
+      (await this._personalizationRepository.getPersonalization(
+        userId
+      )) as IPersonalization;
+    const workoutId = new Types.ObjectId(
+      (personalization.data as IClientPersonalization).workoutPlanId
+    );
+    
+    if (!workoutId) {
+      throw createHttpError(400, "No workout plan assigned to user");
+    }
+
+    const workoutPlan = await this._workoutPlanRepository.findById(workoutId);
+    if (!workoutPlan) {
+      throw createHttpError(404, "Workout plan not found");
+    }
+
+    const weekData = workoutPlan[`${week}`];
+    if (!weekData) {
+      throw createHttpError(404, `${week} not found in workout plan`);
+    }
+
+    const dayData = weekData[day];
+    if (!dayData) {
+      throw createHttpError(404, `${day} not found in week ${week}`);
+    }
+
+    // Return the report if it exists, otherwise return null
+    return dayData.report || null;
   }
 }

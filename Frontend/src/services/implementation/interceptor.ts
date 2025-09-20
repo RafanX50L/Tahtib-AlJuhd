@@ -11,10 +11,10 @@ import { refreshAccessToken } from "@/store/slices/authSlice";
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value: string) => void;
-  reject: (reason?: any) => void;
+  reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   console.log("Processing failed queue, error:", error, "token:", token);
   failedQueue.forEach((prom) => {
     if (error) {
@@ -35,11 +35,10 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
       console.log(
         `Request interceptor triggered for: ${config.url} [${config.method?.toUpperCase()}]`
       );
-      const tokens = secureTokenStorage.get() as { token: string; version: number };
+      const tokens = secureTokenStorage.get() as { token: string;};
       if (tokens && tokens.token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${tokens.token}`;
-        config.headers['X-Token-Version'] = tokens.version;
       } else {
         console.log("No token found in secureTokenStorage");
       }
@@ -75,7 +74,7 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
       if (
         (status === 401 &&
           (data?.error === "User is Blocked" ||
-            data?.error === "Invalid token version")) ||
+            data?.error === "Invalid token ")) ||
         (status === 403 && data?.error === "Unauthorized")
       ) {
         console.log(
@@ -119,30 +118,38 @@ const setupInterceptors = (api: AxiosInstance, dispatch: AppDispatch) => {
           const response = await dispatch(refreshAccessToken()).unwrap();
           console.log("Refresh token response:", response);
 
-          const { accessToken, tokenVersion, user } = response;
-          if (!accessToken || tokenVersion === undefined) {
+          const { accessToken, user, notifications } = response;
+          if (!accessToken) {
             throw new Error(
-              "Invalid refresh response: missing accessToken or tokenVersion"
+              "Invalid refresh response: missing accessToken"
             );
           }
 
-          secureTokenStorage.set(user,accessToken, tokenVersion,dispatch);
+          // Update token storage with new token
+          secureTokenStorage.set(user, notifications, accessToken, dispatch);
+          
+          // Update the original request headers with new token
           originalRequest.headers = {
             ...originalRequest.headers,
             Authorization: `Bearer ${accessToken}`,
-            "X-Token-Version": tokenVersion,
           };
 
           console.log(
-            `Retrying original request for ${originalRequest.url} from ${frontendUrl} with new token, version: ${tokenVersion}`
+            `Retrying original request for ${originalRequest.url} from ${frontendUrl} with new token`
           );
+          
+          // Process queued requests with new token
           processQueue(null, accessToken);
+          
+          // Retry the original request
           return api(originalRequest);
-        } catch (refreshError: any) {
+        } catch (refreshError:any) {
           console.error(
             `Token refresh failed on ${frontendUrl}:`,
-            refreshError.message
+            refreshError.message || refreshError
           );
+          
+          // Clear token storage and redirect to login
           secureTokenStorage.remove();
           processQueue(refreshError);
           window.location.href = `/auth?path=login&from=${encodeURIComponent(frontendUrl)}`;

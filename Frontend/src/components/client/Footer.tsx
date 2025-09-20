@@ -5,7 +5,7 @@ const CFooter = () => {
     <footer className="px-6 py-4 bg-gray-900 mt-8">
       <div className="flex items-center justify-between">
         <p className="text-gray-400 text-sm">
-          © 2025 FitConnect Admin Portal. All rights reserved.
+          © 2025 Tahtib Al Juhd Client Portal. All rights reserved.
         </p>
         <div className="flex items-center space-x-4">
           <a href="#" className="text-gray-400 hover:text-white">

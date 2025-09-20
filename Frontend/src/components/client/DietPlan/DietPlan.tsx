@@ -9,12 +9,10 @@ import {
   FaMoon,
   FaCloudSun,
   FaLeaf,
-  FaCookie,
   FaAppleAlt,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import Loading from "../Loading";
-import { TrainerService } from "@/services/implementation/trainerServices";
 import { ClientService } from "@/services/implementation/clientServices";
 
 interface Dish {
@@ -162,7 +160,7 @@ const DietPlanPage: React.FC = () => {
         {/* Meal Options */}
         <div className="space-y-3">
           {getDisplayedOptions(mealData.options, mealType).map(
-            (dish, index) => (
+            (dish) => (
               <div
                 key={dish._id}
                 onClick={() => handleDishClick(dish, mealType)}
@@ -209,7 +207,6 @@ const DietPlanPage: React.FC = () => {
 
   if (selectedDish) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#12151E] to-[#1E2235] p-6">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
@@ -298,7 +295,6 @@ const DietPlanPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     );
   }
 
@@ -306,18 +302,7 @@ const DietPlanPage: React.FC = () => {
     return <Loading content="Loading Diet Plan...." />;
   } else {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#12151E] to-[#1E2235] p-6">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              Your Diet Plan
-            </h1>
-            <p className="text-[#A0A7B8] text-lg max-w-2xl mx-auto">
-              Personalized vegetarian meal plan designed for muscle building and
-              healthy weight gain
-            </p>
-          </div>
 
           {/* Main Meals Section */}
           <div className="mb-12">
@@ -387,7 +372,6 @@ const DietPlanPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     );
   }
 };

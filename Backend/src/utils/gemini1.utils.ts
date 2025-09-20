@@ -5,6 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { env } from "..//config/env.config";
 import { IClientUserData } from "@/core/interface/model/IPersonalization.model";
 import { IMealType } from "@/core/interface/model/IDietPlan.model";
+import logger from "./logger.utils";
 
 // Initialize the Google GenAI client
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY as string);
@@ -33,20 +34,20 @@ async function generateFitnessPlan(
     // Parse the response into structured data
     return parseResponse(text);
   } catch (error) {
-    console.error("Error generating fitness plan:", error);
+    logger.error("Error generating fitness plan:", error);
     throw new Error("Failed to generate fitness plan");
   }
 }
 
 function getMealCategories(mealsPerDay: string): string[] {
   switch (mealsPerDay) {
-    case "3":
+    case "3 meals":
       return ["breakfast", "lunch", "dinner"];
-    case "4":
+    case "3 meals + 1 snack":
       return ["breakfast", "lunch", "dinner", "snack1"];
-    case "5":
+    case "3 meals + 2 snacks":
       return ["breakfast", "lunch", "dinner", "snack1", "snack2"];
-    case "6":
+    case "6 meals":
       return [
         "breakfast",
         "mid_morning_snack",
@@ -79,7 +80,7 @@ function formatPrompt(
 //       : "";
 
   // Dynamically generate meal plan structure based on getMealCategories
-  const mealCategories = getMealCategories(userData.dietMealsPerDay.join(""));
+  const mealCategories = getMealCategories(userData.dietMealsPerDay);
   const mealPlanStructure: Record<string, IMealType> = {};
   for (const category of mealCategories) {
     mealPlanStructure[category] = {
@@ -272,8 +273,8 @@ function parseResponse(text: string) {
 
     return parsedJson;
   } catch (error) {
-    console.log("Error parsing AI response:", error);
-    console.error("Failed to parse AI response. Raw response was:", text);
+    logger.error("Error parsing AI response:", error);
+    logger.error("Failed to parse AI response. Raw response was:", text);
     throw new Error(
       "Failed to parse AI response. Ensure the model returns pure JSON and is not truncated."
     );
@@ -284,7 +285,7 @@ function parseResponse(text: string) {
 const genAIS = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
 const generateWorkoutReport = async (exercises: IExercise[]) => {
-  console.log("Generating workout report for exercises:", exercises);
+  logger.info("Generating workout report for exercises:");
 
   const prompt = `
   You are a fitness assistant. Based on the following exercise data, generate a workout report that includes:
@@ -315,16 +316,15 @@ ${JSON.stringify(exercises, null, 2)}
   });
 
   const textResponse = response?.text || "";
-  console.log("Raw Gemini Response:", textResponse);
 
   try {
     // Remove any markdown artifacts
     const cleaned = textResponse.replace(/^```json|```$/g, "").trim();
     const report = JSON.parse(cleaned);
-    console.log("Generated workout report:", report);
+    logger.info("Generating workout report successfull");
     return report;
   } catch (err) {
-    console.error("Failed to parse Gemini workout report:", err);
+    logger.error("Failed to parse Gemini workout report:", err);
     throw new Error("Invalid workout report format from Gemini.");
   }
 };
@@ -338,38 +338,14 @@ const generateExercisesForWeek = async (type: ChallengeType) => {
     const numDailyExercises = 5; // Assuming 5 exercises per day
     const totalExercisesNeeded = numDailyExercises * 7;
 
-    // const prompt = `Generate ${totalExercisesNeeded} unique ${type} fitness exercises suitable for a weekly challenge. Ensure there is enough variety so that each day can have a different set of 5 exercises. Each exercise should have:
-    // - name: string (e.g., "Jumping Jacks")
-    // - sets: string (e.g., "2", "3")
-    // - reps: string (e.g., "15 seconds", "12", "10 each leg", "20")
-    // - rest: string (e.g., "30 seconds", "45 seconds")
-    // - instructions: string (a brief, clear description of how to perform the exercise)
-    // - animation_link: string (a placeholder URL, e.g., "https://example.com/exercise-name")
-
-    // Format the output as a JSON array of objects.
-    // `;
+    
 
     const generatedExercises: Partial<IExercise>[] = [];
-    // --- START GEMINI INTEGRATION (Uncomment and implement when ready) ---
-    // try {
-    //   const result = await model.generateContent(prompt);
-    //   const response = await result.response;
-    //   const text = response.text();
-    //   generatedExercises = JSON.parse(text);
-    //   // Basic validation to ensure we got enough exercises
-    //   if (generatedExercises.length < totalExercisesNeeded) {
-    //     console.warn(`Gemini returned fewer exercises than requested (${generatedExercises.length}/${totalExercisesNeeded}). Falling back to dummy data.`);
-    //     generatedExercises = []; // Clear to trigger dummy data fallback
-    //   }
-    // } catch (geminiError) {
-    //   console.error('Error with Gemini API call, falling back to dummy data:', geminiError);
-    //   generatedExercises = []; // Trigger dummy data fallback
-    // }
-    // --- END GEMINI INTEGRATION ---
+    
 
     // Fallback to dummy data if Gemini integration is commented out or fails
     if (generatedExercises.length === 0) {
-      console.log("Using dummy data for exercise generation.");
+      logger.info("Using dummy data for exercise generation.");
       const beginnerDummyPool: Partial<IExercise>[] = [
         {
           name: "Jumping Jacks",
@@ -807,7 +783,7 @@ const generateExercisesForWeek = async (type: ChallengeType) => {
 
     return weeklyTasks;
   } catch (error) {
-    console.error("❌ Critical error in generateExercisesForWeek:", error);
+    logger.error("❌ Critical error in generateExercisesForWeek:", error);
     return [];
   }
 };

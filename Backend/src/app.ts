@@ -17,13 +17,18 @@ import {env} from './config/env.config';
 import {errorHandler} from './middleware/error.middleware';
 
 // cron jobs
-import './utils/createWeeklyChallenge-Corn .utils';
+import '@/utils/createWeeklyChallenge.cron';
 
 //routes
 import authRoutes from '@/routes/auth.routes';
 import userRoutes from '@/routes/user.routes';
-import trainerRouter from './routes/trainer.routes';
-import adminRouter from './routes/admin.routes';
+import trainerRouter from '@/routes/trainer.routes';
+import adminRouter from '@/routes/admin.routes';
+import notificationRoute from '@/routes/shared/notification.routes';
+import schedulingRouter from '@/routes/domain/scheduling.routes';
+import paymentRouter from '@/routes/shared/payment.routes';
+import webhookRouter from '@/routes/domain/webhook.routes';
+import communityRouter from '@/routes/shared/community.routes';
 
 const app = express();
 
@@ -37,17 +42,25 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json());
 app.use(morgan("dev"));
-app.use(express.urlencoded({extended: true}));
 
 connectDb();
+
+app.use('/api/payment/webhook',webhookRouter);
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/client/',userRoutes);
 app.use('/api/trainer', trainerRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/notifications',notificationRoute);
+app.use('/api/payment',paymentRouter);
+app.use('/api/scheduling', schedulingRouter);
+app.use('/api/community', communityRouter);
 app.use(errorHandler);
+
 
 
 export default app;
