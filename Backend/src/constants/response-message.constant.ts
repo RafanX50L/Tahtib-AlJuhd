@@ -88,5 +88,6 @@ export const HttpResponse = {
     SLOTS_CONFLICT : "Slots conflict with existing sessions",
     SLOT_BOOKING_SUCCESSFULL: "Slot booking successfull",
     SLOT_CANCELLING_SUCCESSFULL: "Slot canceling successfull",
+    USER_ALREADY_CANCELLED_MORE_THAN_THREE: "User already canclled more than three slots"
 
 };

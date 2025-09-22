@@ -33,5 +33,13 @@ export class SessionRepository extends BaseRepository<ISession> implements ISess
       startTime: { $gte: fromDate, $lte: toDate },
     });
   }
+
+  // async coutnCancelledDocumentsInAWeek(clientId:string):Promise<number>{
+  //   return await this.model.countDocuments({
+  //     clientId:new Types.ObjectId(clientId),
+  //     // trainerId: new Types.ObjectId(trainerId),
+  //     status: {$in:['cancelled']}
+  //   });
+  // }
   
 }

@@ -137,6 +137,11 @@ export class SchedulingService implements ISchedulingService {
 
   async bookSlot(input: BookSlotInput) {
     // Get trainer's timezone for proper conversion
+
+    // const weeklyCount = await this._sessionRepo.coutnCancelledDocumentsInAWeek(input.clientId);
+    // if(weeklyCount>=3){
+    //   throw createHttpError(HttpStatus.BAD_REQUEST, HttpResponse.USER_ALREADY_CANCELLED_MORE_THAN_THREE);
+    // }
     const trainerPers = await this._personalizationRepo.findByUserId(input.trainerId);
     const data = trainerPers?.data as ITrainerPersonalization | undefined;
     
