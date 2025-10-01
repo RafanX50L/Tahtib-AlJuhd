@@ -124,3 +124,17 @@ export const NOTIFICATION_ROUTES = {
 
   DELETE: (notificationId: string) => `/notifications/${notificationId}`,
 };
+
+
+export const SCHEDULING_ROUTES = {
+  TRAINER_AVAILABILITY: (trainerId: string) =>
+    `/scheduling/trainers/${trainerId}/availability`,
+
+  BOOKINGS: `/scheduling/bookings`,
+
+  BOOKING: (bookingId: string) => `/scheduling/bookings/${bookingId}`,
+  CANCEL_BOOKING: (bookingId: string) =>
+    `/scheduling/bookings/${bookingId}/cancel`,
+  COMPLETE_BOOKING: (bookingId: string) =>
+    `/scheduling/bookings/${bookingId}/complete`,
+};
