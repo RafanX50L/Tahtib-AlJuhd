@@ -61,7 +61,7 @@ export const ClientService = {
       const response = await api.post(
         CLIENT_ROUTES.GENERATE_PERSONALIZATION,
         userData,
-        { timeout: 60000 }
+        { timeout: 300000 }
       );
       return { data: response.data.data };
     } catch (error: unknown) {
