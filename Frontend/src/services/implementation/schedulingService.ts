@@ -1,3 +1,4 @@
+import { SCHEDULING_ROUTES } from '@/utils/constant';
 import api from './api';
 import { toast } from 'sonner';
 
@@ -6,13 +7,13 @@ type AxiosError<T = unknown> = { response?: { data: T } };
 
 export const SchedulingAPI = {
   getAvailability: async (trainerId: string, dateISO: string, tz?: string) => {
-    const res = await api.get(`/scheduling/trainers/${trainerId}/availability`, { params: { date: dateISO, tz } });
+    const res = await api.get(SCHEDULING_ROUTES.TRAINER_AVAILABILITY(trainerId), { params: { date: dateISO, tz } });
     return res.data.data as { date: string; slots: Array<{ time: string; duration: number; isBooked: boolean }> };
   },
  
   book: async (payload: { trainerId: string; clientId: string; date: string; time: string; duration?: number; tz?: string, contractId:string }) => {
     try {
-      const res = await api.post('/scheduling/bookings', payload);
+      const res = await api.post(SCHEDULING_ROUTES.BOOKINGS, payload);
       return res.data.data;
     } catch (error: unknown) {
       const err = error as AxiosError<{ error?: string; message?: string }>;
@@ -35,15 +36,15 @@ export const SchedulingAPI = {
     }
   },
   list: async (params: { trainerId?: string; clientId?: string; status?: 'upcoming' | 'past' }) => {
-    const res = await api.get('/scheduling/bookings', { params });
+    const res = await api.get(SCHEDULING_ROUTES.BOOKINGS, { params });
     return res.data.data;
   },
   cancel: async (bookingId: string, clientId: string ) => {
-    const res = await api.patch(`/scheduling/bookings/${bookingId}/cancel`,{clientId});
+    const res = await api.patch(SCHEDULING_ROUTES.CANCEL_BOOKING(bookingId),{clientId});
     return res.data.data;
   },
   completeBooking: async (bookingId: string) => {
-    const res = await api.patch(`/scheduling/bookings/${bookingId}/complete`);
+    const res = await api.patch(SCHEDULING_ROUTES.COMPLETE_BOOKING(bookingId));
     return res.data.data;
   },
 };
