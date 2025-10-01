@@ -213,7 +213,7 @@ const SetAvailabilityPage = () => {
 
   const handleMarkAsComplete = async (slotId: string) => {
     try {
-      await SchedulingAPI.MarkAsComplete(slotId);
+      await SchedulingAPI.completeBooking(slotId);
       setSlots(slots.map((slot) => (slot.id === slotId ? { ...slot, status: "completed" as const } : slot)));
       toast.success("Session marked as complete");
     } catch (error) {

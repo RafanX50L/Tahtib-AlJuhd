@@ -3,6 +3,7 @@ import { TrainerService } from "../../../services/implementation/trainerServices
 import { Button } from "../../ui/button";
 import { toast } from "sonner";
 import { Settings, Plus, Trash2, Activity, Edit2 } from "lucide-react";
+import { getUserTimezone } from "../../../utils/timezone.utils";
 
 interface DayWindow {
   startTime: string;
@@ -13,6 +14,7 @@ interface WeeklyRulesPayload {
   weeklyRules: Record<string, DayWindow[]>;
   slotLength: number;
   bufferMinutes: number;
+  timezone?: string;
 }
 
 interface WeeklyRulesProps {
@@ -117,9 +119,15 @@ const WeeklyRules = ({ userId, weeklyRules, setWeeklyRules, showWeeklyRules, set
   const saveWeeklyRules = async () => {
     if (!userId) return;
     try {
+      // Get user's timezone for the weekly rules
+      const userTimezone = getUserTimezone();
+      
       await TrainerService.setWeeklyRules({
         trainerId: userId,
-        rules: weeklyRules,
+        rules: {
+          ...weeklyRules,
+          timezone: userTimezone, // Include timezone with weekly rules
+        },
       });
       toast.success("Weekly rules saved successfully");
       setShowWeeklyRules(false);

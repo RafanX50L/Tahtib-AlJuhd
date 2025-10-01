@@ -68,12 +68,13 @@ export interface ITrainerPersonalization {
     engagementType: 'full-time' | 'part-time' | 'contract' | 'freelance';
     weeklyRules: {
       [key: string]: {
-        startTime: string; // "HH:mm"
-        endTime: string;   // "HH:mm"
+        startTime: string; // "HH:mm" - stored in trainer's timezone
+        endTime: string;   // "HH:mm" - stored in trainer's timezone
       }[];
     };
     slotLength: number;     // in minutes, e.g., 30
     bufferMinutes: number;  
+    timezone?: string;      // Trainer's timezone for weekly rules
   };
   evaluation?: {
     communicationSkills?: number;

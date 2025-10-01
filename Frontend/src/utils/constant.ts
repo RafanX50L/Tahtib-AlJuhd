@@ -85,3 +85,42 @@ export const TRAINER_ROUTES = {
   DASHBOARD_TRENDS: `${TRAINER_ROUTE}/dashboard/trends`,
   DASHBOARD_PAYMENTS: `${TRAINER_ROUTE}/dashboard/payments`,
 };
+
+
+export const COMMUNITY_ROUTES = {
+  FEED: `/community/feed`,
+
+  // Posts
+  POSTS: `/community/posts`,
+  POST: (postId: string) => `/community/posts/${postId}`,
+  POST_COMMENTS: (postId: string) => `/community/posts/${postId}/comments`,
+  TOGGLE_LIKE: (postId: string) => `/community/posts/${postId}/like`,
+
+  // Users
+  USER_POSTS: (userId: string) => `/community/user/${userId}/posts`,
+  USER_PROFILE: (userId: string) => `/community/user/${userId}/profile`,
+
+  // Follow / Unfollow
+  FOLLOW: (targetUserId: string) => `/community/follow/${targetUserId}`,
+  UNFOLLOW: (targetUserId: string) => `/community/follow/${targetUserId}`,
+
+  // Search
+  SEARCH: `/community/search`,
+};
+
+
+export const NOTIFICATION_ROUTES = {
+  BASE: `/notifications`,
+
+  LAST_FIVE: `/notifications/last-five`,
+  BASE_DETAILS: `/notifications/base-details`,
+
+  GET_NOTIFICATIONS: `/notifications`,
+
+  MARK_AS_READ: (notificationId: string) =>
+    `/notifications/${notificationId}/read`,
+
+  MARK_ALL_AS_READ: `/notifications/mark-all-read`,
+
+  DELETE: (notificationId: string) => `/notifications/${notificationId}`,
+};

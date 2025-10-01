@@ -11,6 +11,7 @@ import {
 } from "@/store/slices/schedulingSlice";
 import { format, addDays, isSameDay, startOfDay } from "date-fns";
 import { ClientService } from "@/services/implementation/clientServices";
+import { formatTime12Hour, utcToLocalTime, getUserTimezone } from "@/utils/timezone.utils";
 import {
   Calendar,
   Clock,
@@ -62,13 +63,8 @@ export default function CBooking() {
     addDays(startOfWeek, i)
   );
 
-  // Convert 24-hour time (HH:mm) to 12-hour time with AM/PM
-  const formatTime12Hour = (time: string) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    const period = hours >= 12 ? "PM" : "AM";
-    const hours12 = hours % 12 || 12; // Convert 0 to 12 for midnight
-    return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
-  };
+  // Get user's timezone for display
+  const userTimezone = getUserTimezone();
 
   useEffect(() => {
     const id = params.trainerId as string | undefined;

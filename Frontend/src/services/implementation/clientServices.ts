@@ -61,7 +61,7 @@ export const ClientService = {
       const response = await api.post(
         CLIENT_ROUTES.GENERATE_PERSONALIZATION,
         userData,
-        { timeout: 60000 }
+        { timeout: 300000 }
       );
       return { data: response.data.data };
     } catch (error: unknown) {
@@ -557,8 +557,7 @@ export const ClientService = {
       const response = await api.delete(
         `${CLIENT_ROUTES.CHAT_BOT_SESSIONS}/${sessionId}`
       );
-      console.log(response);
-      return response.data.data;
+      return response.data.success;
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage =

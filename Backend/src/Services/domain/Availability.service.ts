@@ -27,6 +27,9 @@ export class AvailabilityService implements IAvailabilityService {
     if (!trainerPers) throw new Error("Trainer personalization not found");
 
     const trainerData = trainerPers.data as ITrainerPersonalization;
+    
+    // Get trainer's timezone from basicInfo
+    const trainerTimezone = trainerData.basicInfo?.timeZone || 'UTC';
 
     // Remove weeklySlots completely
     const availability: ITrainerPersonalization["availability"] = {
@@ -34,6 +37,7 @@ export class AvailabilityService implements IAvailabilityService {
       slotLength: rules.slotLength || 30,    // in minutes, e.g., 30
       bufferMinutes: rules.bufferMinutes|| 0,
       engagementType: trainerData.availability?.engagementType || "contract",
+      timezone: trainerTimezone, // Store trainer's timezone with weekly rules
     };
 
     await this._personalizationRepo.updateTrainerData(trainerId, {

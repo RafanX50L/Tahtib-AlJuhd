@@ -13,7 +13,7 @@ const userSchema = new Schema<IUser>(
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address"],
     },
-    password: { type: String, required: true },
+    password: { type: String, required: false },
     role: {
       type: String,
       enum: ["client", "trainer", "admin"],

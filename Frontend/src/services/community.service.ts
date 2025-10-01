@@ -1,5 +1,6 @@
 import api from "@/services/implementation/api";
 import { CommentDTO, PostDTO, SearchUserDTO } from "@/types/community";
+import { COMMUNITY_ROUTES } from "@/utils/constant";
 // import { AxiosError } from "axios";
 import { toast } from "sonner";
 
@@ -16,7 +17,7 @@ interface ApiError {
 export const CommunityService = {
   fetchFeed: async (cursor?: string):Promise<{data:{posts:PostDTO[], hasMore: boolean, nextCursor?: string}, error:string | null}> => {
     try {
-      const res = await api.get(`/community/feed`, { params: { cursor } });
+      const res = await api.get(COMMUNITY_ROUTES.FEED, { params: { cursor } });
       console.log(res);
       toast.success("Feed fetched successfully");
       return { data: res.data.data, error: null };
@@ -32,7 +33,7 @@ export const CommunityService = {
 
   fetchComments: async (postId: string, cursor?: string):Promise<{data:{comments:CommentDTO[], hasMore: boolean, nextCursor?: string},error:string|null}> => {
     try {
-      const res = await api.get(`/community/posts/${postId}/comments`, {
+      const res = await api.get(COMMUNITY_ROUTES.POST_COMMENTS(postId), {
         params: { cursor },
       });
       toast.success("Comments fetched successfully");
@@ -49,7 +50,7 @@ export const CommunityService = {
 
   fetchUserPosts: async (userId: string, cursor?: string):Promise<{data:{posts:PostDTO[]}, error:string | null}> => {
     try {
-      const res = await api.get(`/community/user/${userId}/posts`, {
+      const res = await api.get(COMMUNITY_ROUTES.USER_POSTS(userId), {
         params: { cursor },
       });
       toast.success("User posts fetched successfully");
@@ -66,7 +67,7 @@ export const CommunityService = {
 
   fetchUserProfile: async (userId: string) => {
     try {
-      const res = await api.get(`/community/user/${userId}/profile`);
+      const res = await api.get(COMMUNITY_ROUTES.USER_PROFILE(userId));
       toast.success("User profile fetched successfully");
       return { data: res.data.data, error: null };
     } catch (error: unknown) {
@@ -81,7 +82,7 @@ export const CommunityService = {
 
   fetchPost: async (postId: string) => {
     try {
-      const res = await api.get(`/community/posts/${postId}`);
+      const res = await api.get(COMMUNITY_ROUTES.POST(postId));
       toast.success("Post fetched successfully");
       return { data: res.data.data, error: null };
     } catch (error: unknown) {
@@ -96,7 +97,7 @@ export const CommunityService = {
 
   createPost: async (form: FormData) => {
     try {
-      const res = await api.post(`/community/posts`, form, {
+      const res = await api.post(COMMUNITY_ROUTES.POST, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post created successfully");
@@ -113,7 +114,7 @@ export const CommunityService = {
 
   toggleLike: async (postId: string) => {
     try {
-      const res = await api.post(`/community/posts/${postId}/like`);
+      const res = await api.post(COMMUNITY_ROUTES.TOGGLE_LIKE(postId));
       toast.success("Like toggled successfully");
       return { data: res.data.data, error: null };
     } catch (error: unknown) {
@@ -132,7 +133,7 @@ export const CommunityService = {
     parentCommentId?: string
   ) => {
     try {
-      const res = await api.post(`/community/posts/${postId}/comments`, {
+      const res = await api.post(COMMUNITY_ROUTES.POST_COMMENTS(postId), {
         content,
         parentCommentId,
       });
@@ -150,7 +151,7 @@ export const CommunityService = {
 
   follow: async (targetUserId: string) => {
     try {
-      const res = await api.post(`/community/follow/${targetUserId}`);
+      const res = await api.post(COMMUNITY_ROUTES.FOLLOW(targetUserId));
       toast.success("User followed successfully");
       return { data: res.data.data, error: null };
     } catch (error: unknown) {
@@ -165,7 +166,7 @@ export const CommunityService = {
 
   unfollow: async (targetUserId: string) => {
     try {
-      const res = await api.delete(`/community/follow/${targetUserId}`);
+      const res = await api.delete(COMMUNITY_ROUTES.UNFOLLOW(targetUserId));
       toast.success("User unfollowed successfully");
       return { data: res.data.data, error: null };
     } catch (error: unknown) {
@@ -180,7 +181,7 @@ export const CommunityService = {
 
   searchUsers: async (q: string, cursor?: string):Promise<{data:{users:SearchUserDTO[], hasMore: boolean, nextCursor?: string}, error:string | null}> => {
     try {
-      const res = await api.get(`/community/search`, { params: { q, cursor } });
+      const res = await api.get(COMMUNITY_ROUTES.SEARCH, { params: { q, cursor } });
       toast.success("Users searched successfully");
       return { data: res.data.data, error: null };
     } catch (error: unknown) {

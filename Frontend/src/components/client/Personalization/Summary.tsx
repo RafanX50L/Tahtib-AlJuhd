@@ -230,7 +230,7 @@ export default function Summary() {
 
       toast.success("Personalized plan generated successfully!");
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/");
       }, 500);
     } catch (error) {
       const errorMessage =

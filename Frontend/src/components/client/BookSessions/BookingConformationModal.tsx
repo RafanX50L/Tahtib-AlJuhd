@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { ITrainerByIdView } from '@/interfaces/client/IClientTrainer';
 import { ICurrentTrainerContractView } from '@/interfaces/shared/contract';
+import { formatTime12Hour } from '@/utils/timezone.utils';
 
 interface BookingConfirmationModalProps {
   isOpen: boolean;
@@ -77,7 +78,7 @@ export default function BookingConfirmationModal({
                 <div className="min-w-0 flex-1">
                   <p className="text-xs sm:text-sm text-[#A0A7B8]">Time & Duration</p>
                   <p className="text-xs sm:text-sm font-medium text-white">
-                    {selectedSlot.time} ({selectedSlot.duration} minutes)
+                    {formatTime12Hour(selectedSlot.time)} ({selectedSlot.duration} minutes)
                   </p>
                 </div>
               </div>
