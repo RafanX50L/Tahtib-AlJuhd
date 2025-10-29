@@ -97,7 +97,7 @@ export const CommunityService = {
 
   createPost: async (form: FormData) => {
     try {
-      const res = await api.post(COMMUNITY_ROUTES.POST, form, {
+      const res = await api.post(COMMUNITY_ROUTES.POSTS, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Post created successfully");
