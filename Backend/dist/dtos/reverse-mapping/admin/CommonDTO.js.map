@@ -1,1 +1,0 @@
-{"version":3,"file":"CommonDTO.js","sourceRoot":"","sources":["../../../../src/dtos/reverse-mapping/admin/CommonDTO.ts"],"names":[],"mappings":";;;AAAA,6DAAyD;AAOzD,MAAa,cAAc;IAEzB;;OAEG;IACH,MAAM,CAAC,6BAA6B,CAAC,MAA+B;QAClE,MAAM,EAAE,GAAG,gCAAc,CAAC,gBAAgB,CAAC,MAAM,CAAC,EAAE,EAAE,IAAI,CAAC,CAAC;QAE5D,OAAO;YACL,EAAE;SACH,CAAC;IACJ,CAAC;CACF;AAZD,wCAYC"}
