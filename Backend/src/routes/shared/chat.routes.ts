@@ -1,7 +1,7 @@
-import { ChatController } from '@/Controller/shared/chat.controller';
+import { ChatController } from '@/Controller/shared/Chat.controller';
 import { AddedRequest } from '@/middleware/verify.token.middleware';
 import { ChatRepository } from '@/Repository/Chat.repository';
-import { ChatService } from '@/Services/shared/chat.service';
+import { ChatService } from '@/Services/shared/Chat.service';
 import express, { NextFunction, Response } from 'express';
 import { Types } from 'mongoose';
 

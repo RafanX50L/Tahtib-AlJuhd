@@ -1,0 +1,1 @@
+{"version":3,"file":"ChatDTO.js","sourceRoot":"","sources":["../../../../src/dtos/reverse-mapping/shared/ChatDTO.ts"],"names":[],"mappings":";;;AAAA,6DAAyD;AAYzD;;;GAGG;AACH,MAAa,OAAO;IAClB;;OAEG;IACH,MAAM,CAAC,sBAAsB,CAAC,MAA+B;QAC3D,MAAM,MAAM,GAAG,gCAAc,CAAC,cAAc,CAAC,MAAM,CAAC,MAAM,EAAE,QAAQ,EAAE,EAAE,CAAC,CAAC;QAE1E,OAAO;YACL,MAAM;SACP,CAAC;IACJ,CAAC;CACF;AAXD,0BAWC"}

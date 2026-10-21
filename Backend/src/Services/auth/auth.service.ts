@@ -1,14 +1,3 @@
-import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
-import {
-  forgotPasswordReturnType,
-  IAuthService,
-  resetPasswordReturnType,
-  signInReturnType,
-  verifyOtpReturnType,
-  SignUpUser,
-  getUserDataReturnType,
-  refreshTokenReturnType,
-} from "../../core/interface/services/auth/IAuth.service";
 import {
   comparePassword,
   generateAccessToken,
@@ -24,12 +13,14 @@ import { createHttpError } from "../../utils/http-error.util";
 import { HttpStatus } from "../../constants/status.constant";
 import { HttpResponse } from "../../constants/response-message.constant";
 import logger from "../../utils/logger.utils";
-import IUser from "@/core/interface/model/IUser.model";
 import { generateNanoId } from "../../utils/generate-nanoid";
 import mongoose from "mongoose";
+import { IUserRepository } from "@/core/interface/repositories/IUser.repository";
+import { forgotPasswordReturnType, getUserDataReturnType, refreshTokenReturnType, resetPasswordReturnType, signInReturnType, SignUpUser, verifyOtpReturnType } from "@/core/interface/services/auth/IAuth.service";
 import { UserDTO } from "@/dtos/auth/UserDTO";
+import IUser from "@/core/interface/model/IUser.model";
 
-export class AuthService implements IAuthService {
+export class AuthService {
   constructor(private readonly _userRepository: IUserRepository) {}
 
   async signUp(user: SignUpUser): Promise<string> {

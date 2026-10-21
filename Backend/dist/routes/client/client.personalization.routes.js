@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_personalization_controller_1 = require("../../Controller/client/client.personalization.controller");
+const DietPlan_repository_1 = require("../../Repository/DietPlan.repository");
+const personalization_repository_1 = require("../../Repository/personalization.repository");
+const user_Repository_1 = require("../../Repository/user.Repository");
+const UserFile_repository_1 = require("../../Repository/UserFile.repository");
+const WorkoutPlan_repository_1 = require("../../Repository/WorkoutPlan.repository");
+const client_personalization_service_1 = require("../../Services/client/client.personalization.service");
+const express_1 = require("express");
+const personalizationRouter = (0, express_1.Router)();
+const personalizationRepository = new personalization_repository_1.PersonalizationRepository();
+const userRepository = new user_Repository_1.UserRepository();
+const workoutPlanRepository = new WorkoutPlan_repository_1.WorkoutPlanRepository();
+const dietPlanRepository = new DietPlan_repository_1.DietPlanRepository();
+const userFileRepository = new UserFile_repository_1.UserFileRepository();
+const personalizationService = new client_personalization_service_1.ClientPersonalizationService(personalizationRepository, userRepository, workoutPlanRepository, dietPlanRepository, userFileRepository);
+const personalizationController = new client_personalization_controller_1.ClientPersonalizationController(personalizationService);
+personalizationRouter.post('/generate-personalization', personalizationController.generatePersonalization.bind(personalizationController));
+personalizationRouter.get('/workout-details', personalizationController.getWorkoutDetails.bind(personalizationController));
+personalizationRouter.get('/clinet-profile', personalizationController.getProfileData.bind(personalizationController));
+personalizationRouter.patch('/update-profile', personalizationController.updateClientProfile.bind(personalizationController));
+exports.default = personalizationRouter;
+//# sourceMappingURL=client.personalization.routes.js.map

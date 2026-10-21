@@ -1,9 +1,9 @@
 import express from 'express';
 import { verifyAnyToken, restrictTo } from '@/middleware/verify.token.middleware';
-import { SchedulingService } from '../../Services/domain/scheduling.service';
+import { SchedulingService } from '../../Services/domain/Scheduling.service';
 import { PersonalizationRepository } from '@/Repository/personalization.repository';
 import { SessionRepository } from '@/Repository/Session.repository';
-import { SchedulingController } from '@/Controller/domain/scheduling.controller';
+import { SchedulingController } from '@/Controller/domain/Scheduling.controller';
 import { TrainerClientContractRepository } from '@/Repository/TrainerClientContract.repository';
 
 const router = express.Router();

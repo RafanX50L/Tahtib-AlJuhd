@@ -6,7 +6,7 @@ import { UserRepository } from "@/Repository/user.Repository";
 import { SessionRepository } from "@/Repository/Session.repository";
 import { clientTrainerService } from "@/Services/client/client.trainer.service";
 import { Router } from "express";
-import { ClientTrainerController } from "@/Controller/client/client.trainer.Controller";
+import { ClientTrainerController } from "@/Controller/client/Client.Trainer.Controller";
 
 const clientTraienrRoot = Router();
 
