@@ -40,9 +40,6 @@ export const validateEnv = () => {
   if (!env.SENDER_EMAIL) {
     throw new Error("SENDER_EMAIL is not defined in the environment variables");
   }
-  if (!env.PASSKEY) {
-    throw new Error("PASSKEY is not defined in the environment variables");
-  }
   if (!env.REDIS_URL) {
     throw new Error("REDIS_URL is not defined in the environment variables");
   }
