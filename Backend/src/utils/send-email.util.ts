@@ -1,13 +1,73 @@
-import { transporter } from "../config/mail.config";
+import { resend } from "../config/mail.config";
 import { env } from "../config/env.config";
 import logger from "./logger.utils";
 
+export interface SendEmailOptions {
+  to: string | string[];
+  subject: string;
+  html: string;
+}
+
+export const extractResendError = (
+  error: any
+): { code: string; message: string; hint: string } => {
+  const code = error?.name || error?.code || "UNKNOWN_RESEND_ERROR";
+  const message = error?.message || "An unknown error occurred while sending email";
+  const statusCode = error?.statusCode;
+
+  let hint = "Check Resend dashboard and configuration.";
+  if (
+    statusCode === 401 ||
+    code === "invalid_api_key" ||
+    code === "missing_api_key"
+  ) {
+    hint = "Authentication failure: RESEND_API_KEY is missing or invalid in your .env file.";
+  } else if (statusCode === 403) {
+    hint =
+      "Domain verification issue: Ensure your sending domain is verified in Resend, or verify you are sending only to your registered account email if using onboarding@resend.dev sandbox.";
+  } else if (statusCode === 429 || code === "rate_limit_exceeded") {
+    hint =
+      "Rate limit exceeded: You have exceeded Resend rate limits (10 req/s or daily plan limit).";
+  } else if (code === "daily_quota_exceeded") {
+    hint = "Daily quota exceeded: Reached 100 free emails limit for today.";
+  } else if (code === "validation_error") {
+    hint =
+      "Validation error: Check sender domain verification, recipient email format, or sandbox restrictions in Resend.";
+  }
+
+  return { code, message, hint };
+};
+
+export const sendEmail = async ({ to, subject, html }: SendEmailOptions) => {
+  const from = env.SENDER_EMAIL || "Tahtib ALJuhd <noreply@mail.tahtib.rafan.me>";
+
+  const { data, error } = await resend.emails.send({
+    from,
+    to,
+    subject,
+    html,
+  });
+
+  if (error) {
+    const { code, message, hint } = extractResendError(error);
+    const recipientStr = Array.isArray(to) ? to.join(", ") : to;
+    logger.error(
+      `[Resend Delivery Failed] To: ${recipientStr} | Code: [${code}] | Message: "${message}" | Hint: ${hint}`
+    );
+    throw new Error(`Email delivery failed [${code}]: ${message}`);
+  }
+
+  logger.info(
+    `[Resend Success] Email sent. ID: ${data?.id} | To: ${Array.isArray(to) ? to.join(", ") : to}`
+  );
+  return data;
+};
+
 export const sendOtpEmail = async (email: string, otp: string) => {
   try {
-    const mailOptions = {
-      from: `"Tahtib ALJuhd" <${env.SENDER_EMAIL}>`,
+    await sendEmail({
       to: email,
-      subject: "Tahtib ALJuhd OTP Verificaiton",
+      subject: "Tahtib ALJuhd OTP Verification",
       html: `
                 <h1>OTP Verification</h1>
                 <p>Your OTP is: ${otp}</p>
@@ -15,20 +75,17 @@ export const sendOtpEmail = async (email: string, otp: string) => {
                 <p>If you did not request this verification, you can ignore this email.</p>
                 <p>~ Tahtib ALJuhd</p>
                   `,
-    };
-    await transporter.sendMail(mailOptions);
-    logger.info("Email sent successfully to:", email);
+    });
   } catch (error) {
-    logger.error("Error sending email:", error);
-    throw new Error("Error sending email");
+    logger.error("Error sending OTP email:", error);
+    throw error instanceof Error ? error : new Error("Error sending email");
   }
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   try {
     const resetLink = `${env.RESET_PASS_URL}?token=${token}`;
-    const mailOptions = {
-      from: `"Tahtib ALJuhd" <${env.SENDER_EMAIL}>`,
+    await sendEmail({
       to: email,
       subject: "Password Reset Request",
       html: `
@@ -38,12 +95,10 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
                 <p>If you did not request this, please ignore this email.</p>
                 <p>~ Tahtib ALJuhd</p>
                   `,
-    };
-    await transporter.sendMail(mailOptions);
-    logger.info("Password reset email sent successfully to:", email);
+    });
   } catch (error) {
     logger.error("Error sending password reset email:", error);
-    throw new Error("Error sending password reset email");
+    throw error instanceof Error ? error : new Error("Error sending password reset email");
   }
 };
 
@@ -54,11 +109,7 @@ export const sendInterviewScheduleEmail = async (
   time: string | Date,
 ) => {
   try {
-    const mailOptions = {
-      from: `"Tahtib ALJuhd" <${env.SENDER_EMAIL}>`,
-      to: email,
-      subject: "Your Interview Has Been Scheduled",
-      html: `
+    const html = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -384,14 +435,16 @@ export const sendInterviewScheduleEmail = async (
             </div>
         </body>
         </html>
-      `,
-    };
+      `;
 
-    await transporter.sendMail(mailOptions);
-    logger.info("Interview schedule email sent successfully to:", email);
+    await sendEmail({
+      to: email,
+      subject: "Your Interview Has Been Scheduled",
+      html,
+    });
   } catch (error) {
     logger.error("Error sending interview schedule email:", error);
-    throw new Error("Error sending interview schedule email");
+    throw error instanceof Error ? error : new Error("Error sending interview schedule email");
   }
 };
 
@@ -400,11 +453,7 @@ export const sendTrainerApprovalEmail = async (
   trainerName: string
 ) => {
   try {
-    const mailOptions = {
-      from: `"Tahtib ALJuhd" <${env.SENDER_EMAIL}>`,
-      to: email,
-      subject: "Congratulations! Your Application Has Been Approved",
-      html: `
+    const html = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -790,14 +839,16 @@ export const sendTrainerApprovalEmail = async (
             </div>
         </body>
         </html>
-      `
-    };
+      `;
 
-    await transporter.sendMail(mailOptions);
-    logger.info("Trainer approval email sent successfully to:", email);
+    await sendEmail({
+      to: email,
+      subject: "Congratulations! Your Application Has Been Approved",
+      html,
+    });
   } catch (error) {
     logger.error("Error sending trainer approval email:", error);
-    throw new Error("Error sending trainer approval email");
+    throw error instanceof Error ? error : new Error("Error sending trainer approval email");
   }
 };
 
@@ -806,11 +857,7 @@ export const sendTrainerRejectionEmail = async (
   trainerName: string,
 ) => {
   try {
-    const mailOptions = {
-      from: `"Tahtib ALJuhd" <${env.SENDER_EMAIL}>`,
-      to: email,
-      subject: "Trainer Application Status – Rejected",
-      html:`
+    const html = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -1007,13 +1054,15 @@ export const sendTrainerRejectionEmail = async (
             </div>
         </body>
         </html>
-      `
-    };
+      `;
 
-    await transporter.sendMail(mailOptions);
-    logger.info("Trainer rejection email sent successfully to:", email);
+    await sendEmail({
+      to: email,
+      subject: "Trainer Application Status – Rejected",
+      html,
+    });
   } catch (error) {
     logger.error("Error sending trainer rejection email:", error);
-    throw new Error("Error sending trainer rejection email");
+    throw error instanceof Error ? error : new Error("Error sending trainer rejection email");
   }
 };

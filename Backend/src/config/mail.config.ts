@@ -1,20 +1,11 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import dotenv from 'dotenv';
 dotenv.config();
 import { env } from './env.config';
+import logger from '../utils/logger.utils';
 
-export const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Must be false for port 587 (uses STARTTLS)
-  auth: {
-    user: env.SENDER_EMAIL,
-    pass: env.PASSKEY,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 10000, // 10s max connection attempt
-  greetingTimeout: 5000,
-  socketTimeout: 15000,
-});
+if (!env.RESEND_API_KEY || env.RESEND_API_KEY === 'your_resend_api_key_here') {
+  logger.warn('[Resend Config] RESEND_API_KEY is missing or set to placeholder value. Set RESEND_API_KEY in your .env file.');
+}
+
+export const resend = new Resend(env.RESEND_API_KEY);

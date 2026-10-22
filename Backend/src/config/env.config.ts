@@ -20,8 +20,8 @@ export const env = {
   get SENDER_EMAIL() {
     return process.env.SENDER_EMAIL;
   },
-  get PASSKEY() {
-    return process.env.PASSKEY;
+  get RESEND_API_KEY() {
+    return process.env.RESEND_API_KEY;
   },
   get REDIS_URL() {
     return process.env.REDIS_URL;
