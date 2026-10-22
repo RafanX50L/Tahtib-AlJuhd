@@ -1,14 +1,45 @@
 import { GoogleGenAI } from "@google/genai";
 import { IExercise, IWeek } from "@/core/interface/model/IWorkoutPlan.model";
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { env } from "..//config/env.config";
+import { env } from "../config/env.config";
 import { IClientUserData } from "@/core/interface/model/IPersonalization.model";
 import { IMealType } from "@/core/interface/model/IDietPlan.model";
 import logger from "./logger.utils";
 
-// Initialize the Google GenAI client
-const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY as string);
+const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+
+// Helper to delay execution
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function callGeminiWithRetry(prompt: string, maxRetries = 3) {
+  let attempt = 0;
+  let delay = 1000; // start with 1 second delay
+
+  while (attempt < maxRetries) {
+    try {
+      return await ai.models.generateContent({
+        model: "gemini-3.8-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+        },
+      });
+    } catch (err: any) {
+      attempt++;
+      const status = err?.status || err?.code || err?.error?.code;
+
+      // Retry on 503 (Unavailable) or 429 (Too Many Requests)
+      if ((status === 503 || status === 429 || err?.message?.includes("high demand")) && attempt < maxRetries) {
+        logger.warn(
+          `Gemini 503/429 high demand spike. Retrying attempt ${attempt}/${maxRetries} after ${delay}ms...`
+        );
+        await sleep(delay);
+        delay *= 2; // exponential backoff: 1s, 2s, 4s...
+        continue;
+      }
+      throw err;
+    }
+  }
+}
 
 async function generateFitnessPlan(
   userData: Partial<IClientUserData>,
@@ -17,7 +48,6 @@ async function generateFitnessPlan(
   previousWeekWorkoutData: Record<string, IWeek> | null = null
 ) {
   try {
-    // Format the prompt with user data, week number, plan type, and previous week's data
     const prompt = formatPrompt(
       userData,
       weekNumber,
@@ -25,20 +55,15 @@ async function generateFitnessPlan(
       previousWeekWorkoutData
     );
 
-    // Generate content using the new API structure
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using 1.5 Flash for potentially better JSON output
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    const response = await callGeminiWithRetry(prompt, 3);
 
-    // Parse the response into structured data
+    const text = response?.text ?? "";
     return parseResponse(text);
   } catch (error) {
     logger.error("Error generating fitness plan:", error);
     throw new Error("Failed to generate fitness plan");
   }
 }
-
 function getMealCategories(mealsPerDay: string): string[] {
   switch (mealsPerDay) {
     case "3 meals":
